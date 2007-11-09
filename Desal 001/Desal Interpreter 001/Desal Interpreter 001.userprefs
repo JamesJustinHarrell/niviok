@@ -1,20 +1,14 @@
 <?xml version="1.0"?>
-<UserCombinePreferences filename="/media/files/source/Desal 001/Desal Interpreter 001/Desal Interpreter 001.mds">
+<UserCombinePreferences filename="/media/files/Desal/Desal 001/Desal Interpreter 001/Desal Interpreter 001.mds">
   <Files>
     <File filename="Welcome" />
   </Files>
   <Views>
     <ViewMemento Id="MonoDevelop.Ide.Gui.Pads.ProjectPad">
-      <TreeView>
-        <Node expanded="True" selected="True">
-          <Node name="Desal Interpreter 001" expanded="True" />
-        </Node>
-      </TreeView>
+      <TreeView />
     </ViewMemento>
     <ViewMemento Id="MonoDevelop.Ide.Gui.Pads.ClassPad">
-      <TreeView>
-        <Node expanded="True" />
-      </TreeView>
+      <TreeView />
     </ViewMemento>
   </Views>
   <Properties>
