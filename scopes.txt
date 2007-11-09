@@ -1,0 +1,82 @@
+functions/interfaces/classes need to refer to objects that haven't been defined yet
+
+declarations run before all other statements
+other statements cannot use mutable identifiers until after passing declaration
+
+executing a block:
+	create a scope with the identifiers in declarations
+	bind objects to identifiers if declarations specify to do so
+	seal the scope and hide all mutable identifiers
+	execute statements one by one
+		when coming across a declaration for a mutable identifier, unhide the identifier
+
+
+----- example 1
+
+return true
+
+func test() Bool {
+	Interface Foo = getFooInterface()
+	Interface Bar = getBarInterface()
+	Interface iface
+	iface = Foo
+	iface o
+	iface = Bar
+	return (o isA Foo)
+}
+
+"o" is an object identifier with Foo as the interface.
+
+
+----- example 2
+
+throw exception
+
+func test() {
+	Interface Foo = getFooInterface()
+	Interface Bar = getBarInterface()
+	Interface const iface = Foo
+	iface o
+	iface = Bar
+}
+
+"iface" is a const object identifier and cannot be bound to anything else.
+
+
+----- example 3
+
+nothing (just don't throw exception)
+
+func test() {
+	Bool bool = doStuff(3)
+
+	func doStuff(Int n) Bool
+		Beta beta = getBeta(n, false)
+		return beta.beta.beta.bool
+		
+	func getBeta(Int n, Bool stop) Beta
+		if stop
+			return Class(n).beta
+		else return beta(n, true)
+		
+	class Class
+		Int _n
+		construct(Int n)
+			_n = n
+		interface Beta
+			Beta beta get
+				return Class(_n).beta
+			Bool bool get
+				return true
+		interface Alpha default
+			Beta beta get
+				return Class(_n) as Beta
+		
+	interface Alpha
+		R Beta beta
+		
+	interface Beta
+		R Beta beta
+		R Bool bool
+}
+

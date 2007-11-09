@@ -1,0 +1,1578 @@
+<book xmlns="http://docbook.org/ns/docbook" version="5.0"
+xmlns:xi="http://www.w3.org/2003/XInclude">
+	
+	<title>Desal Semantics 1.0</title>
+	<subtitle>Edition 1 Draft 20071018</subtitle>
+	
+	<info>	
+		<copyright>
+			<year>2007</year>
+			<holder>James Justin Harrell</holder>
+		</copyright>
+		
+		<legalnotice>Permission is granted to use, copy, display, modify, sell, and distribute this document. This document is provided "as is" without warrany of any kind. In no event shall anyone be liable for any damages or other liability arising from use of this document.</legalnotice>
+	</info>
+	
+	<chapter xml:id="introduction">
+		<title>Introduction</title>
+		
+		<section xml:id="specification-version">
+			<title>Version</title>
+			
+			<para>Each version of Desal Semantics has a major version number and a minor version number, both integers incrementing by one. When the major version number is incremented, the minor version number is reset to 0.</para>
+			
+			<para>All versions of Desal Semantics should be backwards compatible with previous versions that have the same major version number. That means the major version number should be changed when changes are made that break backwards compatibility.</para>
+			
+			<para>Example: Something that is valid Desal Semantics 5.3 will also be valid Desal Semantics 5.4, 5.5, 5.6, etc.</para>
+			
+			<para>Each specification describing a version of Desal Semantics may have multiple editions, each represented by an integer that's incremented by one. The first finalized specification for a version of Desal Semantics is the first edition, or edition one. Creating a new edition is a revision. Revisions should serve to clarify, add guidance, and correct errors in the specification, not to add or remove functionality. Revisions should not attempt to correct errors in Desal Semantics, only errors in describing Desal Semantics. Implementations should target the latest finalized edition of the version they are targeting.</para>
+			
+			<para>Each edition may have multiple drafts before being finalized. Each draft is represented by a date around the time it was published. Implementations and specifications should not target drafts.</para>
+			
+			<para>A version of Desal Semantics may be represented as "Desal Semantics X.Y" where X is the major version number and Y is the minor version number. A finalized specification for Desal Semantics may be represented as "Desal Semantics X.Y Edition A" where A is the edition number. A draft of a specification may be represented as "Desal Semantics X.Y Edition A Draft B" where B is the date in YYYYMMDD format.</para>
+			
+			<para>This specification describes Desal Semantics 1.0. This specification has never been finalized, so is working towards the first edition. It is still in the draft stages.</para>
+			
+			<para>When this specification is finalized, it will be Edition 1 (instead of Edition 1 Draft YYYYMMDD). If the finalized specification is revised, the next finalized edition will be Edition 2.</para>
+		</section>
+		
+		<section xml:id="specification-scope">
+			<title>Scope</title>
+			
+			<para>This document defines Desal semantics, but not how to represent them.</para>
+		</section>
+		
+		<section xml:id="compliance">
+			<title>Compliance</title>
+			
+			<para>This specification provides a definition of compliance. Other definitions of compliance may exist outside of this specification, but to be compliant as defined by this specification, these requirements must be met.</para>
+			
+			<para>For an implementation to be "base compliant", it must meet all the "must" requirements listed in this spec. If this spec says an implementation "must" do something, the implementation will not be considered base compliant according to this specification if it does not do it.</para>
+			
+			<para>Above base compliance, there are further levels of compliance. Each correct implementation of a "should" requirement increases the compliance level, and each failure to implement a "should" requirement decreases the compliance level. Two different compliance levels can only be compared if one is a subset of the other.</para>
+			
+			<para>For example, consider an implementation Alpha that meets all the "must" requirements and three of the the "should" requirements, and an implementation Beta that meets all the "must" requirements and five of the "should" requirements. If Beta does not meet the three "should" requirements that Alpha meets, Aplha is not a subset of Beta, so it cannot be said that Beta is more compliant than Alpha. But if Beta meets the same three "should" requirements as Alpha (in addition to the other two), then Alpha is a subset of Beta, so it can be said that Beta is more compliant than Alpha.</para>
+			
+			<para>This specification also has "encourgements". These encouragements are considered good ideas by the specficiation author(s), but may not always be appropriate or may not be necessary for interoperability. Complying with these encouragements does not increase an implementation's compliance.</para>
+		</section>
+		
+		<section xml:id="executing-desal-tree-rep">
+			<title>Executing a Desal tree representation</title>
+			
+			<para>Note: This section is very new. Its contents might not be reflected yet in other sections.</para>
+			
+			<para>Remember: The main tree might not have a main function. The main tree might just expose it's members, such as for scripting or a library.</para>
+			
+			<para>interpreted:</para>
+			<orderedlist>
+				<listitem>a Desal tree representation is parsed to extract a Desal Semantics tree</listitem>
+				<listitem>tree is processed
+					<orderedlist>
+						<listitem>imported files are parsed into trees</listitem>
+						<listitem>libraries are loaded and linked</listitem>
+					</orderedlist>
+				</listitem>
+				<listitem>optimization</listitem>
+				<listitem>execution of main global node, which produces an exit status</listitem>
+			</orderedlist>
+			
+			<para>runtime compilation:</para>
+			<orderedlist>
+				<listitem>a Desal tree representation is parsed to extract a Desal Semantics tree</listitem>
+				<listitem>tree is processed
+					<orderedlist>
+						<listitem>imported files are parsed into trees</listitem>
+						<listitem>libraries are loaded and linked</listitem>
+					</orderedlist>
+				</listitem>
+				<listitem>optimization</listitem>
+				<listitem>trees translated to bytecode and/or machine code</listitem>
+				<listitem>execution of bytecode and/or machine code, which produces an exit status</listitem>
+			</orderedlist>
+			
+			<para>beforehand compilation:</para>
+			<orderedlist>
+				<listitem>a Desal tree representation is parsed to extract a Desal Semantics tree</listitem>
+				<listitem>tree is processed
+					<orderedlist>
+						<listitem>imported files are parsed into trees</listitem>
+						<listitem>static libraries are loaded and linked</listitem>
+						<listitem>information about shared libraries is loaded and linked</listitem>
+					</orderedlist>
+				</listitem>
+				<listitem>optimization</listitem>
+				<listitem>trees translated to bytecode and/or machine code and stored</listitem>
+				<listitem>code is loaded and processed
+					<orderedlist>
+						<listitem>shared libraries are loaded and linked</listitem>
+					</orderedlist>
+				</listitem>
+				<listitem>execution of bytecode and/or machine code, which produces an exit status</listitem>
+			</orderedlist>
+			
+			<para>This specification is defined with an interpreter in mind. This spec will define how to:</para>
+			<simplelist>
+				<member>process a tree. a fully processed tree should contain no identifiers. identifier nodes should be replaced with direct associations with references.</member>
+				<member>execute/evaluated nodes of a processed tree</member>
+				<member>execute a processed main global tree</member>
+			</simplelist>
+			
+			<para>Implementations that aren't interpreters must produce equivalent behavior when being executed.</para>
+		</section>
+		
+		<section xml:id="definitions">
+			<title>Definitions</title>
+	
+			<glosslist>
+				<glossentry>
+					<glossterm>expression</glossterm>
+					<glossdef>When "evaluated", they produce a value</glossdef>
+				</glossentry>
+				
+				<glossentry>
+					<glossterm>object</glossterm>
+					<glossdef>A collection of data that holds state. Created by a class. Only the class that created it can access an object's state. Values are associated with objects.</glossdef>
+				</glossentry>
+				
+				<glossentry>
+					<glossterm>reference</glossterm>
+					<glossdef>References can be bound to one or more values. An identifier in a certain scope is often associated with references, although they aren't always.</glossdef>
+				</glossentry>
+			
+				<glossentry>
+					<glossterm>value</glossterm>
+					<glossdef>Associated with an object and an interface implementation, except for the null value, which is associated with an interface.</glossdef>
+				</glossentry>
+				
+				<glossentry>
+					<glossterm>prevalent</glossterm>
+					<glossdef>Immutable objects bound to the global scope that exist before source begins execution. No other objects may be bound to the same identifiers, even in inner scopes.</glossdef>
+				</glossentry>
+				
+				<glossentry>
+					<glossterm>element</glossterm>
+					<glossdef>A value stored in a container.</glossdef>
+				</glossentry>
+				
+				<glossentry>
+					<glossterm>member</glossterm>
+					<glossdef>A property or method of an interface.</glossdef>
+					<!-- xxx should it also apply to callees? -->
+				</glossentry>
+				
+				<glossentry>
+					<glossterm>method</glossterm>
+					<glossdef>A member function of an interface.</glossdef>
+				</glossentry>
+			</glosslist>
+		</section>
+	</chapter>
+	
+	<chapter xml:id="overview">
+		<title>Overview</title>
+		
+		<para>Desal semantics are represented by a node tree. The way this node tree is represented is not covered in this specification. This specification explains what kind of node tree a representation can represent, the meaning of the nodes in a Desal node tree, and how to evaluate the node tree.</para>
+		
+		<para>This node tree has scopes attached at various places. These scopes contain identifiers that are bound to namespaces and references. Thus, a Desal implementation must code for a node tree, scopes, objects, and functions.</para>
+		
+		<section xml:id="ext-namespace">
+			<title>ext namespace</title>
+			
+			<para>Unofficial features of Desal should appear in the "ext" namespace when possible. Implementations do not have to recognize extensions or support them, although they are encouraged to at least recognize them in order to give more useful error messages.</para>
+			
+			<programlisting>
+import atExit from ext
+
+atExit.add(myfunc)
+			</programlisting>
+		</section>
+		
+		<section xml:id="expressions">
+			<title>Expressions</title>
+			
+			<para>Expressions evaluate to an value.</para>
+		</section>
+		
+		<section xml:id="references">
+			<title>references</title>
+			
+			<para>Identifiers can be associated with values, references, and namespaces. There are multiple types of references. References are created by declaration nodes that associate an identifier with a new reference. Declarations specify what the reference can be bound to.</para>
+			
+			<section xml:id="value-identifiers">
+				<title>value identifier</title>
+				<para>A value identifier is a associated with a value. It can never be reassociated with a different value.</para>
+			</section>
+			 
+			<section xml:id="reference-identifiers">
+				<title>Reference identifiers</title>
+				<para>A reference identifier is associated with a reference. That reference can be bound to values with with the active interface specified by the associated declaration. (i.e. The associated identifier declaration specifies an interface, and the reference can only be bound to values with that interface as the active interface.) References can also be unbound i.e. bound to nothing i.e. bound to null. The identifier can only ever be bound to one object reference at a time.</para>
+			</section>
+			
+			<section xml:id="function-identifiers">
+				<title>function identifier</title>
+				<para>Function identifiers are associated with references that can be bound to multiple values with a specified function interface as the active interface.</para>
+			</section>
+			
+			<section xml:id="namespace-identifiers">
+				<title>namespace identifier</title>
+				<para>Namespace identifiers can be associated with a namespace. (Only 1 at any time.) These and alias identifiers are the only types of identifiers that cannot be evaluated.</para>
+			</section>
+			
+			<section xml:id="dynamic-identifiers">
+				<title>dynamic identifier</title>
+				<para>Dynamic identifiers are associated with references that can be bound to any value, with any active interface. (Only 1 at any time.)</para>
+				
+				<programlisting>
+interface Foo
+	func fooMeth()
+
+interface Bar
+	func barMeth()
+
+Dyn obj = getFoo()
+obj.fooMeth()
+obj = getBar()
+obj.barMeth()
+				</programlisting>
+				
+				<para>Dyn identifiers are associated with references that can point to values. At all times, one of the interface implementations of the object's class is the active interface. When accessing properties of the pointed-to-object, which properties are available and what they do is determined by the active interface. The active interface and the pointed-to object can both be changed.</para>
+			
+				<programlisting>
+dyn foo //same as: dyn foo = null
+foo = getBar()
+foo.barProp
+foo = 3
+foo.minus(5)
+foo = "test"
+foo.toUpperCase()
+foo = CMyClass()
+foo.myClassProp
+foo = cast {BazInterface} alpha
+foo.bazProp
+foo = cast {MazInterface} alpha
+foo.mazProp
+foo = cast {GazInterface} alpha
+foo.gazProp
+(BazInterface foo) .bazProp
+(MazInterface foo) .mazProp
+				</programlisting>
+			</section>
+			
+			<section xml:id="meta-identifiers">
+				<title>meta identifier</title>
+				<para>Meta identifiers are associated with references that can be bound to vaules with MetaObject as the active interface. The difference between this identifier type and the reference identifier type is that members of the MetaObject (xxx link to MetaObject spec) are not exposed through this reference. Instead, any attempted member access calls methods of the MetaObject implementation.</para>
+				
+				<programlisting>
+interface MetaObject
+	func handleCall(String identifier, Dyn[] arguments) Dyn
+	func handlePropGet(String identifier) Dyn
+	func handlePropSet(String identifier, Dyn value)
+	func handleCallMethod(String identifier, Dyn[] arguments) Dyn
+	func handleCast(Interface iface) Dyn
+
+class CMeta
+	interface MetaObject
+		...
+
+Meta obj = CMeta()
+obj.foo = "hey hey he"
+obj.foo = [1, 2, 3]
+obj.bar = obj.notheutnhoetnhu
+obj.heyPeople()
+obj.HowsItGoing?(obj.n789, obj.immaGoNow())
+				</programlisting>
+			</section>
+		</section>
+		
+		<section xml:id="execution">
+			<title>Execution</title>
+			
+			<para>Some nodes can be executed.</para>
+		</section>
+		
+		<section xml:id="builtin-numbers">
+			<title>Built-in numbers</title>
+			
+			<para>The built-in implementations of the Int and Rat interfaces must be able to handle numbers of an arbitrary complexity. Built-in libraries should handle numbers of an arbitrary complexity. Desal implementations must not ever introduce rounding errors or otherwise introduce numerical errors without being explicitly told that such errors may occur.</para>
+			
+			<para>For example, pow(10, pow(10,100)), must correctly return an Int object reference that accurately represents a googolplex, and must be able to perform operations on this number with perfect accuracy.</para>
+			
+			<para>Implementations may throw errors when they are unable to perfectly represent a number. This is the only alternative to perfectly representing the number, unless user code has explicitly allowed the implementation to introduce errors. Implementations must not introduce errors by default.</para>
+			
+			<para>For example, if the implementation was directed by user code to print a googolplex without using scientific notation (i.e. a "1" followed by a googol "0"), the implementation may throw an error specifying that it is unable to create such a representation.</para>
+		</section>
+	</chapter>
+	
+	<chapter xml:id="objects">
+		<title>Objects</title>
+		
+		<para>Objects have state which is modified through interfaces. Every object has an ID that never charges. Objects implement interfaces. Each interface implementation consists of the implementation of the members of that interface.</para>
+		
+		<para>Every objects implements one or more interfaces. Interfaces are objects. Objects are accessed through interfaces.</para>
+	</chapter>
+	
+	<chapter xml:id="functions">
+		<title>Functions</title>
+		
+		<para>Functions have an associated object. When identifiers that are bound to functions are evaluated, they evaluted to this object.</para>
+		
+		<para>Functions have a return interface and parameters. Parameters have an interface and an optional default value.</para>
+	</chapter>
+	
+	<chapter xml:id="interfaces">
+		<title>Interfaces</title>
+		
+		<para>Interfaces define a means of interacting with an object. Interfaces declare that implementations will be able to provide object references with specified interfaces when asked for the object reference bound to identifiers specified by the interface and/or that implementations will be able to bind object references with specified interfaces to specified identifiers. Methods are a type of property. Methods are callable and cannot be assigned, only retrieved.</para>
+		
+		<para>Interfaces can declare that properties are "read only", "write only", or "read+write".</para>
+		
+		<para>Interface member functions can have default values. This differs from a class with abstract members because interfaces cannot have any private members, so these default functions can not store or extract state in the object. These functions are only intended to call other member functions or throw errors.</para>
+		
+		<para>There are two kinds of interfaces: object interfaces (Interface) and function interfaces (FuncInterface). Object interfaces define properties and methods. Function interfaces define parameters and a return type. An interface cannot be a function interface and an object interface, though an object interface can have call methods that allow implementations to be used like functions. A function interface can be wrapped to an object interface with a single call method.</para>
+		
+		<para>Interface callees and members may refer to the interface. This is useful when an interface wants to define a method that returns an object reference with itself as the active interface. For generic interfaces, it is also possible to refer to the generic template.</para>
+		
+		<programlisting>
+<![CDATA[
+interface Int
+	func power(Self) Self
+	r Self timesTwo
+
+//some representations may be able to translate the below example as well
+
+iterface Int
+	func power(Int) Int
+	r Int timesTwo
+
+//note that the interface node will have no knowledge of the identifier it is being bound to
+
+//generics:
+
+interface<T> Print
+	callee(T) Self
+
+Print<Int> print = getIntPrinter()
+print(3)(5)(8) //the print callee returns a Print<Int> object reference
+
+//refering to Generic interface
+
+interface<T> Print
+	callee(T) GenericSelf
+
+Print print = getGenericPrinter()
+print <Int>(3) <String>("foo") <Rat>(1.23)
+
+//some representations may also allow:
+print 3 "foo" 1.23
+]]>
+		</programlisting>
+		
+		<section xml:id="adding-interfaces">
+			<title>Adding and Subtracting Interfaces</title>
+			
+			<para>Interfaces can be added together to produce other interfaces. How this addition occurs depends on whether the operands were produce through addition, and the inherited interfaces of the operands.</para>
+			
+			<para>If an interface is "fromAddition", it was produced through addition and/or subtract. The <link linkend="ident.Interface">Interface interface</link> exposes this information as a property.</para>
+			
+			<para>Interfaces produced from addition don't define any members themeselves; they only inherit from other interfaces.</para>
+			
+			<para>No interface can inherit from an interface that is fromAddition. When a fromAddition interface is an operand of interface addition, the inheritees of the fromAddition interface are copied into the produced interface, but the produced interface does not inherit from the fromAddition operands.</para>
+			
+			<para>No interface that is fromAddition can inherit from a single interface. When subtracting from a fromAddition interface, and the produced interface would have otherwise only inherited from a single interface, the produced interface is actually that single interface that it would have inherited from.</para>
+			
+			<screen>
+interface A
+	fromAddition = false
+
+interface B
+	fromAddition = false
+
+interface C
+	fromAddition = true
+
+interface D
+	fromAddition = true
+
+interface A+B
+	inherit A
+	inherit B
+
+interface A+C
+	inherit A
+	C's inheritees (doesn't inherit from C)
+
+interface A+D
+	inherit A
+	D's inheritees (doesn't inherit from D)
+
+interface B+C
+	inherit B
+	C's inheritees (doesn't inherit from C)
+
+interface B+D
+	inherit B
+	D's inheritees (doesn't inherit from D)
+
+interface C+D
+	C's inheritees (doesn't inherit from C)
+	D's inheritees (doesn't inherit from D)
+
+(A+B)-B must be A, not a fromAddition interface that inherits only from A.
+
+consider this expression:
+	(A+B+C)-(B+C)
+if:
+	* C is fromAddition
+	* A and B are not fromAddition
+	* C inherits from C1, C2, and C3
+then the expresison is equal to:
+	(A+B+C1+C2+C3)-(B+C1+C2+C3)
+	(A+B+C1+C2+C3)-B-C1-C2-C3
+	A
+			</screen>
+
+			<para>xxx ENSURE ORDER DOESN'T MATTER</para>
+			
+			<para>Addition with operands A and B:</para>
+			<orderedlist>
+				<listitem>Create an interface, PRODUCT, where fromAddition is true.</listitem>
+				<listitem>If A is fromAddition, copy the inheritees of A to PRODUCT. If A is not fromAddition, add A as an inheritee to PRODUCT.</listitem>
+				<listitem>If B is fromAddition, copy the inheritees of B to PRODUCT. If B is not fromAddition, add B as an inheritee to PRODUCT.</listitem>
+				<listitem>If PRODUCT has only one inheritee, evaluate this addition to that inheritee. Otherwise, evaluate this addition to PRODUCT.</listitem>
+			</orderedlist>
+			
+			<para>Note: An example of when PRODUCT would only have one inheritee from addition is when an interface that is not fromAddition is added to itself. i.e. A + A = A</para>
+			
+			<para>Subtraction with operands A and B:</para>
+			<orderedlist>
+				<listitem>If A is not fromAddition, throw an error.</listitem>
+				<listitem>Copy A as PRODUCT. (i.e. Copy A. We'll refer to this copy as PRODUCT.)</listitem>
+				<listitem>If B is fromAddition, remove every inheritee of B from the inheritees of PRODUCT. If any of the inheritees of B is not an inheritee of PRODUCT, throw an error.</listitem>
+				<listitem>If B is not fromAddition, remove B from the inheritees of PRODUCT. If B is an inheritee of PRODUCT, throw an error.</listitem>
+				<listitem>If PRODUCT has only one inheritee, evaluate this subtraction to the inheritee. If PRODUCT does not have any inheritees, throw an error. Otherwise, evaluate this subtraction to PRODUCT.</listitem>
+			</orderedlist>
+		</section>
+	</chapter>
+	
+	<chapter xml:id="special-members">
+		<title>Special members</title>
+		
+		<para>Some identifiers can only be bound to certain types of properties and methods, and have a predefined meaning. Thus, the semantics of a member with one of these identifiers is already predefined by this specification.</para>
+		
+		<para>Many of these special predefined members come in mutating and non-mutating forms. In these cases, the mutating form modifies the object and returns nothing while the non-mutating form returns a copy of the object with the mutation.</para>
+		
+		<para>Implementations must prevent identifiers from being bound to other types. Implementations are encouraged to provide shortcuts for accessing/using these members. Some examples in this section show a possible usage of the methods with and without shortcuts.</para>
+		
+		<para>add, subtract, multiply, divide, add!, subtract!, multiply!, divide!, equals?, lessThan?, lessThanOrEqual?, equal?, greaterThanOrEqual?, greaterThan?, unequal?, remainder, remainder!, floorDivide, floorDivide!, power, power!, absolute, absolute!, positive?, negative?, concat, concat!, remove, remove!</para>
+		
+		<section xml:id="member.add">
+			<title>add</title>
+			
+			<screen>func add(Self) Self</screen>
+			<screen>func add!(Self)</screen>
+			
+			<para>Inserts an object into a container, joins data together, sends an object to something, etc. This method should only be used when order is not significant, such as when adding integers. When order is significant, such as when concatenating strings, the <link linkend="member.insert">insert method</link> would be more appropriate.</para>
+			
+			<programlisting>
+Int a = 1.add(2)
+a.add!(3)
+
+Int a = 1 + 2
+a += 3
+			</programlisting>
+		</section>
+		
+		<section xml:id="member.equals">
+			<title>equals?</title>
+			
+			<screen>func equals?(Self o) Bool</screen>
+			
+			<para>Tells whether the owner value and the argument value both have state for the interface that, from the outside, appears the same.</para>
+			
+			<programlisting>
+if( a == b )
+	print "they equal each other"
+			</programlisting>
+		</section>
+		
+		<section xml:id="member.extract">
+			<title>extract</title>
+			
+			<para>
+				<screen>func extract!() Foo</screen>
+				Throws if there is nothing to extract.
+			</para>
+			
+			<para>
+				<screen>func extract!(out Foo) Bool</screen>
+				Returns false if there is nothing to extract.
+			</para>
+			
+<programlisting>
+println container.extract!()
+while container >> obj
+	println obj
+</programlisting>
+		</section>
+		
+		<section xml:id="member.insert">
+			<title>insert</title>
+			
+			<screen>func insert(Self) Self</screen>
+			<screen>func insert!(Self)</screen>
+			
+			<para>Inserts an object into a container, joins data together, sends an object to something, etc. This method should only be used when order is significant, such as when concatenating strings. When order is not significant, such as when adding integers, the <link linkend="member.add">add method</link> would be more appropriate.</para>
+			
+			<programlisting>
+			<![CDATA[
+String a = "foo".insert("bar")
+a.insert!("gaz")
+
+String a = "foo" & "bar"
+a << "gaz"
+			]]>
+			</programlisting>
+		</section>
+		
+		<section xml:id="member.throwDivide">
+			<title>throwDivide</title>
+			
+			<screen>func throwDivide(Int) Int</screen>
+			<screen>func throwDivide(Rat) Int</screen>
+			<screen>func throwDivide!(Int)</screen>
+			<screen>func throwDivide!(Rat)</screen>
+			
+			<para>Throws an error if the result is not an integer.</para>
+		</section>
+	</chapter>
+	
+	<chapter xml:id="object-references">
+		<title>Object references</title>
+		
+		<para>Objects are referred to through references. A reference is associated with an interface and an object. Objects may implement multiple interfaces with the same property names, so reference serve to declare from which interface properties can be accessed. References can be cast to other references that are associated with the same object but a different interface to allow accessing properties .</para>
+	</chapter>
+	
+	<chapter xml:id="scopes">
+		<title>Scopes</title>
+		
+		<para>Scopes consist of a collection of identifiers and an optional association with a parent scope. Each identifier is declared to be capable of pointing to one of: a namespace, objects with a certain interface, functions with a certain return interface. Identifiers are also capable of pointing to null. Each identifier is either bound to: a namespace/object/function (depending on which it can point to), or null. Scopes may be associated with a single parent scope.</para>
+		
+		<para>xxx should namespace identifiers and function identifiers be able to point to null?</para>
+	</chapter>
+	
+	<chapter xml:id="nodes">
+		<title>Nodes</title>
+	
+		<para>Desal semantics are represented by a tree of nodes. How this tree and its nodes are represented is outside the scope of this specification. Many means may exist of representing a Desal tree.</para>
+
+		<para>Nodes are either base nodes or tree nodes. Tree nodes only contain other nodes, and their entire meaning is derived from their child nodes. Base nodes do not contain any other child nodes, and must is some way encode their meaning themselves.</para>
+		
+		<para>When a node has multiple child nodes with equivalent meaning, the order of those child nodes is significant, so their order must be specified by some means. The order of nodes of different meaning in relation to each other is not significant, and must not have any observable side effects.</para>
+		
+		<para>The child nodes of tree nodes are sometimes executed in order, such as statements in blocks and arguments in function calls. This means the order of the child nodes is sometimes significant and thus should always be preserved.</para>
+			
+		<para>How ordering is represented has no effect on the semantics (left-to-right, numbered, linked list, etc) as long as there is a specified order. Each representation should specify how nodes are ordered.</para>
+		
+		<para>Node type names are nouns or noun phrases. XXX find correct English terminology</para>
+			
+		<section xml:id="node-terminology">
+			<title>Node terminology</title>
+			
+			<para>If a node can contain other nodes, it is a tree node. If a node is contained directly inside another node, the inner node is the child of the outer node, and the outer node is the parent of the inner node. If a node is contained inside another node, but not directly, the inner node is the descendant of the outer node, and the outer node is the ancestor of the inner node.</para>
+			
+			<para>Statement nodes can be executed. When statements are executed, they may perform some kind of action. Statements can have side effects.</para>
+			
+			<para>Expressions can also be executed, but in addition, after execution an object reference is produced (xxx object reference = object + interface ie struct of pointers).</para>
+		</section>
+		
+		<section xml:id="tree-node-layout">
+			<title>Tree node layout</title>
+			
+			<para>The number, type, and order of a tree nodes children is determined by the tree node's layout.</para>
+		</section>
+	
+		<section xml:id="node-supertypes">
+			<title>Node supertypes</title>
+		
+			<para>The "Expression" and "Statement" types are each actually a family of types. Where the layout for a tree node specifies that a child node is an Expression node, that child node can be any expression in section XXX. Similarly, when the layout for a tree node specifies that a child node is a Statement node, that child node may be of any type in section XXX.</para>
+		</section>
+	</chapter>
+	
+	<xi:include href="Desal%20Semantics%20-%20Nodes.docbook"/>
+	
+	<chapter xml:id="prevalent-identifiers">
+		<title>Prevalent identifiers</title>
+		
+		<para>Prevalent identifiers are constant identifiers in the global scope that exist before source begins execution. The objects the identifiers are bound to are immutable. Additionaly, these identifiers cannot be declared in any other scope. Therefore, referencing one of these identifiers always refers to the same object no matter the scope. The objects can, however, be bound to additional identifiers with normal scoping rules.</para>
+		
+		<simplelist>
+			<!-- definitely should be part of the spec -->
+			<member>interface Interface</member>
+			<member>interface Object</member>
+			<member>interface{I} Generator</member>
+			<member>interface{I} List</member> <!-- not resizable -->
+			<member>interface String</member>
+			<member>interface Int</member>
+			<member>interface Rat</member>
+			<member>interface BigInt</member>
+			<member>interface BigRat</member>
+			
+			<member>func{I}(obj)I cast</member>
+			<member>func(obj,interface)bool implements?</member>
+			
+			<member>interface Bool</member>
+			<member>bool true</member>
+			<member>bool false</member>
+			
+			<member>namespace global</member> <!-- xxx spec out -->
+			<member>namespace ext</member>
+			
+			<!-- xxx should this be built into the language more? -->
+			<member>interface{I} weakRef</member>
+			
+			<!-- things that can be defined in terms of other things -->
+			<!-- xxx Some of these should probably not be part of the language, although they should still be recommended default names in case another standard doesn't specify a name. -->
+			<member>interface complex</member>
+			<member>interface{I} array2</member> <!-- 2 dimensional array -->
+			<member>interface{I} array3</member> <!-- 3 dimensional array -->
+			<member>interface{I} arrayN</member> <!-- N dimensional array -->
+			<member>interface{I} vector</member> <!-- resizable -->
+			<member>interface{I} vector2</member>
+			<member>interface{I} vector3</member>
+			<member>interface{I} vectorN</member>
+			<member>interface{I} slist</member>
+			<member>interface{I} dlist</member>
+			<member>interface{I} deque</member>
+			<member>interface{I} queue</member>
+			<member>interface{I} stack</member>
+			<member>interface{I1,I2} map</member>
+			<member>interface{I1,I2} sortedmap</member>
+			<member>interface{I1,I2} multimap</member>
+			<member>interface{I1,I2} sortedmultimap</member>
+			<member>interface{I1,I2} bimap</member>
+			<member>interface{I1,I2} sortedbimap</member>
+			<member>interface{I1,I2} multibimap</member>
+			<member>interface{I1,I2} sortedmultibimap</member>
+			<member>interface{I} set</member>
+			<member>interface{I} orderedset</member>
+			<member>interface{I} multiset</member>
+			<member>interface{I} orderedmultiset</member>
+			
+			<!-- xxx -->
+			<member>interface octet</member>
+			<member>interface blob</member>
+			
+			<!-- xxx spec out - should they really be interfaces, or more like duck/dyn/dynref? -->
+			<!-- specify that the object will be able to store objects with at least this much presion, although more precision may be available -->
+			<member>interface sint8</member>
+			<member>interface uint8</member>
+			<member>interface sint16</member>
+			<member>interface uint16</member>
+			<member>interface sint32</member>
+			<member>interface uint32</member>
+			<member>interface sint64</member>
+			<member>interface uint64</member>
+			<member>interface sint128</member>
+			<member>interface uint128</member>
+			<member>interface float8</member>
+			<member>interface float16</member>
+			<member>interface float32</member>
+			<member>interface float64</member>
+			<member>interface float128</member>
+
+			<!-- xxx spec out how to use fixed point integers -->
+			<member>interface limitedint</member> <!-- throws error on overflow -->
+			<member>interface limitedrat</member> <!-- throws error on overflow -->
+			<!-- fixed(6,3) a = 8fp16,3 -->
+		</simplelist>
+		
+		<section xml:id="object.cast">
+			<title>func{I}(obj)I cast</title>
+			
+			<para>The cast function returns an object cast to the specified interface, or throws a cast error. The returned object must be the same object that was passed in.</para>
+			
+			<programlisting>
+if (foo is Bar)
+	(cast {Bar} foo).propOfBar()
+			</programlisting>
+		</section>
+		
+		<section xml:id="object.generator">
+			<title>interface generator</title>
+			
+			<screen>
+interface{I} generator
+	func next() I
+			</screen>
+			
+			<para>The next() method will return objects when called until it throws a GeneratorDone exception.</para>
+			
+			<para>Some looping constructs will automatically obtain a generator by calling the object's getValueIterator, getKeyIterator, or getPairIterator method, and call the next() method of the generator until the exception is thrown</para>
+			
+			<programlisting>
+MyClass[] objs
+for each o in objs
+	o.doStuff()
+			</programlisting>
+		</section>
+		
+		<section xml:id="object.implements_q">
+			<title>func(obj, interface)bool implements?</title>
+			
+			<para>Tells whether the object implements the interface, like the implements node.</para>
+			
+			<programlisting>
+if implements(foo, Bar)
+	(foo as Bar).propOfBar()
+			</programlisting>
+		</section>
+		
+		<section xml:id="ident.Int">
+			<title>interface Int</title>
+			
+			<simplelist>
+				<!-- comparison -->
+				<member>func lessThan?(Int) Bool</member>
+				<member>func lessThanOrEqual?(Int) Bool</member>
+				<member>func equal?(Int) Bool</member>
+				<member>func greaterThanOrEqual?(Int) Bool</member>
+				<member>func greaterThan?(Int) Bool</member>
+				<member>func unequal?(Int) Bool</member>
+				
+				<!-- information -->
+				<member>Bool positive?</member>
+				<member>Bool negative?</member>
+				
+				<!-- math operations -->
+				<member>func add(Int) Int</member>
+				<member>func subtract(Int) Int</member>
+				<member>func multiply(Int) Int</member>
+				<member>func multiply(Rat) Rat</member>
+				<member>func divide(Int) Rat</member>
+				<member>func divide(Rat) Rat</member>
+				<member>func floorDivide(Rat) Int</member>
+				<member>func remainder(Int) Int</member>
+				<member>Int absolute</member>
+				
+				<!-- mutation -->
+				<member>func add!(Int)</member>
+				<member>func subtract!(Int)</member>
+				<member>func multiply!(Int)</member>
+				<member>func increment!()</member>
+				<member>func decrement!()</member>
+				
+				<!-- conversion -->
+				<member>func toBuiltin() Int</member>
+				<!-- xxx should this be some kind of "conversion member" instead? arbitrary interfaces need a means of specifying a conversion to another interface -->
+				<member>func toString() String</member>
+				<member>func toString(IntNotationMethod) String</member>
+			</simplelist>
+			
+			<para>When Desal implementations need to determine the value of int objects that were implemented by user code, they should call the toBuiltin method to get an int object that was implemented by the implementation. If toBuiltin throws an error, it should raise into user code. If the returned int is not a built-in, an error results that should extend into user code.</para>
+			
+			<para>IntNotationMethod is an enum with "normal", "scientific10", "scientificE", "multipleScientific10", and "multipleScientificE". The toString meth may throw an error if the number cannot be represented, such as a googolplex being called with "normal". If called with multipleScientificE, "10E(10E100)" could be returned.</para>
+		</section>
+		
+		<section xml:id="object.BigInt">
+			<title>interface BigInt</title>
+			
+			<para>Inherits from Int.</para>
+		</section>
+		
+		<section xml:id="object.BigRat">
+			<title>interface BigRat</title>
+			
+			<para>Inherits from Rat.</para>
+		</section>
+
+		<section xml:id="ident.Interface">
+			<title>interface Interface</title>
+			
+			<simplelist>
+				<member>get Bool fromAddition?</member>
+				<member>get Set{Interface} inheritees</member>
+				<member>get List{Parameters} parameters</member>
+				<member>get Type returnType</member>
+				<member>get List{Property} properties</member>
+				<member>get List{Method} methods</member>
+				<member>func add(Interface) Interface</member>
+				<member>func subtract(Interface) Interface</member>
+			</simplelist>
+			
+			<para>Implements itself.</para>
+		</section>
+		
+		<section xml:id="object.Object">
+			<title>interface Object</title>
+			
+			<simplelist>
+				<member>Bool builtin?</member>
+				<member>Bool mutable?</member>
+				<member>Int number</member>
+				<member>func{I} cast() I</member>
+				<member>func implements? (Interface) Bool</member>
+				<member>func sameObject? (Object) Bool</member>
+			</simplelist>
+			
+			<para>These methods expose the same functionality of some of the nodes.</para>
+			
+			<para>The builtin? property tells whether the object is implemented by the Desal implementation, such as for integers and strings. The implements? method tells whether the object implements a specified interface.</para>
+		</section>
+		
+		<section xml:id="interface.rat">
+			<title>interface rat</title>
+			
+			<simplelist>
+				<member>func toInt() int</member>
+				<member>func round() int</member>
+				<member>func round!()</member>
+			</simplelist>
+			
+			<para>toInt will throw if the represented value is not already an integer. round should not throw. round! modifies the represented value.</para>
+		</section>
+	</chapter>
+	
+	<chapter xml:id="preexisting-global-identifiers">
+		<title>Other preexisting global identifiers</title>
+		
+		<para>Constant identifiers in the global scope that exist before source begins execution. The objects the identifiers are bound to are immutable. Unlike prevalent identifers, these identifers follow normal scoping rules. They can always be refered to trough the prevalent global namespace identifier.</para>
+		
+		<simplelist>
+			<member>interface InterfaceBuilder</member>
+			<member>func()InterfaceBuilder CInterfaceBuilder</member>
+		
+			<member>func(int, interface[], interface)interface getFuncInterface</member>
+			
+			<member>interface{I} Iterator</member>
+			
+			<!-- expose functionality of Desal as functions -->
+			<member>func{I}(:vararg)array{I} CArray</member>
+			<member>func(bool[] bits, bool positive = true)int CInt</member>
+			<member>func{I}(:vararg)list{I} CList</member>
+			
+			<member>func{I}(I)SelfGen print</member>
+			<member>func{I}(I)SelfGen println</member>
+		</simplelist>
+		
+		<!-- xxx does this go against the purpose of interfaces? -->
+		<section xml:id="InterfaceBuilder">
+			<title>InterfaceBuilder</title>
+		
+			<simplelist>
+				<member>map{string, interface} properties</member>
+				<!-- xxx should this be an object-by-object pref or an interface-defined pref? Some interfaces, like interface interface, are always immutable, but users should be able to create immutable forms of non-immutable interfaces. -->
+				<member>bool alwaysImmutable?</member> 
+				<member>func()interface generate</member>
+			</simplelist>
+			
+			<para>interface interface is always immutable, so InterfaceBuilder exists to allow creating interface objects procedurally.</para>
+		</section>
+		
+		<section xml:id="Iterator">
+			<title>Iterator</title>
+			
+			<screen>
+interface{I} Iterator
+	//values may change
+	bool first?
+	bool last?
+	bool hasNext?
+	bool hasPrevious?
+	bool between? //iterator points between 2 items (such as after the item was removed)
+	bool valid?
+
+	//capabilities of the iterator - values should not change
+	bool canMoveForward? //whether the iterator can move forward
+	bool canMoveBackward? //whether the iterator can move backwards
+	bool canRemove?
+	bool canReplace? //whether the objects can be replaced with different objects
+	bool canRead?
+	bool canInsertAfter?
+	bool canInsertBefore?
+	bool canCompareCollection?
+	bool canCompareIterator? //corresponds to equal?
+	bool canComparePosition? //corresponds to before? and after?
+
+	func moveForward()
+	func moveBackward()
+	func remove()
+	func replace(I)
+	func insertAfter(I)
+	func insertBefore(I)
+	func sameCollection?( Iterator{I} ) bool
+	func before?( Iterator{I} ) bool
+	func after?( Iterator{I} ) bool
+	func equal?( Iterator{I} ) bool
+	
+	I value
+			</screen>
+
+			<para>An iterator is used to access the elements in a container. If the elements are not ordered 2-dimensionally, an 2-dimensional order must be decided for the iterator that does not change for that iterator instance. If the elements in the container are ordered 2-dimensionally, the iterator must refer the elements in that order.</para>
+
+			<para>The equals? method returns true if both iterators are pointing to same item of the same collection. If the collection is unordered, the order the iterator moves over items must also be the same.</para>
+
+			<para>A valid iterator either refers to an element or a position between two elements. An iterator should only refer to a position between two elements when the element the iterator currently pointed to was removed. If the iterator is not valid, or read? is false, the value property refers to null.</para>
+			
+			<para>An iterator only becomes invalid if:</para>
+			<simplelist>
+				<member>the container contains no objects</member>
+				<member>the iterator is moved beyond all objects</member>
+				<member>a non-supported method is called (example: moveBackward() is called on an iterator that can only move forward)</member>
+			</simplelist>
+
+			<para>If an iterator is not valid, it may be possible to revalidate it by calling next() or previous(). For example, if the iterator refers to the last object and next is called, the iterator becomes invalid, but calling previous may make the iterator valid again. Whether an iterator can be revalidated and under what circumstances the iterator is revalidated is dependant on the implementation of the iterator.</para>
+			
+			<para>Containers should always give iterators with the same functionality. For example, if a container, when it has three elements, gives an iterator with forward? set to true, it should also give an iterator with the property forward? set to true when it has 1, even though calling moveForward() would invalidate the iterator.</para>
+
+			<programlisting>
+Container{int} numbers;
+Iterator iter = numbers.iterate();
+int num = iter.value
+
+while( iter.valid? )
+	int num = iter.value
+	iter.moveForward()
+			</programlisting>
+		</section>
+		
+		<section xml:id="CInterfaceBuilder">
+			<title>CInterfaceBuilder</title>
+			
+			<para>CInterfaceBuilder, when called, returns an object that can be used to procedurally and/or dynamically create interface objects.</para>
+		</section>
+		
+		<section xml:id="getFuncInterface">
+			<title>getFuncInterface</title>
+			
+			<screen>
+func getFuncInterface (
+	int templateParamCount,
+	interface[] params,
+	interface returnInterface,
+) interface
+			</screen>
+			
+			<para>Returns an interface specifying a call method with the specified number of template parameters, the specified parameters, and the specified return interface. If returnInterface is null, the interface specifies a void call method. Every time it is called with the same arguments, it must return the same object.</para>
+		</section>
+	</chapter>
+	
+	<chapter xml:id="evaluation">
+		<title>Evaluation</title>
+		
+		<para>Some nodes, when executed, evaluate to an object reference. These are called expressions.</para>
+		
+		<para>Evaluation of a Desal node tree may begin before the tree is fully constructed.</para>
+		
+		<section xml:id="error-handling">
+			<title>Error handling</title>
+			
+			<para>This section explains how to handle errors.</para>
+			
+			<para>If errors occur while generating the Desal node tree, and none of the already generated nodes have been evaluated, all generated nodes in the entire Desal tree should not be used for purposes beyond explaining the source of errors. Construction of the Desal node tree may continue after errors are found. This applies even if the Desal nodes were not intended to be evaluated.</para>
+			
+			<para>If errors occur while generating the Desal node tree, and evaluation has already begun, a warning should immediately be emitted describing the error. How this warning is emitted is undefined. Generation of the Desal node tree may continue. When evaluation reaches the damaged section of the tree, an error should be thrown describing the error. If evaluation never reaches the damaged section of the tree, the error should have no effect on evaluation.</para>
+		</section>
+		
+		<para>Evaluation of a Desal node tree begins with name bindings in the global namespace. Then, the object bound to "main" in the global namespace is called with an array of strings representing the arguments given to the tree. How these arguments are obtained is undefined. Evalution of the tree ends when main returns or an exception raises out of main.</para>
+	</chapter>
+	
+	<chapter xml:id="unsorted-stuff">
+		<title>unsorted stuff</title>
+
+		<section xml:id="closures">
+			<title>Closures</title>
+			
+			<para>Functions and classes (amoung others) have references to their containing scope. Identifier references in these scopes can be accessed and modified by the functions/classes.</para>
+			
+			<para>Copy closures create copies of specific values when a function node is evaluated. Modifying this copy does not modify the captured scope.</para>
+			
+			<programlisting>
+<![CDATA[
+//regular closures
+
+func makePrinters(Int max) func()void[] {
+	func()void[] printers = new func()void[]
+	Int i = 1
+	while i <= max {
+		printers << func()void {
+			print i + ' '
+		}
+		i++
+	}
+	return printers
+}
+
+//array of functions that have no parameters and return nothing
+func()void[] printers = makePrinters(10)
+for printer in printers {
+	printer()
+}
+
+//output
+10 10 10 10 10 10 10 10 10 10 
+
+Each of the anonymous functions held a reference to the same scope where i was defined. Because i held 10 when the functions were called, each output 10.
+]]>
+			</programlisting>
+			
+			<programlisting>
+<![CDATA[
+//copy closures
+
+func makePrinters(Int max) func()void[] {
+	func()void[] printers = new func()void[]
+	Int i = 1
+	while i <= max {
+		printers << func()void {
+			copyclosure i
+			print i + ' '
+		}
+		i++
+	}
+	return printers
+}
+
+//array of functions that have no parameters and return nothing
+func()void[] printers = makePrinters(10)
+for printer in printers {
+	printer()
+}
+
+//output
+1 2 3 4 5 6 7 8 9 10
+
+Each of the anynonymous functions held a copy of the value of i at the time the function was created.
+]]>
+			</programlisting>
+		</section>
+
+		<section xml:id="tree-examples">
+			<title>Tree examples</title>
+				
+			<section xml:id="tree-example-1">
+				<title>Example 1</title>
+					
+				<programlisting>
+<![CDATA[
+
+global
+	identifier-const-definition
+		identifier
+			"main"
+		expression [value] (function-definition)
+			function-parameter
+				identifier
+					"args"
+				expression [interface] (interface-template-instantiation)
+					expression [interface-template] (identifier)
+						"array"	
+					expression [template-argument] (identifier)
+						"string"
+			expression [return-interface] (identifier)
+				"int"
+			statement (return)
+				expression (integer)
+					0
+
+func main(string[] args) int
+	return 0
+]]>
+				</programlisting>
+			</section>
+				
+			<section xml:id="tree-example-2">
+				<title>Example 2</title>
+					
+				<programlisting>
+<![CDATA[
+global (global)
+	declaration (declaration > function-declaration)
+		name (string)
+			"main"
+		return (expression > object-reference)
+			name (string)
+				"int"
+		item (item > return)
+			value (expression > integer)
+				0
+
+func main() int
+	return 0
+
+<global type="global">
+	<declaration type="function-declaration">
+		<name type="string">main</name>
+		<return type="object-reference">
+			<name type="string">int</name>
+		</return>
+		<item type="return">
+			<value type="integer">0</value>
+		</item>
+	</declaration>
+</global>
+]]>
+				</programlisting>
+			</section>
+
+			<section xml:id="tree-example-3">
+				<title>Example 3</title>
+					
+				<programlisting>
+<![CDATA[
+global (global)
+	name-bind (name-bind)
+		identifier (identifier)
+			"main"
+		expression (function-definition)
+			parameter (parameter)
+				interface (interface > function-call)
+					function (function > identifier)
+						"array"
+					argument (expression > identifier)
+						"string"
+				identifier (identifier)
+					"args"
+		return-interface (interface > identifier)
+			"int"
+		statement (statement > return)
+			expression (expression > literal-integer)
+				0
+
+func main(string[] args) int
+	return 0
+
+<global type="global">
+	<name-bind type="name-bind">
+		<identifier type="identifier">main</identifier>
+		<expression type="function-definition">
+			<parameter-list type="parameter-list">
+				<parameter type="parameter">
+					<identifier type="identifier">args</identifier>
+					<expression type="function-call">
+						<identifier type="identifier">array</identifier>
+						<argument-list type="argument-list">
+							<identifier type="identifier">string</identifier>
+						</argument-list>
+					</expression>
+				</parameter>
+			</parameter-list>
+			<return-interface type="identifier">int</return-interface>
+			<statement-list type="statement-list">
+				<statement type="return">
+					<expression type="literal-integer">0</expression>
+				</statement>
+			</statement-list>
+		</function>
+	</name-bind>
+</global>
+]]>
+				</programlisting>
+			</section>
+		</section>
+		
+		<section xml:id="get-interface">
+			<title>get interface</title>
+			
+			<para>It's always possible to bind the interface of an object to an identifier.</para>
+			
+			<programlisting>
+func getInterface{I}(I o) {
+return I;
+}
+
+dynref o = getMysteryObj()
+interface i = getInterface(o)
+i o2 = o
+			</programlisting>
+		</section>
+		
+		<section xml:id="obj-interface">
+			<title>obj interface</title>
+			
+			<para>All objects automatically implement the "obj" interface.</para>
+			
+			<programlisting>
+obj foo = getAnObject()
+(myinterface foo) .doStuff 3
+			</programlisting>
+		</section>
+		
+		<section xml:id="identifier-binding">
+			<title>Binding to identifiers</title>
+			
+			<programlisting>int alpha</programlisting>
+			<para>Declares that "alpha" can refer to objects that implement the "int" interface. alpha currently doesn't refer to anything; i.e. it refers to null.</para>
+			
+			<programlisting>alpha = 3</programlisting>
+			<para>Creates an object that implements the int interface and makes alpha refer to it</para>
+			
+			<programlisting>int beta = 5</programlisting>
+			<para>Declares that "beta" can refer to objects that implement the "beta" interface. Creates an object that implements the int interface. Binds the object to "beta".</para>
+			
+			<para>Multiple identifiers can refer to the same object.</para>
+			<programlisting>
+obj o = getObj()
+int a = o
+rat b = o
+			</programlisting>
+		</section>
+		
+		<section xml:id="print-println-return-interfaces">
+			<title>Return interfaces of print and println</title>
+			
+			<para>Below, [unbound] means the interface is not bound to an identifier. However, these interfaces can be bound to identifiers and used like any user-created interface, and they have no special properties.</para>
+			
+			<simplelist>
+				<member>func{I}(I)[unbound] print</member>
+				<member>func{I}(I)[unbound] println</member>
+			</simplelist>
+
+			<screen>
+interface{I} Print
+	func call(I) Print
+
+interface{I} PrintLine
+	func call(I) PrintLine
+			</screen>
+			
+			<para>When print is called, it returns an object that implements an interface like Print. When println is called, it returns an object that implements an interface like PrintLine. Neither interface is bound to an identifier when execution begins. They are not the same interface, meaning print(1).interface == println(1).interface evaluates to false.</para>
+			
+			<screen>
+println 1 2 3 "a" "b" "c" 4.5 6.7 8.9
+			</screen>
+		</section>
+		
+		<section xml:id="adjuncts">
+			<title>Adjuncts</title>
+			
+			<programlisting>
+interface IMyInterface
+	public func doStuffA()
+	public func doStuffB()
+
+class MyClass
+	:implements(IMyInterface)
+	...
+
+func IMyInterface.doAB()
+	this.doStuffA()
+	this.doStuffB()
+
+func testThing(ref IMyInterface arg)
+	arg.doAB()
+
+MyClass inst
+testThing(inst)
+			</programlisting>
+		</section>
+		
+		<section xml:id="runtime-inteface">
+			<title>runtime interface implementation</title>
+		
+			<para>With Desal, you should be able to write a function that takes an interface (foo) and returns a function that takes an object of that interface (foo) and returns an object that implements that same interface (foo), but with an implementation that writes to a log anytime a method is called.</para>
+		
+			<screen>
+log l = Log()
+foo o = Foo()
+foo wrapped = wrap(o, l)
+doStuffWithAFoo(wrapped)
+			</screen>
+		
+			<para>Now anytime a method is called on the object, a log entry could be written.</para>
+		
+			<screen>
+func{I} wrap(I o, log l) I
+objbuilder wrapper = newObjbuilder()
+wrapper.implement(I)
+for prop in I.props
+wrapper.interfaces[I].setProp( prop.name,
+func(:vararg)obj
+
+interface i = newInterface()
+i.inherit(I)
+for prop in 
+
+wrap(...) takes an interface and returns a function
+wrap(foo)(...) takes a foo and returns a foo
+			</screen>
+		</section>
+		
+		<section xml:id="runtime-interface-creation">
+			<title>Runtime interface creation</title>
+			
+			<screen>
+func createInterface( map{string,dyn} methods ) interface
+	interface rv = newInterface()
+	for (name, meth) in methods
+		rv.methods.add( pair(name, meth.functionSignature) )
+	return rv
+
+func foo(int b) string
+...
+
+func bar(float c, float d) myClass
+...
+
+func baz(widget1 e, widget4 f)
+...
+
+map(string, func) table = {
+"methA": foo,
+"methB": bar,
+"methC": baz
+}
+interface myinterface = createInterface(table)
+
+func alpha(int g) string
+...
+
+func beta(float h, float i) myClass
+...
+
+func gamma(widget1 j, widget4 k)
+...
+
+myinterface myobj = {
+methA: alpha,
+methB: beta,
+methC: gamma
+}
+string str = obj.methA(3)
+myClass val = obj.methB(5.5, 7.7)
+obj.gamma( createWidget1(), Widget4Factory.makeOne() )
+			</screen>
+		</section>
+		
+		<section xml:id="self-return-type">
+			<title>"self" return type</title>
+			
+			<screen>
+func(int,float)self
+
+is the same as
+
+interface __foo__
+	func call(int,float) __foo__
+
+func example(int num) self
+	...
+	
+example 1 2 3 4 5 6 7 8 9 0 //calls the example function 10 times
+			</screen>
+		</section>
+
+		<section xml:id="bind">
+			<title>Bind</title>
+			
+			<screen>
+interface foo
+	...
+
+func bar(foo o, int num)
+	...
+
+foo fooInst = getAFoo()
+bar(fooInst, 3)
+(fooInst => bar) 3
+func() funcy = (fooInst => bar)
+funcy(3)
+			</screen>
+		
+			<para>obj => func</para>
+		
+			<para>The "=>" operator binds the obj to the first argument of the function. It evaluates to a function. Semantically this creates a function-definition with a closure of the obj and func.</para>
+		</section>
+
+		<section xml:id="classes">
+			<title>Classes</title>
+			
+			<para>Classes produce functors that, when called, create objects. If a class implements more than 1 interface, it can declare which of the implemented interfaces is the active interface of the returned object by marking an interface as default. If no interface is marked, the active interface is obj.</para>
+		</section>
+
+		<section xml:id="noninstantiated-interface-templates">
+			<title>Noninstantiated interface templates</title>
+		
+			<screen>
+interface list{I}
+	readonly int count
+	func pushFront(I o)
+	func popFront() I
+
+struct node{C}
+	node{C} next = null
+	node{C} value = null
+
+class makeList{T}
+	node{T} first
+	
+	interface list{T} #default //so makeList returns a list instead of an obj that has to be cast
+		...
+
+list{int} nums = makeList{int}()
+nums.pushFront(3)
+nums.pushFront(5)
+print nums.size //2
+
+list{string} names = makeList{string}()
+names.pushFront("John")
+names.pushFront("Sarah")
+names.pushFront("Billy")
+print names.size //3
+
+list someList = nums
+print someList.size //2
+someList.pushFront(5) //error
+			</screen>
+			
+			<para>someList may refer to any kind of list, such as list{foo}, list{bar}, etc, so only methods that have the same paramater and return interfaces for all list{}s can be called.</para>
+		</section>
+
+		<section xml:id="dynamic-library-loading">
+			<title>Dynamic library loading</title>
+		
+			<para>The selectLibrary function enables gaining references to objects without knowing the nodes that created the objects.</para>
+		
+			<screen>
+interface Library
+	readonly String path
+	readonly String name
+	readonly String version
+	readonly Bool loaded?
+	func key(String name) Dyn
+	func get{I}(String name) I
+	func load()
+	func unload()
+
+//prototype
+func selectLibrary(string identifier, string version, bool load? = true) Library
+
+---
+
+string identifier
+string version
+if platform == platforms.MacOSX or platform == platforms.Windows
+	identifier = "libxml"
+	version = "2.1"
+elif platform == platforms.Linux
+	identifier = "/usr/lib/libxml.so"
+	version = "56"
+else
+	throw Error("unsupported platform")
+
+Library XmlLib = selectLibrary(identifier, version)
+
+Interface XmlElement = XmlLib.get{Interface}("XmlElement")
+Dyn XmlReader = XmlLib["XmlReader"]
+
+XmlElement element = XmlRead.read("foo.xml").documentElement
+			</screen>
+		</section>
+		
+		<section xml:id="static-typing">
+			<title>Static typing</title>
+			
+			<para>XXX spec out static typing and demand that implementations check all typing as much as possible before running anything. Note the section on dynamic static typing.</para>
+		</section>
+	</chapter>
+	
+	<chapter xml:id="rationales">
+		<title>Rationales</title>
+		
+		<para>This chapter explains the decisions behind various choices made for Desal.</para>
+		
+		<section xml:id="rationale.dynamic-static-typing">
+			<title>Dynamic static typing</title>
+			
+			<para>Dynamic static typing refers to explicitly using and enforcing type information that isn't available until runtime. The type information isn't known until runtime, but after it's known, it's enforced and can't be changed.</para>
+			
+			<para>An example of this is loading an interface from a library and then using obtaining values with that interface through the library. The loaded interface can be used as the type for function parameters, free identifiers, etc. So although the interface wasn't known until runtime, one the information was known, it was enforced, and the values of that interface are only accessed by ensuring they are of that interface.</para>
+			
+			<para>Dynamic static typing can do nothing beforehand to ensure property/method access is correct, but it can ensure that various values are of the same type. For example, consider the case where an interface is loaded from a library and bound to an identifer. Then a free identifier is declared to be of that type, and a function is declared to accept a value of that type. An implementation will known that the free identifer and the function's parameter are of the same type, so the value bound to the free identifier can safely be passed to the function. This safety could not be ensured with fully dynamic typing.</para>
+			
+			<para>Dynamic static typing is not as safe as fully static typing, but interfaces cannot always be known before runtime, which is a requirement for fully static typing. Therefore, Desal should provide something to give more type safety for the cases when interfaces cannot be known until runtime. Dynamic static typing is safer than fully dynamic typing.</para>
+			
+			<programlisting>
+Interface Foo = lib['Foo']
+Interface Bar = lib['Bar']
+func()Foo getFoo = lib['getFoo']
+func(Bar)Int doStuff = lib['doStuff']
+
+Foo foo = getFoo() //static typing: known beforehand that types match
+foo.somthing() //dynamic typing: don't know beforehand whether Foo declares a 'somthing' method
+doStuff(foo) //static typing: known beforehand that types don't match
+
+---
+
+Dyn getFoo = lib['getFoo']
+Dyn doStuff = lib['doStuff']
+
+Dyn foo = getFoo() //dynamic typing: don't know beforehand whether types match
+foo.somthing() //dynamic typing: don't know beforehand whether value of foo has a "somthing" method
+doStuff(foo) //dynamic typing: don't know beforehand whether types match
+			</programlisting>
+			
+			<para>Arguments against: Interfaces should almost always be known beforehand. Dynamic static typing may be very rarely used, and could encourage bad programming.</para>
+		</section>
+		
+		<section xml:id="rationale.terms">
+			<title>Terms</title>
+			
+			<section xml:id="rationale.get-set">
+				<title>get/set</title>
+								
+				<table>
+					<tbody>
+						<tr>
+							<th>term as verb</th>
+							<th>term as noun</th>
+							<th>good points</th>
+							<th>bad points</th>
+						</tr>
+						
+						<tr>
+							<td>get</td>
+							<td>getter</td>
+							<td>short, easy to say, easy to spell, common amoung programming languages</td>
+							<td>implies the property has been taken away</td>
+						</tr>
+						
+						<tr>
+							<td>set</td>
+							<td>setter</td>
+							<td>short, easy to say, easy to spell, common amoung programming languages</td>
+							<td>sounds more like adding a new property than changing the value of a pre-existing property</td>
+						</tr>
+						
+						<tr>
+							<td>access</td>
+							<td>accessor</td>
+						</tr>
+						
+						<tr>
+							<td>retrieve</td>
+							<td>retriever</td>
+						</tr>
+						
+						<tr>
+							<td>read</td>
+							<td>reader</td>
+						</tr>
+						
+						<tr>
+							<td>write</td>
+							<td>writer</td>
+						</tr>
+						
+						<tr>
+							<td>mutate</td>
+							<td>mutator</td>
+						</tr>
+					</tbody>
+				</table>
+				
+				<para>Additional notes:</para>
+				<para>The one letter difference between "get" and "set" (and "getter" and "setter") could cause errors more easily than if the difference were greater. Also, the noun form is slightly irregular; some people may expect "geter" and "seter" to be the noun form.</para>
+			</section>
+		</section>
+	</chapter>
+</book>

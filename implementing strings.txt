@@ -1,0 +1,96 @@
+//Bridge.cs creates Desal bindings for this class
+class Class_String {
+	string _str;
+	
+	public Class_String() {}
+	
+	public Class_String(string str) {
+		_str = str;
+	}
+
+	public string nativeValue {
+		get { return _str; }
+	}
+
+	public int length {
+		get { return Class_Integer.wrap(_str.length); }
+	}
+
+	//get a character
+	public string value(int index) {
+		return _str[index];
+	}
+
+	public string sub(int start, int limit) {
+		return _str.substring(start, limit);
+	}
+}
+
+
+//bridge between native code and Desal code
+//a bridge is created for every file interpreted
+class Bridge {
+	Scope _scope;
+	Class _CInt;
+	Class _CString;
+	
+	void setupCInt() {
+		IInterfaceImplementation defaultImpl =
+			new InterfaceImplementation_CInt_Int();
+		
+		_CInt = new Class(
+			new Constructor[] {
+				new Constructor(
+					new Parameter[]{}
+				)
+			},
+			new IInterfaceImplementation[] {
+				defaultImpl
+			},
+			defaultImpl
+		);
+		
+		scope.bindObject(
+			new Identifier("CInt"),
+			NativeClassWrapper.wrap(_CInt) );
+	}
+	
+	void setupCString() {
+		IInterfaceImplementation defaultImpl =
+			new InterfaceImplementation_CString_String();
+
+		_CString = new Class(
+			new Constructor[] {
+				new Constructor(
+					new Parameter[]{}
+				)
+			},
+			new IInterfaceImplementation[] {
+				defaultImpl
+			},
+			defaultImpl
+		);
+
+		scope.bindObject(
+			new Identifier("CString"),
+			NativeClassWrapper.wrap(_CString) );
+	}
+	
+	public Bridge() {
+		_scope = new Scope();
+		setupCInt();
+		setupCString();
+	}
+	
+	public Scope globalScope {
+		get { return _scope; }
+	}
+	
+	public ObjectReference wrap(int val) {
+		return _CInt.wrap( new Class_Int(val) );
+	}
+	
+	public ObjectReference wrap(string val) {
+		return _CString.wrap( new Class_String(val) );
+	}
+}

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?><html xmlns="http://www.w3.org/1999/xhtml"><head><title>Desal XML Representation</title><link href="styling.css" rel="stylesheet" type="text/css"/></head><body>
+	<h1>Desal XML Representation</h1>
+	
+	<h2>Desible</h2>
+	
+	<ol class="toc"><li><a href="#introduction">1. Introduction</a></li><li><a href="#unsorted-stuff">2. unsorted stuff</a><ol><li><a href="#text-nodes-escaping">2.1. text nodes escaping</a></li></ol></li></ol><div id="introduction">
+		<h1>Chapter 1. Introduction</h1>
+		
+		<p>This document defines a means of representing Desal semantics, and a means for extracting the semantics from that representation.</p>
+	</div>
+	
+	<div id="unsorted-stuff">
+		<h1>Chapter 2. unsorted stuff</h1>
+
+		<p>&quot;.desible&quot; file extesion</p>
+		
+		<p>default namespace - xmlns attribute on root attribute not required</p>
+		
+		<p>elements from other namespaces should be ignored if unrecognized</p>
+		
+		<p>recognized elements from other namespaces produce undefined behavior</p>
+		
+		<p>all whitespace is considered part of the string for text nodes</p>
+		
+		<p>integer nodes consist of text which is evaluated as an integer</p>
+		
+		<div id="text-nodes-escaping">
+			<h2>2.1. text nodes escaping</h2>
+			
+			<p>Elements that contain only text have an implied attribute &quot;escaped&quot; which defaults to &quot;false&quot;. The other possible option is &quot;true&quot;. The value is not inherited by child elements. If the @escaped attribute appears on elements that do not directly contain text nodes, agents should warn that it has no effect.</p>
+			
+			<p>If escaping is enabled, \000000 (6 hexadecimal digits) should be interpreted as a Unicode code point, and \\ should be interpreted as a backslash. If an agent encounters a \ that isn't followed by either 6 hex digits or another \ in a text node with escaping on, the agent should stop and output an error message.</p>
+		</div>
+	</div>
+</body></html>

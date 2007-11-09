@@ -1,0 +1,251 @@
+interface<T> Enum
+	inherit Collection<T>
+	r Int size
+	func key(String str) T
+
+interface<T> EnumValue
+	inherit Stringable
+	r T value
+
+interface Stringable
+	r String str
+
+Enum, EnumValue, and EnumNullValue cannot be implemented manually
+
+In the below examples, "Animal" is often bound to an interface. This interface will be refered to as {{AnimalInterface}}. Often, an object with the enum values as properties exists. The interface of this object will be refered to as {{Properties}}.
+
+interface {{AnimalInterface}}
+	inherit EnumValue<Int>
+
+interface {{Properties}}
+	inherit Enum< {{AnimalInterface}} >
+	r {{AnimalInterface}} dog
+	r {{AnimalInterface}} cat
+	r {{AnimalInterface}} fish
+	r {{AnimalInterface}} parrot
+	r {{AnimalInterface}} ferret
+	r {{AnimalInterface}} gerbil
+	r {{AnimalInterface}} hamster
+
+When no identifiers are assigned values, the value property of EnumValue will return null.
+
+Multiple identifiers can be assigned the same value. Each identifier will refer to the same object. The str property of that object will give the first identifier as a string.
+
+An enum is like an immutable dictionary (aka map aka associative array) with syntactic sugar.
+
+
+
+========== emum 1
+
+rational:
+	separating enum values is safer
+	accessing the Enum impl is easy to access
+
+problems:
+	two identifiers may cause confusion and seems too complex
+
+layout:
+	identifier [interface]
+	identifier [collection]
+	+ identifier [value]
+
+-------
+
+enum Animal, Animals {
+	dog, cat, fish, parrot, ferret, gerbil, hamster
+}
+
+Animal a = Animals.dog
+Animal b = Animals["cat"]
+println Animals.size
+
+for animal in Animals
+	println animal.str " " animal.value
+
+-------
+
+Animal == {{AnimalInterface}}
+typeOf(Animals) == {{Properties}}
+
+
+
+========== enum 2
+
+rational:
+	one identifier is simpler and like other languages
+	the Enum impl will probably not be accessed much, and can be bound to an identifier manually
+
+problems:
+	accessing the Enum impl is ugly
+	there is no impl of {{Properties}}, only Enum< {{AnimalInterface}} >
+
+layout:
+	identifier [interface]
+	+ identifier [value]
+
+-------
+
+enum Animal {
+	DOG, CAT, FISH, PARROT, FERRET, GERBIL, HAMSTER
+}
+
+Animal a = DOG
+Animal b = (Animal as Enum<Animal>)["CAT"]
+println (Animal as Enum<Animal>).size
+
+for animal in (Animal as Enum<Animal>)
+	println animal.str " " animal.value
+
+-------
+
+Animal == {{AnimalInterface}}
+Animal object also implements Enum<Animal>
+typeOf(DOG) == Animal (aka {{AnimalInterface}})
+
+
+
+============= enum 3
+
+rational:
+	one identifier is simpler and like other languages
+	the Enum impl is easy to access
+
+problems:
+	may be confusing that an interface object is also a non-interface object
+		users confused why this interface has non-interface members
+
+layout:
+	identifier [interface]
+	+ identifier [value]
+
+-----
+
+enum Animal {
+	dog, cat, fish, parrot, ferret, gerbil, hamster
+}
+
+Animal a = Animal.DOG
+Animal b = Animal["cat"]
+println Animal.size
+
+for animal in Animal
+	println animal.str " " animal.value
+
+-----
+
+typeOf(Animal) == Interface + {{Properties}}
+(Animal as Interface) == {{AnimalInterface}}
+
+
+
+========== enum 4
+
+rational:
+	programmers should have options when there is no clear better way
+	namespaces are faster than objects with properties (ignoring good optimizing)
+
+problems:
+	namespaces cannot be passed as function arguments
+	there is no {{Properties}} impl
+	way too complicated
+
+layout:
+	+ identifier [value]
+	identifier [interface-name]
+	? identifier [namespace-name]
+	? bool [expose]
+
+If [expose] is true, the [value]s will be placed in the same scope as the enum node. If a [namespace-name] is provided, the [namespace-name] will be placed in the same scope as the enum node, and that namespace will contain all the [value]s. Note that the [value]s can be placed both in a child scope (a namespace) and in the enum node's scope. The [interface-name] is bound to {{AnimalInterface}}, but it can be cast to Enum< {{AnimalInterface}} >. The [value]s are bound to object references with {{AnimalInterface}} as the active interface.
+
+----- example 1
+
+enum expose Animal {
+	DOG, CAT, FISH, PARROT, FERRET, GERBIL, HAMSTER
+}
+
+Animal a = DOG
+Animal b = CAT
+
+for animal in (Animal as Enum<Animal>)
+	println animal.str " " animal.value
+
+----- example 2
+
+enum Animal, Animals {
+	dog, cat, fish, parrot, ferret, gerbil, hamster
+}
+
+Animal a = Animals.dog
+Animal b = Animals.cat
+
+for animal in (Animal as Enum<Animal>)
+	println animal.str " " animal.value
+
+----- example 3
+
+enum expose Animal, Animals {
+	DOG, CAT, FISH, PARROT, FERRET, GERBIL, HAMSTER
+}
+
+Animal a = DOG
+Animal b = Animals.CAT
+
+for animal in (Animal as Enum<Animal>)
+	println animal.str " " animal.value
+
+
+
+============= enum 5
+
+rational:
+	one identifier is simpler and like other languages
+	the Enum impl is easy to access
+	programmers have a choice of putting the enum values in the enum node's scope
+
+problems:
+	may be confusing that an interface object is also a non-interface object
+		users confused why this interface has non-interface members
+		solution: note that it's only okay to link together interface and implementation when the interface cannot be implemented by other code
+
+layout:
+	identifier [interface]
+	? expression [value-type]
+	+ enum-entry [value]
+	? bool [expose]
+
+enum-entry layout:
+	identifier [name]
+	expression [value]
+
+----- example 1
+
+enum Animal {
+	dog, cat, fish, parrot, ferret, gerbil, hamster
+}
+
+Animal a = Animal.DOG
+Animal b = Animal["CAT"]
+println Animal.size
+
+for animal in Animal
+	println animal.str " " animal.value
+
+----- example 2
+
+enum Animal expose {
+	DOG, CAT, FISH, PARROT, FERRET, GERBIL, HAMSTER
+}
+
+Animal a = Animal.DOG
+Animal b = Animal["CAT"]
+Animal c = FISH
+println Animal.size
+
+for animal in Animal
+	println animal.str " " animal.value
+
+-----
+
+typeOf(Animal) == Interface + {{Properties}}
+(Animal as Interface) == {{AnimalInterface}}
+typeOf(DOG) == typeOf(Animal.DOG)

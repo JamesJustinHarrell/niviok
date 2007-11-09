@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="desible.css"?>
+<?desible version="1.0"?>
+
+<global xmlns="urn:desible1">
+	<!--
+	function main() {
+		doStuff()
+	}
+	-->
+	<declaration-pervasive>
+		<identifier>main</identifier>
+		<reference-type>
+			<reference-category>function</reference-category>
+		</reference-type>
+		<function label='value'>
+			<block>
+				<function-call>
+					<identifier label='function'>doStuff</identifier>
+				</function-call>
+			</block>
+		</function>
+	</declaration-pervasive>
+	
+	<!-- this should be ignored since it's in a different namespace -->
+	<foo:ignored-stuff xmlns:foo="http://site.com/stuff">
+		<candy>
+			<apple>
+				<cinnamon/>
+			</apple>
+		</candy>
+	</foo:ignored-stuff>
+
+	<!--
+	function doStuff() {
+		if true {
+			println("this is a test")
+		}
+		string str = "🿰 Hello,".concat(" World 🿱")
+		println(str)
+		println(str.length)
+		for x from 1 to 20  {
+			println( x.add(10000) )
+		}
+	}
+	-->
+	<declaration-pervasive>
+		<identifier>doStuff</identifier>
+		<reference-type>
+			<reference-category>function</reference-category>
+		</reference-type>
+		<function label='value'>
+			<block>
+				<conditional-block>
+					<identifier label='test'>true</identifier>
+					<block label='action'>
+						<function-call>
+							<identifier label='function'>println</identifier>
+							<string label='argument'>this is a test</string>
+						</function-call>
+					</block>
+				</conditional-block>
+				<declaration-bind>
+					<identifier label='name'>str</identifier>
+					<reference-type label='type'>
+						<reference-category>value</reference-category>
+					</reference-type>
+					<method-call label='value'>
+						<string label='value'>&#x1FFF0; Hello,</string>
+						<identifier label='method-name'>concat</identifier>
+						<string label='argument'> World &#x1FFF1;</string>
+					</method-call>
+				</declaration-bind>
+				<function-call>
+					<identifier label='function'>println</identifier>
+					<identifier label='argument'>str</identifier>
+				</function-call>
+				<function-call>
+					<identifier label='function'>println</identifier>
+					<get-property label='argument'>
+						<identifier label='value'>str</identifier>
+						<identifier label='property-name'>length</identifier>
+					</get-property>
+				</function-call>
+				<for-range>
+					<identifier>x</identifier>
+					<integer label='start'>1</integer>
+					<integer label='limit'>20</integer>
+					<block>
+						<function-call>
+							<identifier label='function'>println</identifier>
+							<method-call label='argument'>
+								<identifier label='value'>x</identifier>
+								<identifier label='method-name'>add</identifier>
+								<integer label='argument'>10000</integer>
+							</method-call>
+						</function-call>
+					</block>
+				</for-range>
+			</block>
+		</function>
+	</declaration-pervasive>
+</global>

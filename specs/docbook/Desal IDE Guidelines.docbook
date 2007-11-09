@@ -1,0 +1,94 @@
+comments should appear as talk bubbles, and be positioned appropriately
+
+
+4 possible levels of function purity:
+
+diff-rv   diff-rv and side-effects
+pure      side-effects
+
+diff-rv means the returned value may be different for the same arguments, such as random number generators
+side-effects mean there are observable changes produced from calling the function, like drawing to screen
+
+
+
+
+bytecode-compile - translate to an intermediate stage
+compile - translate to machine code
+
+interpret - evaluate source code
+bytecode-interpret - evalutae bytecode
+hardware-interpret - run machine code
+JIT - compile source code or bytecode at runtime
+
+Desal source code should work under any method of evaluation. It should not require one method or another.
+
+
+Q: What's the difference between execution and compilation?
+A: The purity of tha actions: side effects and different return values for the same arguments. If all called functions were pure, compilation produces a value, and execution just grabs that value. Bytecode does not retain purity information, preventing many optimization opportunities!
+
+For optimum speed:
+1) parse all source code at once to a single tree
+2) optimized tree
+3) compile anything that can be
+4) optimize machine code
+5) convert tree to bytecode with references to compiled parts
+6) output machine code and bytecode
+7) at runtime:
+if code is compiled
+	if runtime information could provide further optimization
+		JIT the bytecode
+		add a reference to the newly compiled version
+		run the new machine code
+	else
+		run the prexisting machine code
+else
+	if bytecode can be compiled
+		JIT the bytecode
+		add a reference to the newly compiled version
+		run the new machine code
+	else
+		interpret the bytecode
+
+
+
+
+IDEs should parse code in real time and align it properly. Programmers should never have to manually line up code.
+
+
+
+After typing code that opens a block and moving to a newline, tabs should automatically be inserted.
+
+if 2 < 3|
+
+if 2 < 3
+|
+
+if 2 < 3
+	|
+	
+if 2 < 3
+	doStuff()|
+
+
+
+arguments, local variables, and external variables should be highlighted differently
+
+
+When calling a member function, it helps to know whether it:
+	returns a value from the object - getElementsByTagName()
+	tells something about the object - isEmpty()
+	modifies the object - appendChildNode(obj)
+	creates something new - cloneNode(objs)
+	
+	
+*** deprecated operators ***
+
+IDEs and editors should automatically replace deprecated with nondeprecated variant, if there is one
+
+
+*** testing equality ***
+
+deprecated: ==
+-or-
+U+2248
+

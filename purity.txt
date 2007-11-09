@@ -1,0 +1,98 @@
+Question: Should method/function purity be split apart from node purity?
+Question: Should interfaces and/or interface implementations define purity?
+
+
+--- CAUSE
+
+Results are affected by certain things. Every result is one of these 4 dependency levels:
+
+* independent
+	the result is always the same
+	example: literal values (string, integer, rational)
+
+* argument
+	the result is affected by explicitly passed-in arguments or child nodes
+	by passing in the same arguments, you can be sure to get the same results
+
+* external
+	the result is affected by external variables/functions that may change
+
+If an implementation knows the external variables/functions will always give the same result, or that in the end they have no affect on the outcome, it can move the dependency level to "argument". If an implementation knows the arguments to a function will always be the same, or that they will have no affect, it can move the dependency level to "independent".
+
+An implementation may move the dependency level down even when code has specifically been marked with a higher dependency level. An implementation must not move the dependency level higher than code has been marked as.
+
+
+--- EFFECT
+
+There are 3 types of results:
+
+* visible side effects
+	example: binding a global identifier-reference to a different value
+
+* non-visible side effects
+	example: printing, playing a sound
+
+* evaluation
+	example: a function call returning something
+
+Visible means the result causes changes within the implementation, rather than going outside the implementation. Non-visible changes don't have lasting affects on the implementation, although they may have lasting affects outside the implementation.
+
+Every Desal node has information about each of these result types. A Desal node should specify all visible and non-visible side effects of execution, and each result's dependency level. It should also specify the dependency level of of evaluation if it can be evaluated. 
+
+
+--- ORDER
+
+differentiate between ordered and unordered results!
+
+Nodes should also have information about whether the results are dependent on order.
+
+example: incrementing is unordered, but printing is ordered
+
+
+--- EXPLICIT PURITY INFORMATION
+
+Results and their dependency level should be markable for every executable node. If something is marked a certain way, it should be treated that way, even if it isn't.
+
+
+--- EXAMPLE
+
+If a function has no side effects, so that the only result is evaluation, and the dependency level of the function is "argument", every function call with that function, where the arguments can be evaluated, can be evaluated during processing.
+
+So, Math.square(5) may be replaced with 25.
+
+The tree after processing could be turned back into a Desal storage tree if all evaluated expressions can be represented with Desal nodes. In this case, 25 is a builtin integer, so it could be replaced with an integer node.
+
+
+--- FAME
+
+Find sites where various programming languages compete at specific problems to see what's fastest. Find a problem that can be reduced to a single println function call and serialized to a Desal storage tree. Put up Desal source code for that problem and put up Desal Implementation 001's source code somewhere.
+
+Because Desal Impl 001 would have already done all the heavy lifting beforehand, it should be by far the fastest. This should bring in some attention.
+
+return str1 & str2
+
+<method>
+	<identifier label="name">concat</identifier>
+	
+	<results>
+		<evaluation>
+			<dependency>argument</dependency>
+		</evaluation>
+	</results>
+	
+	...
+</method>
+
+<method-call>
+	<identifier label="target">str1</identifier>
+	
+	<identifier label="method">concat</identifier>
+	
+	<identifier label="argument">str2</identifier>
+</method-call>
+
+
+
+For if-else blocks, where the test for the first if is known to always be true, but the block in the else depends on external variables, the if-else depends on external variables, and can't immediately be reduced. However, the if-else can be instructed to reduce its children, which lead to the test for the if being evaluated.
+
+This is the extent of purity information. But from here, it is simple for an implementation to remove the else blocks and replace the entire if-else node with a single block node.

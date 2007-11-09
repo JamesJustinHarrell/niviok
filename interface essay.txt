@@ -1,0 +1,21 @@
+In the beginning, twisted masses of wires and other hardware controlled computers. There was no way to get a computer to do something other than by actually changing the computer.
+
+Then things like switches, dials, punch cards, and machine language told computers what to do. Now the computer could do different things while remaining physically the same.
+
+Assembly and higher-level languages made telling computers what to do easier. However, programming was still limited to creating a step by step list of instructions.
+
+Structured programming grouped code together, to define certain actions, but programming was still limited to lists of steps. The computer was still the only one allowed to do anything.
+
+OOP introduced objects that could do stuff, and for the first time programming wasn't just about creating lists of steps for the computer to follow. Now you could create things, and those things could do stuff. The computer was no longer the only one allowed to take action.
+
+However, there was a problem with OOP: classes. Instead of requiring objects that could do this or that, programmers required objects with a specific way of doing it. Programmers forgot about what the objects could do, and only thought how they did it. One class could not be exchanged for another, even if it behaved the same.
+
+The savior from this mess was interfaces. With interfaces, an object could proudly declare that it could do this or that, and keep it's dirty secrets of *how* to itself. OOP was to be clensed of it's biggest error.
+
+However, that didn't happen. In fact, the opposite occurred. Rather than replacing classes, interfaces actually *depended* on them. Interfaces were an add-on, an extra, that classes could provide. How shameful it was to be a lowly interface, rather than a glorious class. Interfaces were extra work on top of classes, and only to be used when absolutely necessary. It was foolish to create an interface that only one class implemented.
+
+Macros, generic programming, dynamic typing, and duck typing offered a different solution. If a programmer thought an object behaved in a certain way and could do certain things, he simply treated like it did. After all, if it walks like a duck, and quacks like a duck, then it obviously must be a duck. Sure, sometimes what you think is a duck might walk like a snake and quack like cow, or just explode because it doesn't know how to walk or quack, but it was less work than interfaces, and that's all that really mattered. These technologies allowed programmers to ignore how an object was implemented, but also stripped away much of the assurance that any object could do what the programmer wanted it to do.
+
+I belive this path is the wrong one. Rather than adding interfaces on top of classes, or using duck tying to ignore interface and implementation, it would be better to just make using interfaces easier. So that's what I aim to do.
+
+For some programming languages, people say "everything is a function" or "everything is an object". For Desal you could say "everythings an interface", because in Desal, the only way to refer to any object is through an interface.

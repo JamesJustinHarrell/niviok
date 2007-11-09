@@ -1,0 +1,125 @@
+This document describes the syntax of a Funsynn grammar definition.
+
+
+BasicIdentifier = ( [a-z] | [A-Z] | "_" )+ ;
+
+
+/* ignored stuff */
+
+Comment = "/*" CommentN(0) ;
+CommentN(int n) = @{n} "*/" | CommentN(n+1) ;
+
+Whitespace = (" " | %A | %9)+ ;
+
+Fill = (Comment | Whitespace)+ ;
+
+
+/* terminals */
+
+Terminal = "@" | String | CodePoint | CodePointRange | CharacterRange ;
+
+String = "\"" ( String_FreeCharacter | String_EscapeSequence )* "\""
+String_SpecialCharacter = "\"" | "\\" ;
+String_FreeCharacter = @ - String_SpecialCharacter ;
+String_EscapeSequence = "\\" String_SpecialCharacter ;
+
+HexDigit = "0" | [1-9] | [A-F] | [a-f] ;
+
+CodePoint = "%" HexDigit+ ;
+
+CodePointRange = "[" "%" HexDigit+ "-" "%" HexDigit+ "]" ;
+
+CharacterRange = "[" @ "-" @ "]" ;
+
+
+/* integers */
+
+Integer = (0 | [1-9])+ ;
+
+IntegerIdentifier = "#" BasicIdentifier ;
+
+IntegerExpression =
+	"(" IntegerExpression ")" |
+	IntegerExpression ( "++" | "--" | "**" ) IntegerExpression |
+	IntegerIdentifier |
+	Integer ;
+
+
+/* functions */
+
+Function = FunctionIdentifier "(" Parameters ")" "=" Expression ;
+
+FunctionIdentifier = "!" BasicIdentifier ;
+
+Parameters = (Parameter ",")* Parameter ;
+
+Paramater = Parameter_Integer | Parameter_Rule ;
+Parameter_Integer = "int" Fill IntegerIdentifier ;
+Paramater_Rule = "rule" Fill RuleIdentifier ;
+
+FunctionCall = FunctionIdentifier "(" Arguments ")" ;
+
+Arguments = (Argument ",")* Argument ;
+
+Argument = IntegerExpression | Expression ;
+
+
+/* document layout */
+
+Document = Fill? ( Rule Fill? )+ ;
+
+Rule = RuleIdentifier Fill? "=" Fill? RuleExpression Fill? ";" ;
+
+RuleIdentifier = BasicIdentifier ;
+
+RuleExpression =
+	Group | Repetition
+	Exclusion | Series | Option |
+	FunctionCall | Identifier | Terminal ;
+
+Group = "(" RuleExpression ")" ;
+
+Repetition =
+	Repetition_N | Repetition_Range | Repetition_NPlus |
+	Repetition_Optional | Repetition_AnyCount | Repetition_OnePlus ;
+Repetition_N = RuleExpression "{" IntegerExpression "}" ;
+Repetition_Range = RuleExpression "{" IntegerExpression "," IntegerExpression "}" ;
+Repetition_NPlus = RuleExpression "{" IntegerExpression "," "*" "}" ;
+Repetition_Optional = RuleExpression "?" ;
+Repetition_AnyCount = RuleExpression "*" ;
+Repetition_OnePlus = RuleExpression "+" ;
+
+Exclusion = RuleExpression "-" RuleExpression ;
+
+Series = RuleExpression+ ;
+
+Option = RuleExpression "|" RuleExpression ;
+
+
+
+
+
+
+
+
+
+
+
+<document>
+	<rule>
+		<identifier/>
+		<expression>
+			<term>
+				<factor/>
+				<factor/>
+				...
+			</term>
+			<term>...</term>
+			...
+		</expression>
+	</rule>
+	
+	<rule>...</rule>
+	
+	...
+</document>

@@ -1,0 +1,129 @@
+--- example 1
+
+func foo(Int a) String
+	return "exampleA"
+	
+func foo(Bar a) String
+	return "exampleB"
+
+identifier-function
+	identifier
+		"foo"
+	expression > identifier [return-interface]
+		"String"
+	expression > function [function]
+		parameter
+			expression > identifier [type]
+				"Int"
+			identifier
+				"a"
+		expression > identifier [return-type]
+			"String"
+		block
+			statement > return
+				expression > string
+					"exampleA"
+	expression > function [function]
+		parameter
+			expression > identifier [type]
+				"Bar"
+			identifier
+				"a"
+		expression > identifier [return-type]
+			"String"
+		block
+			statement > return
+				expression > string
+					"exampleB"
+
+1. declares that foo can point to objects that implement a function interface with String as the return type
+2. defines a callable object
+3. binds foo to the callable object
+4. defines another callable object
+5. binds foo to the second callable object (without unbinding it from the first callable object)
+
+
+--- example 2
+
+func(Int)String foo = func(Int a)String
+	return "example"
+
+identifier-object
+	identifier
+		"foo"
+	expression > function-interface [interface]
+		expression > identifier [paramater-type]
+			"Int"
+		expression > identifier [return-type]
+			"String"
+	expression > function [function]
+		parameter
+			expression > identifier [type]
+				"Int"
+			identifier
+				"a"
+		expression > identifier [return-type]
+			"String"
+		block
+			statement > return
+				expression > string
+					"example"
+
+1. declares that foo can point to any object that implements the func(Int)String interface
+2. defines a callable object which implements the func(Int)String interface
+3. points foo at the callable object
+
+Because foo is an object identifier, it cannot be bound to more than one object reference.
+
+
+--- example 3
+
+function foo() Int
+	public Int toReturn = 5
+	return toReturn
+	
+foo() //5
+foo.toReturn = 8
+foo() //8
+
+identifier-bind-object-auto
+	identifier
+		"foo"
+	expression (function)
+		public-member
+			interface (identifier)
+				"int"
+			identifer
+				"toReturn"
+			default
+				5
+		function-defintion
+			return-type
+				"int"
+			statement-block
+				return
+					expression (identifier)
+						"toReturn"
+
+The function node evaluates to an object reference with an active interface that is not a function interface. Therefore, foo is an object interface, and thus cannot be overloaded.
+
+
+--- example 4
+
+func(*)Int igloo
+
+func foo(Rat val) Int
+	return Math.round(val)
+
+func bar(Int val) Int
+	return Math.round(val*2)
+
+igloo = foo
+igloo = bar
+
+func igloo(Rat val1, Rat val2) Int
+	return igloo(val1 + val2)
+
+igloo(3.4, 5.6)
+igloo(7.8)
+igloo(6)

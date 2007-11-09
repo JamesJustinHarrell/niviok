@@ -1,0 +1,114 @@
+-------- identifiers
+
+An identifier in a certain scope (scoped-identifier) can be associated with one of:
+	* a namespace
+	* an alias
+	* any value
+		- with a specified active interface
+		- any value (dyn)
+		- values that implement the Meta interface
+		- multiple values that all have:
+			* a function interface as the active interface
+			* the same return type
+
+Note: If a value has multiple callees, the active interface is not a function interface, and thus it cannot be bound to a function identifier. The object reference must be cast to each function interface, and each resulting object reference bound individually to the function identifier.
+
+Overloading an identifier means binding multiple object references to it.
+
+Identifier nodes can be evaluated. xxx spec out evaluating identifiers
+
+Const identifiers can never be unbound from what they're bound to. Only object identifiers can be declared const. Function identifiers are always const, and namespace identifiers can never be const. Const object identifiers must be bound to something when defined.
+
+
+-------- interface
+
+Interfaces define how code can interact with an object. Interfaces are object references where the active interface is the Interface interface.
+
+interface RegularInterface
+	Interface[] inheritees
+	tuple{ FuncInterface type, String identifier } methods
+	tuple{ Interface type, String identifier, r/w/r+w } properties
+
+interface FunctionInterface
+	tuple{ Interface[] params, Interface returnType } callees
+
+interface Interface
+	Interface[] inheritees
+	tuple{ Interface[] params, Interface returnType } callees
+	tuple{ FuncInterface type, String identifier } methods
+	tuple{ Interface type, String identifier, r/w/r+w } properties
+
+The interface node evaluates to an object reference with an implementation of the Interface interface as the active interface implementation.
+
+Interfaces cannot declare a "call" method or property explicitly. Call methods are created implicitly by defining callees.
+
+When an interface defines a callee, the interface impliticly inherits from a function interface that declares the callee. That means all callees are defined by function interfaces, one callee per function interface. That means only function interfaces are allowed to define callees. This means there are two kinds of interfaces: The kind that can inherit and define properties and methods, and the kind that define callees but can't inherit.
+
+xxx what about the "call" and "apply" methods and "length" property?
+
+
+--------- class
+
+Classes contain information about the state that instances of the class (objects) must hold. Each class is associated with a hierachy of interface implementations. Classes know which interface implementation is the default interface implementation, meaning which interface implementation is the active interface implementation for new instances.
+
+An instance of a class is an object that can hold the state specified by the class.
+
+A "class" node evaluates to a function that creates objects when called (unless the class node defines a singleton xxx spec out). Each time the function is called, an instance of the class (an object) is created. xxx elaborate (perhaps only in class node section)
+
+Note that calling the function does not produce more interface implementations. Each class creates a fixed number of interface implementations when the class node is evaluated, and that number does not change from the resultant function being called.
+
+Class can instantiate an arbitrary number of objects.
+
+
+-------- singletons
+
+Singletons are instances of a class that cannot be accessed to create more instances. xxx elaborate
+
+
+--------- objects
+
+Hold state that only interface implementations that are associated with the same class can access. The state is provided by contained objects. The objects an object contains is defined by the associated class. They have an ID. Objects are associated with a class.
+
+Each object can be refered to by an arbitrary number of object references.
+
+
+--------- interface implementation
+
+Associated with a class. Fits into an interface implementation hierachy because interfaces can inherit interfaces, and a class can be associated with multiple implementations of the same interface. Defines actions/behavior for an interface.
+
+An interface implementation hierachy is composed of an arbitrary number of interface implementations.
+
+
+--------- object references
+
+Object references are associated with an object and an interface implementation. The object and interface implementation must both be associated with the same class.
+
+The "active interface implemantation" of an object reference is the interface implementation the object reference is associated with. The "active interface" of an object reference is the interface that the active interface implementation is associated with.
+
+
+--------- expressions
+
+Expressions can do something called "evaluation". When expressions are evaluated, they "evaluate to" object references. For example, a "function" node is an expression, so it evaluates to an object reference.
+
+
+--------- function interfaces
+
+FuncInterface is an interface that inherits from Interface. Function interfaces implement FuncInterface, instead of just implementing Interface. User code cannot implement FuncInterface or force cast to FuncInterface, but it can do so for function interfaces.
+
+FuncInterface doesn't define anything itself (callees, methods, properties, etc), so FuncInterface implementations can be cast to Interface without loss of functionality.
+
+A function interface is an implementation of the FuncInterface. They can only be created by the Desal implementation, not user code. Given information about parameters and the return type, Desal implementations create function interfaces.
+
+example function interface:
+interface ...
+	call(Alpha)Beta
+	func apply(dyn[])Beta
+	func call(Alpha)Beta
+	Int length
+
+Interfaces cannot inherit from function interfaces explicitly. Interfaces that declare a callee automatically implicitly inherit from a function interface.
+
+
+------- functors and functions
+
+Some object references are callable. The active interface of these object references has callees, and it is either a function interface or an interface that inherits form a function interface. A functor is an object reference that can be called i.e. it has one or more callees. A function is an object reference with a function interface as the active interface. Therefore, functions are a special type of functor.

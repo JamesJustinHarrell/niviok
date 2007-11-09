@@ -1,0 +1,141 @@
+challenge: Complicated programs that always output the same string should be reduced by the compiler to a single print statement. Compilers of Desal should use many tests of this to reduce lots of complicated programs to a single print statement. Figuring out why certain things weren't reduced should lead to improvements in the compiler.
+
+
+
+
+header format defined by implementation and only used by implementation
+automatic generation of headers
+no #includes - all headers precompiled and included for all source files
+
+
+If the target architecture doesn't support a certain native type, the compiler may:
+  use a larger type
+  refuse to compile
+  anything else
+But it should always let the user know what's it's doing by default. 
+
+Compiler must recognize all aspects of Desal.
+If the compiler doesn't support a certain feature,
+  it must report that the feature is not supported,
+  not that it is undefined.
+The exception is candidate/minor features. (Stuff in the ext: namespace.)
+
+
+
+currently:
+  makefile
+    tells which files to include to build various targets
+    lists dependencies
+  make
+    reads makefile to determine which source files are needed to make the target
+    reads makefile to determine those source files dependencies
+    checks age of source files, object files, and same for dependencies
+    determines which source files need to be recompiled
+    tells compiler to recompile source files that need to be recompiled
+    tells linker to combine object files
+  compiler
+    takes some source code and compiles it into an object file
+  linker
+    takes some object files and combines them into an executable
+  
+Desal:
+  makefile
+    tells which files to include to build various targets
+  compiler
+    reads makefile to determine which source files are needed to make the target
+      or is told which files to compile
+      or is told which files to create syntax tree files for
+    checks age of source files and syntax tree files
+    determines which source files need to be parsed
+    reads sytax tree file if available, or produces sytax tree and copies it into file
+    combines all syntax trees into global syntax tree
+    compiles global syntax tree
+  
+Why is this better?
+  The dependencies of each source file never has to be determined.
+    Either the dependency is available somewhere in one of the sourcefiles or it isn't.
+  Each source file only has to be parsed once.
+  A change in a source file only requires itself to be reparsed, not its dependencies as well.
+  After a sourcefile is parsed, it can be kept in memory.
+    The traditional way requires that the resulting object file be written to disk and then read back in.
+  Removes need for specific ordering or prototypes.
+    A function can call another function that is defined below itself.
+    Header files aren't necessary; only source files are needed.
+  Higher potential for optimization, especially inlining.
+
+
+
+------ vtables -----
+
+
+--- Inheritance ---
+
+
+class Base
+  func doStuffA()
+    doStuffB
+    
+  func doStuffB()
+    ...
+    
+class Derived
+  #inherits Base
+  
+  func doStuffB()
+    ...
+    
+Derived instance
+instance.doStuffA() //Base.doStuffB() is called
+
+
+
+
+class Base
+  func doStuffA()
+    doStuffB
+    
+  virtual func doStuffB()
+    ...
+    
+class Derived
+  #inherits Base
+  
+  virtual func doStuffB()
+    ...
+    
+Derived instance
+instance.doStuffA() //Derived.doStuffB() is called
+
+
+
+
+interface IStuff
+  func doStuffA()
+
+class Base
+  #implements IStuff
+  
+  func doStuffA()
+    doStuffB()
+    
+  virtual func doStuffB()
+    ...
+    
+class Derived
+  #inherits Base
+  
+  virtual func doStuffB()
+    ...
+    
+Derived classInst
+ref IStuff interfaceInst -> @classInst
+interfaceInst.doStuffA() //Derived.doStuffB() is called
+
+
+
+
+conclusion:
+vtables shouldn't be used for interfaces, but should be used for inheritance
+
+
+

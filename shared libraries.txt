@@ -1,0 +1,71 @@
+This document is brainstorming for a way for Desal code running in any kind of implementation (interpreted, compiled, etc) to access libraries in the form of machine code. The libraries should be such that they could be used by either Desal or C/C++.
+
+This document does NOT do the opposite: It does not specify a way for machine code to access Desal code, or to translate Desal code into machine code.
+
+
+--- in library (machine code) ---
+
+"Example" is an interface
+	with guid 9837258972834787
+	and members
+		func foo() with calling method xxx
+
+"bar" is a function
+	with this signature func()Example
+	and these calling methods: <xxx>
+	located here: <xxx>
+
+Information in the library is expressed through an XML document with restricted syntax. Implementations are not required to check that the syntax has been appropriately restricted, although a library isn't valid if it isn't. Using notation from the XML 1.0 specification:
+
+document ::= element #x20*
+element ::= STag content ETag
+STag ::= '<' Name '>'
+ETag ::= '</' Name '>'
+content ::= (CharData | element | Reference)*
+Reference ::= '&lt;' | '&gt;' | '&quot;' | '&apos;' | '&amp;' | CharRef
+
+CharData, CharRef, and Name are as defined in the XML 1.0 specification. The encoding used must be UTF-8 without a BOM. To be conformant with this specification, the document must comply with these syntax rules and the XML 1.0 specification.
+
+
+--- in library header (Dextr) ---
+
+interface Example
+	:guid 9837258972834787
+	func foo()
+
+Library lib = selectLibrary("ExampleLib", "1")
+func()Example const bar = lib.get("bar")
+
+
+--- user (Dextr) ---
+
+import <library-header>
+
+Example ex = bar()
+ex.foo()
+
+
+--- implementation (machine code) ---
+
+for this line: Library lib = selectLibrary("ExampleLib", "1")
+
+The implementation notes the information about "bar" and "Example".
+
+
+for this line: func()Example const bar = lib.get("bar")
+
+The implementation creates an object that, when called, calls the librarie's bar at the specified location through the specified calling mechanism and returns the result.
+
+Then it compares the interface of the local bar with the interface of this object. It sees that they are both function objects that take no arguments and return an object, so it just has to make sure they both have the same return interface.
+
+To compare the interfaces, the implementation compares the members of the local Example interface with the members of the librarie's Example interface, and it compare's their guids. If that checks out, the implementation points the local identifier bar at the object it created.
+
+
+for this line: Example ex = bar()
+
+The implementation calls the librarie's bar function, which returns a set of function pointers, one for each method of the interface Example. The implementation creates an Example reference that, when any property is accessed, calls the associated function in the returned set of function pointers specified by the library.
+
+
+for this line: ex.foo()
+
+The implementation has associated foo with a function location that was specified by the library. The implementation calls the function at that location.

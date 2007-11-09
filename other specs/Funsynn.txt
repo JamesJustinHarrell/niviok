@@ -1,0 +1,306 @@
+Funsynn
+Functional Syntax Notation
+
+=========== Description
+
+Funsynn is similar to Backus–Naur form (BNF) or Wirth syntax notation (WSN), but it has functions. This enables parsing of some grammars that are context-sensitive, and can simplify grammar notation.
+
+Funsynn can be thought of as a dynamic metasyntax for context-free grammars, in that it only ever creates a finite number of rules (aside from bugs leading to infinite recursion), but it can create more and more rules as needed until a string will parse or is known to be invalid. Because Funsynn has the *ability* to create infinitely many rules, it is not limited to expressing context-free grammars.
+
+Funsynn only adds very basic functions.
+some restritions:
+functions must evaluate to rules/expressions
+functions must be called with the same number of arguments as parameters specified
+	i.e. no currying and no extra arguments
+functions cannot appear inline inside of rules
+functions cannot appear inside of other functions
+	i.e. all functions are global
+
+
+=========== Syntax
+
+Funsynn has a context-free syntax that can be described by BNF or WSN.
+
+Funsynn works on Unicode code points.
+
+/* comment */
+	comments are ignored
+
+@
+	matches any character
+
+%N
+	where N is a hexadecimal integer
+	a Unicode code point
+
+[%N-%N]
+	matches any single character code point in this range, inclusive
+
+[a-z]
+	same as [%(code point for a)-%(code point for z)]
+
+"string"
+	matches the characters in the string
+	example: " \" \\ " matches the characters between the pipes in | " \ |
+
+A B
+	matches A followed by B
+
+A | B
+	matches A or B
+
+A - B
+	matches any string that matches A but does not match B
+
+A?
+	optional (0 or 1)
+
+A*
+	0 or more
+
+A+
+	1 or more
+
+A {3}
+B {1,3}
+C {2,*}
+	repetition
+	example: "foo" {3} matches "foofoofoo"
+	example: "foo" {1,3} matches "foo", "foofoo", and "foofoofoo"
+	example: "foo" {2,*} matches "foofoo", "foofoofoo", "foofoofoofoo", etc
+
+(A B)
+	grouping
+
+R = ...
+	defines a rule
+
+F(int a, rule b, func c, ...) = ...
+	defines a function
+
+F(3)
+	calls a function
+	evaluates to a rule/expression
+
+A ++ B
+A -- B
+A ** B
+	A and B are integers
+	evaluates to A plus/minus/mult B
+	example: 5 ++ 3 evaluates to 8
+
+precendence:
+
+This followed by operator has higher precedence than alternation; thus A B | C D is identical to (A B) | (C D).
+A B* is identical to (A) (B*)
+
+operator order:
+	(...)
+	++ -- **
+	? * +
+	-
+	followed by (ex: A B)
+	|
+
+precedence example:
+
+Z? A* - B+ D? | C+
+(Z?) (A*) - (B+) (D?) | (C+)
+(Z?) ( (A*) - (B+) ) (D?) | (C+)
+( (Z?) ( (A*) - (B+) ) ) (D?) | (C+)
+( ( (Z?) ( (A*) - (B+) ) ) (D?) ) | (C+)
+
+(
+	(
+		(Z?)
+		followed by
+		(
+			(A*) - (B+)
+		)
+	)
+	followed by
+	(D?)
+)
+|
+(C+)
+
+
+========= Proposal:
+Function to retrieve the longest string that doesn't contain a certain substring.
+LongestStringNotContaining("*/")
+
+
+========================= Example
+
+Example 1
+blocks and tabs
+
+Consider this example syntax:
+
+---
+alpha
+	alpha
+		4
+		2
+	alpha
+		1
+		7
+		3
+		0
+	alpha
+		alpha
+			7
+		alpha
+			5
+			3
+---
+
+Each alpha can contain alphas or numerals. How to represent this in BNF? It's impossible to do it to an arbitrary level.
+
+Document ::= Alpha1
+
+Alpha1 ::=
+	"alpha" newline
+	( Alpha2+ | (tab numeral newline)+ )
+
+Alpha2 ::=
+	tab "alpha" newline
+	( Alpha3+ | (tab tab numeral newline)+ )
+
+Alpha3 ::=
+	tab tab "alpha" newline
+	( Alpha4+ | (tab tab tab numeral newline)+ )
+
+---
+
+With Funsynn, this syntax can be fully defined to an arbitrary level.
+
+Document = Alpha(0) ;
+
+Alpha(int tabCount) =
+	tab {tabCount} "alpha" newline
+	( Alpha(tabCount++1)+ | (tab {tabCount++1} numeral newline)+ ) ;
+
+-or-
+
+Document = Alpha("") ;
+
+Alpha(rule indention) =
+	indention "alpha" newline
+	( Alpha(indention tab) | (indention tab numeral newline)+ ) ;
+
+
+
+=================== Brainstorming
+
+Brainstorm: more functional stuff
+
+/* function that evals to a rule */
+Thing(int n) = "bar-" * n ;
+
+/* function that evals to a function */
+Fooitize(func a) = func(int b)( "foo " a(b) " foo" ) ;
+
+/* rule that matches "foo bar-bar-bar-bar-bar- foo" */
+FooThing5 = Fooitize(Thing)(5) ;
+
+------
+
+/* function that evals to a rule */
+Thing = func(int n)( "bar-" * n ) ;
+
+/* function that evals to a function */
+Fooitize = func(func a)( func(int b)( "foo " a(b) " foo" ) ) ;
+
+/* rule that matches "foo bar-bar-bar-bar-bar- foo" */
+FooThing5 = Fooitize(Thing)(5) ;
+
+-----
+with currying:
+
+/* function that evals to a rule */
+Thing(int n) = "bar-" * n ;
+
+/* function that evals to a function */
+Fooitize(func a, int b) = "foo " a(b) " foo" ;
+
+/* rule that matches "foo bar-bar-bar-bar-bar- foo" */
+FooThing5 = Fooitize(Thing)(5) ;
+FooThing5 = Fooitize(Thing, 5) ;
+
+
+================ Example
+
+Example 2:
+lots of needless repetition
+consider blocks
+
+foo: bar
+foo: bar, baz, bar
+foo
+{ baz
+bar, baz
+bar }
+
+moo: milk, grass
+moo {
+grass
+grass, grass, milk
+milk
+}
+
+
+
+ws ::= space | newline
+wsl ::= space
+
+--- traditional
+
+Foo ::= "foo"
+	( wsl? ":" wsl? (FooBS wsl? "," wsl?)* FooBS ) |
+	( ws? "{" ws? ((FooBS wsl? "," wsl?)* FooBS ws? newline ws?)* (FooBS wsl? "," wsl?)* FooBS ws? "}" )
+
+/* Foo Block Statement */
+FooBS ::= "bar" | "baz"
+
+Moo ::= "moo"
+	( wsl? ":" wsl? (MooBS wsl? "," wsl?)* MooBS ) |
+	( ws? "{" ws? ((MooBS wsl? "," wsl?)* MooBS ws? newline ws?)* (MooBS wsl? "," wsl?)* MooBS ws? "}" )
+
+/* Moo Block Statement */
+MooBS ::= "grass" | "milk"
+
+--- Funsynn
+
+BlockLine(rule r) = (r wsl? "," wsl?)* r ;
+
+Block(rule r) =
+	( wsl? ":" wsl? BlockLine(r) ) |
+	( ws? "{" ws? (BlockLine(r) ws? newline ws?)* BlockLine(r) ws? "}" ) ;
+
+Foo = "foo" Block("bar" | "baz") ;
+
+Moo = "moo" Block("milk" | "grass") ;
+
+
+================ Example
+
+Example
+
+This is something a context-free grammar cannot do!
+
+write Funsynn for this:
+
+abc
+aabbcc
+aaabbbccc
+aaaabbbbcccc
+(etc, to an arbitrary level)
+
+Line = LineN(1)
+LineN(int n) = "a" ( "b" {n} "c" {n} | LineN(n ++ 1) )
+
+WARNING: A poorly written function can lead to long-lasting recursion. This example function tries to match longer and longer substrings until trying every available character. It won't go into infinite recursion, but it can lead to unnecesarily bad performance.
+LineN(int n) = ( "a" {n} "b" {n} "c" {n} ) | LineN(n ++ 1)
+
+

@@ -1,0 +1,342 @@
+class
+	static members
+	private members of instances
+		identifier
+		-> interface
+	interface implementations
+	-> default implementation
+	constructors (functions)
+	
+	methods:
+	create instance
+	create instance with object (of instance of native class)
+
+interface implementation
+	-> interface
+	functions
+	-> class
+	
+	methods:
+	execute/evaluate call
+	get/set properties
+	execute/evaluate methods
+
+object
+	private members (scope)
+	id
+	-> class
+	
+	(no methods)
+
+object reference
+	-> object
+	-> interface implementation
+	
+	properties:
+	object ID
+	active interface
+	
+	methods:
+	implements?
+	cast
+	execute/evaluate call
+	get/set properties
+	execute/evaluate methods
+
+
+interfaces can be built up by native code (including interface nodes) or client code
+interfaces appear to client code as object references
+IInterface
+InterfaceFromObjRef
+InterfaceWrapper //creates object reference that wraps around interface
+
+interface implementations know the type of objects they receive, and it affects the interface
+IInterfaceImplementation<T>
+NativeInterfaceImplementation : IInterfaceImplementation<T>
+ClientInterfaceImplementation : IInterfaceImplementation<Client_Object>
+
+classes know the type of objects passed to interface implementations, and it affects the interface
+IClass<T>
+NativeClass<T> : IClass<T>
+ClientClass : IClass<Client_Object>
+
+object references know the type of objects they refer to, but it doesn't affect the interface
+IObjectReference
+NativeObjectReference<T> : IObjectReference
+ClientObjectReference : IObjectReference
+
+objects know what kind of item is holding the state
+IObject<T>
+Client_Object : IObject<Scope>
+Native_Object<T> : IObject<T>
+
+
+A constructor is a method that is associated with a class. When a constructor is called, it creates an instance of a class. The object reference produced by a class node is called a COR (class object reference).
+
+classFactory is the class that will be used to create objects when the function is called.
+classWrapper is the class of the function that can be called to create objects.
+Only one instance of classWrapper is created. It is a singleton.
+An instance of classFactor is created every time the classWrapper function is called.
+
+Note: There is not yet support for static interfaces. (Non-singleton class nodes that evaluate to an object reference that can be cast to the interface.) There is also no support for generic programming.
+
+
+sections below:
+native function without public static members
+native function with public static members
+client function without static members
+client function with private static members
+client function with public static members
+
+to do:
+native class (eg CInt, CRat, CString)
+client class
+singletons
+
+
+Note: function objects can't be copied
+
+
+-------- native function without public static members (may have private static members)
+manual:
+native function
+parameters
+return type
+
+automatic:
+function interface
+(poltergeist: interface implementation info)
+class (creates implementation of Object interface)
+implementation of function interface
+implementation of Object interface
+object (without scope or state)
+
+object reference (with function interface) +
+object reference (with Object interface) +
+
+
+-------- native function with public static members
+manual:
+native function
+parameters
+return type
+public static properties
+	identifier
+	interface
+	native function
+public static methods
+	identifier
+	function interface
+	native function
+
+automatic:
+custom interface
+	callee with parameters and return type
+		implicitly creates function interface and inherits
+	properties
+	methods
+(poltergeist: interface implementation info for custom interface)
+(poltergeist: interface implementation info for function interface)
+class (creates implementation of Object interface)
+implementation of custom interface
+implementation of function interface
+implementation of Object interface
+object (without scope or state)
+
+object reference (with custom interface) +
+object reference (with function interface) +
+object reference (with Object interface) +
+
+Note: for something like this that can be copied, see the section on native singleton
+
+
+-------- client function without static members
+manual:
+statement block
+scope
+parameters
+return type
+
+automatic:
+function interface
+(poltergeist: interface implementation info)
+class (creates implementation of Object interface)
+implementation of function interface
+implementation of Object interface
+object (without scope or state)
+
+object reference (with function interface) +
+object reference (with Object interface) +
+
+Note: has an inner function scope (replaced every call) but no outer scope (same for each call)
+
+
+-------- client function with private static members, but no public static members
+manual:
+statement block
+scope
+parameters
+return type
+private static properties
+	identifier
+	interface
+	expression (evaled when function object created, not each call)
+private static methods
+	identifier
+	function interface
+	expression (same as above)
+
+automatic:
+function interface
+(poltergeist: interface implementation info)
+class (creates implementation of Object interface)
+implementation of function interface
+implementation of Object interface
+object with scope
+
+object reference (with function interface) +
+object reference (with Object interface) +
+
+Note: has inner and out function scopes
+outer scopes are where the static members are
+
+
+-------- client function with public static members
+manual:
+statement block
+scope
+parameters
+return type
+private static properties
+	identifier
+	interface
+	expression
+private static methods
+	identifier
+	function interface
+	expression
+public static properties
+	identifier
+	interface
+	expression
+public static methods
+	identifier
+	function interface
+	expression
+
+automatic:
+custom interface
+	callee with parameters and return type
+		implicitly creates function interface and inherits
+	properties
+	methods
+(poltergeist: interface implementation info for custom interface)
+(poltergeist: interface implementation info for function interface)
+class (creates implementation of Object interface)
+implementation of custom interface
+implementation of function interface
+implementation of Object interface
+object with scope
+
+object reference (with custom interface) +
+object reference (with function interface) +
+object reference (with Object interface) +
+
+
+-------- native class
+manual:
+interface implementations
+default interface implementation
+private constructors - functions to create instances; only exposed to Desal implementation
+public constructors - functions to create instances; exposed to user code
+public static properties
+	identifier
+	interface
+public static methods
+	identifier
+	function interface
+
+class automatic:
+on create instance, instantiates a native class and combines it with the default interface implementation to create an object reference
+
+COR automatic:
+see section "COR automatic"
+
+
+-------- client class
+manual:
+interface implementations
+default interface implementation
+private constructors - only exposed to code in class node
+public constructors - exposed through class object
+private static properties
+	identifier
+	interface
+private static methods
+	identifier
+	function interface
+public static properties
+	identifier
+	interface
+public static methods
+	identifier
+	function interface
+private properties of instances
+	identifier
+	interface
+private methods of instances
+	identifier
+	function interface
+public properties of instances
+	identifier
+	interface
+public methods of instances
+	identifier
+	function interface
+
+class automatic:
+create a scope
+declare identifiers for static members
+run static constructor
+on instantiation:
+create a scope
+run specified constructor
+combine scope with the default interface implementation to create an object reference
+
+COR automatic:
+see section "COR automatic"
+
+
+-------- COR automatic
+
+This is the object reference that wraps around the class, exposing the class to user code. It is the same for classes created through user code and native code.
+
+interface that defines a callee for each constructor and defines the public members [COR interface]
+COR interface automatically inherits from function interfaces for each constructor
+(poltergeists: implementation info for each function interface)
+(poltergeist: interface implementation info for [COR interface] - properties and methods)
+classWrapper created from implementation info
+(created by classWrapper:) implementation of Object interface
+instance of classWrapper
+
+COR with [COR interface] as the active interface
+possibly more references to the same object
+
+when the COR is called:
+the object reference decide which of the callees to call
+the object reference calls the callee with the object
+the callee passses the object to the class
+the class creates an instance of the class
+
+
+-------- native/client singleton
+manual:
+see sections for native class and client class
+
+automatic:
+bascially, create class, but don't wrap it i.e. don't create the COR
+check class to ensure it has no static members and no constructors with parameters
+create classFactory
+create instance of classFactory (don't send any constructor parameters)
+
+(perhaps then: bind instance to identifier)

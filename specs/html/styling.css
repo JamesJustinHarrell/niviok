@@ -1,0 +1,90 @@
+/* for numbered lists, numbers are in content, so do not need to be added with CSS */
+.toc, .layout, .exec, .eval {
+	padding-left: 0
+}
+
+.toc li, .layout li {
+	display: block;
+}
+
+/* should numbers be part of content? */
+.exec li, .eval li {
+	list-style-position: inside;
+}
+
+code, pre, .layout, .exec, .eval, .process {
+	border-width: medium;
+	border-style: solid;
+}
+
+code, pre {
+	background: rgb(234,234,255);
+	border-color: blue;
+	display: block;
+	overflow: auto;
+	white-space: pre;
+}
+
+code::before {
+	background: blue;
+	color: rgb(234,234,255);
+	content: "code example";
+	display: block;
+}
+
+.layout {
+	background: rgb(234,255,234);
+	border-color: green;
+}
+.layout::before {
+	background: green;
+	color: rgb(234,255,234);
+	content: "layout";
+	display: block;
+}
+
+.exec {
+	background: rgb(255,234,234);
+	border-color: red;
+}
+.exec::before {
+	background: red;
+	color: rgb(255,234,234);
+	content: "execution";
+	display: block;
+}
+
+.eval {
+	background: rgb(255,234,255);
+	border-color: purple;
+}
+.eval::before {
+	background: purple;
+	color: rgb(255,234,255);
+	content: "evaluation";
+	display: block;
+}
+
+.process {
+	background: rgb(250,250,250);
+	border-color: gray;
+}
+.process::before {
+	background: gray;
+	color: rgb(250,250,250);
+	content: "process";
+	display: block;
+}
+
+table {
+	background-color: black;
+	border-spacing: 1px;
+}
+th, td {
+	background-color: white;
+	vertical-align: top;
+}
+th {
+	white-space: pre;
+	padding: 0 1em;
+}

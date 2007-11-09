@@ -1,0 +1,59 @@
+
+Quest: automation of the Curriously Recurring Template Pattern
+
+Solution: keyword "inheriter"
+
+
+--- C++ ---
+
+template<typename T>
+class FooGiver {
+	public:
+		int getFoo() {
+			return ( (*T)(this) )->foo;
+		}
+};
+
+class MyClass : public FooGiver<MyClass> {
+	public:
+		int foo;
+};
+
+MyClass instance;
+std::cout << instance.getFoo() << std::endl;
+
+
+--- Desal (old) ---
+
+abstract class FooGiver
+	public func getFoo() int
+		return inheriter.foo
+
+class MyClass
+	:inherit FooGiver
+	public int foo
+
+MyClass instance
+print instance.getFoo()
+
+
+--- Desal (new) ---
+
+interface Foo
+	func getNumber() int
+
+interface Bar
+	func getInteger() int
+
+implementation FooFromBar
+	interface Foo
+		func getNumber() int
+			return (inheriter as Bar).getInteger()
+
+class MyClass
+	int _value
+	
+	interface Foo = FooFromBar(@_value)
+	
+	interface Bar
+		return _value

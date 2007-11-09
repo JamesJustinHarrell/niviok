@@ -1,0 +1,79 @@
+--- identifier types ---
+
+value x2
+dyn
+meta x2
+function x2
+namespace
+alias
+
+The value, meta, and function identifier types come in const and var versions. (The const version of dyn would be a const auto-type value/function declaration.) That's a total of 9 identifier types. Identifiers have additional attributes that further differentiate them, such as being pervasive or prevalent.
+
+auto-typed means type obtained from value, when declaring and binding with a single node
+
+const-able identifiers: value, meta, function
+
+var-able identifiers: value, dyn, meta, function
+
+
+--- identifier declarations and bindings ---
+
+namespace identifiers can only be created with import
+alias identifiers can only be created with alias
+alias can be used in place of declaring namespace identifiers and binding namespaces
+
+pervasive identifier declaration+bind
+	identifier is always const
+	ident-type: applys to const-able identifers
+	bool: can be auto-typed
+	(interface expression, value expression)
+
+identifier declaration+bind
+	ident-type: applys to value, dyn, meta, function
+	bool: can be const if not dyn identifier
+	? interface-expression: can be auto if value/function identifier and binding
+	expression: bind value
+
+identifier declaration
+	always variable
+	ident-type: applys to value, dyn, meta, function
+	interface-expression/bool: can be auto if value/function identifier and binding
+
+identifier bind
+	identifier must be variable
+	applys to var-able identifers
+
+identifier unbind
+	identifier must be variable
+	applys to var-able identifers
+	(when unbinding a function identifier, unbind all bound functions)
+
+function identifier unbind
+	identifier must be variable function identifier
+	unbinds a single bound function
+
+
+--- identifier stages ---
+
+non-pervasive identifiers have a "before declaration" stage and an "after declaration" stage
+
+
+
+
+when executing scope:
+
+declare all identifiers with specified types
+define all pervasive identifiers
+execute statements step by step
+	when executing a ... do ...
+	pervasive identifier declaration
+		ignore it
+	identifier declaration+bind
+		set identifier stage to after
+		bind the value to the identifier
+	identifier declaration
+		set identifier stage to after
+	identifier bind
+		bind the value
+	identifier unbind
+		unbind the value

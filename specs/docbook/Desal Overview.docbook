@@ -1,0 +1,133 @@
+the Desal programming language is divided into 3 parts:
+
+grammar - basics of what contains what
+semantics - the meaning of the grammar and how it is evaluated
+syntax - how the grammar is expressed
+
+
+*** slogan? ***
+
+"Expand your vocabulary."
+
+1:
+Desal can be modified by all, so each person will add what they want.
+  It will probably gain an imense number of features.
+    This like having a very large vocabulary.
+Users of Desal can learn and use a very large number of features.
+  This is like expanding your own vocabulary.
+
+2:
+Anyone can change the langugage.
+  If there's a feature you want in Desal, you can add it.
+    This is like being able to expand your own vocabulary.
+      This is different from other languages, where the feature set is decided by others.
+      Desal is unique in allowing users to expand their own vocabulary.
+
+      
+      
+macros are a failure of the language
+macros shouldn't be needed
+rather than writing a macro, people should propose features for Desal      
+However, if macros do become a part of the language, they should be as expressive as the language.
+
+
+
+
+
+
+*** Process ***
+
+Desal has an open specification process. Anyone can freely view, distribute, and modify the specifications, view comments and final poll results regarding changes to the specifications, or create a free account at Desal.org and join in the process. Desal is an abbreviation of "Design At Large", meaning Desal is designed by the worldwide community and not by a small closed group.
+
+
+*** Philosophy ***
+
+* If the programmer wants to do something, he should be able to do it, even if it's a really stupid thing to do.
+  * raw pointers, dynamic typing, "bucket of bits"
+* However, it should always be easier to do something that isn't stupid.
+  * This means the best solution should be the most obvious one, and it shouldn't be easy to make a mistake.
+
+* Features should never be left out of Desal just because they would negatively affect performance.
+* However, if a feature has negative consequences, it should only be used explicitly.
+    * For example, closures shouldn't be formed unless the programmer explicitly specifies that they want a closure.
+    
++++ example 1 +++
+Since explicit typing is safer than implicit typing, objects without a type should not be allowed.
+However, if the programmer wants to user implicit typing, they should be able to.
+Therefore, implicit typing should be stated explicitly, perhaps like this:
+  imp myObj = getSomething()
+  
++++ example 2 +++
+Since static typing is safer than dynamic typing, objects should by default be statically type.
+However, if the programmer wants to use dynamic typing, they should be able to.
+Therefore, dynamic typing should be stated explicitly, perhaps like this:
+  dyn myObj
+  myObj = 1
+  myObj = "text"
+  myObj = new MyClass
+
+  
+* If features exist in other languages that programmers like and it can be copied into Desal, it should be.
+
+
+* compiled/interpreted
+
+It is a waste of time to specify languages as scripting laguages, compiled languages, etc since almost any language could be translated to a different language, interpreted, compiled to bytecode at runtime, compiled to bytecode beforehand, compiled to machine code JIT, compiled to machine code beforehand, etc with enough effort.
+
+Desal should not cater to any one of these methods. Compilers may not support an eval() command and interpreters may not support inline assembly, but that isn't a good enough reason to not include the features in the Desal specification.
+
+
+* choice and expression
+
+Desal is not explicitly typed or implicitly typed. It is not staticly typed or dynamically typed. Desal should support everything. Just as a natural language needs to be able to express as much as possible, Desal should work to express every facet of programming.
+
+With Desal being open for anyone to propose changes, everyone will probably add the features they want and like. Thus, Desal should try hard to make all types of programming fit together. Nothing should be left out simply because it inteferes with other features or is too CPU intensive.
+
+However, although Desal should support every feature, it should reveal each feature in as few ways as possible. For example, there shouldn't be multiple keywords with the same meaning. At some point there will have to be a decision whether to support "raise" or "throw". Supporting both is bad.
+
+
+* domain
+
+Desal should be a general programming lanugage and not sacrifice too much to excel at any specific problem. E4X and SQL are great, but Desal should not contain features that are so specific to a particular problem. Instead Desal should try hard to play well with others so there is no need to move such specific features into Desal.
+
+
+* support
+
+Implementations are encouraged to implement whatever subset of Desal fits the need.
+
+For example, a scripting engine might not want to enable inline assembly, and a simplistic compiler may not want to support dynamically typed references. A garbage collected implementation may not allow manual memory management and of course an implementation that doesn't support garbage collection wouldn't support gc commands such as collectGarbageNow() or setGCPriority().
+
+Implementors are very strongly encouraged to document well what features their implementation does and doesn't support. For this reason, a Desal Feature Checklist is provided that attempts to list all known features. All implementors are encouraged to use this as a starting point for documenting what features of Desal are implemented. It is of utmost importance that programmers are able to easily learn what features an implementation supports.
+
+Although implementors are encouraged to *support* whatever subset they feel is best, they are very stongly encouraged to at least *recognize* all features. When code attempts to use features that aren't supported, rather than giving an error message that something isn't recognized or undefined, implementations should report that the feature isn't supported.
+
+
+*** Documents ***
+
+Desal Overview
+Desal Syntax Description
+Desal Programming Langauge
+Desal Standard Library
+Desal IDE and Compiler Guidelines
+Desal Feature List
+
+
+*** Project Groups ***
+
+Desal.org website
+specifications
+tutorials
+IDE
+implementation of standard library
+compiler
+
+
+*** website ***
+
+donate page listing how much money has been received and what it's been spent on
+
+A donation should not fall into a black hole; donators should know what's happening with their donations.
+
+A donation document should describe how the donation money should be spent.
+
+

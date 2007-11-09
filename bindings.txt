@@ -1,0 +1,153 @@
+Desal Binder 001 takes interfaces and classes written in Desible and outputs C# to Desal bindings for Desal Implementation 001.
+
+Note: Desal Binder 001 should use a differet RelaxNG schema from Desal Implementation 001 that is a very restricted subset of Desible.
+
+Note: no support for default parameter values yet
+
+
+<class>
+	<name>Client_String</name>
+	
+	<!-- constructor with no parameters -->
+	<constructor/>
+	
+	<constructor>
+		<parameter>String</parameter>
+	</constructor>
+	
+	<interface>
+		<name>String</name>
+	</interface>
+</class>
+
+
+-------------- interfaces.desible
+
+<library>
+
+<interface xml:id='string'>
+	<identifier value="name">String</identifier>
+
+	<property>
+		<identifer value="name">length</identifier>
+		<identifier value="interface">Int</identifer>
+		<access>GET</access>
+	</property>
+
+	<method>
+		<identifier value="name">substring</identifier>
+		<parameter>
+			<identifier value="name">start</identifer>
+			<identifier value="interface">Int</identifer>
+		</parameter>
+		<type-info>
+			<reference-type>VALUE</reference-type>
+			<identifier value="interface">String</identifier>
+		</type-info>
+	</method>
+
+	<method>
+		<identifier value="name">substring</identifier>
+		<parameter>
+			<identifier value="name">start</identifer>
+			<identifier value="interface">Int</identifer>
+		</parameter>
+		<parameter>
+			<identifier value="name">limit</identifer>
+			<identifier value="interface">Int</identifer>
+		</parameter>
+		<type-info>
+			<reference-type>VALUE</reference-type>
+			<identifier value="interface">String</identifier>
+		</type-info>
+	</method>
+</interface>
+
+<interface>
+	<name>Int</name>
+	...
+</interface>
+
+<interface>
+	<name>Rat</name>
+	...
+</interface>
+
+
+---------
+
+XmlDocument interfaceDoc = Xml.parse("interfaces.desible");
+
+IInterface String = InterfaceFromValue.create(
+	Desible.parseInterface( interfaceDoc.GetElementById("String")));
+
+IInterface Int = InterfaceFromValue.create(
+	Desible.parseInterface( interfaceDoc.GetElementById("Int")));
+
+IInterface Rat = InterfaceFromValue.create(
+	Desible.parseInterface( interfaceDoc.GetElementById("Rat")));
+
+
+
+
+
+
+
+InterfaceImplementation also accepts a mapping of interface parameter identifiers to implementation parameter identifers. This wouldn't be used for bindings, but would be necessary for client code.
+
+IDictionary<KeyT, ValueT>
+makeDictionary<KeyT, ValueT>(KeyValuePair<KeyT, ValueT>[] pairs) {
+	IDictionary<KeyT, ValueT> dict = new Dictionary<KeyT, ValueT>();
+	foreach( KeyValuePair<KeyT, ValueT> pair in pairs ) {
+		dict.Add(pair);
+	}
+	return dict;
+}
+
+stringImpl.addValueMethod(
+	new Identifier("substring"),
+	new FunctionInterface(
+		new Parameter[]{
+			new Parameter( new Identifier("start"), Int )
+		},
+		String ),
+	makeDictionary(
+		new KeyValuePair<Identifier,Identifier>[] {
+			new KeyValuePair<Identifier,Identifer>(
+				new Identifier("start"),
+				new Identifer("beginning") )
+		}),
+	delegate(Client_String o, ref Scope args) {
+		return o.substring(
+			Wrapper.unwrapInteger(
+				scope.evaluateIdentifier(
+					new Identifier("beginning"))) );
+	});
+
+stringImpl.addValueMethod(
+	new Identifier("substring"),
+	new FunctionInterface(
+		new Parameter[]{
+			new Parameter( new Identifier("start"), Int ),
+			new Parameter( new Identifier("end"), Int )
+		},
+		String ),
+	makeDictionary(
+		new KeyValuePair<Identifer,Identifer>[] {
+			new KeyValuePair<Identifier,Identifier>(
+				new Identifier("start"),
+				new Identifer("beginning") ),
+			new KeyValuePair<Identifier,Identifier>(
+				new Identifier("limit"),
+				new Identifier("end")
+		}),		
+	delegate(Client_String o, ref Scope args) {
+		return o.substring(
+			Wrapper.unwrapInteger(
+				scope.evaluateIdentifier(
+					new Identifier("beginning"))),
+			Wrapper.unwrapInteger(
+				scope.evaluateIdentifier(
+					new Identifier("end"))) );
+	});
+

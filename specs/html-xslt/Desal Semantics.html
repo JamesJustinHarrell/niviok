@@ -1,0 +1,634 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"><title>Desal Semantics 1.0</title><link rel="stylesheet" href="styling.css" type="text/css"><meta name="generator" content="DocBook v5 XSL Stylesheets V1.72.0"></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="book" lang="en"><div class="titlepage"><div><div><h1 class="title"><a name="id2433127"></a>Desal Semantics 1.0</h1></div><div><h2 class="subtitle">Edition 1 Draft 20071006</h2></div><div><p class="copyright">Copyright © 2007 James Justin Harrell</p></div><div><div class="legalnotice"><a name="id2432606"></a>Permission is granted to use, copy, display, modify, sell, and distribute this document. This document is provided "as is" without warrany of any kind. In no event shall anyone be liable for any damages or other liability arising from use of this document.</div></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="chapter"><a href="#introduction">1. Introduction</a></span></dt><dd><dl><dt><span class="section"><a href="#specification-version">1.1. Version</a></span></dt><dt><span class="section"><a href="#specification-scope">1.2. Scope</a></span></dt><dt><span class="section"><a href="#compliance">1.3. Compliance</a></span></dt><dt><span class="section"><a href="#definitions">1.4. Definitions</a></span></dt></dl></dd><dt><span class="chapter"><a href="#overview">2. Overview</a></span></dt><dd><dl><dt><span class="section"><a href="#ext-namespace">2.1. ext namespace</a></span></dt><dt><span class="section"><a href="#expressions">2.2. Expressions</a></span></dt><dt><span class="section"><a href="#identifiers">2.3. Identifiers</a></span></dt><dd><dl><dt><span class="section"><a href="#object-identifiers">2.3.1. object identifier</a></span></dt><dt><span class="section"><a href="#function-identifiers">2.3.2. function identifier</a></span></dt><dt><span class="section"><a href="#namespace-identifiers">2.3.3. namespace identifier</a></span></dt><dt><span class="section"><a href="#dynamic-identifiers">2.3.4. dynamic identifier</a></span></dt><dt><span class="section"><a href="#meta-identifiers">2.3.5. meta identifier</a></span></dt></dl></dd><dt><span class="section"><a href="#dyn">2.4. dyn</a></span></dt><dt><span class="section"><a href="#execution">2.5. Execution</a></span></dt><dt><span class="section"><a href="#builtin-numbers">2.6. Bult-in numbers</a></span></dt></dl></dd><dt><span class="chapter"><a href="#objects">3. Objects</a></span></dt><dt><span class="chapter"><a href="#functions">4. Functions</a></span></dt><dt><span class="chapter"><a href="#interfaces">5. Interfaces</a></span></dt><dt><span class="chapter"><a href="#special-members">6. Special members</a></span></dt><dd><dl><dt><span class="section"><a href="#member.add">6.1. add</a></span></dt><dt><span class="section"><a href="#member.insert">6.2. insert</a></span></dt></dl></dd><dt><span class="chapter"><a href="#object-references">7. Object references</a></span></dt><dt><span class="chapter"><a href="#scopes">8. Scopes</a></span></dt><dt><span class="chapter"><a href="#nodes">9. Nodes</a></span></dt><dd><dl><dt><span class="section"><a href="#node-terminology">9.1. Node terminology</a></span></dt><dt><span class="section"><a href="#tree-node-layout">9.2. Tree node layout</a></span></dt><dt><span class="section"><a href="#tree-node-child-labels">9.3. Tree node child labels</a></span></dt><dt><span class="section"><a href="#node-supertypes">9.4. Node supertypes</a></span></dt><dd><dl><dt><span class="section"><a href="#node.statement">9.4.1. statement</a></span></dt><dt><span class="section"><a href="#node.expression">9.4.2. expression</a></span></dt><dt><span class="section"><a href="#tree-node-types.key">9.4.3. Syntax guide</a></span></dt></dl></dd></dl></dd><dt><span class="chapter"><a href="#node-types">10. Node types</a></span></dt><dd><dl><dt><span class="section"><a href="#nonexecuted-tree-node-types">10.1. Nonexecuted tree node types</a></span></dt><dd><dl><dt><span class="section"><a href="#node.comment">10.1.1. comment</a></span></dt><dt><span class="section"><a href="#node.parameter">10.1.2. parameter</a></span></dt></dl></dd><dt><span class="section"><a href="#statement-tree-node-types">10.2. Statement tree node types</a></span></dt><dd><dl><dt><span class="section"><a href="#node.do-while">10.2.1. do-while</a></span></dt><dt><span class="section"><a href="#node.do-times">10.2.2. do-times</a></span></dt><dt><span class="section"><a href="#node.enum">10.2.3. enum</a></span></dt><dt><span class="section"><a href="#node.for">10.2.4. for</a></span></dt><dt><span class="section"><a href="#node.for-key">10.2.5. for-key</a></span></dt><dt><span class="section"><a href="#node.for-pair">10.2.6. for-pair</a></span></dt><dt><span class="section"><a href="#node.for-range">10.2.7. for-range</a></span></dt><dt><span class="section"><a href="#node.for-range-while">10.2.8. for-range-while</a></span></dt><dt><span class="section"><a href="#node.for-value">10.2.9. for-value</a></span></dt><dt><span class="section"><a href="#node.identifier-function-declaration">10.2.10. identifier-function-declaration</a></span></dt><dt><span class="section"><a href="#node.identifier-object-declaration">10.2.11. identifier-object-declaration</a></span></dt><dt><span class="section"><a href="#node.if-else">10.2.12. if-else</a></span></dt><dt><span class="section"><a href="#node.loop">10.2.13. loop</a></span></dt><dt><span class="section"><a href="#node.return">10.2.14. return</a></span></dt><dt><span class="section"><a href="#node.while">10.2.15. while</a></span></dt></dl></dd><dt><span class="section"><a href="#sometimes-expression-tree-node-types">10.3. Sometimes expression tree node types</a></span></dt><dd><dl><dt><span class="section"><a href="#node.block">10.3.1. block</a></span></dt><dt><span class="section"><a href="#node.function-call">10.3.2. function-call</a></span></dt></dl></dd><dt><span class="section"><a href="#expression-tree-node-types">10.4. Expression tree node types</a></span></dt><dd><dl><dt><span class="section"><a href="#leaf-nodes">10.4.1. Leaf nodes</a></span></dt><dd><dl><dt><span class="section"><a href="#node.identifier">10.4.1.1. identifier</a></span></dt><dt><span class="section"><a href="#node.integer">10.4.1.2. integer</a></span></dt><dt><span class="section"><a href="#node.rational">10.4.1.3. rational</a></span></dt><dt><span class="section"><a href="#node.string">10.4.1.4. string</a></span></dt></dl></dd><dt><span class="section"><a href="#boolean-logic-nodes">10.4.2. Boolean logic nodes</a></span></dt><dd><dl><dt><span class="section"><a href="#node.and">10.4.2.1. and</a></span></dt><dt><span class="section"><a href="#node.nand">10.4.2.2. nand</a></span></dt><dt><span class="section"><a href="#node.or">10.4.2.3. or</a></span></dt><dt><span class="section"><a href="#node.nor">10.4.2.4. nor</a></span></dt><dt><span class="section"><a href="#node.xor">10.4.2.5. xor</a></span></dt><dt><span class="section"><a href="#node.xnor">10.4.2.6. xnor</a></span></dt></dl></dd><dt><span class="section"><a href="#node.array">10.4.3. array</a></span></dt><dt><span class="section"><a href="#node.cast">10.4.4. cast</a></span></dt><dt><span class="section"><a href="#node.class">10.4.5. class</a></span></dt><dt><span class="section"><a href="#node.conditional">10.4.6. conditional</a></span></dt><dt><span class="section"><a href="#node.function">10.4.7. function</a></span></dt><dt><span class="section"><a href="#node.function-interface">10.4.8. function-interface</a></span></dt><dt><span class="section"><a href="#node.function-template-instantion">10.4.9. function-template-instantion</a></span></dt><dt><span class="section"><a href="#node.id">10.4.10. id</a></span></dt><dt><span class="section"><a href="#node.identifier-chain">10.4.11. identifier-chain</a></span></dt><dt><span class="section"><a href="#node.identifier-function-bind">10.4.12. identifier-function-bind</a></span></dt><dt><span class="section"><a href="#node.identifier-object-auto">10.4.13. identifier-object-auto</a></span></dt><dt><span class="section"><a href="#node.identifier-object-bind">10.4.14. identifier-object-bind</a></span></dt><dt><span class="section"><a href="#node.identifier-object-const">10.4.15. identifier-object-const</a></span></dt><dt><span class="section"><a href="#node.implements">10.4.16. implements?</a></span></dt><dt><span class="section"><a href="#node.interface-template-instantion">10.4.17. interface-template-instantion</a></span></dt><dt><span class="section"><a href="#node.is">10.4.18. is</a></span></dt><dt><span class="section"><a href="#node.list">10.4.19. list</a></span></dt></dl></dd><dt><span class="section"><a href="#unsorted-tree-node-types">10.5. Unsorted tree node types</a></span></dt><dd><dl><dt><span class="section"><a href="#node.global">10.5.1. global</a></span></dt><dt><span class="section"><a href="#node.alias">10.5.2. alias</a></span></dt><dt><span class="section"><a href="#node.property">10.5.3. property</a></span></dt><dt><span class="section"><a href="#node.namespace-member">10.5.4. namespace-member</a></span></dt><dt><span class="section"><a href="#node.import">10.5.5. import</a></span></dt></dl></dd></dl></dd><dt><span class="chapter"><a href="#prevalent-identifiers">11. Prevalent identifiers</a></span></dt><dd><dl><dt><span class="section"><a href="#object.cast">11.1. func{I}(obj)I cast</a></span></dt><dt><span class="section"><a href="#object.generator">11.2. interface generator</a></span></dt><dt><span class="section"><a href="#object.implements_q">11.3. func(obj, interface)bool implements?</a></span></dt><dt><span class="section"><a href="#object.Int">11.4. interface Int</a></span></dt><dt><span class="section"><a href="#object.interface">11.5. interface{I} Interface</a></span></dt><dt><span class="section"><a href="#object.Object">11.6. interface Object</a></span></dt><dt><span class="section"><a href="#interface.rat">11.7. interface rat</a></span></dt></dl></dd><dt><span class="chapter"><a href="#preexisting-global-identifiers">12. Other preexisting global identifiers</a></span></dt><dd><dl><dt><span class="section"><a href="#InterfaceBuilder">12.1. InterfaceBuilder</a></span></dt><dt><span class="section"><a href="#Iterator">12.2. Iterator</a></span></dt><dt><span class="section"><a href="#CInterfaceBuilder">12.3. CInterfaceBuilder</a></span></dt><dt><span class="section"><a href="#getFuncInterface">12.4. getFuncInterface</a></span></dt></dl></dd><dt><span class="chapter"><a href="#evaluation">13. Evaluation</a></span></dt><dd><dl><dt><span class="section"><a href="#error-handling">13.1. Error handling</a></span></dt></dl></dd><dt><span class="chapter"><a href="#unsorted-stuff">14. unsorted stuff</a></span></dt><dd><dl><dt><span class="section"><a href="#closures">14.1. Closures</a></span></dt><dt><span class="section"><a href="#tree-examples">14.2. Tree examples</a></span></dt><dd><dl><dt><span class="section"><a href="#tree-example-1">14.2.1. Example 1</a></span></dt><dt><span class="section"><a href="#tree-example-2">14.2.2. Example 2</a></span></dt><dt><span class="section"><a href="#tree-example-3">14.2.3. Example 3</a></span></dt></dl></dd><dt><span class="section"><a href="#get-interface">14.3. get interface</a></span></dt><dt><span class="section"><a href="#obj-interface">14.4. obj interface</a></span></dt><dt><span class="section"><a href="#identifier-binding">14.5. Binding to identifiers</a></span></dt><dt><span class="section"><a href="#print-println-return-interfaces">14.6. Return interfaces of print and println</a></span></dt><dt><span class="section"><a href="#preexsting-spec">14.7. Pre-existing spec</a></span></dt><dt><span class="section"><a href="#adjuncts">14.8. Adjuncts</a></span></dt><dt><span class="section"><a href="#to-do">14.9. To do</a></span></dt><dt><span class="section"><a href="#runtime-inteface">14.10. runtime interface implementation</a></span></dt><dt><span class="section"><a href="#runtime-interface-creation">14.11. Runtime interface creation</a></span></dt><dt><span class="section"><a href="#self-return-type">14.12. "self" return type</a></span></dt><dt><span class="section"><a href="#bind">14.13. Bind</a></span></dt><dt><span class="section"><a href="#classes">14.14. Classes</a></span></dt><dt><span class="section"><a href="#noninstantiated-interface-templates">14.15. Noninstantiated interface templates</a></span></dt><dt><span class="section"><a href="#dynamic-library-loading">14.16. Dynamic library loading</a></span></dt></dl></dd></dl></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="introduction"></a>Chapter 1. Introduction</h2></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="specification-version"></a>1.1. Version</h2></div></div></div><p>Each version of Desal Semantics has a major version number and a minor version number, both integers incrementing by one. When the major version number is incremented, the minor version number is reset to 0.</p><p>All versions of Desal Semantics should be backwards compatible with previous versions that have the same major version number. That means the major version number should be changed when changes are made that break backwards compatibility.</p><p>Example: Something that is valid Desal Semantics 5.3 will also be valid Desal Semantics 5.4, 5.5, 5.6, etc.</p><p>Each specification describing a version of Desal Semantics may have multiple editions, each represented by an integer that's incremented by one. The first finalized specification for a version of Desal Semantics is the first edition, or edition one. Creating a new edition is a revision. Revisions should serve to clarify, add guidance, and correct errors in the specification, not to add or remove functionality. Revisions should not attempt to correct errors in Desal Semantics, only errors in describing Desal Semantics. Implementations should target the latest finalized edition of the version they are targeting.</p><p>Each edition may have multiple drafts before being finalized. Each draft is represented by a date around the time it was published. Implementations and specifications should not target drafts.</p><p>A version of Desal Semantics may be represented as "Desal Semantics X.Y" where X is the major version number and Y is the minor version number. A finalized specification for Desal Semantics may be represented as "Desal Semantics X.Y Edition A" where A is the edition number. A draft of a specification may be represented as "Desal Semantics X.Y Edition A Draft B" where B is the date in YYYYMMDD format.</p><p>This specification describes Desal Semantics 1.0. This specification has never been finalized, so is working towards the first edition. It is still in the draft stages.</p><p>When this specification is finalized, it will be Edition 1 (instead of Edition 1 Draft YYYYMMDD). If the finalized specification is revised, the next finalized edition will be Edition 2.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="specification-scope"></a>1.2. Scope</h2></div></div></div><p>This document defines Desal semantics, but not how to represent them.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="compliance"></a>1.3. Compliance</h2></div></div></div><p>This specification provides a definition of compliance. Other definitions of compliance may exist outside of this specification, but to be compliant as defined by this specification, these requirements must be met.</p><p>For an implementation to be "base compliant", it must meet all the "must" requirements listed in this spec. If this spec says an implementation "must" do something, the implementation will not be considered base compliant according to this specification if it does not do it.</p><p>Above base compliance, there are further levels of compliance. Each correct implementation of a "should" requirement increases the compliance level, and each failure to implement a "should" requirement decreases the compliance level. Two different compliance levels can only be compared if one is a subset of the other.</p><p>For example, consider an implementation Alpha that meets all the "must" requirements and three of the the "should" requirements, and an implementation Beta that meets all the "must" requirements and five of the "should" requirements. If Beta does not meet the three "should" requirements that Alpha meets, Aplha is not a subset of Beta, so it cannot be said that Beta is more compliant than Alpha. But if Beta meets the same three "should" requirements as Alpha (in addition to the other two), then Alpha is a subset of Beta, so it can be said that Beta is more compliant than Alpha.</p><p>This specification also has "encourgements". These encouragements are considered good ideas by the specficiation author(s), but may not always be appropriate or may not be necessary for interoperability. Complying with these encouragements does not increase an implementation's compliance.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="definitions"></a>1.4. Definitions</h2></div></div></div><div class="glosslist"><dl><dt>object, value</dt><dd><p>any "thing"</p></dd><dd><p>can be copied or modified, but not moved</p></dd><dd><p>has an address/location/position</p></dd><dt>expression</dt><dd><p>evaluates to an object/value</p></dd><dt>prevalent</dt><dd><p>Immutable objects bound to the global scope that exist before source begins execution. No other objects may be bound to the same identifiers, even in inner scopes.</p></dd><dt>element</dt><dd></dd><dt>member</dt><dd></dd><dt>method</dt><dd></dd></dl></div></div></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="overview"></a>Chapter 2. Overview</h2></div></div></div><p>Desal semantics are represented by a node tree. The way this node tree is represented is not covered in this specification. This specification explains what kind of node tree a representation can represent, the meaning of the nodes in a Desal node tree, and how to evaluate the node tree.</p><p>This node tree has scopes attached at various places. These scopes contain identifiers that are bound to namespaces, objects, and functions. Thus, a Desal implementation must code for a node tree, scopes, objects, and functions.</p><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="ext-namespace"></a>2.1. ext namespace</h2></div></div></div><p>Unofficial features of Desal should appear in the "ext" namespace when possible. Implementations do not have to recognize extensions or support them, although they are encouraged to at least recognize them in order to give more useful error messages.</p><pre class="programlisting">
+import atExit from ext
+
+atExit.add(myfunc)
+			</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="expressions"></a>2.2. Expressions</h2></div></div></div><p>Expressions evaluate to an object reference.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="identifiers"></a>2.3. Identifiers</h2></div></div></div><p>Identifiers are "bound" to object references and namespaces. There are multiple types of identifiers. Identifiers are declared by identifier declarations. Identifier declarations specify what the identifier can be bound to.</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="object-identifiers"></a>2.3.1. object identifier</h3></div></div></div><p>An object identifier can be bound to object references with the active interface specified by the associated identifier declaration. (i.e. The associated identifier declaration specifies an interface, and the identifier can only be bound to object references with that interfaces as the active interface.) Object identifiers can also be unbound i.e. bound to nothing i.e. bound to null. The identifier can only ever be bound to one object reference at a time.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="function-identifiers"></a>2.3.2. function identifier</h3></div></div></div><p>Function identifiers can be bound to multiple object references with a specified function interface as the active interface.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="namespace-identifiers"></a>2.3.3. namespace identifier</h3></div></div></div><p>Namespace identifiers can be bound to a namespace. (Only 1 at any time.) These are the only type of identifier that cannot be evaluated.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="dynamic-identifiers"></a>2.3.4. dynamic identifier</h3></div></div></div><p>Dynamic identifiers can be bound to any object reference, with any active interface. (Only 1 at any time.)</p><pre class="programlisting">
+interface Foo
+	func fooMeth()
+
+interface Bar
+	func barMeth()
+
+Dyn obj = getFoo()
+obj.fooMeth()
+obj = getBar()
+obj.barMeth()
+				</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="meta-identifiers"></a>2.3.5. meta identifier</h3></div></div></div><p>Meta identifiers can be bound to object references with MetaObject as the active interface. The difference between this identifier type and the object identifier type is that members of the MetaObject (xxx link to MetaObject spec) are not exposed through this identifier. Instead, any attempted member access calles methods of the MetaObject implementation.</p><pre class="programlisting">
+interface MetaObject
+	func handleCall(String identifier, Dyn[] arguments) Dyn
+	func handlePropGet(String identifier) Dyn
+	func handlePropSet(String identifier, Dyn value)
+	func handleCallMethod(String identifier, Dyn[] arguments) Dyn
+	func handleCast(Interface iface) Dyn
+
+class CMeta
+	interface MetaObject
+		...
+
+Meta obj = CMeta()
+obj.foo = "hey hey he"
+obj.foo = [1, 2, 3]
+obj.bar = obj.notheutnhoetnhu
+obj.heyPeople()
+obj.HowsItGoing?(obj.n789, obj.immaGoNow())
+				</pre></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="dyn"></a>2.4. dyn</h2></div></div></div><p>Dyn identifiers point to objects. At all times, one of the interfaces implemented by the object is the active interface. When accessing properties of the pointed-to-object, which properties are available and what they do is determined by the active interface. The active interface and the pointed-to object can both be changed.</p><pre class="programlisting">
+dyn foo //same as: dyn foo = null
+foo = getBar()
+foo.barProp
+foo = 3
+foo.minus(5)
+foo = "test"
+foo.toUpperCase()
+foo = CMyClass()
+foo.myClassProp
+foo = cast {BazInterface} alpha
+foo.bazProp
+foo = cast {MazInterface} alpha
+foo.mazProp
+foo = cast {GazInterface} alpha
+foo.gazProp
+(BazInterface foo) .bazProp
+(MazInterface foo) .mazProp
+			</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="execution"></a>2.5. Execution</h2></div></div></div><p>Some nodes can be executed.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="builtin-numbers"></a>2.6. Bult-in numbers</h2></div></div></div><p>The built-in implementations of the Int and Rat interfaces must be able to handle numbers of an arbitrary complexity. Bult-in libraries should handle numbers of an arbitrary complexity. Desal implementations must not ever introduce rounding errors or otherwise introduce numerical errors without being explicitly told that such errors may occur.</p><p>For example, pow(10, pow(10,100)), must correctly return an Int object reference that accurately represents a googolplex, and must be able to perform operations on this number with perfect accuracy.</p><p>Implementations may throw errors when they are unable to perfectly represent a number. This is the only alternative to perfectly representing the number, unless user code has explicitly allowed the implementation to introduce errors. Implementations must not introduce errors by default.</p><p>For example, if the implementation was directed by user code to print a googolplex without using scientific notation (i.e. a "1" followed by a googol "0"), the implementation may throw an error specifying that it is unable to create such a representation.</p></div></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="objects"></a>Chapter 3. Objects</h2></div></div></div><p>Objects have state which is modified through interfaces. Every object has an ID that never charges. Objects implement interfaces. Each interface implementation consists of the implementation of the members of that interface.</p><p>Every objects implements one or more interfaces. Interfaces are objects. Objects are accessed through interfaces.</p></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="functions"></a>Chapter 4. Functions</h2></div></div></div><p>Functions have an associated object. When identifiers that are bound to functions are evaluated, they evaluted to this object.</p><p>Functions have a return interface and parameters. Parameters have an interface and an optional default value.</p></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="interfaces"></a>Chapter 5. Interfaces</h2></div></div></div><p>Interfaces define a means of interacting with an object. Interfaces declare that implementations will be able to provide object references with specified interfaces when asked for the object reference bound to identifiers specified by the interface and/or that implementations will be able to bind object references with specified interfaces to specified identifiers. Methods are a type of property. Methods are callable and cannot be assigned, only retrieved.</p><p>Interfaces can declare that properties are "read only", "write only", or "read+write".</p><p>Interface member functions can have default values. This differs from a class with abstract members because interfaces cannot have any private members, so these default functions can not store or extract state in the object. These functions are only intended to call other member functions or throw errors.</p><p>There are two kinds of interfaces: object interfaces (Interface) and function interfaces (FuncInterface). Object interfaces define properties and methods. Function interfaces define parameters and a return type. An interface cannot be a function interface and an object interface, though an object interface can have call methods that allow implementations to be used like functions. A function interface can be wrapped to an object interface with a single call method.</p><p>Interface callees and members may refer to the interface. This is useful when an interface wants to define a method that returns an object reference with itself as the active interface. For generic interfaces, it is also possible to refer to the generic template.</p><pre class="programlisting">
+		
+		interface Int
+			func power(Self) Self
+			r Self timesTwo
+		
+		//some representations may be able to translate the below example as well
+		
+		iterface Int
+			func power(Int) Int
+			r Int timesTwo
+		
+		//note that the interface node will have no knowledge of the identifier it is being bound to
+		
+		//generics:
+		
+		interface&lt;T&gt; Print
+			callee(T) Self
+		
+		Print&lt;Int&gt; print = getIntPrinter()
+		print(3)(5)(8) //the print callee returns a Print&lt;Int&gt; object reference
+		
+		//refering to Generic interface
+		
+		interface&lt;T&gt; Print
+			callee(T) GenericSelf
+		
+		Print print = getGenericPrinter()
+		print &lt;Int&gt;(3) &lt;String&gt;("foo") &lt;Rat&gt;(1.23)
+		
+		//some representations may also allow:
+		print 3 "foo" 1.23
+		
+		</pre></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="special-members"></a>Chapter 6. Special members</h2></div></div></div><p>Some identifiers can only be bound to certain types of properties and methods, and have a predefined meaning. Thus, the semantics of a member with one of these identifiers is already predefined by this specification.</p><p>Many of these special predefined members come in mutating and non-mutating forms. In these cases, the mutating form modifies the object and returns nothing while the non-mutating form returns a copy of the object with the mutation.</p><p>Implementations must prevent identifiers from being bound to other types. Implementations are encouraged to provide shortcuts for accessing/using these members. Some examples in this section show a possible usage of the methods with and without shortcuts.</p><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="member.add"></a>6.1. add</h2></div></div></div><pre class="screen">func add(Self) Self</pre><pre class="screen">func add!(Self)</pre><p>Inserts an object into a container, joins data together, sends an object to something, etc. This method should only be used when order is not significant, such as when adding integers. When order is significant, such as when concatenating strings, the <a href="#member.insert" title="6.2. insert">insert method</a> would be more appropriate.</p><pre class="programlisting">
+Int a = 1.add(2)
+a.add!(3)
+
+Int a = 1 + 2
+a += 3
+			</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="member.insert"></a>6.2. insert</h2></div></div></div><pre class="screen">func insert(Self) Self</pre><pre class="screen">func insert!(Self)</pre><p>Inserts an object into a container, joins data together, sends an object to something, etc. This method should only be used when order is significant, such as when concatenating strings. When order is not significant, such as when adding integers, the <a href="#member.add" title="6.1. add">add method</a> would be more appropriate.</p><pre class="programlisting">
+			
+String a = "foo".insert("bar")
+a.insert!("gaz")
+
+String a = "foo" &amp; "bar"
+a &lt;&lt; "gaz"
+			
+			</pre></div></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="object-references"></a>Chapter 7. Object references</h2></div></div></div><p>Objects are referred to through references. A reference is associated with an interface and an object. Objects may implement multiple interfaces with the same property names, so reference serve to declare from which interface properties can be accessed. References can be cast to other references that are associated with the same object but a different interface to allow accessing properties .</p></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="scopes"></a>Chapter 8. Scopes</h2></div></div></div><p>Scopes consist of a collection of identifiers and an optional association with a parent scope. Each identifier is declared to be capable of pointing to one of: a namespace, objects with a certain interface, functions with a certain return interface. Identifiers are also capable of pointing to null. Each identifier is either bound to: a namespace/object/function (depending on which it can point to), or null. Scopes may be associated with a single parent scope.</p><p>xxx should namespace identifiers and function identifiers be able to point to null?</p></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="nodes"></a>Chapter 9. Nodes</h2></div></div></div><p>Desal semantics are represented by a tree of nodes. How this tree and its nodes are represented is outside the scope of this specification.</p><p>Nodes are either base nodes or tree nodes. Tree nodes only contain other nodes, while base nodes do not.</p><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="node-terminology"></a>9.1. Node terminology</h2></div></div></div><p>If a node can contain other nodes, it is a tree node. If a node is contained directly inside another node, the inner node is the child of the outer node, and the outer node is the parent of the inner node. If a node is contained inside another node, but not directly, the inner node is the descendant of the outer node, and the outer node is the ancestor of the inner node.</p><p>Statement nodes can be executed. When statements are executed, they may perform some kind of action. Statements can have side effects.</p><p>Expressions can also be executed, but in addition, after execution an object reference is produced (xxx object reference = object + interface ie struct of pointers).</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="tree-node-layout"></a>9.2. Tree node layout</h2></div></div></div><p>The number, type, and order of a tree nodes children is determined by the tree node's layout.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="tree-node-child-labels"></a>9.3. Tree node child labels</h2></div></div></div><p>The type of a tree nodes's child node is usually enough to quickly and clearly identify its purpose. However, sometimes a tree node will contain multiple child nodes of the same type, or the name of the node type isn't descriptive of the puprose of the node's placement in it's parent tree node.</p><p>For these cases, some child nodes have labels. These labels identify the purpose of the node, while the type declares what it is.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="node-supertypes"></a>9.4. Node supertypes</h2></div></div></div><p>Supertype types consist of a family of types. Where the layout for a tree node requires a supertype, the actual type of that child node should be a type in the family of types.</p><p>Following the name of each node supertype is a list of contained types.</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="node.statement"></a>9.4.1. statement</h3></div></div></div><table class="simplelist" border="0" summary="Simple list"><tr><td>expression</td></tr><tr><td>identifier-const</td></tr><tr><td>identifier-bind</td></tr><tr><td>identifier-declaration</td></tr><tr><td>return</td></tr></table></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="node.expression"></a>9.4.2. expression</h3></div></div></div><table class="simplelist" border="0" summary="Simple list"><tr><td>function-call</td></tr><tr><td>function</td></tr><tr><td>function-interface</td></tr><tr><td>function-template-instantion</td></tr><tr><td>identifier</td></tr><tr><td>integer</td></tr><tr><td>rational-number</td></tr><tr><td>string</td></tr></table></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="tree-node-types.key"></a>9.4.3. Syntax guide</h3></div></div></div><p>This section describes the syntax used to describe the layout of tree node types.</p><p>The child nodes of tree nodes are sometimes executed in order, such as statements in blocks and arguments in function calls. This means the order of the child nodes is sometimes significant and thus should always be preserved.</p><p>How ordering is represented has no effect on the semantics (left-to-right, right-to-left, etc) as long as there is a specified order. Each representation should specify how nodes are ordered. In this specification, the first node is represented at the top, and successive nodes follow lower down.</p><div class="variablelist"><dl><dt><span class="term">?</span></dt><dd>0 or 1</dd><dt><span class="term">*</span></dt><dd>0 or more</dd><dt><span class="term">+</span></dt><dd>1 or more</dd></dl></div></div></div></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="node-types"></a>Chapter 10. Node types</h2></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="nonexecuted-tree-node-types"></a>10.1. Nonexecuted tree node types</h2></div></div></div><p>These nodes cannot be executed (and thus also cannot be evaluated).</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="node.comment"></a>10.1.1. comment</h3></div></div></div><p>Comments are text nodes. Comments nodes may appear as children of any tree node. Comment nodes describe the node that they are contained in. Comment nodes must not have any affect on execution or evaluation.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="node.parameter"></a>10.1.2. parameter</h3></div></div></div><table class="simplelist" border="0" summary="Simple list"><tr><td>identifier [name]</td></tr><tr><td>expression [interface]</td></tr><tr><td>? expression [default-value]</td></tr></table><p>A function parameter.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="statement-tree-node-types"></a>10.2. Statement tree node types</h2></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="node.do-while"></a>10.2.1. do-while</h3></div></div></div><table class="simplelist" border="0" summary="Simple list"><tr><td>expression [test]</td></tr><tr><td>block</td></tr></table></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="node.do-times"></a>10.2.2. do-times</h3></div></div></div><table class="simplelist" border="0" summary="Simple list"><tr><td>expression [times]</td></tr><tr><td>block</td></tr></table></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="node.enum"></a>10.2.3. enum</h3></div></div></div><p>An enum is similar to an immutable dict.</p><pre class="screen">
+
+
+interface&lt;T, U&gt; Enum
+	inherit Collection&lt;T&gt;
+	r Int size
+	func key(String str) T
+	func fromValue(U val) T
+
+interface&lt;T&gt; EnumElement
+	inherit Stringable
+	r T value
+
+interface Stringable
+	r String str
+
+Enum and EnumElement cannot be implemented manually.
+
+These two interfaces are used in the examples below:
+
+interface {{AnimalInterface}}
+	inherit EnumElement&lt;Int&gt;
+
+interface {{Properties}}
+	inherit Enum&lt; {{AnimalInterface}}, Int &gt;
+	r {{AnimalInterface}} dog
+	r {{AnimalInterface}} cat
+	r {{AnimalInterface}} fish
+	r {{AnimalInterface}} parrot
+	r {{AnimalInterface}} ferret
+	r {{AnimalInterface}} gerbil
+	r {{AnimalInterface}} hamster
+
+When [value-type] is not given:
+	no entries can have values
+	the value property of EnumEntry will return null
+	the fromValue method of Enum will return null
+
+When a [value-type] is given, all entries must have values.
+
+Multiple identifiers can be assigned the same value. In such a case, each identifier will refer to the same object, and the str property of that object will give the first identifier as a string.
+
+layout:
+	identifier [interface]
+	? expression [value-type]
+	? bool [expose]
+	(+ identifier [name]) | (+ enum-entry [element])
+
+enum-entry layout:
+	identifier [name]
+	? expression [value]
+
+----- example 1
+
+enum Animal {
+	dog, cat, fish, parrot, ferret, gerbil, hamster
+}
+
+Animal a = Animal.dog
+Animal b = Animal["cat"]
+println Animal.size
+
+for animal in Animal
+	println animal.str " " animal.value
+
+----- example 2
+
+enum Animal expose {
+	DOG, CAT, FISH, PARROT, FERRET, GERBIL, HAMSTER
+}
+
+Animal a = Animal.DOG
+Animal b = Animal["CAT"]
+Animal c = FISH
+println Animal.size
+
+for animal in Animal
+	println animal.str " " animal.value
+
+-----
+
+typeOf(Animal) == Interface + {{Properties}}
+(Animal as Interface) == {{AnimalInterface}}
+typeOf(DOG) == typeOf(Animal.DOG)
+
+
+			</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="node.for"></a>10.2.4. for</h3></div></div></div><table class="simplelist" border="0" summary="Simple list"><tr><td>* expression [initializer]</td></tr><tr><td>? expression [test]</td></tr><tr><td>* expression [counter]</td></tr><tr><td>block</td></tr></table><p>Like C(++) for loops.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="node.for-key"></a>10.2.5. for-key</h3></div></div></div><table class="simplelist" border="0" summary="Simple list"><tr><td>expression [container]</td></tr><tr><td>identifier</td></tr><tr><td>block</td></tr></table><table class="simplelist" border="0" summary="Simple list"><tr><td>1. Call getKeyIterator on [container].</td></tr><tr><td>2. Call getNext on [1]. If an exception is thrown with an active interface of GeneratorDone, swallow it and end execution. If anything else is thrown, follow normal exception rules.</td></tr><tr><td>3. Create a scope.</td></tr><tr><td>4. Bind [2] to [identifier] in [3].</td></tr><tr><td>5. Execute [block] with scope [3].</td></tr><tr><td>6. Go to step 2.</td></tr></table><pre class="programlisting">
+			for key x in foo
+				doStuff(x)
+			</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="node.for-pair"></a>10.2.6. for-pair</h3></div></div></div><table class="simplelist" border="0" summary="Simple list"><tr><td>expression [container]</td></tr><tr><td>identifier [key-identifier]</td></tr><tr><td>identifier [value-identifier]</td></tr><tr><td>block</td></tr></table><pre class="programlisting">
+			for pair x y in coords
+				drawPoint(x, y)
+			</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="node.for-range"></a>10.2.7. for-range</h3></div></div></div><table class="simplelist" border="0" summary="Simple list"><tr><td>? identifier</td></tr><tr><td>expression [start]</td></tr><tr><td>expression [limit]</td></tr><tr><td>? bool [inclusive]</td></tr></table><pre class="programlisting">
+			for 0 to 100
+				println "test"
+			
+			for x from 0 to 100
+				println x
+			
+			for x from 0 to 100 inclusive
+				println x
+			</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="node.for-range-while"></a>10.2.8. for-range-while</h3></div></div></div><table class="simplelist" border="0" summary="Simple list"><tr><td>? identifier</td></tr><tr><td>expression [start]</td></tr><tr><td>expression [limit]</td></tr><tr><td>? bool [inclusive]</td></tr><tr><td>expression [test]</td></tr></table><pre class="programlisting">
+			for 0 to string.length while not container.full
+				container.push(string.unshift!())
+			
+			for x from 0 to 100 while not foo.done
+				foo.runTest(x)
+			</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="node.for-value"></a>10.2.9. for-value</h3></div></div></div><table class="simplelist" border="0" summary="Simple list"><tr><td>expression [container]</td></tr><tr><td>+ identifier [value-identifier]</td></tr><tr><td>block</td></tr></table><pre class="programlisting">
+for name in names
+	println name
+			</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="node.identifier-function-declaration"></a>10.2.10. identifier-function-declaration</h3></div></div></div><table class="simplelist" border="0" summary="Simple list"><tr><td>identifier</td></tr><tr><td>expression [return-interface]</td></tr></table><p>Declares a function identifier in the current scope. A function identifer can be bound to multiple functions (objects that implement the function interface) at the same time, but can never be unbound from a function. Every function it is bound to must have the return type of [return-interface]. After this node executes, [identifier] does not yet point to a function object; i.e. it "points at" null.</p><pre class="programlisting">
+			func int foo //identifier-function-declaration
+			func foo = func()int { return 3 }
+			func foo = func(int a)int { return a * 2 }
+			print foo() //prints 3
+			print foo(2) //prints 4
+			func foo = func()int { return 5 } //error - already pointing at function with this interface
+			foo = func(string a)int { return parseInt(a) } //error - "foo" is not an object identifier
+			</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="node.identifier-object-declaration"></a>10.2.11. identifier-object-declaration</h3></div></div></div><table class="simplelist" border="0" summary="Simple list"><tr><td>identifier</td></tr><tr><td>expression [interface]</td></tr></table><p>Declares an identifier in the current scope. It does not yet point at on object; i.e. it "points at" null. The identifier can only refer to objects that implement [interface].</p><pre class="programlisting">
+func()int foo //identifier-object-declaration
+foo = func()int { return 3 }
+print foo() //prints 3
+foo = func()int { return 5 }
+print foo() //prints 5
+foo = func(int a)int { return a * 2 } //error - interface mismatch
+			</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="node.if-else"></a>10.2.12. if-else</h3></div></div></div><table class="simplelist" border="0" summary="Simple list"><tr><td>+ {
+					<table class="simplelist" border="0" summary="Simple list"><tr><td>expression [test]</td></tr><tr><td>block</td></tr></table>
+				} [if-member]</td></tr><tr><td>? block [default]</td></tr></table><p>Evaluates the expressions of the if-members until it finds one that evaluates to true and executes the block associated with that if-member. If none of the if-member expressions evaluate to true, execute [default]. If any of the if-member expressions evaluate to an object that doesn't implement the bool interface, an error results.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="node.loop"></a>10.2.13. loop</h3></div></div></div><p>block</p><p>Executes block continuously. Can only be exited by statements in the block such as break and return.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="node.return"></a>10.2.14. return</h3></div></div></div><p>expression</p><p>Function call ends and evaluates to expression.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="node.while"></a>10.2.15. while</h3></div></div></div><table class="simplelist" border="0" summary="Simple list"><tr><td>expression [test]</td></tr><tr><td>block</td></tr></table></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="sometimes-expression-tree-node-types"></a>10.3. Sometimes expression tree node types</h2></div></div></div><p>Some nodes can be evaluated under some circumstances, but not always. These are called "sometimes expression" nodes. Trying to evaluate may produce a NotExpression error. (xxx before or after execution?) They can always be executed.</p><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="node.block"></a>10.3.1. block</h3></div></div></div><p>* statement</p><p>(Note: This node type is only somewhat related to the Dextr concept of blocks. To differentiate between the two, nodes of this type can be called "node blocks", "statement blocks", or "semantic blocks". The syntactic construct can be called "Dextr blocks" or "syntatic blocks".)</p><p>Has scope. Can be evaluated if it has one or more return statements. If it has one or more return statements, but the block ends evaluation without encountering one of the return statements, the block evaluates to null. (The block does NOT evaluate to null if it contains no return statements.)</p><pre class="programlisting">
+			int a =
+				if foo == "bar"
+					if alpha.beta(gamma)
+						return 2 * 3
+					else
+						return NUMBER_CONST
+				else
+					return 6 * 7
+			</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="node.function-call"></a>10.3.2. function-call</h3></div></div></div><table class="simplelist" border="0" summary="Simple list"><tr><td>expression [function]</td></tr><tr><td>* expression [argument]</td></tr></table><p>The [argument] nodes are evaluated in order from the first one to the last one. Can be evaluated if [function] returns an object reference when called.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="expression-tree-node-types"></a>10.4. Expression tree node types</h2></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="leaf-nodes"></a>10.4.1. Leaf nodes</h3></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="node.identifier"></a>10.4.1.1. identifier</h4></div></div></div><p>Identifiers can sometimes evaluate to object references. Object references point to an object and have an active interface. Only properties declared by the active interface can be accessed, even if the object implements other interfaces.</p><p>When evaluating an identifier to an object: If the identifier is undefined in the current scope, move to the containing scope. If there is no containing scope, throw an UndefinedIdentifier error. Continue moving to outer scopes until the identifier is found or there is no containing scope. If the identifier is bound to an object, the identifier evaluates to that object. If the identifier has been declared that it can be bound to objects, but it is currently not bound to anything, return null. If the identifier is bound to a function, the identifier evaluates to the wrapper for that function, as defined in function-wrapper xxx. If the identifier is bound to a namespace, a NamespaceIdentifier error results.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="node.integer"></a>10.4.1.2. integer</h4></div></div></div><p>Evaluates to an object reference with Int as the active interface. The object may implement other interfaces if they do not conflict with the Int interface.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="node.rational"></a>10.4.1.3. rational</h4></div></div></div><p>Evaluates to an object with interface rational as the active interface. The object may implement other interfaces if they do not conflict with the rational interface.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="node.string"></a>10.4.1.4. string</h4></div></div></div><p>string nodes consist of text</p><p>strings are expressions</p><p>Evaluates to an object with interface string as the active interface. The object may implement other interfaces if they do not conflict with the string interface.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="boolean-logic-nodes"></a>10.4.2. Boolean logic nodes</h3></div></div></div><p>Boolean logic nodes take two boolean values and evaluate to a boolean value. During evaluation, if casting an object reference to Bool produces an error, end evaluation and allow the exception to rise. Some boolean logic nodes can do shortcutting, meaning they do not evaluate the second node if the result of the node is already known.</p><p>Boolean logic nodes have this layout:</p><table class="simplelist" border="0" summary="Simple list"><tr><td>expression</td></tr><tr><td>expression</td></tr></table><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="node.and"></a>10.4.2.1. and</h4></div></div></div><p>Evaluates to false if either child expression evaluates to false.</p><p>Evaluation:</p><table class="simplelist" border="0" summary="Simple list"><tr><td>1. Evaluate the first [expression] node.</td></tr><tr><td>2. Cast [1] to Bool.</td></tr><tr><td>3. If [2] is false, evaluate this node to false.</td></tr><tr><td>4. Evaluate the second [expression] node.</td></tr><tr><td>5. Cast [4] to Bool.</td></tr><tr><td>6. Evaluate this node to [5].</td></tr></table></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="node.nand"></a>10.4.2.2. nand</h4></div></div></div><p>Evaluates to true if either child expression evaluates to false.</p><p>Evaluation:</p><table class="simplelist" border="0" summary="Simple list"><tr><td>1. Evaluate the first [expression] node.</td></tr><tr><td>2. Cast [1] to Bool.</td></tr><tr><td>3. If [2] is false, evaluate this node to true.</td></tr><tr><td>4. Evaluate the second [expression] node.</td></tr><tr><td>5. Cast [4] to Bool.</td></tr><tr><td>6. Evaluate this node to the inverse of [5].</td></tr></table></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="node.or"></a>10.4.2.3. or</h4></div></div></div><p>Evaluates to true if either child expression evaluates to true.</p><p>Evaluation:</p><table class="simplelist" border="0" summary="Simple list"><tr><td>1. Evaluate the first [expression] node.</td></tr><tr><td>2. Cast [1] to Bool.</td></tr><tr><td>3. If [2] is true, evaluate this node to true.</td></tr><tr><td>4. Evaluate the second [expression] node.</td></tr><tr><td>5. Cast [4] to Bool.</td></tr><tr><td>6. Evaluate this node to [5].</td></tr></table></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="node.nor"></a>10.4.2.4. nor</h4></div></div></div><p>Evaluates to false if either child expression evaluates to true.</p><p>Evaluation:</p><table class="simplelist" border="0" summary="Simple list"><tr><td>1. Evaluate the first [expression] node.</td></tr><tr><td>2. Cast [1] to Bool.</td></tr><tr><td>3. If [2] is true, evaluate this node to false.</td></tr><tr><td>4. Evaluate the second [expression] node.</td></tr><tr><td>5. Cast [4] to Bool.</td></tr><tr><td>6. Evaluate this node to the inverse of [5].</td></tr></table></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="node.xor"></a>10.4.2.5. xor</h4></div></div></div><p>Evaluates to true if the child expressions evaluate to different values.</p><p>Evaluation:</p><table class="simplelist" border="0" summary="Simple list"><tr><td>1. Evaluate the first [expression] node.</td></tr><tr><td>2. Cast [1] to Bool.</td></tr><tr><td>3. Evaluate the second [expression] node.</td></tr><tr><td>4. Cast [3] to Bool.</td></tr><tr><td>5. If [2] and [4] are different, evalute to true. Otherwise, evaluate to false.</td></tr></table></div><div class="section" lang="en"><div class="titlepage"><div><div><h4 class="title"><a name="node.xnor"></a>10.4.2.6. xnor</h4></div></div></div><p>Evaluates to true if the child expressions evaluate to the same value.</p><p>Evaluation:</p><table class="simplelist" border="0" summary="Simple list"><tr><td>1. Evaluate the first [expression] node.</td></tr><tr><td>2. Cast [1] to Bool.</td></tr><tr><td>3. Evaluate the second [expression] node.</td></tr><tr><td>4. Cast [3] to Bool.</td></tr><tr><td>5. If [2] and [4] are the same, evalute to true. Otherwise, evaluate to false.</td></tr></table></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="node.array"></a>10.4.3. array</h3></div></div></div><table class="simplelist" border="0" summary="Simple list"><tr><td>expression [interface]</td></tr><tr><td>* expression [element]</td></tr></table><p>Evaluates to an object with interface array as the active interface. The object may implement other interfaces if they do not conflict with the array interface.</p><p>Each [element] is cast to [interface]. If a cast error results, it raises out of the array node, so that the array node doesn't evaluate to anything.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="node.cast"></a>10.4.4. cast</h3></div></div></div><table class="simplelist" border="0" summary="Simple list"><tr><td>expression [object]</td></tr><tr><td>expression [interface]</td></tr></table><p>Evaluates to an object reference where the active interface is [interface] and the object is [object]. If [object] does not implement [interface], an error results.</p><pre class="programlisting">
+			Int o = getIntAndString()
+			print (o as String).length
+			</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="node.class"></a>10.4.5. class</h3></div></div></div><p>Evaluates to an object reference that, when called, produces other object references that implements the specified interfaces in the specified way.</p><table class="simplelist" border="0" summary="Simple list"><tr><td>* Attribute-Object static-object</td></tr><tr><td>* Attribute-Method static-method</td></tr><tr><td>Block static-constructor</td></tr><tr><td>* Attribute-Object instance-object</td></tr><tr><td>* Attribute-Method instance-method</td></tr><tr><td>* Interface-Implementation static-interface</td></tr><tr><td>* Interface-Implementation instance-interface</td></tr></table><p>Evaluation:</p><table class="simplelist" border="0" summary="Simple list"><tr><td>1. Create a scope and run the static-constuctor with it.</td></tr><tr><td>2. Create an interface that inherits from the interfaces that the static-interface nodes implement.</td></tr><tr><td>3. Create an object reference with [2] as the active interface. XXX more info</td></tr><tr><td>4. Evaluate this node to [3].</td></tr></table><p>xxx move to own sections</p><p>Attribute-Object node type:</p><table class="simplelist" border="0" summary="Simple list"><tr><td>Identifier name</td></tr><tr><td>Expression interface</td></tr></table><p>Attribute-Method node type:</p><table class="simplelist" border="0" summary="Simple list"><tr><td>Identifier name</td></tr><tr><td>? Expression interface</td></tr><tr><td>Expression function</td></tr></table><p>Interface-Implementation node type:</p><table class="simplelist" border="0" summary="Simple list"><tr><td>Expression interface</td></tr><tr><td>* Function callee</td></tr><tr><td>* Named-Function getter</td></tr><tr><td>* Named-Function setter</td></tr><tr><td>* Named-Function method</td></tr></table><p>Named-Function node type:</p><table class="simplelist" border="0" summary="Simple list"><tr><td>Identifier identifier</td></tr><tr><td>Function function</td></tr></table></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="node.conditional"></a>10.4.6. conditional</h3></div></div></div><table class="simplelist" border="0" summary="Simple list"><tr><td>expression [test]</td></tr><tr><td>expression [true]</td></tr><tr><td>expression [false]</td></tr></table><p>If [test] evaluates to true, this node evaluates to [true]. If [test] evaluates to false, this node evalutes to [false].</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="node.function"></a>10.4.7. function</h3></div></div></div><table class="simplelist" border="0" summary="Simple list"><tr><td>* identifier [template-parameter]</td></tr><tr><td>* parameter</td></tr><tr><td>? expression [return-type]</td></tr><tr><td>block</td></tr></table><pre class="screen">
+
+&lt;function&gt;
+	&lt;identifier label='template-parameter'&gt;I&lt;/identifier&gt;
+	&lt;parameter&gt;
+		&lt;identifier label='name'&gt;string&lt;/identifier&gt;
+		&lt;identifier label='interface'&gt;String&lt;/identifier&gt;
+		&lt;string label='default-value'&gt;[default]&lt;/string&gt;
+	&lt;/parameter&gt;
+	&lt;identifier label='return-interface'&gt;Int&lt;/identifier&gt;
+	&lt;block&gt;...&lt;/block&gt;
+&lt;/function&gt;
+
+			</pre><p>When this node is evaluated, it evaluates to a function object. Only the [template-parameter], [parameter], and [return-type] nodes are evaluated at this time. When the function object is called, the [block] member is evaluated, in the scope of this function node, not the scope of the function-call node.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="node.function-interface"></a>10.4.8. function-interface</h3></div></div></div><table class="simplelist" border="0" summary="Simple list"><tr><td>? expression [template-argument-count]</td></tr><tr><td>* expression [parameter-interface]</td></tr><tr><td>? expression [return-interface]</td></tr></table></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="node.function-template-instantion"></a>10.4.9. function-template-instantion</h3></div></div></div><table class="simplelist" border="0" summary="Simple list"><tr><td>expression [function-template]</td></tr><tr><td>+ expression [template-argument]</td></tr></table><p>For a function with template arguments, pass template arguments in to get back a function. All required template arguments must be passed at once; Desal does not support currying of template arguments.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="node.id"></a>10.4.10. id</h3></div></div></div><p>expression</p><p>Every object has an ID that never changes. An ID is an integer. The id node evaluates to the ID for an object.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="node.identifier-chain"></a>10.4.11. identifier-chain</h3></div></div></div><table class="simplelist" border="0" summary="Simple list"><tr><td>+ identifier</td></tr></table><p>xxx explain</p><pre class="screen">
+			
+			a.b.c
+			
+			&lt;identifier-chain&gt;
+				&lt;identifier&gt;a&lt;/identifier&gt;
+				&lt;identifier&gt;b&lt;/identifier&gt;
+				&lt;identifier&gt;c&lt;/identifier&gt;
+			&lt;/identifier-chain&gt;
+			
+			</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="node.identifier-function-bind"></a>10.4.12. identifier-function-bind</h3></div></div></div><table class="simplelist" border="0" summary="Simple list"><tr><td>identifier</td></tr><tr><td>expression [function]</td></tr></table><p>If [identifier] is not defined in the active scope, define it as a pointing to functions with the same return interface as [function], then bind [function] to [identifier]. If [identifier] is defined as pointing to functions with the same return interface as [function], bind [function] to [identifier]. Otherwise, [identifier] is defined as pointing to something else, so an error results.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="node.identifier-object-auto"></a>10.4.13. identifier-object-auto</h3></div></div></div><table class="simplelist" border="0" summary="Simple list"><tr><td>identifier</td></tr><tr><td>expression</td></tr></table><p>Decalare an identifier in the current scope that points to objects with the interface of the object reference of the expression. Then bind the object from the expression to the identifier.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="node.identifier-object-bind"></a>10.4.14. identifier-object-bind</h3></div></div></div><table class="simplelist" border="0" summary="Simple list"><tr><td>identifier</td></tr><tr><td>expression</td></tr></table><p>Points identifier at object from expression. If the object does not implement the interface of the identifier, a cast error results.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="node.identifier-object-const"></a>10.4.15. identifier-object-const</h3></div></div></div><table class="simplelist" border="0" summary="Simple list"><tr><td>identifier</td></tr><tr><td>expression [value]</td></tr></table><p>Declares an identifier in the current scope and binds an object to it. The identifier thereafter always refers to the same object; it cannot be pointed at a different object. The active interface also cannot be changed.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="node.implements"></a>10.4.16. implements?</h3></div></div></div><table class="simplelist" border="0" summary="Simple list"><tr><td>expression [object]</td></tr><tr><td>expression [interface]</td></tr></table><p>Returns a bool object reference to the true or false objects. True if [object] implements [interface], false otherwise.</p><pre class="programlisting">
+			if (o imps Foo)
+				(o as Foo).propOfFoo()
+			</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="node.interface-template-instantion"></a>10.4.17. interface-template-instantion</h3></div></div></div><table class="simplelist" border="0" summary="Simple list"><tr><td>expression [interface-template]</td></tr><tr><td>+ expression [template-argument]</td></tr></table><p>For an interface with template arguments, pass template arguments in to get back an interface. All required template arguments must be passed at once; Desal does not support currying of template arguments.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="node.is"></a>10.4.18. is</h3></div></div></div><table class="simplelist" border="0" summary="Simple list"><tr><td>expression</td></tr><tr><td>expression</td></tr></table><p>Tells whether the resultant object references refer to the same object.</p><pre class="programlisting">
+			Alpha a = getAlpha()
+			Beta b = getBeta()
+			if( a is b )
+				print "same objects"
+			</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="node.list"></a>10.4.19. list</h3></div></div></div><table class="simplelist" border="0" summary="Simple list"><tr><td>expression [interface]</td></tr><tr><td>* expression [element]</td></tr></table><p>Evaluates to a list, as if calling CList{ [interface] } ( [element], [element], ... )</p><p>Each [element] is cast to [interface]. If a cast error results, it raises out of the list node, so that the list node doesn't evaluate to anything.</p></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="unsorted-tree-node-types"></a>10.5. Unsorted tree node types</h2></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="node.global"></a>10.5.1. global</h3></div></div></div><p>+ identifier-const</p><p>has scope</p><p>xxx Some nodes, like global nodes, have scope. Spec this out and specify with nodes have scope.</p><p>The global type is the type of the root node. No node can contain a global node. All Desal nodes that are executed in any way must be part of a complete Desal tree, which means having a global node as the root node.</p><p>xxx Program arguments are no longer passed to the main function, because developers should have a choice of accessing program arguments in different ways, and some implementations may not have program arguments, or have non-string program arguments, etc. The old way just isn't flexible enough. Implementations should give program arguments through some API instead of passing them to the main function.</p><p>Unlike other nodes, the global node has a setup procedure. This setup must occur before any evaluation or execution of any nodes takes place, and must only occur once.</p><table class="simplelist" border="0" summary="Simple list"><tr><td>1. Bind the global objects defined in XXX to the specified identifiers for this node's scope.</td></tr><tr><td>2. Bind any implementation-specific identifiers.</td></tr><tr><td>3. Execute each child identifier-const node in order.</td></tr></table><p>When the complete Desal tree is treated as a standalone program, section XXX applies. Otherwise, besides layout and setup, the abilities and behaviour of the global node is implementation-specific, and execution or evaluation of Desal nodes may occur directly, without going through the global node.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="node.alias"></a>10.5.2. alias</h3></div></div></div><table class="simplelist" border="0" summary="Simple list"><tr><td>+ identifier [from]</td></tr><tr><td>identifier [target]</td></tr><tr><td>identifier [new-name]</td></tr></table><pre class="programlisting">
+alias FooBarBaz as FBZ
+alias Alpha.Beta.Gamma //as Gamma
+alias System.out.print as puts
+			</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="node.property"></a>10.5.3. property</h3></div></div></div><table class="simplelist" border="0" summary="Simple list"><tr><td>expression [object]</td></tr><tr><td>identifier [property-name]</td></tr></table><p>Retrieves a property of an object. If the active interface of the object does not have a property with the name [property-name], an UndefinedProperty error results.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="node.namespace-member"></a>10.5.4. namespace-member</h3></div></div></div><table class="simplelist" border="0" summary="Simple list"><tr><td>+ identifier [namespace]</td></tr><tr><td>identifier [member]</td></tr></table><p>Evaluates to the object bound to [member] (or the function wrapper for the function bound to [member]) in the specified namespace. Since one namespace can be inside another, each namespace from outer to inner must be declared.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="node.import"></a>10.5.5. import</h3></div></div></div><table class="simplelist" border="0" summary="Simple list"><tr><td>? text [directory-alias]</td></tr><tr><td>text [location]</td></tr><tr><td>? identifier [alias]</td></tr></table><p>The import nodes grabs Desal nodes from other files and includes them inline.</p><pre class="programlisting">
+import "XMLLib" as XML
+alias XML.XMLReader
+alias XML.XMLDocument as Doc
+alias XML.XMLElement
+XMLReader reader = XML.createReader()
+Doc doc = reader.read("foo.xml")
+XMLElement root = doc.root
+
+from "XMLLib" import XMLDocument as Doc
+
+import from "XMLLib" // like import * from "XMLLib" -- imports everything
+			</pre></div></div></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="prevalent-identifiers"></a>Chapter 11. Prevalent identifiers</h2></div></div></div><p>Prevalent identifiers are constant identifiers in the global scope that exist before source begins execution. The objects the identifiers are bound to are immutable. Additionaly, these identifiers cannot be declared in any other scope. Therefore, referencing one of these identifiers always refers to the same object no matter the scope. The objects can, however, be bound to additional identifiers with normal scoping rules.</p><table class="simplelist" border="0" summary="Simple list"><tr><td>interface Interface</td></tr><tr><td>interface Object</td></tr><tr><td>interface{I} Generator</td></tr><tr><td>interface{I} Array</td></tr><tr><td>interface String</td></tr><tr><td>interface Int</td></tr><tr><td>interface Rational</td></tr><tr><td>func{I}(obj)I cast</td></tr><tr><td>func(obj,interface)bool implements?</td></tr><tr><td>interface Bool</td></tr><tr><td>bool true</td></tr><tr><td>bool false</td></tr><tr><td>namespace global</td></tr><tr><td>namespace ext</td></tr><tr><td>interface{I} weakRef</td></tr><tr><td>interface complex</td></tr><tr><td>interface{I} array2</td></tr><tr><td>interface{I} array3</td></tr><tr><td>interface{I} arrayN</td></tr><tr><td>interface{I} vector</td></tr><tr><td>interface{I} vector2</td></tr><tr><td>interface{I} vector3</td></tr><tr><td>interface{I} vectorN</td></tr><tr><td>interface{I} slist</td></tr><tr><td>interface{I} dlist</td></tr><tr><td>interface{I} deque</td></tr><tr><td>interface{I} queue</td></tr><tr><td>interface{I} stack</td></tr><tr><td>interface{I1,I2} map</td></tr><tr><td>interface{I1,I2} sortedmap</td></tr><tr><td>interface{I1,I2} multimap</td></tr><tr><td>interface{I1,I2} sortedmultimap</td></tr><tr><td>interface{I1,I2} bimap</td></tr><tr><td>interface{I1,I2} sortedbimap</td></tr><tr><td>interface{I1,I2} multibimap</td></tr><tr><td>interface{I1,I2} sortedmultibimap</td></tr><tr><td>interface{I} set</td></tr><tr><td>interface{I} orderedset</td></tr><tr><td>interface{I} multiset</td></tr><tr><td>interface{I} orderedmultiset</td></tr><tr><td>interface octet</td></tr><tr><td>interface blob</td></tr><tr><td>interface sint8</td></tr><tr><td>interface uint8</td></tr><tr><td>interface sint16</td></tr><tr><td>interface uint16</td></tr><tr><td>interface sint32</td></tr><tr><td>interface uint32</td></tr><tr><td>interface sint64</td></tr><tr><td>interface uint64</td></tr><tr><td>interface sint128</td></tr><tr><td>interface uint128</td></tr><tr><td>interface float8</td></tr><tr><td>interface float16</td></tr><tr><td>interface float32</td></tr><tr><td>interface float64</td></tr><tr><td>interface float128</td></tr><tr><td>interface limitedint</td></tr><tr><td>interface limitedrat</td></tr></table><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="object.cast"></a>11.1. func{I}(obj)I cast</h2></div></div></div><p>The cast function returns an object cast to the specified interface, or throws a cast error. The returned object must be the same object that was passed in.</p><pre class="programlisting">
+			if (foo is Bar)
+				(cast {Bar} foo).propOfBar()
+			</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="object.generator"></a>11.2. interface generator</h2></div></div></div><pre class="screen">
+				interface{I} generator
+					func next() I
+			</pre><p>The next() method will return objects when called until it throws a GeneratorDone exception.</p><p>Some looping constructs will automatically obtain a generator by calling the object's getValueIterator, getKeyIterator, or getPairIterator method, and call the next() method of the generator until the exception is thrown</p><pre class="programlisting">
+				MyClass[] objs
+				for each o in objs
+					o.doStuff()
+			</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="object.implements_q"></a>11.3. func(obj, interface)bool implements?</h2></div></div></div><p>Tells whether the object implements the interface, like the implements node.</p><pre class="programlisting">
+			if implements(foo, Bar)
+				(foo as Bar).propOfBar()
+			</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="object.Int"></a>11.4. interface Int</h2></div></div></div><table class="simplelist" border="0" summary="Simple list"><tr><td>func less?(int) bool</td></tr><tr><td>func greater?(int) bool</td></tr><tr><td>func equal?(int) bool</td></tr><tr><td>func toBuiltin() int</td></tr><tr><td>func toString() String</td></tr><tr><td>func toString(IntNotationMethod) String</td></tr></table><p>When Desal implementations need to determine the value of int objects that were implemented by user code, they should call the toBuiltin method to get an int object that was implemented by the implementation. If toBuiltin throws an error, it should raise into user code. If the returned int is not a built-in, an error results that should extend into user code.</p><p>IntNotationMethod is an enum with "normal", "scientific10", "scientificE", "multipleScientific10", and "multipleScientificE". The toString meth may throw an error if the number cannot be represented, such as a googolplex being called with "normal". If called with multipleScientificE, "10E(10E100)" could be returned.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="object.interface"></a>11.5. interface{I} Interface</h2></div></div></div><table class="simplelist" border="0" summary="Simple list"><tr><td>func call(obj o) I</td></tr><tr><td>map{string,interface} readOnlyProperties</td></tr><tr><td>map{string,interface} writeOnlyProperties</td></tr><tr><td>map{string,interface} readWriteProperties</td></tr></table><p>Implements itself.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="object.Object"></a>11.6. interface Object</h2></div></div></div><table class="simplelist" border="0" summary="Simple list"><tr><td>Bool builtin?</td></tr><tr><td>Bool mutable?</td></tr><tr><td>func{I} cast () I</td></tr><tr><td>func implements? (Interface) Bool</td></tr><tr><td>func is? (Object) Bool</td></tr></table><p>The builtin? property tells whether the object is implemented by the Desal implementation, such as for integers and strings. The implements? method tells whether the object implements a specified interface. The is? method tells whether the argument object reference refers to the same object.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="interface.rat"></a>11.7. interface rat</h2></div></div></div><table class="simplelist" border="0" summary="Simple list"><tr><td>func toInt() int</td></tr><tr><td>func round() int</td></tr><tr><td>func round!()</td></tr></table><p>toInt will throw if the represented value is not already an integer. round should not throw. round! modifies the represented value.</p></div></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="preexisting-global-identifiers"></a>Chapter 12. Other preexisting global identifiers</h2></div></div></div><p>Constant identifiers in the global scope that exist before source begins execution. The objects the identifiers are bound to are immutable. Unlike prevalent identifers, these identifers follow normal scoping rules. They can always be refered to trough the prevalent global namespace identifier.</p><table class="simplelist" border="0" summary="Simple list"><tr><td>interface InterfaceBuilder</td></tr><tr><td>func()InterfaceBuilder CInterfaceBuilder</td></tr><tr><td>func(int, interface[], interface)interface getFuncInterface</td></tr><tr><td>interface{I} Iterator</td></tr><tr><td>func{I}(:vararg)array{I} CArray</td></tr><tr><td>func(bool[] bits, bool positive = true)int CInt</td></tr><tr><td>func{I}(:vararg)list{I} CList</td></tr><tr><td>func{I}(I)SelfGen print</td></tr><tr><td>func{I}(I)SelfGen println</td></tr></table><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="InterfaceBuilder"></a>12.1. InterfaceBuilder</h2></div></div></div><table class="simplelist" border="0" summary="Simple list"><tr><td>map{string, interface} properties</td></tr><tr><td>bool alwaysImmutable?</td></tr><tr><td>func()interface generate</td></tr></table><p>interface interface is always immutable, so InterfaceBuilder exists to allow creating interface objects procedurally.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="Iterator"></a>12.2. Iterator</h2></div></div></div><pre class="screen">
+interface{I} Iterator
+	//values may change
+	bool first?
+	bool last?
+	bool hasNext?
+	bool hasPrevious?
+	bool between? //iterator points between 2 items (such as after the item was removed)
+	bool valid?
+
+	//capabilities of the iterator - values should not change
+	bool canMoveForward? //whether the iterator can move forward
+	bool canMoveBackward? //whether the iterator can move backwards
+	bool canRemove?
+	bool canReplace? //whether the objects can be replaced with different objects
+	bool canRead?
+	bool canInsertAfter?
+	bool canInsertBefore?
+	bool canCompareCollection?
+	bool canCompareIterator? //corresponds to equal?
+	bool canComparePosition? //corresponds to before? and after?
+
+	func moveForward()
+	func moveBackward()
+	func remove()
+	func replace(I)
+	func insertAfter(I)
+	func insertBefore(I)
+	func sameCollection?( Iterator{I} ) bool
+	func before?( Iterator{I} ) bool
+	func after?( Iterator{I} ) bool
+	func equal?( Iterator{I} ) bool
+	
+	I value
+			</pre><p>An iterator is used to access the elements in a container. If the elements are not ordered 2-dimensionally, an 2-dimensional order must be decided for the iterator that does not change for that iterator instance. If the elements in the container are ordered 2-dimensionally, the iterator must refer the elements in that order.</p><p>The equals? method returns true if both iterators are pointing to same item of the same collection. If the collection is unordered, the order the iterator moves over items must also be the same.</p><p>A valid iterator either refers to an element or a position between two elements. An iterator should only refer to a position between two elements when the element the iterator currently pointed to was removed. If the iterator is not valid, or read? is false, the value property refers to null.</p><p>An iterator only becomes invalid if:</p><table class="simplelist" border="0" summary="Simple list"><tr><td>the container contains no objects</td></tr><tr><td>the iterator is moved beyond all objects</td></tr><tr><td>a non-supported method is called (example: moveBackward() is called on an iterator that can only move forward)</td></tr></table><p>If an iterator is not valid, it may be possible to revalidate it by calling next() or previous(). For example, if the iterator refers to the last object and next is called, the iterator becomes invalid, but calling previous may make the iterator valid again. Whether an iterator can be revalidated and under what circumstances the iterator is revalidated is dependant on the implementation of the iterator.</p><p>Containers should always give iterators with the same functionality. For example, if a container, when it has three elements, gives an iterator with forward? set to true, it should also give an iterator with the property forward? set to true when it has 1, even though calling moveForward() would invalidate the iterator.</p><pre class="programlisting">
+Container{int} numbers;
+Iterator iter = numbers.iterate();
+int num = iter.value
+
+while( iter.valid? )
+	int num = iter.value
+	iter.moveForward()
+			</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="CInterfaceBuilder"></a>12.3. CInterfaceBuilder</h2></div></div></div><p>CInterfaceBuilder, when called, returns an object that can be used to procedurally and/or dynamically create interface objects.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="getFuncInterface"></a>12.4. getFuncInterface</h2></div></div></div><pre class="screen">
+				func getFuncInterface (
+					int templateParamCount,
+					interface[] params,
+					interface returnInterface,
+				) interface
+			</pre><p>Returns an interface specifying a call method with the specified number of template parameters, the specified parameters, and the specified return interface. If returnInterface is null, the interface specifies a void call method. Every time it is called with the same arguments, it must return the same object.</p></div></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="evaluation"></a>Chapter 13. Evaluation</h2></div></div></div><p>Some nodes, when executed, evaluate to an object reference. These are called expressions.</p><p>Evaluation of a Desal node tree may begin before the tree is fully constructed.</p><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="error-handling"></a>13.1. Error handling</h2></div></div></div><p>This section explains how to handle errors.</p><p>If errors occur while generating the Desal node tree, and none of the already generated nodes have been evaluated, all generated nodes in the entire Desal tree should not be used for purposes beyond explaining the source of errors. Construction of the Desal node tree may continue after errors are found. This applies even if the Desal nodes were not intended to be evaluated.</p><p>If errors occur while generating the Desal node tree, and evaluation has already begun, a warning should immediately be emitted describing the error. How this warning is emitted is undefined. Generation of the Desal node tree may continue. When evaluation reaches the damaged section of the tree, an error should be thrown describing the error. If evaluation never reaches the damaged section of the tree, the error should have no effect on evaluation.</p></div><p>Evaluation of a Desal node tree begins with name bindings in the global namespace. Then, the object bound to "main" in the global namespace is called with an array of strings representing the arguments given to the tree. How these arguments are obtained is undefined. Evalution of the tree ends when main returns or an exception raises out of main.</p></div><div class="chapter" lang="en"><div class="titlepage"><div><div><h2 class="title"><a name="unsorted-stuff"></a>Chapter 14. unsorted stuff</h2></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="closures"></a>14.1. Closures</h2></div></div></div><pre class="programlisting">
+function foo() {
+	int a = 5
+	function bar() {
+		closure a
+		print a
+	}
+	bar() //prints 5
+}
+			</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="tree-examples"></a>14.2. Tree examples</h2></div></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="tree-example-1"></a>14.2.1. Example 1</h3></div></div></div><pre class="programlisting">
+
+
+global
+	identifier-const-definition
+		identifier
+			"main"
+		expression [value] (function-definition)
+			function-parameter
+				identifier
+					"args"
+				expression [interface] (interface-template-instantiation)
+					expression [interface-template] (identifier)
+						"array"	
+					expression [template-argument] (identifier)
+						"string"
+			expression [return-interface] (identifier)
+				"int"
+			statement (return)
+				expression (integer)
+					0
+
+func main(string[] args) int
+	return 0
+
+				</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="tree-example-2"></a>14.2.2. Example 2</h3></div></div></div><pre class="programlisting">
+
+global (global)
+	declaration (declaration &gt; function-declaration)
+		name (string)
+			"main"
+		return (expression &gt; object-reference)
+			name (string)
+				"int"
+		item (item &gt; return)
+			value (expression &gt; integer)
+				0
+
+func main() int
+	return 0
+
+&lt;global type="global"&gt;
+	&lt;declaration type="function-declaration"&gt;
+		&lt;name type="string"&gt;main&lt;/name&gt;
+		&lt;return type="object-reference"&gt;
+			&lt;name type="string"&gt;int&lt;/name&gt;
+		&lt;/return&gt;
+		&lt;item type="return"&gt;
+			&lt;value type="integer"&gt;0&lt;/value&gt;
+		&lt;/item&gt;
+	&lt;/declaration&gt;
+&lt;/global&gt;
+
+				</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h3 class="title"><a name="tree-example-3"></a>14.2.3. Example 3</h3></div></div></div><pre class="programlisting">
+
+global (global)
+	name-bind (name-bind)
+		identifier (identifier)
+			"main"
+		expression (function-definition)
+			parameter (parameter)
+				interface (interface &gt; function-call)
+					function (function &gt; identifier)
+						"array"
+					argument (expression &gt; identifier)
+						"string"
+				identifier (identifier)
+					"args"
+		return-interface (interface &gt; identifier)
+			"int"
+		statement (statement &gt; return)
+			expression (expression &gt; literal-integer)
+				0
+
+func main(string[] args) int
+	return 0
+
+&lt;global type="global"&gt;
+	&lt;name-bind type="name-bind"&gt;
+		&lt;identifier type="identifier"&gt;main&lt;/identifier&gt;
+		&lt;expression type="function-definition"&gt;
+			&lt;parameter-list type="parameter-list"&gt;
+				&lt;parameter type="parameter"&gt;
+					&lt;identifier type="identifier"&gt;args&lt;/identifier&gt;
+					&lt;expression type="function-call"&gt;
+						&lt;identifier type="identifier"&gt;array&lt;/identifier&gt;
+						&lt;argument-list type="argument-list"&gt;
+							&lt;identifier type="identifier"&gt;string&lt;/identifier&gt;
+						&lt;/argument-list&gt;
+					&lt;/expression&gt;
+				&lt;/parameter&gt;
+			&lt;/parameter-list&gt;
+			&lt;return-interface type="identifier"&gt;int&lt;/return-interface&gt;
+			&lt;statement-list type="statement-list"&gt;
+				&lt;statement type="return"&gt;
+					&lt;expression type="literal-integer"&gt;0&lt;/expression&gt;
+				&lt;/statement&gt;
+			&lt;/statement-list&gt;
+		&lt;/function&gt;
+	&lt;/name-bind&gt;
+&lt;/global&gt;
+
+				</pre></div></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="get-interface"></a>14.3. get interface</h2></div></div></div><p>It's always possible to bind the interface of an object to an identifier.</p><pre class="programlisting">
+func getInterface{I}(I o) {
+return I;
+}
+
+dynref o = getMysteryObj()
+interface i = getInterface(o)
+i o2 = o
+			</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="obj-interface"></a>14.4. obj interface</h2></div></div></div><p>All objects automatically implement the "obj" interface.</p><pre class="programlisting">
+obj foo = getAnObject()
+(myinterface foo) .doStuff 3
+			</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="identifier-binding"></a>14.5. Binding to identifiers</h2></div></div></div><pre class="programlisting">int alpha</pre><p>Declares that "alpha" can refer to objects that implement the "int" interface. alpha currently doesn't refer to anything; i.e. it refers to null.</p><pre class="programlisting">alpha = 3</pre><p>Creates an object that implements the int interface and makes alpha refer to it</p><pre class="programlisting">int beta = 5</pre><p>Declares that "beta" can refer to objects that implement the "beta" interface. Creates an object that implements the int interface. Binds the object to "beta".</p><p>Multiple identifiers can refer to the same object.</p><pre class="programlisting">obj o = getObj()
+int a = o
+rat b = o</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="print-println-return-interfaces"></a>14.6. Return interfaces of print and println</h2></div></div></div><p>Below, [unbound] means the interface is not bound to an identifier. However, these interfaces can be bound to identifiers and used like any user-created interface, and they have no special properties.</p><table class="simplelist" border="0" summary="Simple list"><tr><td>func{I}(I)[unbound] print</td></tr><tr><td>func{I}(I)[unbound] println</td></tr></table><pre class="screen">
+				interface{I} Print
+					func call(I) Print
+				
+				interface{I} PrintLine
+					func call(I) PrintLine
+			</pre><p>When print is called, it returns an object that implements an interface like Print. When println is called, it returns an object that implements an interface like PrintLine. Neither interface is bound to an identifier when execution begins. They are not the same interface, meaning print(1).interface == println(1).interface evaluates to false.</p><pre class="screen">
+				println 1 2 3 "a" "b" "c" 4.5 6.7 8.9
+			</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="preexsting-spec"></a>14.7. Pre-existing spec</h2></div></div></div><p>Q: Were the initial specs really written by a single person? If so, why? Doesn't that go against the entire concept of this project?</p><p>A: The project did indeed start with specs created by a single person. I thought that people would be much less likely to contribute if there wasn't a starting point. With nothing up, few people would feel like participating. For me at least, it's less intimidating to quickly create something crappy and then improve upon it, even though the final product is often nothing like what I started with. Since the entirety of every one of these document can be completely rewritten so that nothing original remains, I didn't feel that starting the project with preexisting specs would hurt the goal of being written by everyone.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="adjuncts"></a>14.8. Adjuncts</h2></div></div></div><pre class="programlisting">
+interface IMyInterface
+	public func doStuffA()
+	public func doStuffB()
+
+class MyClass
+	:implements(IMyInterface)
+	...
+
+func IMyInterface.doAB()
+	this.doStuffA()
+	this.doStuffB()
+
+func testThing(ref IMyInterface arg)
+	arg.doAB()
+
+MyClass inst
+testThing(inst)
+					</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="to-do"></a>14.9. To do</h2></div></div></div><table class="simplelist" border="0" summary="Simple list"><tr><td>enable creating objects without classes</td></tr><tr><td>it should be possible to create an object from an inline class without binding the class to an identifier</td></tr><tr><td>spec out binding and assignment as separate things</td></tr><tr><td>Look at Java's way of handling multiple source files and libraries: import java.util.Random;</td></tr><tr><td>Spec out binding namespaces to identifers.</td></tr></table></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="runtime-inteface"></a>14.10. runtime interface implementation</h2></div></div></div><p>With Desal, you should be able to write a function that takes an interface (foo) and returns a function that takes an object of that interface (foo) and returns an object that implements that same interface (foo), but with an implementation that writes to a log anytime a method is called.</p><pre class="screen">
+log l = Log()
+foo o = Foo()
+foo wrapped = wrap(o, l)
+doStuffWithAFoo(wrapped)
+			</pre><p>Now anytime a method is called on the object, a log entry could be written.</p><pre class="screen">
+func{I} wrap(I o, log l) I
+objbuilder wrapper = newObjbuilder()
+wrapper.implement(I)
+for prop in I.props
+wrapper.interfaces[I].setProp( prop.name,
+func(:vararg)obj
+
+interface i = newInterface()
+i.inherit(I)
+for prop in 
+
+wrap(...) takes an interface and returns a function
+wrap(foo)(...) takes a foo and returns a foo
+			</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="runtime-interface-creation"></a>14.11. Runtime interface creation</h2></div></div></div><pre class="screen">
+func createInterface( map{string,dyn} methods ) interface
+	interface rv = newInterface()
+	for (name, meth) in methods
+		rv.methods.add( pair(name, meth.functionSignature) )
+	return rv
+
+func foo(int b) string
+...
+
+func bar(float c, float d) myClass
+...
+
+func baz(widget1 e, widget4 f)
+...
+
+map(string, func) table = {
+"methA": foo,
+"methB": bar,
+"methC": baz
+}
+interface myinterface = createInterface(table)
+
+func alpha(int g) string
+...
+
+func beta(float h, float i) myClass
+...
+
+func gamma(widget1 j, widget4 k)
+...
+
+myinterface myobj = {
+methA: alpha,
+methB: beta,
+methC: gamma
+}
+string str = obj.methA(3)
+myClass val = obj.methB(5.5, 7.7)
+obj.gamma( createWidget1(), Widget4Factory.makeOne() )
+			</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="self-return-type"></a>14.12. "self" return type</h2></div></div></div><pre class="screen">
+func(int,float)self
+
+is the same as
+
+interface __foo__
+	func call(int,float) __foo__
+
+func example(int num) self
+	...
+	
+example 1 2 3 4 5 6 7 8 9 0 //calls the example function 10 times
+			</pre></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="bind"></a>14.13. Bind</h2></div></div></div><pre class="screen">
+interface foo
+	...
+
+func bar(foo o, int num)
+	...
+
+foo fooInst = getAFoo()
+bar(fooInst, 3)
+(fooInst =&gt; bar) 3
+func() funcy = (fooInst =&gt; bar)
+funcy(3)
+			</pre><p>obj =&gt; func</p><p>The "=&gt;" operator binds the obj to the first argument of the function. It evaluates to a function. Semantically this creates a function-definition with a closure of the obj and func.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="classes"></a>14.14. Classes</h2></div></div></div><p>Classes produce functors that, when called, create objects. If a class implements more than 1 interface, it can declare which of the implemented interfaces is the active interface of the returned object by marking an interface as default. If no interface is marked, the active interface is obj.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="noninstantiated-interface-templates"></a>14.15. Noninstantiated interface templates</h2></div></div></div><pre class="screen">
+interface list{I}
+	readonly int count
+	func pushFront(I o)
+	func popFront() I
+
+struct node{C}
+	node{C} next = null
+	node{C} value = null
+
+class makeList{T}
+	node{T} first
+	
+	interface list{T} #default //so makeList returns a list instead of an obj that has to be cast
+		...
+
+list{int} nums = makeList{int}()
+nums.pushFront(3)
+nums.pushFront(5)
+print nums.size //2
+
+list{string} names = makeList{string}()
+names.pushFront("John")
+names.pushFront("Sarah")
+names.pushFront("Billy")
+print names.size //3
+
+list someList = nums
+print someList.size //2
+someList.pushFront(5) //error
+			</pre><p>someList may refer to any kind of list, such as list{foo}, list{bar}, etc, so only methods that have the same paramater and return interfaces for all list{}s can be called.</p></div><div class="section" lang="en"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="dynamic-library-loading"></a>14.16. Dynamic library loading</h2></div></div></div><p>The selectLibrary function enables gaining references to objects without knowing the nodes that created the objects.</p><pre class="screen">
+interface Library
+	readonly string path
+	readonly string name
+	readonly string version
+	readonly bool loaded?
+	func get(string name) dyn
+	func get{I}(string name) I
+	func load()
+
+func selectLibrary(string identifier, string version, bool load? = true) Library
+
+string identifier
+string version
+if platform == platforms.MacOSX or platform == platforms.Windows
+	identifier = "libxml"
+	version = "2.1"
+elif platform == platforms.Linux
+	identifier = "/usr/lib/libxml.so"
+	version = "56"
+
+Library XMLLib = selectLibrary(identifier, version)
+
+interface XMLElement = XMLLib.get{interface}("XMLElement")
+dyn XMLReader = XMLLib.get("XMLReader")
+			</pre></div></div></div></body></html>

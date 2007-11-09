@@ -1,0 +1,63 @@
+block,
+conditional-block,
+declaration-pervasive,
+for-range,
+function,
+global
+{
+	display: block;
+}
+
+block > * {
+	margin-left: 1em;
+}
+block::before {
+	content: "{";
+	display: block;
+}
+block::after {
+	content: "}";
+	display: block;
+}
+
+conditional-block::before { content: "if"; }
+
+declaration-pervasive > [label="value"] {
+	margin-left: 2em;
+}
+declaration-pervasive > identifier::before {
+	content: "pervasive ";
+}
+declaration-pervasive > reference-type::after {
+	content: "]] = ";
+}
+
+for-range::before { content: "for" }
+for-range > [label="start"]::before { content: " from "; }
+for-range > [label="limit"]::before { content: " to "; }
+
+function::before { content: "func {"; }
+function > block::before { content: ""; }
+
+function-call > [label="function"]::after {
+	content: "(";
+}
+function-call::after {
+	content: ")";
+}
+
+method-call > [label="method-name"]::before {
+	content: ".";
+}
+method-call > [label="method-name"]::after {
+	content: "(";
+}
+method-call::after {
+	content: ")";
+}
+
+reference-type::before { content: "[["; }
+reference-type::after { content: "]]"; }
+
+string::before { content: '"'; }
+string::after { content: '"'; }

@@ -1,0 +1,439 @@
+define how files see each other
+	packages
+		files are grouped into packages
+		files in the same package can see stuff in each other
+		import scoped identifiers from libraries
+		packages can be libraries
+		example: C#
+	files
+		import individual files
+		example: C++
+
+to spec out:
+	terms
+		infoset
+		structure
+		layout
+		tree
+		semantics
+		data model
+		abstract infoset/structure/tree/etc
+		hierarchy
+	leaf/terminal nodes
+	tree nodes
+	layout
+	generics
+	const/immutable objects
+	scope
+	closures
+	multiple dispatch
+		made possible with dynamic identifiers (Dyns)
+		Do I need to say anything? I should probably mention it, although multiple dispatch should exist without specifically specifying it.
+	interfaces that require (implementations also (implement (other specified interfaces)))
+		interface Foo
+			require Bar
+		An implementation of Foo must also implement Bar.
+		That way, a Foo can be cast to a Bar without producing a warning about an unsafe cast.
+	requirements on arguments
+		func doStuff(Int a where 3 < a and a < 10, Int b where a < b)
+	requirements on identifiers
+		Foo foo where foo impls Bar = getFoo()
+			//or: Foo|Bar foo = getFoo()
+		Bar bar = foo //safe cast
+	adding interfaces
+		//adding 2 interfaces must always produce same interface
+		Foo+Bar obj = getFooBar()
+		obj.propOfFoo()
+		obj.propOfBar()
+		Foo foo = obj
+		Bar bar = obj
+	function parameters are immutable
+	clone/copy method
+		func clone() Self
+	conversion methods (or "copy as" methods)
+		Int a = 3
+		Rat b = a.convert<Rat>()
+		Rab c = a copyas Rat
+	performance interfaces
+		that tells the growth rate of various actions
+		example: an array would implement the List interface and specify with an object that implements the performance interface that the array supports O(1) (constant time) key lookups (ie. random access)
+	add callees to classes
+	blocks in functions
+		how does return work?
+	"in" parameters
+		they're immutable
+	nullable in/inout parameters
+		it must be explicit, and not by default
+		func foo(null Int value) ...
+			...
+	consider: objects can't be immutable, but object references can
+	implementing const/immutable versions of interfaces that aren't normally const/immutable
+		Q: should the mutable version of the interface inherit from the immutable one?
+	immutable object references can only be cast to immutable object references
+	Q: how to cast a mutable type to an immutable type?
+	immutability and generics need much more specing
+	encouragement:
+		mode where any dynamic typing produces a warning, like for/when
+		Dyn identifiers
+		generics use methods not defined by Desal (eg add, add!)
+		object identifiers are cast to interfaces that are not inherited by the previous interface
+	the "!" part of identifiers is syntax
+		it should not be a part of Desal semantics
+		mutator methods should only be a way for Dextr to specify that the method produces mutations
+		in Desal, there should be some other way
+		it shouldn't be part of the identifiers!
+	adding interfaces
+	make object identifiers and function identifiers more similar
+		make sure functions can be boud to function identifiers in child scopes
+	identifier declarations
+		take place before scope is executed
+		binding may also occur here
+		differentiate between bindings that happen later
+		warn when identifier is referenced before being bound to a value
+			//okay - bound at decl time
+			Int a = b * 2
+			def Int b = 5
+			//produce warning - not bound yet
+			Int a = b * 2
+			Int b = 5
+	const function identifiers
+		can't have further functions bound
+			rational: call on that identifier may change when a function is added that requires fewer casts
+		can't unbind functions
+			rational: call on identifiers that were valid may become invalid
+	unbinding functions
+		(from non-const identifiers only)
+	all interfaces are implementable, even enums, function interfaces and Object
+
+
+handle these comments pulled from the Impl:
+	/*
+	Many things in Desal are just implementations of interfaces.
+	Because client code can implement these interfaces,
+	there often needs to be:
+		* an interface for the item
+		* a class for native items
+			created manually in C# or by a construct in client
+			ex: wrapping a C# int
+			ex: an integer node
+		* a class for items created manually by client
+			ex: implementing the Int interface
+		* a class to make items appear as objects
+			though items created manually by client are already objects
+	
+	For example:
+		* IInterface
+			a Desal interface
+		* Interface
+			a Desal interface created:
+				* manually in C#
+				* through an "interface" Desal node
+		* InterfaceFromValue
+			a Desal interface created by client code implementing Interface
+		* InterfaceWrapper
+			to make an Interface look like a Desal object
+	
+	For functions, there's also the NativeFunction class, which makes
+	a C# function look like a Desal function.
+	
+	The conversion functions (*FromValue, *Wrapper) are factories that
+	just return the unwrapped object when possible.
+	*/
+	
+	//xxx problem: dictionaries are used for interface implementations,
+	//but multiple methods can be bound to the same identifier!
+	//this means we need something like multi_map from C++
+	//or to bind identifiers to a list of functions
+
+
+possibly spec out common conventions
+	Interface
+	object
+	returnsBoolean?
+	CClass
+
+ensure Desal has all features of lambda calculus
+
+add processing step to Desal
+create ScopeFormulas from declarations
+check all interfaces to ensure correctness
+
+make list of significant features
+	full specifications
+		extremely permissive license
+	working implementation
+		LGPL-like license
+		access to many libraries
+	syntax separated from semantics
+		no reserved words in semantics
+	objects only refered to through interfaces
+	built-in ways of specifying opacity/purity
+	mixed static and dynamic typing
+	number literals are BigNums
+	better string abstractions than many languages provide
+		length doesn't count astral characters twice like e.g. Java and JavaScript do
+	maybe: really good parallel programming support?
+	allows global functions and objects
+	non-nullable parameters
+	no value types (only reference types)
+		distinction is a big deal in C#
+
+add to rationale section
+	why lang?
+	why split between semantics and syntax?
+	why not use technology XXX (like ASN.1, LaTeX, etc)
+
+spec out function identifiers that can refer to functions with different return types
+spec out methods with the same name that have different return types
+
+write style guidelines for specs
+separate (what stuff *should* do) from (what stuff should *not* do)
+
+!!! NEW !!!
+Every class node's interface implementations should be reduced to a single interface implemenatation of the interface that is produced by adding together the interfaces of the provided interface implementations.
+class
+	faceimpl Foo
+	faceimpl Bar
+__priv = Foo + Bar
+class
+	faceimpl __priv
+!!! NEW !!!
+
+spect otu creating objects without classes (singletons)
+
+Look at Java's way of handling multiple source files and libraries:
+	import java.util.Random;
+
+Spec out binding namespaces to identifers
+
+write up rational for allowing classes to implement the same interface multiple times in different ways
+
+test how other languages treat it
+	interface Base
+	interface Parent1 : Base
+	interface Parent2 : Base
+	class {
+		Parent1 {...}
+		Parent2 {...}
+	}
+
+
+many important libraries should be accessible from Desal Implementation 001
+	standard libraries
+		Java (see Mozilla's Java<->JavaScript bridge)
+		Perl
+		PHP
+		Python
+		Ruby
+		Visual Basic (not VB.NET)
+	component models
+		Bonobo
+		CLI (Common Language Infrastructure)
+		COM
+			ActiveX
+			OLE
+		CORBA
+		D-Bus
+		DCOP
+		KPart
+		Kross
+		XPCOM
+	libraries with bindings
+		GObject
+			maybe other stuff from GLib
+		GTK
+		Mono/DotGNU/.NET
+		Qt
+		WxWidgets
+
+
+implementation:
+	when handling a Desible element, mark it as handled
+	after parsing Desible, go through every element
+	throw error or warn if any of the elements haven't been handled
+
+divide expression nodes into only-expression nodes and dual expression/statement nodes
+dual expression/statement nodes "do something" when executed
+only-expression nodes cannot be executed
+
+
+stop overloading the term "identifier"
+current, it refers to:
+	string
+		can be evaluated
+		not typed (value, function, meta, dyn, namespace)
+	reference
+		cannot be evaluated
+		associated with a string-identifier and a value/functions/namespace
+		typed
+one possibility:
+	use "identifier" for the string identifier
+	use "value" for what is currently called an "object reference"
+	use "reference" for the reference identifier
+
+
+spec out representing numbers in bases besides base 10
+should NOT be a part of semantics - only representations
+Dextr:
+	8x123 (base 8)
+	0xF00 (base 16)
+	16xDeAd (base 16)
+	2x110101001010 (base 2)
+	1234567890 (base 10)
+	10x123 (base 10)
+Desible:
+	<integer>123</integer> (base 10)
+	<integer base="8">444</integer> (base 8)
+	<integer base="2">10101000101</integer>
+	<integer base="10">567</integer>
+	<integer base="16">CAFE</integer>
+
+similarly to above:
+	<string escaped="true">null: \000000</string>
+	<string escaped="true">one slash: \\</string>
+	<string escaped="false">two slashes: \\</string>
+	<string>two slashes: \\</string>
+
+
+//declaration:
+func Rat square
+
+//declaration:
+def func square(Rat n) Rat {
+	return n * 2
+}
+
+//not declaration:
+square = func(Rat n) Rat {
+	return n * 2
+}
+
+
+impl: add "immutable" attribute to ObjectReference class
+
+implement prevalent identifiers
+	func bindIdent(string ident)
+		if identIsPrevalent(ident)
+			throw error
+		...
+	func identIsPrevalent(string ident)
+		if parent == null
+			return prevalentIdents.contains(ident)
+		return top.identIsPrevalent(ident)
+	top get
+		if parent == null
+			return this
+		return parent
+
+ensure this is possible:
+	take a value of any type and wrap it so you get 2 values:
+		* a value that implements the same interface
+		* a value used for event registration
+	Int a = 8
+	Listener l
+	(l, a) = wrap(a)
+	l.addMethodCallListener("add", func(event){...})
+	Int b = a + 80 //listener gets called
+
+interface Int
+	Bool negative?
+	Bool positive?
+
+interface Interface
+	func add(Interface) Interface
+
+search for XXX in all specs and work on fixing problems
+
+check Desal specs and implementation into version control
+look at version control systems
+
+lookup license of GPL
+lookup extremely permissive licenses
+see about making Desal Spec license more permissive
+
+make sure my Desal implementation isn't affecting the spec in negative ways
+It's okay for them to differ, even greatly!
+
+emphasize that the rational for creating this language was to create a better separation between interface and implementation
+
+further separate interface from implementation
+	licensing libraries
+		It should be easy to separate a public library interface from everything else and license it under a permissive license, while licensing the implementation of the library under a copyleft license.
+		problem: Enum values must be part of the public library interface.
+	loading libraries
+		Should be possible to specify a library interface (and version) and get an implementation of it, both for static and dynamic linking. Should also be possible to specify several implementations to try first. If none of the implementations are available, programmer should be able to prevent a different implementation from being used.
+
+spec out dynamically loading a library as a meta object
+
+Desal implementation
+	divide into these parts:
+		library interface
+		library implementation
+		command line wrapper around library
+		GUI wrapper around library
+
+Desal implementation defines a way of declaring a class so bindings can be created automatically
+make class node and children like that
+copy the syntax/format
+
+spec out enums
+	are they even possible with all this interface business?
+	see how enums work in other languages (especially highly OOP ones)
+should Bool be an enum?
+Bool could also be an interface that user code could not implement, and true and false the only implementations.
+
+many things that should be function identifiers look like object identifiers
+make it clear they are function identifiers, not obect identfiers
+
+create specification for ASN.1 representation (Desasn) of Desal Semantics
+modify Desible specification so it uses ASN.1 representation
+
+need some way to access iterators (or functionality of iterators) in loops
+	clean, easy, simple for loops that need it
+	not show up for loops that don't need it
+
+If there are multiple interfaces user code can't implement, create a section that refers to all of them.
+
+Add a notice that a TriBool type does not exist because a Bool object identifier can point to null (so that a Bool can be null, true, or false).
+
+currying should be builtin, but explicit
+
+closures should be builtin, but explicit
+func test(int number) func()int
+	func getNumber() int
+		closure number
+		return number
+	return getNumber
+println test(3)() //prints "3"
+
+define syntax highling for strings where spaces are colored and spaces next to each other are colored differently
+
+lookup modern opcodes (MMX, SSE, etc) and see if any describe actions that can't be explicitly stated with Desal
+	if so, add stuff to Desal to support the opcodes
+
+define memory representation
+	for machine code implementations to speak to each other
+
+come up for name of Desal tree where root node is global node
+	as apposed to a tree where the root node is not a global node
+	global tree, full tree, complete tree
+
+spec out that IDEs should have option to show default values for function calls
+	when a function has a default value and a call to that function doesn't specify an argument,
+	show the default argument as if it was specified, perhaps grayed out or colored differently or boxed or something
+
+if an object is not a function, and it's called like a function, you want to get the same error every time!
+this means every implementation of IObject should not be handling being called like a function!
+
+in the implementation, many times nodes that should have scopes don't
+
+ultimate optimer test:
+	replace slow sorting algorithm with fast sorting algorithm
+	bubble sort -> quick/heap/merge sort
+
+
+tree -
+	1) a graphical representation of a hierachy
+	2) a computer data structure
+hierarchy -
+	objects ranked so that every one but the topmost is subordinate to a specified one above it

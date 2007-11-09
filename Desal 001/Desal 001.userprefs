@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<UserCombinePreferences filename="/media/files/source/Desal 001/Desal 001.mds">
+  <Files>
+    <File filename="./Desal Interpreter 001/DesalInterpreter001.cs" />
+    <File filename="./Desal Interpreter 001/Client_String.cs" />
+  </Files>
+  <Views>
+    <ViewMemento Id="MonoDevelop.Ide.Gui.Pads.ProjectPad">
+      <TreeView>
+        <Node expanded="True">
+          <Node name="Desal Interpreter 001" expanded="True">
+            <Node name="DesalInterpreter001.cs" expanded="False" selected="True" />
+          </Node>
+        </Node>
+      </TreeView>
+    </ViewMemento>
+    <ViewMemento Id="MonoDevelop.Ide.Gui.Pads.ClassPad">
+      <TreeView>
+        <Node expanded="True">
+          <Node name="Desal Interpreter 001" expanded="False" selected="True" />
+        </Node>
+      </TreeView>
+    </ViewMemento>
+  </Views>
+  <Properties>
+    <Properties>
+      <Property key="ActiveConfiguration" value="Debug" />
+      <Property key="ActiveWindow" value="/media/files/source/Desal 001/Desal Interpreter 001/DesalInterpreter001.cs" />
+    </Properties>
+  </Properties>
+</UserCombinePreferences>

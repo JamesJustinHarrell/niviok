@@ -1,0 +1,12 @@
+classes
+
+class state
+instructions to setup the class state
+means of interacting with the class state
+means of doing class-related stuff
+
+instance state
+instructions to setup the instance state (public and private means)
+means of interacting with the instance state
+which means of interacting is default
+means of doing instance-related stuff

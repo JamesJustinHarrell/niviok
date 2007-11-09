@@ -1,0 +1,501 @@
+Parsing Example
+
+type of parsing:
+no same-state recursion
+no recursion without consumption
+watch stack, and if calling rule without consuming tokens, the rule fails
+
+example (have Funsynn 001 output something like this) :
+
+NOTE: "fail" is a "no match fail" unless otherwise specified
+
+pretend that:
+RuleExpression = Group | Repetition | Terminal ;
+Repetition = Repetition_N | Repetition_OnePlus ;
+
+and we're parsing this:
+Foo = "bar" + ;
+
+Document
+	Fill?
+		(success)
+	Rule
+		RuleIdentifier
+			BasicIdentifier
+				<repeat terminals>
+					(success as "Foo")
+				(BasicIdentifier success)
+			(RuleIdentifier success)
+		Fill?
+			(success)
+		<string	"=">
+			(success)
+		Fill?
+			(success)
+		RuleExpression
+			Group
+				<string "(">
+					(fail)
+				(fail)
+			| Repetition
+				Repetition_N
+					RuleExpression
+					(recursion failure)
+				| Repetition_OnePlus
+					RuleExpression
+					(recursion failure)
+				(recur fail - no more choices in option)
+			| Terminal
+				<string "@">
+					(fail)
+				String
+					...
+					(success as "bar")
+				(success for Terminal)
+			(alt success for RuleExpression)
+		Fill?
+			(success)
+		<string ";">
+			(failure)
+		(temp failure)
+	(temp failure)
+
+Recursion failures are at first treated just like normal/no-match failures, except that parent nodes that fail have a recursion failure instead of a no-match failures.
+
+The Rule rule temporarily failed. It had a temp failure instead of a failure because it contains an alt success member. An alt success occurs when no-state-change-recursion is avoided and an alternate member is successful.
+
+At first, a temporary failure is treated just like normal/no-match failures, execpt that parent nodes that fail have a temp fail instead of a no-match fail. However, if the temp failure moves all the way to the root rule ("Document" in this case), we go back to the recursion error and allow recursion one additional time. Then we continue parsing from there.
+
+Document
+	Fill?
+		(success)
+	Rule
+		RuleIdentifier
+			BasicIdentifier
+				<repeat terminals>
+					(success as "Foo")
+				(BasicIdentifier success)
+			(RuleIdentifier success)
+		Fill?
+			(success)
+		<string	"=">
+			(success)
+		Fill?
+			(success)
+		RuleExpression
+			Group
+				<string "(">
+					(fail)
+				(fail)
+			| Repetition
+				Repetition_N
+					RuleExpression (level 1 recursion)
+						Group
+							<string "(">
+								(fail)
+							(fail)
+						| Repetition
+							(recur fail)
+						| Terminal
+							<string "@">
+								(fail)
+							| String
+								...
+								(success as "bar")
+							(alt success)
+						(alt success)
+					<string "{">
+						(fail)
+					(temp fail)
+				| Repetition_OnePlus
+					RuleExpression
+					(recursion failure)
+				(recur fail - no more choices in option)
+			| Terminal
+				<string "@">
+					(fail)
+				String
+					...
+					(success as "bar")
+				(success for Terminal)
+			(alt success for RuleExpression)
+		Fill?
+			(success)
+		<string ";">
+			(failure)
+		(temp failure)
+	(temp failure)
+
+Repetition_N temp failed! We don't go back and recur once more yet, because there is an alternative to Repetition_N for the Repetition rule. Next we try that alternative.
+
+Now we have two alt successes. Which one do we continue from? The one with the lower recursion level, or the first one if they're at the same recursion level. Repetition_N is at recursion level 1, while Repetition_OnePlus is at recursion level 0. That means we continue from the recursion fail in the Repetition_OnePlus node.
+
+Document
+	Fill?
+		(success)
+	Rule
+		RuleIdentifier
+			BasicIdentifier
+				<repeat terminals>
+					(success as "Foo")
+				(BasicIdentifier success)
+			(RuleIdentifier success)
+		Fill?
+			(success)
+		<string	"=">
+			(success)
+		Fill?
+			(success)
+		RuleExpression
+			Group
+				<string "(">
+					(fail)
+				(fail)
+			| Repetition
+				Repetition_N
+					RuleExpression (level 1 recursion)
+						Group
+							<string "(">
+								(fail)
+							(fail)
+						| Repetition
+							(recur fail)
+						| Terminal
+							<string "@">
+								(fail)
+							| String
+								...
+								(success as "bar")
+							(alt success)
+						(alt success)
+					<string "{">
+						(fail)
+					(temp fail)
+				| Repetition_OnePlus
+					RuleExpression (level 1 recursion)
+						(was recur fail, now allowed to recurse once)
+						Group
+							<string "(">
+								(fail)
+							(fail)
+						| Repetition
+							(recur fail)
+						| Terminal
+							<string "@">
+								(fail)
+							| String
+								...
+								(success as "bar")
+							(alt success)
+						(alt success)
+					<string "+">
+						(alt success)
+					(alt success)
+				(alt success)
+			(alt success)
+		<string ";">
+			(alt success)
+		(alt success)
+	(alt success)
+
+Success! The document parsed correctly!
+
+
+
+============================================
+
+
+
+Note: What about when nothing matches due to syntax errors and we just keep recursing forever?
+
+This doesn't work though for everything.
+
+Document = Expression;
+Expression = Mult | Add | Number;
+Mult = Expression "*" Expression;
+Add = Expression "+" Expression;
+Number = (0 | [1-9])+;
+
+for this document:
+1 + 2 * 3
+
+Document
+	Expression
+		Mult
+			Expression
+			(recur fail)
+		| Add
+			Expression
+			(recur fail)
+		| Number
+			(success as "1")
+		(alt success)
+	(temp fail - unconsumed characters)
+
+We can't do level 1 recursion if:
+	we've already done level 1 recursion that lead to characters being consumed
+But otherwise we can.
+We can continue to do level 1 recursion until a node with level 1 recursion leads to consuming characters. If the node fails, we can do level 1 recursion again, even if we've consumed characters.
+
+Document
+	Expression
+		Mult
+			Expression (level 1 recursion)
+				Mult
+					(recur fail)
+				| Add
+					Expression
+					(recur fail)
+				| Number
+					(success as "1")
+				(alt success)
+			<string "*">
+				(temp fail)
+			(temp fail)
+		| Add
+			Expression (level 1 recursion)
+				Mult
+					Expression
+					(recur fail)
+				| Add
+					(recur fail)
+				| Number
+					(success as "1")
+				(alt success)
+			<string "+">
+				(success)
+			Expression
+			(recur fail)
+		| Number
+			(success as "1")
+		(alt success "1")
+	(temp fail - unconsumed characters)
+
+Now we have 4 level 2 recur fails and a level 1 recur fail. We are stil only at level 1 recursion.
+
+Document
+	Expression
+		Mult
+			Expression (level 1 recursion)
+				Mult
+					(recur fail)
+				| Add
+					Expression
+					(recur fail)
+				| Number
+					(success as "1")
+				(alt success)
+			<string "*">
+				(temp fail)
+			(temp fail)
+		| Add
+			Expression (level 1 recursion)
+				Mult
+					Expression
+					(lv2 recur fail)
+				| Add
+					(lv2 recur fail)
+				| Number
+					(success as "1")
+				(alt success)
+			<string "+">
+				(success)
+			Expression (level 1 recursion)
+				Mult
+					Expression
+					(recur fail)
+				| Add
+					(recur fail)
+				| Number
+					(success as "2")
+				(alt success)
+			(alt success)
+		(alt success "1 + 2")
+	(temp fail - unconsumed characters)
+
+Now there are 6 recursion failures, and they're all at level 2. So we continue from the first one. We are at level 2 recursion now, and as long as a level 2 recursion dosn't consume characters we can do level 2 recursion.
+
+Document
+	Expression
+		Mult
+			Expression (level 1 recursion)
+				Mult (level 2 recursion)
+					Expression
+					(lv3 recur fail)
+				| Add
+					Expression (level 2 recursion)
+						Mult
+							(lv3 recur fail)
+						| Add
+							(lv3 recur fail)
+						| Number
+							(success as "1")
+						(alt success)
+					<string "+">
+						(success)
+					Expression
+						(lv2 recur fail - characters have been consumed)
+					(recur fail)
+				| Number
+					(success as "1")
+				(alt success)
+			<string "*">
+				(fail)
+			(temp fail)
+		| Add
+			Expression (level 1 recursion)
+				Mult
+					Expression (level 2 recursion)
+						Mult
+							(lv3 recur fail)
+						| Add
+							(lv3 recur fail)
+						| Number
+							(success as "1")
+						(alt success)
+					<string "*">
+						(fail)
+					(temp fail)
+				| Add (level 2 recursion)
+					Expression
+					(lv3 recur fail)
+				| Number
+					(success as "1")
+				(alt success)
+			<string "+">
+				(success)
+			Expression (level 1 recursion)
+				Mult
+					Expression (level 2 recursion - we've consumed characters and done level 2 recursion, but the level 2 recursion didn't lead to consuming characters)
+						Mult
+							(lv3 recur fail)
+						| Add
+							(lv3 recur fail)
+						| Number
+							(success as "2")
+						(alt success)
+					<string "*">
+						(success)
+					Expression
+						(lv2 recur fail - we've already done level 2 recursion that lead to consuming characters)
+					(recur fail)
+				| Add
+					Expression (level 2 recursion)
+						Mult
+							Expression
+								(lv3 recur fail)
+							(recur fail)
+						| Add
+							(lv3 recur fail)
+						| Number
+							(success as "2")
+						(alt success)
+					<string "+">
+						(fail)
+					(temp fail)
+				| Number
+					(success as "2")
+				(alt success)
+			(alt success)
+		(alt success for Expression as "1 + 2")
+	(temp fail - unconsumed characters)
+
+We have several level 3 recursion failures and a couple of level 2 recursion failures. We continue from the first level 2 recursion failure. We can now do level 2 recursion.
+
+Document
+	Expression
+		Mult
+			Expression (level 1 recursion)
+				Mult (level 2 recursion)
+					Expression
+					(lv3 recur fail)
+				| Add
+					Expression (level 2 recursion)
+						Mult
+							(lv3 recur fail)
+						| Add
+							(lv3 recur fail)
+						| Number
+							(success as "1")
+						(alt success)
+					<string "+">
+						(success)
+					Expression (level 2 recursion -- beginning of this cycle)
+						Mult
+							(lv3 recur fail)
+						| Add
+							(lv3 recur fail)
+						| Number
+							(success as "2")
+						(alt success)
+					(alt success)
+				(alt success)
+			<string "*">
+				(success)
+			Expression
+				(lv1 recur fail)
+			(recur fail)
+		| Add
+			Expression (level 1 recursion)
+				Mult
+					Expression (level 2 recursion)
+						Mult
+							(lv3 recur fail)
+						| Add
+							(lv3 recur fail)
+						| Number
+							(success as "1")
+						(alt success)
+					<string "*">
+						(fail)
+					(temp fail)
+				| Add (level 2 recursion)
+					Expression
+					(lv3 recur fail)
+				| Number
+					(success as "1")
+				(alt success)
+			<string "+">
+				(success)
+			Expression (level 1 recursion)
+				Mult
+					Expression (level 2 recursion - we've consumed characters and done level 2 recursion, but the level 2 recursion didn't lead to consuming characters)
+						Mult
+							(lv3 recur fail)
+						| Add
+							(lv3 recur fail)
+						| Number
+							(success as "2")
+						(alt success)
+					<string "*">
+						(success)
+					Expression
+						(lv2 recur fail - we've already done level 2 recursion that lead to consuming characters)
+					(recur fail)
+				| Add
+					Expression (level 2 recursion)
+						Mult
+							Expression
+								(lv3 recur fail)
+							(recur fail)
+						| Add
+							(lv3 recur fail)
+						| Number
+							(success as "2")
+						(alt success)
+					<string "+">
+						(fail)
+					(temp fail)
+				| Number
+					(success as "2")
+				(alt success)
+			(alt success)
+		(alt success for Expression as "1 + 2")
+	(temp fail - unconsumed characters)
+
+
+Document = Expression;
+Expression = Mult | Add | Number;
+Mult = Expression "*" Expression;
+Add = Expression "+" Expression;
+Number = (0 | [1-9])+;

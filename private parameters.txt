@@ -1,0 +1,34 @@
+Private Method Parameters
+can only be seen/used within the same class
+
+
+interface Fibonacci {
+	func fibonacci(Int n)
+}
+
+class FibonacciClass {
+	func _fibonacci(Int n, Int a, Int b) {
+		if( n < 2 ) return n
+		return a + _fibonacci(n-1, b, a+b)
+	}
+
+	interface Fibonacci {
+		func fibonacci(Int n) {
+			return _fibonacci(n, 0, 1)
+		}
+	}
+}
+
+class FibonacciClass {
+	interface Fibonacci {
+		func fibonacci(Int n, private Int a = 0, private Int b = 1) {
+			if( n < 2 ) return n;
+			return a + fibonacci(n-1, b, a+b);
+		}
+	}
+}
+
+
+Fibonacci f = FibonacciClass()
+f.fibonacci(10)
+f.fibonacci(3, 55, -7) //error - interface defines no matching method

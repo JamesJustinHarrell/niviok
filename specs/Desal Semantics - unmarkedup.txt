@@ -1,0 +1,4598 @@
+This file contains stuff from the Desal Semantics spec that wasn't marked up. Everything in here should be moved to Desal Semantics or deleted.
+
+
+
+=== function overloading ===
+
+func foo()
+	...
+
+func foo(int a) float
+	...
+
+func foo(string b, string c) bool
+	...
+
+Does this create 3 objects, or 1 object with 3 call methods?
+Is there a difference?
+How do you refer to just one?
+
+
+
+mulitple functions can be bound to the same identifier in the same scope
+
+to refer to a specific function, cast the the identifier and the signature are used, together know as the function-identifier
+
+func foo() int
+	return 3
+
+func foo(int a) int
+	return a * 2
+
+func()int b = foo.call{int}
+
+
+ 
+
+
+====== EXPRESSIONS AND STATEMENTS =====
+
+an "expression" evaluates to some value
+a "statement" does not evaluate to a value
+an "expression statement" is an expression where the value is ignored
+an "effective statement" is either a statement or an expression statement
+
+===== END =====
+=== source code ===
+
+forms a tree/hierarchy
+
+
+=== generic functions / function interface parameters ===
+
+--- example 1 ---
+
+interface foo
+	func call{I}(I o) string
+		return (o < 3).toString()
+
+foo bar = getFoo()
+bar{int}(2)
+bar(2)
+bar 2
+func{I}(I)string f1 = bar.call
+func(int)string f2 = bar.call{int}
+func{I}(foo,I)string f3 = foo::call
+func(foo, int)string f4 = foo::call{int}
+
+not allowed due to possible ambiguity:
+	bar int 2
+
+--- example 2 ---
+
+func println{I}(I o)
+	print o
+	print "\n"
+
+println {int} 3
+println 3
+func{I}(I o) printlnAgain = println
+func(int) printlnint = println{int}
+
+not allowed due to possible ambiguity:
+	println int 3
+
+--- why support? ---
+
+func println(interface i) obj
+	return func(i o)
+		print o
+		print "\n"
+
+println(int)(3)
+println int 3
+func(int) printlnint = println(int)
+
+problems
+	casting required to obj and back
+	more code ("interface", "obj", "return")
+	more indentation
+	interface must always be specified
+		"println 3" wouldn't work
+	not as semantic
+
+=== END ===
+
+
+=== function static memebers ===
+
+Refer to the same object every time the function is called.
+
+--- static (but not shared) ---
+
+default is private, but can be made public
+Each instance has it's own prop.
+
+func getNum() int
+	public static int num = 3
+	return num
+
+print getNum() //3
+getNum.num = 5
+print getNum() //5
+
+auto getNum2 = getNum.copy(true)
+print getNum2 //5 -- from getNum
+getNum2.num = 8
+print getNum2() //8
+
+auto getNum3 = getNum.copy(false)
+print getNum3 //3 -- the default
+getNum3.num = 12
+print getNum3() //12
+
+print getNum() //5
+print getNum2() //8
+print getNum3() //12
+
+--- shared (also static) ---
+
+Each instance share the same prop.
+public shared int num = 3
+
+For the last 2 lines above:
+print getNum() //12
+print getNum2() //12
+print getNum3() //12
+
+getNum, getNum2, and getNum3 share the same "num" object
+
+--- interface ---
+
+The interface of getNum(2|3) has a property named "num", so the interface isn't the same as func()int. That's why "auto" was used. However, this interface inherits from func()int, so getNum(2|3) can still be refered to through this method.
+
+func()int getNum4 = getNum.copy(true)
+getNum4.num = 9 //error -- func()int doesn't define a "num" property
+print getNum4() //5 or 12, depending on whether num is static or shared
+
+=== inheriting interfaces ===
+
+interface foo
+	func a()int
+
+interface bar
+	inherits foo
+	func b()int
+
+class alpha
+	defines interface beta
+		inherits foo
+			func a()int
+				return 3	
+
+=== generic interfaces and classes ===
+
+interface list{I}
+	func pushFront(I o)
+	func popFront() I
+
+struct node{C}
+	node{C} next = null
+	node{C} value = null
+
+class makeList{T}
+	node{T} first
+	
+	interface list{T} #default //so makeList returns a list instead of an obj that has to be cast
+		func pushFront(T o)
+			first = (first, o)
+
+		func popFront() T
+			T rv = first.value
+			first = first.next
+			return rv
+
+list{int} nums = makeList{int}()
+nums.pushFront(3)
+int num = nums.popFront()
+
+
+*** identifier ***
+
++ [A-Z,a-z,_]
+* [0-9]
+? [!,?]
+
+The optional last ! or ? character conveys semantics and thus has additional rules.
+An identifier may end with "?" only if the identifier is bound to a member function (method) that returns a boolean.
+An identifier may end with "!" only if the identifier is bound to a member function (method).
+Function identifiers ending in "!" convey that the method mutates the object in a visible way. Thus, ! methods can't be called on const/immutable objects.
+
+
+=== immutable/const objects ===
+
+any methods with a name ending with "!" cannot be called
+
+3 = 5 //error -- int literals are immutable, and line is same as:
+3.assign!(5)
+
+3 += 5 //error -- same as
+3.add!(5)
+
+3 + 5 //okay -- same as
+3.add(5)
+
+Methods with names that don't end with "!" may still mutate the object, but any changes *should not* produce visible changes in the object, i.e. through the interface, the object should seem to be the same.
+
+
+=== special class methods ===
+
+construct
+destruct
+restruct
+
+convert
+
+key ["foo"]
+key! ["foo"] =
+
+add +
+add! +=
+subtract -
+subtract! -=
+multiply *
+multiply! *=
+divide /
+divide! /=
+
+concat &
+concat! <<
+call ()
+equals? ==
+lessThan? <
+greaterThan? >
+
+class MyClass
+	func construct(int value) //create a MyClass from an integer
+		...
+		//MyClass a = MyClass(3)
+
+	func construct(float value) //create a MyClass from a float
+		...
+		//MyClass b = MyClass(4.5)
+
+	func convert<int>()int //convert a MyClass to an integer
+		:lossy
+		...
+		//int c = cast<int> myClassInstance
+
+	func convert<float>()float //convert a MyClass to a float
+		:lossless
+		...
+		//float d = myClassInstance
+		//float e = cast<float> myClassInstance
+
+	func key(string key) int
+		...
+		//int f = myClassInstance["foo"]
+
+	func key(string key, int value)
+		...
+		//myClassInstance["bar"] = 7
+
+	func add(MyClass val)MyClass
+		...
+		//MyClass g = myClassInst1 + myClassInst2
+
+	func subtract(MyClass val)MyClass
+		...
+		//MyClass h = myClassInst1 - myClassInst2
+
+	func concatAdd(MyClass val)
+		...
+		//myClassInst1 << myClassInst2
+
+	func concatNew(MyClass val) MyClass
+		...
+		//MyClass i = myClassInst1 & myClassInst2
+
+	func call(int arg1, float arg2) string
+		...
+		//string str = myClassInst(2, 7.8)
+
+	func equals?(MyClass val) bool
+		...
+		//if( myClassInst1 == myClassInst2 ) { ... }
+
+	func lessThan?(MyClass val) bool
+		...
+		//if( myClassInst1 < myClassInst2 ) { ... }
+
+=== /end ===
+
+
+=== method calling ===
+
+class MyClass
+	private int val
+
+	public constructor(int val)
+		this.val = val
+
+	public func mult(int val) int
+		return this.val * val
+
+MyClass inst = MyClass(5)
+int val1 = inst.foo(3)
+int val2 = MyClass.foo(inst, 3)
+
+=== /end ===
+
+
+
+=== caller function ===
+
+caller functions call a certain method of their first argument with the rest of their arguments
+
+interface intery
+	func methy(int paramy)
+		...
+
+intery objecty = getIntery()
+func(intery, int) funcy -> @intery::methy
+
+//following 3 lines equivalent:
+funcy(objecty, 3)
+intery::methy(objecty, 3)
+objecty.methy(3)
+
+
+<interface>::<identifier> produces a function
+paramaters: an object with interface <interface> named "o" or "obj" or "object" plus all the parameters of <interface>::<identifer>
+action: calls the object's <identifer> method with any other arguments it receives
+
+
+
+
+
+
+
+source code consists of items
+some items container other items
+
+types of items:
+	declaration
+		int foo
+		class MyClass
+	container
+		for shoe in shoes: ...
+		while boy.horny?: me .fuck boy
+	expressions
+		3
+		getSomeValue()
+		foo = "bar"
+
+
+
+
+
+objects have type
+values have type
+objects hold values
+values are information of a defined type
+types tell how to get information from values
+
+
+--- superset inheritance ---
+
++ inheritance +
+if foo inherits from bar
+	all foo's are bar's
+		foo is just one kind of bar
+	but not all bar's are foo's
+
+barRef -> barInstance
+fooRef -> fooInstance
+barRef -> fooInstance //legal -- foo is a bar
+fooRef -> barInstance //not allowed -- not all bar's are foo's
+
++ superset +
+if foo is a superset of bar
+	all bar's are foo's
+		bar is just one kind of foo
+	but not all foo's are bar's
+
+barRef -> barInstance
+fooRef -> fooInstance
+barRef -> fooInstance //not allowed -- not all foo's are bar's
+fooRef -> barInstance //legal -- bar is a foo
+
+if rat is superset of int
+
+intRef -> intInst
+ratRef -> ratInst
+intRef -> ratInst //not allowed -- not all rational numbers are integers
+ratRef -> intInst //legal -- all integers are rational numbers
+
++ example +
+interface integer
+	greater-than comparison
+	less-than comparison
+	equality comparison
+
+interface rational_number
+	supsetof integer //rationalnumber has all the member functions of integer
+
+interface complex_number_approximation
+	supersetof rational_number
+
+--- subset inheritance ---
+
+Defines an interface that is a limitation of another interface.
+
+if foo is a subset of bar
+	all bar's are foo's
+		bar's are just a type of foo
+
+interface ImmutableString
+	subsetof MutableString
+		//declare which fields aren't inherited
+
+
+--- classes/interfaces/constructors ---
+
+problems:
+	implement multiple interfaces
+	multiple constructors
+		repetition of all methods required?
+	inheritance
+	virtual methods
+	abstract classes
+	static methods
+
+C++
+	classes define types and constructors
+
+Desal
+	classes become type/interface definitions
+	constructors become overloaded functions that return the same type
+
+interface Kitten
+	readonly string name
+	readonly Health health
+	func sleep(int time)
+	func feed()
+
+func makeKitten(string kittensName) Kitten {
+	return new Kitten object {
+		pubread string name: kittensName,
+		pubread Health health: makeHealth(0),
+		pub func(int) sleep: func(int time) {
+			health += 3 },
+		pub func() feed: func() {
+			health += 2 }
+	}
+}
+
+Kitten kitty = makeKitten("Lucky")
+
+
+--- classes as objects ---
+
+Ruby
+	Object
+	Module
+	Class
+	TheClass
+
+	object instanceof TheClass
+
+
+class MyClass {
+	static int foo
+
+	construct(int a)
+		...
+	constructor(string b, float c)
+		...
+
+	int bar
+}
+
+creates an object
+	instance of class
+	
+MyClass = {
+	int foo,
+	func(int)MyClass constructor,
+	func(string,float)MyClass constructor,
+}
+
+
+object
+	instance of object
+
+class
+	instance of object
+
+MyClass
+	instance of class
+
+foo
+	instance of MyClass
+
+
+--- tuples ---
+
+A tuple holds objects, but doesn't ensure that the various objects are in any kind of state. A class should control access to its data to ensure it is always in a good state, while a tuple doesn't take care of its data, and instead lets the owners of the tuple take care of the data. Tuples are like C++ structs where data member is public and there are no member functions.
+
+Members of the object have an order, and can be referred to by this number.
+Members of the object can have names, and can be referred to by this name.
+
+tuple MyTuple
+	int,
+	string,
+	string foo,
+	int baz,
+	dynref " - ; @ ! blah ",
+	func() doStuff,
+	func() toString,
+	float
+
+MyTuple a = {
+	50,
+	"fifty",
+	"bar",
+	234,
+	null,
+	func() { ... },
+	func() { ... },
+	12345.67890
+}
+
+a[1] //50
+a[4] //234
+a.toString()
+a["foo"] //"bar"
+a.foo //"bar"
+a[" - ; @ ! blah "] //null
+
+
+--- classes and interfaces ---
+
+Class instances can only be refered to through interfaces the object defined.
+
+Interface1 objA = Class(args)
+Interface2 objB
+if objA.implementsInterface(Interface2)
+	objB = objA.getInterface(Interface2)
+-or-
+Interface1 objA = Class(args)
+Interface2 obj = objA.getInterfaceOrNull(Interface2)
+
+Interface1+Interface2 obj = Class(args)
+obj.interface1Method()
+obj.interface2Method()
+
+-- internal interfaces --
+
+Class can expose implemented interfaces to the public or to just derived or friend classes.
+
+tuple ButtonEvent
+	...
+
+interface CallableButton
+	func() buttonActivated(ButtonEvent)
+	func() buttonDeactivated(ButtonEvent)
+
+class InputManager
+	private interface RegisterButtons
+		func() register(CallableButton button)
+			...
+
+		friend CallableButton
+
+class Button
+	construct(RegisterButtons obj)
+		obj.register(this)
+
+	implements interface CallableButton
+		func() buttonActivated(ButtonEvent e)
+			...
+
+		func() buttonDeactivated(ButtonEvent e)
+			...
+
+int main()
+	RegisterButtons obj = InputManager(...) //error - main doesn't have permission to access interface RegisterButtons
+
+
+--- OOP ---
+
+*everything* *must* be an object.
+functions, classes, function/class templates, interfaces, operators
+
+infix operators are special functions syntax wise, but completely nomal otherwise
+
+
+*** type hierachy ***
+
+Q: How are objects and values different?
+A: Objects hold values. At different points in time, the same object may hold different values. An object can be altered, while a value cannot. Different objects can hold the same value. Trying to modify a value just produces a new value. Modifying an object causes the object to hold a different value.
+
++ definitions +
+
+class - defines a type
+	defines how values of that type should be treated
+	defines how data of values of that type can be accessed/modified
+type - a grouping of values whose rules for intepretation are defined by the same class
+derived type - a type that is composed of other types
+native type - a type that is not composed of other types
+
+object - holds values of a certain type
+value - typed data
+
++ native types +
+
+can't be expressed in terms of other types
+
+class
+complex number
+function
+namespace
+reference
+string
+subroutine
+
++ derived objects +
+
+can be expressed in terms of other objects
+
+(class)
+(complex number)
+	real number
+		irrational number
+		rational number
+			integer
+(function)
+	class template
+	function template
+	closure
+array
+list
+map
+
+
+3 //value of type "complex number"
+complexnumber foo //object of type "complex number"
+foo = 3 //the object now holds a value
+complexnumber bar //object of type "complex number"
+foo.square() //the class that defined type "complex number" also defined the method square
+bar = foo.square() //the object now holds a value
+
+Note that classes don't have to have names.
+
+
+//template<class T> class Foo
+//template(class T) class Foo
+ClassTemplate(class T) Foo
+	T value
+	constructor(T val)
+		value = val
+typeof Foo == "ClassTemplate"
+function doStuff(ClassTemplate arg1)
+	class SomeClass = arg1(int) //calling the class template returned a class
+	SomeClass inst(555) //instantiating the class
+doStuff(Foo)
+
+
+Giving the same arguments to a ClassTemplate always returns the same class.
+
+
+Array(int) numbers1 = (9, 8, 7)
+Array(float) numbers2 = [9.8, 7.6, 5.4]
+
+
+(... , ... , ...) is a collection literal and can be converted to an array or list
+
+
+func a(class b)
+	b c()
+
+
+*** starting point ***
+
+either a global function named "main" or a public static member of a class named "main"
+there must only be one function named "main"
+
+func main()	
+func main(string[] arguments)	
+func main() int
+func main(string[] arguments) int
+	
+	
+class MyClass
+	public static func main()
+	public static func main(string[] arguments)
+	public static func main() int
+	public static func main(string[] arguments) int
+
+
+*** int ***
+
+interface IInt
+	pubread bool negative
+	pubread uint8 unsingedSize
+	pubread uint8 signedSize
+	func getU8() uint8
+	func getS8() sint8
+	func getU16() uint16
+	func getS16() sint16
+	...
+
+unsignedSize is the minimum number of bytes needed to hold the number in an unsigned int, or 0 if it can't be stored in an unsinged int.
+signedSize is the minimum number of bytes needed to hold the number in a signed int.
+The get* functions throw an exception if the value can't be stored in that type.
+
+	
+*** conditional operator ***
+
+C++
+	a ? b : c;
+	
+Desal
+	?( a, b, c )
+	
+return ?( num != 0, num, 0 )
+
+
+*** function-style operators ***
+
+?
+
+int number = ?( arg != null, arg, 0 )
+
+true/false/value Once?
+
+trueOnce?
+falseOnce?
+valueOnce?
+
+any/all True/False/Equal(to)/Difference(From) ?
+
+anyTrue?
+allTrue?
+anyFalse?
+allFalse?
+anyEqual?
+allEqual?
+anyEqualTo?
+allEqualTo? (xxx how is this different from allEqual?)
+anyDifferent?
+allDifferent?
+anyDifferentFrom?
+allDifferentFrom?
+
+These function-style operators are also member functions of containers.
+
+bool succeeded = allTrue?(
+	step1(),
+	step2(),
+	step3() )
+bool failed = anyFalse?(
+	step1(),
+	step2(),
+	step3() )
+bool succeeded = allEqual?(
+	NS_Success,
+	step1(),
+	step2(),
+	step3() )
+failed = anyDifferent?( NS_Success, ... )
+succeeded = allDifferentFrom?( NS_Error, ... )
+failed = anyEqualTo?( NS_Error, ... )
+
+
+*** sending and receiving ***
+
+func main(string[] arguments)
+	Logger log
+	
+	try
+		Program program(arguments)
+		program.run()
+	receive(Notice notice)
+		log.logNotice(notice)
+	receive(Warning warning)
+		log.logWarning(warning)
+	receive(Error error)
+		log.logRecoverableError(error)
+	catch(Error error)
+		log.logFatalError(error)
+		
+class Program
+	public constructor(string[] arguments)
+		...
+		
+	public func run()
+		print "before"
+		send Notice("running debug build")
+		print "after"
+
+possible output:
+before
+Notice: running debug build
+after
+
+When an object is sent, it moves up the stack until it finds something to receive it.
+The receive block is executed.
+Execution continues from where the object was sent.
+If there is no receiver, the sent object is discarded and execution continues from where the object was sent.
+
+
+
+*** alternate instantiation syntax ***
+
+Type obj(3)
+Type obj.construct(3)
+
+dyn refer -> Type(3)
+dyn refer -> @Type.construct(3)
+
+
+*** named constructors ***
+
+Constructors do not have to be named "construct".
+The just have to *start* with "construct".
+
+
+class MyClass
+	pub func constructA()
+		...
+
+	pub func constructB(int val)
+		...
+		
+MyClass alpha()
+MyClass beta.constructA()
+dyn epsilon -> @MyClass()
+dyn zeta -> @MyClass.constructA()
+
+MyClass delta(3)
+MyClass gamma.constructB(4)
+dyn sigma -> @MyClass(7)
+dyn omega -> @MyClass.constructB(8)
+
+
+class NumAndSquareHolder
+	float val
+	float square
+	bool hasBeenSetup
+
+	pub func constructNoSetup(int val)
+		this.val(val)
+		
+	pub func constructSetup(int val)
+		this.val(val)
+		setup()
+
+	func setup()
+		square = val*val
+		hasBeenSetup = true
+		
+	pub getSquare() float
+		if not hasBeenSetup
+			setup()
+		return square
+		
+NumAndSquareHolder foo(1) //error - ambiguous
+NumAndSquareHolder bar(val = 2) //error - ambiguous
+dyn baz -> @NumAndSquareHolder(3) //error - ambiguous
+dyn foz -> @NumAndSquareHolder(val = 4) //error - ambiguous
+		
+NumAndSquareHolder alpha.constructSetup(5)
+NumAndSquareHolder beta.constructNoSetup(8)
+
+dyn gamma -> @NumAndSquareHolder.constructSetup(10)
+dyn delta -> @NumAndSquareHolder.constructNoSetup(15)
+
+alpha.restructSetup(9)
+beta.restructNoSetup(6)
+gamma.restructSetup(11)
+delta.restructNoSetup(16)
+
+
+*** function specialization ***
+
+//1st function
+func pow(float number, int power) float
+	...
+	
+//2nd function
+func pow(float number, 2) float
+	...
+-OR-
+func pow(float number, int power)(*, 2) float
+	...
+-OR-
+func pow(float number, when int power = 2) float 
+	...
+-OR-
+func pow(float number, int power)(power = 2) float
+	...
+	
+var num = pow(4, 2) //calls the second function
+var power = 2
+var num2 = pow(4, power) /* implementation may call second function if it is able to determine that power will be 2, otherwise it should call the first function */
+
+
+*** full function overloading ***
+
+Multiple functions can have the same parameters in the same order if the parameters have different names.
+
+class NumAndSquareHolder
+	pubread float number
+	pubread float square
+
+	pub func construct(float number)
+		this.number(number)
+		this.square(number*number)
+		
+	pub func construct(float square)
+		this.square(square)
+		this.number( Math.sqrt(square) )
+		
+NumAndSquareHolder alpha(number = 5)
+dyn beta -> @NumAndSquareHolder(square = 16)
+
+
+*** MultiFunc type ***
+
+MultiFunc alpha
+alpha.add( func(int val){...} )
+alpha.add( func(int val, int val){...} )
+alpah.add( func(float val, string text){...} )
+alpha.add( func(string text){ ... } )
+
+alpha(3)
+alpha(5, 6)
+alpha(7.5, "text")
+alpha("text")
+
+alpha.remove<int,int>()
+
+alpha(5, 6) //error - no function takes such arguments
+
+
+*** restruct ***
+
+the .restruct() member function destructs an object and then immediately constructs it again
+it can be explicitly defined
+
+//implicit restruct
+class MyClass
+	func construct(int val)
+		...
+	
+	func destruct()
+		...
+		
+MyClass inst(3)
+inst.restruct(5)
+
+//explicit restruct
+class MyClass2
+	func construct(int val)
+		...
+	
+	func destruct()
+		...
+		
+	func restruct(int val)
+		...
+
+MyClass2 inst2(8)
+inst2.restruct(10)
+
+
+operator= is the same as calling .restruct() if an appropriate .construct() exists and an appropriate operator= doesn't exist.
+
+
+*** dynamic functions ***
+
+func a(int arg)
+  ...
+  
+func b(float arg) int
+  ...
+  
+dyn c -> @function(float arg)
+  return a( b(arg) )
+  
+c(12.34)
+
+
+
+*** curry ***
+
+func f(int a, int b, int c, int d)
+  ...
+  
+func g(MyClass arg) int
+  ...
+  
+dyn h -> @f(3) :curry
+dyn j -> @f(*, *, 3) :curry
+
+
+
+Recommended warnings should be in "Compiler & IDE Reccomendations" and not in other specs. Only errors should be part of the language and in the main spec.
+
+
+
+*** icon ***
+    black/brown/silver flame
+    
+*** mascot ***
+  bomb from Final Fantasy
+    
+*** file format ***
+
+".dsl" extension
+default encoding of UTF-8
+:version(2.3)
+
+
+
+
+++++++++++++++++++++++++++++++
+***** XXX Unsorted Stuff *****
+++++++++++++++++++++++++++++++
+
+
+--- versioning ---
+
+X.?.? is allowed to not be backwards compatible
+X.Y.? should be backwards compatible with all previous X versions
+X.Y.Z should only fix errors -- nothing new should be introduced
+
+examples:
+version 3 can get rid of features that were in version 2
+version 3.1 must be bacwards compatible with version 3.0
+version 3.1.1 can fix errors in the 3.1.0 specification
+
+To make backwards compatability easier, new keywords can be added to the "ext" namespace, a special namespace that only implementations are allowed to define members for.
+
+example:
+version 3.1 introduces a new assert feature, but can't add a new keyword, so it puts the keyword in the "ext" namespace.
+dyn varA = getA()
+dyn varB = getB()
+ext:assert(varA < varB)
+doStuff(varA, varB)
+
+---
+
+
+
+
+
+
+
+class MyClass
+  int value
+
+func doStuff(ref MyClass inst)
+  ...
+  
+MyClass instance
+doStuff(instance)
+instance.doStuff() //legal
+
+func doStuff2(ref MyClass inst)
+  inst.value = 3 //error - member "value" is private
+
+func MyClass.doStuff3()
+  this.value = 3 //legal
+  
+MyClass instance2
+doStuff3(instance2) //legal
+instance2.doStuff3() //legal
+
+
+
+
+
+
+--- Blob type ---
+
+represents a binary blob of data
+
+.size
+.toInt8()
+.toInt16()
+.toInt32()
+.toInt64()
+.toInt128()
+.getInt8(position)
+.getInt16(position)
+.getInt32(position)
+.getInt64(position)
+.getInt128(posiion)
+.setInt(position, value)
+.getBlob(position, size) //return blob
+.getBlob(position, ref obj) //sets value of obj
+.setBlob(position, obj)
+
+Blob blob1 = readFile(filePath)
+file.write(blob1)
+
+uint8[] data1 = blob.toInt8()
+uint16[] data2 = blob.toInt16()
+uint32[] data3 = blob.toInt32()
+uint64[] data4 = blob.toInt64()
+uint128[] data5 = blob.toInt128()
+
+Blob blob2(data1)
+Blob blob3(data2)
+blob3 = data3
+Blob blob4(data4)
+
+
+--- String type ---
+
+Char
+  size: 32 bits/4 bytes
+  holds a single Unicode character
+  DOES *NOT* hold a UTF-16 surrogate
+  .codePoint
+    a 32-bit integer    
+
+A String may have text stored as multiple encodings, and only translate to a certain encoding when needed.
+
+[]
+  gets/sets a character at a certain index
+  might not run in constant time
+  returns a Char when getting
+  takes a Char when setting
+.length
+  number of Unicode characters
+.compact()
+  attempts to use less space to store the string
+  may be implemented by switching the internal encoding to UTF-8 or UTF-16
+.generator
+  returns a generator that yields character by character from front to back in constant time
+.iterator
+  returns an iterator that can be used to move back and forth through the string
+  returned iterator can access the currently pointed to char in constant time
+.setupInsertRemove()
+  ensures that substrings can then be added/removed in constant time
+  may be implemented by changing the internal representation to a doubly linked list
+.setupRandomAccess()
+  ensures that random access of characters is then possible
+  may be implemented by changing the internal representation to an array of values with a fixed-width encoding
+.toChars()
+  returns an array of Char
+.toBinary(encoding="UTF-8", BOM=false)
+  returns a binary Blob that contains the string encoded with specified character encoding
+  
+  
+String text = getTextFromFile(filePath0) //BOM is stripped
+
+OutTextFile file1
+file1.open(filePath1, append=true)
+file1.setDefaultEncoding("UTF-16LE") //in case the file was empty
+file1.write(text)
+
+OutFile file2
+file2.open(filePath2)
+file2.write( text.toBinary("UTF-16LE") )
+
+OutFile file3
+file3.open(filePath3)
+file3.write( text.toBinary("UTF-16LE", BOM=true) )
+
+
+OutTextFile.open() attempts to determine the character encoding when appending to an existing file.
+UTF-8 is chosen by default if the file is empty.
+Throws an exception if the file isn't empty and the character encoding isn't recognized.
+  This exception will also be thrown for binary files.
+  
+  
+func stringFromBinary(Blob data, encoding="auto") string
+  takes an array of bytes and returns a string
+  if the encoding is set to "auto", the function attempts to determine what encoding the text is in
+  
+String a
+...
+String b = stringFromBinary( a.toBinary("UTF-16LE", true) )
+
+
+String.registerEncodingChecker("Big5", big5checker) //used to determine if a binary blob contains text in that encoding
+String.registerParser("Big5", big5Parser)
+String.registerSerializer("Big5", big5Serializer)
+
+String text(textBlob, "Big5")
+
+
+
+
+
+
+When declaring a type or function, a special would should appear first. This makes it easier to recognize whether a function is being defined or called, and whether a type is being defined or instantiated.
+
+enum Color
+func doStuff()
+class MyClass
+
+
+
+
+
+
+
+
+enum Color
+  red
+  yellow
+  blue
+  green
+  purple
+  orange
+  black
+  white
+  gray
+  brown
+
+Color someColor( Color.green )
+someColor = Color.orange
+setColor( Color.purple )
+
+An enum value cannot be converted to/from an integer value.
+
+  
+enum<uint32> Color
+  ...
+  
+enum<uint64> Color
+  ...
+
+
+
+
+
+domain
+declares what values the function is allowed to take
+
+func test( int val :domain(-1 to 2) )
+
+throws DomainError when given an incorrent argument
+
+
+
+
+
+
+There are 2 ways of defining how source files should be combined:
+
+* give the compiler a big list of all source files
+  The compiler should treat all the text as if it was all included in the same file.
+
+* "uses"/"import"/"needs"/"requires" keywords
+  The compiler allows source files to access stuff that the file has asked to access. If file A imports file B and file B imports file C, file A will not automatically have access to file C.
+
+
+
+
+
+
+Implementations must comply with all "MUST" requirements to be considered a conforming implementation by this document.
+
+
+
+
+
+
+#doAction() tells the Desal implementation to do something
+#create(copyConstructor) tells the implementation to create a copy constructor
+#dontCreate(defaultCopyConstructor) tells the implementation to not create a default copy constructor
+
+
+:doesThis() tells the Desal that something does something
+:implements(IMyInterface) tells the implementation that the class implements the interface named "IMyInterface"
+
+
+
+final specifications should be available as PDF
+they should be bookmarked well and have bookmarks to every section
+it should be easy to navigate
+final specifications should be available in several forms, and each should be high quality
+all specs should have the same forms available
+  when a form is began being used, older specs should also be made available in that form
+
+
+
+Memory management is implementation specific.
+
+One possibility is using both reference counting and tracing.
+  When an object has no more references, immediate action should be taken.
+    memory freed or noted that the memory should be freed soon
+    object removed from tracer's references
+  Reference counting may be faster than tracing, but has problems with circular references.
+  So evertually the tracer should run and remove whatever orphaned objects haven't been freed.
+
+
+
+  
+There should be a way to ask for a large block of memory and be assured that the block will not move, like a big bucket of bits. There of course should also be a way to instatiate objects within this block. Within this block, pointers should be able to increment and decrement and access memory with assurance that the data isn't being modified by the system, OS, etc.
+
+
+
+object in namespace
+  stuff:variable = 3
+function in namespace
+  stuff:doStuff()
+type in namespace
+  func doStuff(stuff:MyType arg1)
+  
+static object in class
+  MyClass.variable = 3
+static function in class
+  MyClass.doStuff()
+function in class
+  func MyClass.doStuff() { ... }
+type in class
+  func doStuff(MyClass::MyType arg2)
+
+
+
+
+
+
+
+
+expression [interface] (function-call)
+	expression [function] (identifier)
+		"getFuncInterface"
+	expression [argument] (integer)
+		0
+	expression [argument] (function-call)
+		expression [function] (function-template-instantiation)
+			expression [function-template] (identifier)
+				"CArray"
+			expression [template-argument] (identifier)
+				"interface"
+		expression [argument] (interface-template-instantiation)
+			expression [interface-template] (identifier)
+				"array"	
+			expression [template-argument] (identifier)
+				"string"
+	expression [argument] (identifier)
+		"int"
+
+expression [interface] (function-interface-get)
+	expression [parameter-interface] (interface-template-instantiation)
+		expression [interface-template] (identifier)
+			"array"	
+		expression [template-argument] (identifier)
+			"string"
+	expression [return-interface] (identifier)
+		"int"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Desal should have a good way of writing long boolean statements.
+
+
+*** then ***
+
+Blocks cannot appear one after the other, even if ended with "}".
+Blocks can be separated with the "then" keyword.
+Use of the "then" keyword must be specified in the construct's syntax.
+  -or-
+>boolean block< can be replaced with >"test" test-block "then" block<
+
+
+syntax for if statement:
+  "if" boolean code-block
+  "if" "test" test-block "then" code-block
+
+syntax for while statment:
+  "while" boolean code-block
+  "while" "test" test-block "then" code-block
+  
+while test
+  str eql "keep going"
+  and errorCount eql 0
+  and worldImploded eql false
+then
+  doStuffA()
+  doStuffB()
+  
+while test: str eql "keep going"
+then: doStuffA()
+  
+  
+*** test ***
+
+The "test" block returns true or false.
+
+if (
+  event.target.tagName == null
+  or event.target.tagName != 'listitem'
+  or event.target.getAttribute('disabled') == 'true' )
+  return
+
+if test
+  event.target.tagName == null
+  or event.target.tagName != 'listitem'
+  or event.target.getAttribute('disabled') == 'true'
+then
+  return
+
+
+*** return if ***  
+
+syntax
+  "return" "if" boolean
+  "return" value "if" boolean
+
+return if thing1 == thing2
+
+return if (
+  event.target.tagName == null
+  or event.target.tagName != 'listitem'
+  or event.target.getAttribute('disabled') == 'true' )
+
+return if test
+  event.target.tagName == null
+  or event.target.tagName != 'listitem'
+  or event.target.getAttribute('disabled') == 'true'  
+
+return 'you suck' if test
+  letter != null
+  and letter.message.firstIndexOf('past due') != null
+  
+  
+  
+  
+  
+  
+  
+
+
+
+	
+int intergret
+intergret = 8
+
+ref int intergret
+intergret -> new int
+intergret = 8
+
+Classical objective
+objective.functional(8)
+objective.viable = 8
+
+ref Classical objective
+objective -> new Classical
+objective.functional(8)
+objective.viable = 8
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+*** refering to objects ***
+
+There are 5 types of references.
+
+explicitly typed reference
+  explicitly typed locked reference
+    type name  //type cannot be const
+    type name(object)
+    type name -> ObjectID
+
+  explicitly typed varying reference
+    var type name
+    var type name(object)
+    var type name -> ObjectID
+    
+implicitly typed reference
+  implicitly typed locked reference
+    impl name(object)
+    impl name -> ObjectID
+
+  implicitly typed varying reference
+    var impl name(object)
+    var impl name -> ObjectID
+
+dynamically typed reference
+  dyn name
+  dyn name(object)
+  dyn name -> ObjectID
+
+
+References can point to any object, including other references.
+A reference's identifier is evaluated as the object the reference points to except when:
+  the identifier is followed by the ref keyword
+  the -> operator is used  
+
+operator = changes the value of the object pointed to
+  not allowed on:
+    references that point to references
+    explicitly and implicitly typed references that point to const types
+    locked and manual dynamically typed references that point to const types
+    locked and manual dynamically typed references that point to objects of an incompatible type
+  
+operator -> changes which object a reference points to
+  not allowed on:
+    locked references
+  all varying references can be pointed to nothing, called "null"
+    ex: var int number -> null
+  
+When references point to other references, the pointed to reference is accessed with the ".$" property.
+"ref" can only be used when declaring the type for references that point to references
+
+A reference is either explicitly typed, implicitly typed, or dynamically typed.
+  explicitly typed forms have the type of object pointed to stated at declaration time
+  implicitly typed forms have the type of object pointed to determined by the instantiation value
+  dynamically typed forms can point to any object of any type
+The explicitly typed and implicitly typed forms have locked and varying forms.
+  Locked references always refer to the same object.
+  Varying references can be changed to point to other objects.
+  
+Dynamically typed references
+  Dynamically typed references can be switched between 3 states: locked, manual, and automatic
+    the manual and automatic states are both varying
+  dynamically typed references can be locked to the current object with lockDyn()
+    operator -> isn't allowed on locked dyn refs
+    if operator = tries to assign a value of a different type, an exception is raised
+  manualDyn() allows a dyn ref to point to new objects with operator ->
+    operator = still raises exceptions when the value cannot be automatically converted
+  autoDyn() allows operator = to point the reference at a new object if needed
+    when operator = is used on an automatic dynamically typed reference and the value cannot be converted to the type pointed to,
+    a new object is created with the type of the value, the value is assigned into it, and the reference is pointed to it
+  dynamically typed references are automatic by default
+
+
+int num111
+  instantiates an object of type int and points to it
+  
+num111 = 777
+  set the value of the object pointed to by num111 to 777
+  
+int num112(555)
+  instantiates an object of type int with value 555 and points to it
+  
+int num113 -> @num112
+  points num113 at the object that num112 is current pointing to
+  
+ref int num114b -> @ref num113
+  points num114b at num113
+  
+num114b.$ = 888
+  sets the value of the object pointed to by num112 and num113 to 888
+  
+ref ref int num114c -> @ref num114b
+
+
+@identifier
+  returns the ObjectID of the object that is pointed to
+@ref identfier
+  returns the ObjectID of the reference
+  
+@ref num114b
+  returns the ObjectID of reference "num114b"
+@num114b
+  returns the ObjectID of reference "num113"
+@num114b.$
+  returns the ObjectID of the object pointed to by "num113" and "num112"
+
+
+
+
+
+int test
+  test evaluates to the object that test points to
+  ref test evaluets to the reference named "test"
+  @test evaluates to the ObjectID of the object pointed to by test
+  @ref test evaluates to the ObjectID of the reference named "test"
+
+
+a reference evaluates to the object it points to
+
+int object
+ref int reference
+
+@object gives a const ref to the object
+@reference gives a const ref to the object that the reference points to
+@reference.$ gives a const ref to the object that the reference points to
+@@reference evaluates to the reference 
+@@@reference gives a const ref to the reference
+
+function arguments are always constant
+
+//pass by value
+func doStuffA(int number) //I want a value
+  //error: number = 2
+  int number2(number) //okay
+
+//pass by reference
+func doStuffB(ref int number) //I want a reference to an object
+  //error: number -> new int
+  number = number + 8
+  doStuffA(number)
+
+int num(3)
+print num //prints "3"
+doStuffA(num) //sends the value of num
+print num //prints "3"
+doStuffB(@num) //sends a reference to num
+print num //prints "11"
+
+ref int num2 -> new int(5)
+print num2 //prints "5"
+doStuffA(num2) //sends the value of the object pointed to by num2
+print num2 //prints "5"
+doStuffB(@num2) //sends a reference to the object pointed to by num2, but not the same reference as num2
+print num2 //prints "13"
+doStuffB(@@num2) //sends num2
+print num2 //prints "21"
+
+
+
+
+type ident
+ref type ident
+const ref type ident -> ObjectID
+ref ref type ident
+dyn type ident
+const dyn type ident -> ObjectID   //should only be used instead of "const ref impl" when the type cannot be determined
+
+
+
+
+type aaa
+type bbb
+ref type ccc // -> new type is default
+
+ident = aaa // references evaluate to the end object pointed to
+ident -> bbb // operator -> works on the topmost reference
+
+ref ref type ddd // -> new type
+ddd -> ccc // operator -> worked on ddd 
+ddd = 4 // changed value of bbb to 4
+ddd.$ = 5 // operator .$ explicitly access the pointed to object; changed value of bbb to 5
+ddd.$.$ = 7 // changed value of bbb to 7
+ddd.$.$.$ //error
+ddd.$ -> aaa //points ccc at aaa
+
+
+
+func testAAA(ref type arg)
+  ...
+  
+type zero
+ref type alpha
+testAAA(alpha) //error - function testAAA wants a reference to an object and "alpha" evaluates to the object that it points to
+testAAA(ref alpha) //good
+testAAA(zero) //error
+testAAA(ref zero) //error - zero isn't a reference - PROBLEM RIGHT HERE
+testAAA(@zero) //good
+testAAA(@alpha) //good
+
+func testBBB(ref ref type arg)
+  ...
+  
+ref ref type beta
+testBBB(beta) //error - "beta" evals to object of type "type" but func wants ref to ref to object of type "type"
+testAAA(ref beta) //good
+testBBB(ref beta) //error - "ref beta" evals to a ref to type object, but func wants ref to ref to object
+testBBB(ref ref beta) //good 
+
+
+
+problem:
+  var int numA(111)
+  var int numB(222)
+
+  numA -> numB
+  numB -> numA
+
+This is confusing.
+
+  var int numA(111)
+  var int numB(222)
+
+  ref numA -> numB
+  ref numB -> numA
+
+Not much better.
+
+
+
+
+
+
+
+
+dyn alpha
+dyn beta
+
+alpha -> beta
+beta -> alpha
+
+ref alpha //evaluates to the reference named "alpha"
+alpha //doesn't evaluate to anything
+ref alpha.$ //evaluates to the reference named "beta"
+alpha.$ //doesn't evaluate to anything
+ref alpha.$.$ //evaluates to the reference named "alpha"
+alpha.$.$ //doesn't evaluate to anything
+ref alpha.$.$.$ //evaluates to the reference named "beta"
+
+alpha.$ = 3 //should work, so alpha.$ obviously evaluates to something
+
+
+Identifiers of statically typed references to references shouldn't evaluate to anything.
+But identifiers of dynamically typed references to references should evaluate to something.
+  But what?
+You should be able to assign into it, but not get anything out of it.
+
+
+
+
+
+
+
+
+
+
+
+
+//Dextr
+string data = "abcdef"
+
+for char in data: print char endl
+for char in data: println char
+
+{ |char| print char endl } eachin data
+println eachin data
+//better to require the left side is an identifier
+
+each(data, |char| print char endl)
+each(data, println)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+*** error catching ***
+
+All errors should be caught as early as possible when doing so doesn't interfere.
+When Desal is compiled to machine code, the compiler should refuse to produce anything when it finds an error.
+When Desal is being translated (such as to bytecode files), the translator should refuse to produce anything when it finds an error.
+When Desal is being interpreted, the interpreter should refuse to evaluate anything if it's not already running code, or throw an EvaluationError exception if it is. 
+
+
+
+
+
+The "=" operator can't be used to instantiate an object.
+  MyClass alpha = beta //doesn't compile
+  MyClass alpha(beta) //okay
+
+
+
+
+class MyClass
+  int num1
+
+var MyClass alpha
+alpha.num1 = 3
+
+MyClass beta
+beta.num1 = 6
+
+alpha = beta //value of object pointed to by beta copied into object pointed to by alpha
+beta.num1 = 10000
+print alpha.num1 //prints "6"
+
+alpha -> @beta //alpha pointed to object that beta points to
+print alpha.num1 //prints "10000"
+
+var MyClass epsilon -> null //epsilon doesn't point anywhere
+MyClass phi -> alpha //phi points to the same object that alpha points to
+
+
+
+
+ 
+
+versions #.*** should be backwards compatible
+  1.3 should be backwards compatible should be backwards compatible with 1.0
+breaking changes should be reserved for the next major version number  
+
+an entire class can be declared static, making all it's members static and dissallowing the creation of instances of it (objects)
+a switch case never falls through, but a fallcase does if a break isn't present
+"eql" and U+2248 are used for testing equality
+  IDEs are encouraged to automatically convert "eql" tokens to U+2248
+no prototypes - function or class can be defined lower in the source file from where it's called
+
+macro funcarg
+  opt("ref") type userid
+  
+macro funcargs
+  paren( opt(funcarg optmult("," funcarg)) )
+
+
+*** Native Types ***
+
+Native types are supported by the target's architechure.
+
+Examples: sint32, uint32, sfixed32, ufixed32, float32 (also for 8, 16, 64, 128, etc)
+bare ptr, bare ptr func, bare array
+
+Operator adjuncts, conversion adjuncts, and constructor/destructor adjuncts are not allowed on native types.
+
+
+*** Built-In Types ***
+
+Desal provides built in types for strings, integers, floating-point numbers, and pointers. These types may be slower, but they're safer. Builtin types can be extended with adjuncts.
+
+strings:
+int len = "this is some text".length
+
+ints:
+int num1 = 9999999999999999999999999999999999999999999999999999999999999
+
+references:
+ref int num1
+num1 = 8 //error: num1 doesn't point to anything
+
+whole int rational complex string ptr "ptr func" array
+
+
+*** User-Defined Types ***
+
+Types defined by the standard library, third-party libraries, or any other code.
+
+
+*** Reserved Words and Keywords ***
+
+and or xor if elif else while do for const static constructor destructor public pubread private pointer switch break eql cast default template type singlet band bor bxor sub meth func string byte null
+
+
+*** Free Functions ***
+
+Free functions are functions that are not member functions.
+
+
+*** Free Function Declarations ***
+
+syntax:
+  "func" newscopeid join paren(
+    opt(
+      opt("ref") type userid
+      optmult("," opt("ref") type userid)
+    )
+  ) opt(type) codeblock
+  
+  The user identifiers must each be different.
+
+comparisons:
+  C++
+    int createSum(int num1, int num2) {
+      return num1 + num2;
+    }
+
+  Desal
+    func createSum(int num1, int num2) int
+      return num1 + num2
+    }
+
+  C++
+    void add3(int & num1) {
+      num1 += 3;
+    }
+
+  In Desal, no return type is stated if nothing is returned.
+    func add3(ref int num1) 
+      num1 =+ 3
+    }
+
+
+*** Class Declaration ***
+
+syntax:
+  "class" newscopeid block(
+    
+  )
+  
+
+*** Adjucts ***
+
+Adjuncts are member functions that are added on later to the class.
+
+The syntax for adjuncts is the same as for free functions because "MyClass.functionName" is an identifier.
+
+examples:
+  class Test
+  }
+
+  func Test.doStuff1(float alpha, float beta) int
+    int value = cast<int>(alpha) + cast<int>(beta)
+    value =+ 5
+    return value
+  }
+
+  func Test.doStuff2(float alpha, float beta) int
+    return cast<int>(alpha) + cast<int>(beta) + 5
+  }
+
+  func Test.doStuff3(int arg) string
+    return std:lexcast<string>(arg) //namespaces seperated with only 1 colon
+  }
+
+comparison:
+  C++
+    class MyClass
+    {
+      MyClass()
+      {
+        ...
+      }
+      ~MyClass()
+      {
+        ...
+      }
+    }
+
+  Desal
+    class MyClass
+    }
+
+    func MyClass.constuctor()
+      ...
+    }
+    func MyClass.destructor()
+      ...
+    }
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+  //when a constructor is written the default copy constructor isn't created unless told to be made
+  class MyClass
+    int number
+  }
+
+  func MyClass.defaultcopyconstructor();
+
+  func MyClass.constructor(array string textArray)
+    number = textArray.length
+  }
+
+
+  //same with the = operator
+  class MyClass
+    int value
+  }
+
+  func MyClass.operator=(int number)
+    value = number
+  }
+
+  func MyClass.defaultoperator=;
+
+
+  //C++
+  class MyClass
+  {
+    int nums;
+    int getNums()
+    {
+      return nums;
+    }
+  }
+
+  //Desal
+  class MyClass
+    privread //publicly available, but only MyClass can change its value - only variables are allowed here
+      int nums
+    }
+  }
+
+  //getters and setters are often created when they aren't needed for forwards compatibility
+  //in Desal this isn't necessary
+
+  //old class - C++
+  class House
+  {
+    ...
+    public:
+    int getWindowCount() {
+      return __windowCount;
+    }
+    private:
+    int __windowCount;
+  }
+  House myHouse;
+  int windowCount = myHouse.getWindowCount();
+
+  //old class - Desal
+  class House
+    ...
+    pubread
+      int windowCount
+	  
+  House myHouse
+  int windowCount = myHouse.windowCount
+
+  //current class - C++
+  class House
+  {
+    ...
+    public:
+    int getWindowCount() {
+      return __smallWindowCount + __largeWindowCount;
+    }
+    private:
+    int __smallWindowCount;
+    int __largeWindowCount;
+  }
+  House myHouse;
+  int windowCount = myHouse.getWindowCount();
+
+  //current class - Desal
+  class House
+    ...
+    private
+      int smallWindowCount
+      int largeWindowCount
+  }
+  getter House.windowCount int //variable windowCount doesn't have to exist, although it can
+    return smallWindowCount + largeWindowCount
+  }
+  House myHouse
+  int windowCount = myHouse.windowCount
+
+  
+  setter MyClass.value(int value)
+    ...
+  }
+  getter MyClass.value int
+    ...
+  }
+  
+  
+  MyClass inst
+  
+  func(MyClass, int) setA = MyClass.setters.value
+  func(int) setB = bind(MyClass.setters.value, inst)
+  func(int) setC = bind(setA, inst)
+  
+  //equivalent
+  setA(inst, 1)
+  setB(1)
+  setC(1)
+  
+  func(MyClass)int getA = MyClass.getters.value
+  func()int getB = bind(MyClass.getters.value)
+  func()int getC = bind(getA, inst)
+  
+  //equivalent
+  print getA(inst)
+  print getB()
+  print getC()
+  
+  
+  func MyClassB.doStuff(int arg1) float
+    ...
+  }
+  func(MyClassB, int)float method = MyClassB.functions.doStuff
+  
+  class MyClassC
+    private int number
+  }
+  MyClassC inst
+  inst.objects.number = 555 #ignore(privateAccess)
+  
+  class.objects.XXX can reach around getters/setters to access the actual object
+  
+
+*** Switch ***
+
+syntax:
+  "switch" obj block(
+    mult(
+      either("case", "fallcase") obj optmult("," obj) codeblock
+    )
+    opt("default" codeblock)
+  )
+
+comparison:
+  C++
+    switch(number)
+    {
+      case 1:
+        doOne();
+        break;
+      case 2:
+        if(doTwo() == 555)
+        {
+          break;
+        }
+      case 3:
+      case 4:
+        doThreeOrFourOrMaybeTwo();
+      default:
+        logError();
+    }
+
+  Desal
+    switch number
+      case 1
+        doOne()
+      fallcase 2
+        if doTwo() eql 555: break
+      case 3, 4
+        doThreeOrFourOrMaybeTwo()
+      default
+        logError()
+      }
+    }
+
+
+*** if/else ***
+
+syntax:
+  "if" test block
+  optmult("elif" test block)
+  opt("else" block)
+
+comparisons:
+  C++
+    if(myVariable < 3)
+    {
+      doStuff();
+      dontDoTooMuch();
+    }
+    else if(variable == 3)
+    {
+      doMoreStuff();
+      doMoreStuffAgain();
+    }
+    else
+    {
+      freakOutOnce();
+      freakOutTwice();
+    }
+
+  Desal
+    if myVariable < 3
+      doStuff()
+      dontDoTooMuch()
+    elif myVariable eql 3
+      doMoreStuff()
+      doMoreStuffAgain()
+    else
+      freakOutOnce()
+      freakOutTwice()
+    }
+
+  C++
+    if(reallyLongName.reallyLongName2.reallyLongName3(lotsOfArguments) == returnTypeList[1]
+    || reallyLongName.reallyLongName2.reallyLongName3(lotsOfArguments) == returnTypeList[2])
+    {
+      doStuff();
+    }
+
+  Desal
+  Parenthesis allow multiple lines. Just note that the opening parenthesis can't touch the "if".
+    if (reallyLongName.reallyLongName2.reallyLongName3(lotsOfArguments) = returnTypeList[1]
+    or reallyLongName.reallyLongName2.reallyLongName3(lotsOfArguments) = returnTypeList[2])
+      doStuff()
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+*** References ***
+
+//pointers look and behave exactly like regular objects/variables, but support the -> operator
+//IDEs should automatically convert "->" to the proper Unicode arrow character as soon as "->" is typed
+
+int * value; //C++
+ptr int value //Desal
+
+ptr int myNum //pointer to an int
+ptr const int myNum //can point at different const ints, but the value of those const ints can't be changed
+const ptr int myNum -> new int(8) //always points to the same int, but the value of that int can be changed
+const ptr const int myNum -> new int(8) //always points to the same const int, and that const int can't be changed
+
+int num1
+ptr int num2 -> @num1 //@num1 is the address of num1
+int num3 = num2 //num2 syntactically behaves like a regular int
+
+//C++
+int a = 8;
+int * b = &a;
+int c = *b;
+int * d = b;
+
+//Desal
+int a = 8
+ptr int b -> @a
+int c = b
+ptr int d -> @b //the @ operator returns the address of the end object pointed to
+
+//C++
+int * a = new int;
+int ** b = &b;
+
+//Desal
+ptr int a -> new int
+ptr ptr int b --> @@b //the ptraddr operator returs the address of a ptr
+
+//C++
+int melon;
+void pointAtMelon(int * & pointer)
+{
+  pointer = &melon;
+}
+int * pointer;
+pointAtMelon(pointer);
+
+//Desal
+int melon
+func pointAtMelon(ref ptr int pointer)
+  pointer -> @melon
+}
+ptr int pointer
+pointAtMelon(pointer)
+
+//C++
+void makeNine(int * pointer)
+{
+  *pointer = 9;
+}
+int num1;
+makeNine(&num1);
+
+//Desal
+func makeNine(ptr int pointer)
+  pointer = 9
+}
+int num1
+makeNine(@num1)
+
+
+*** references ***
+
+//like const ptr
+
+//C++
+int num1;
+int & num2 = num1;
+num2 = 555;
+
+//Desal
+int num1
+ref int nu'2(num1)
+num2 = 555
+
+//Desal
+int num1
+const ptr int num2 -> @num1
+num2 = 555
+
+
+*** left-to-right assignment ***
+
+int num1
+8 => num1
+
+myObject1.myWonderfulObject2.myWonderfulObject3.doAmazingStuff() => string result
+if result eql "ERROR"
+  crapSelf()
+}
+
+//C++
+int * num1;
+num1 = new int;
+*num1 = 8;
+
+//Desal
+ptr int num1
+num1 -> new int
+num1 = 8
+
+
+*** blocks ***
+
+//C++
+if(test()) { //opening bracket required
+  doStuff();
+}
+
+//Desal - opening bracket would be an error
+if test
+  doStuff()
+}
+
+/* if a comma comes after a keword that opens a block (like if and while)
+   except in declarations (like func and operator) the newline ends the block */
+if result eql "ERROR"
+  crapSelf()
+  crapOnOthers()
+  haveAHeartAttack()
+}
+if result eql "ERROR", crapSelf(), crapOnOthers(), haveAHeartAttack()
+
+while playing
+  playFrame()
+}
+while playing, playFrame()
+
+
+*** generics ***
+
+generic?type t1?
+class Wrapper
+  private
+    t1 theObject
+  }
+}
+public func Wrapper.constructor(t1 object)
+  theObject = object
+}
+public func Wrapper.getObject() t1
+  return theObject
+}
+int num1 = 7
+Wrapper wrappedInt(num1) //wrappedInt is known to be of type Wrapper?int? because of the constructor
+int num2 = wrappedInt.getObject()
+func addTwo(Wrapper?int? wrappedObject) int
+  return wrappedObject.getObject() + 2
+}
+int num3 = addTwo(wrappedInt)
+
+generic?type t1?
+func getSum(t1 arg1, t1 arg2) t1
+  return arg1 + arg2
+}
+int sum = getSum(3, 4.0) //warning raised - 3 is automatically converted to a float
+
+
+*** custom operators ***
+
+operator add(uint32 number1, uint32 number2) uint32
+  return number1 + number2
+}
+uint32 number = 3 add 4 //number is now equal to 7
+
+operator eat(ref Person person, Food food)
+  person.feed(food)
+}
+Person Nancy
+Food banana
+Food orange
+Nancy eat banana
+Nancy eat orange
+
+
+*** mathematical style tests ***
+
+if(x > 3 && x < 5) {...} //C++
+if 3 < x < 5, ...} //Desal
+
+
+*** assign result ***
+
+num1 = num1 + 5; //C
+num1 += 5; //C++
+num1 =+ 5 //Desal
+
+int num1
+int num2 = num1++ //doesn't compile because num++ doesn't return anything
+
+//the ++ or -- operator must come right after the variable it modifies
+++num1 //doesn't compile
+
+
+*** do while loops ***
+
+//C++
+do {
+  keepGoing = run();
+} while(keepGoing);
+
+//Desal
+repeat while keepGoing
+  keepGoing = stuff()
+}
+
+
+*** unconditional loops ***
+
+//C++
+for(;;) {
+  doStuff();
+  if(test) break;
+}
+
+//Desal
+loop
+  doStuff()
+  if test, break
+}
+
+
+*** for loops ***
+
+//C++
+for(int i = 0; i < stuff.size(); i++) {
+  doStuff(stuff[i]);
+  if(test) break;
+}
+
+//Desal
+range int i from 1 to stuff.size()
+  doStuff(stuff[i])
+  if test, exitloop
+}
+
+//Desal
+int i
+range i to stuff.size() //starts at 1 by default
+  doStuff(stuff[i])
+  if test, exit loop
+}
+
+//C++
+for(int i = 0; i < 100; i++) {
+  doStuff();
+}
+
+//Desal
+range to 100
+  doStuff
+}
+
+
+*** exiting ***
+
+range int rowNum from 1 to table.rowCount
+  range int colNum from 1 to table.columnCount
+    Cell cell = table.get(rowNum, colNum)
+    doStuff(cell)
+    if timeToStop(), exitloop(2)
+  }
+}
+
+//C++
+void doLotsOfStuff(vector collection) {
+  for(int i = 0; i < collection.size; i++) {
+    lookForIt(cellection[i]);
+    if(foundIt()) return;
+  }
+}
+
+//Desal
+func doLotsOfStuff(vector collection)
+  range int i to things.size
+    lookForIt things[i]
+    if foundIt, exitfunc
+  }
+}
+
+//Desal
+func doLotsOfStuff(vector collection)
+  foreach thing of things frm 1 to things.length //things supports operator []
+    lookForIt(thing) //thing is the same as things[currentIndex]
+    if foundIt, exitfunc
+  }
+}
+
+//Desal
+func doLotsOfStuff(vector collection)
+  foreach thing of things to things.length //start at 1 by default
+    lookForIt(thing)
+    if foundIt, exitfunc
+  }
+}
+
+
+*** singletons ***
+
+Note: singletons cannot have static members (like the way classes can)
+
+singleton getInt
+	int _value
+
+	construct()
+		_value = 8
+
+	define default interface Foo
+		call() int
+			return _value
+		
+		ro int value = _value
+
+print getInt() //8
+getInt.value = 5
+print getInt() //5
+
+
+singleton DrunkMonkey
+	define default interface Foo
+		func drinkBeer()
+			...
+
+func main()
+	DrunkMonkey.drinkBeer()
+	Foo instance1 = DrunkMonkey() //throws an error
+
+
+*** string levels ***
+
+C++
+"then he said, \"Do you ever shut up?\" and I was all like, \"Um, no. Duh.\" and then he shot himself."
+
+Desal
+2"then he said, "Do you ever shut up?" and I was all like, "Um, no. Duh." and then he shot himself.""
+3"he said ""use as many levels as you want"" but he seems suspicous"""
+8"if you don't want to escape """"""" (7 quotes in a row) then don't.""""""""
+'' = "" = 1'' = 1"" = 2''' = 2""" = 3'''' = 3"""" etc
+
+
+*** multi-line strings ***
+
+//C++
+"line1\nline2\nline3"
+
+//Desal
+m"line1
+lin2
+line3"
+
+//C++
+"really long string that I would really like to break up into multiple lines so that I don't have to scroll since my IDE sucks and it can't break lines decently"
+
+//Desal
+m"really long string that I would really
+like to break up into multiple lines
+so that I don't have to scroll since my
+IDE sucks and it can't break lines decently"
+.replace("\w+", " ")
+
+
+*** concat ***
+
+if "thisthat" eql "this" + that"
+  print "Desal is wonderful"
+}
+
+
+*** conversion to built-in string type ***
+
+//compilers should accept source files in many encodings
+//strings are stored as arrays of uint16 in UTF-16 format
+//no bare string type
+
+string text1 = "some stuff ?a ?i ?u ?e ?o" //converted to string type
+array uint16 text2 = b"some stuff ?a ?i ?u ?e ?o" //not converted to string type (notice the b)
+string text3 = text2 //doesn't compile
+
+class ConversionTest
+  public
+    constructor(string argText)
+      text = argText
+    }
+    constructor(array uint32 argNumbers)
+      numbers = argNumbers
+    }
+  }
+  private
+    string text
+    array uint32 numbers
+  }
+}
+ConversionTest test1("some stuff ?a ?i ?u ?e ?o") //first constructor called
+ConversionTest test2(b"some stuff ?a ?i ?u ?e ?o") //second constructor called
+bare
+  ConversionTest test1("some stuff ?a ?i ?u ?e ?o") //second constructor called
+}
+
+
+*** accessing variables inside a string ***
+
+int num1
+float num2
+string name1
+string name2
+
+//C++
+std::string("My girlfriend ") + name1 + " owns over " + num1 + " thousand unicorn figurines, but her sister " + name2 + " has a " + num2 + " inch bust."
+
+//C++
+stringstream stream;
+stream << "My girlfriend " << name1 << " owns over " << num1 << " thousand unicorn figurines, but her sister " << name2 << " has a " << num2 << " inch bust."
+
+//Desal
+v"My girlfriend $name1 owns over $num1 thousand unicorn figurines, but her sister $name2 has a $num2 inch bust."
+//The above is the exact same as this:
+"My girlfriend " + name1 + " owns over " + num1 + " thousand unicorn figurines, but her sister " + name2 + " has a " + num2 + " inch bust."
+
+
+*** conversion functions ***
+
+class MoneyAmount
+  int dollars
+  int cents
+
+  convert float
+    return dollars + cents/100
+  }
+}
+
+//if a class didn't create a converter and you can't modify the class, you're not out of luck
+convert(MoneyAmount amount) float
+  return amount.dollars + amount.cents/100
+}
+
+MoneyAmount myAmount(7, 30) //assuming the proper constructor existed
+float myAmountSimple = myAmount
+
+
+*** this ***
+
+func example1(int arg1) float
+  ptr func(int)float currentFunc = thisfunc //spaces aren't allowed between "func" and "(" or between ")" and the return type
+  return 1.0
+}
+
+func example2()
+  ptr func() currentFunc = thisfunc
+}
+
+class AnyClass
+  int num555
+
+  func example3(int arg1) int
+    thisinst.num555 = arg1
+    return arg1
+  }
+
+  func getFunction() ptr func()
+    return thisfunc
+  }
+}
+
+
+*** function pointers ***
+
+//uses above stuff
+AnyClass instance
+ptr func() function1 -> instance.getFunction()
+ptr func() funciton2 -> function1()
+ptr func(int)int memberFunction1 -> instance.@example3
+ptr func(AnyClass, int)int memberFunction2 -> AnyClass.@example3
+memberFunction1(7777) //if instance of AnyClass has been destructed, this should throw an error
+memberFunction2(instance, 12345)
+
+func giveMeA3() int
+  return 3
+}
+ptr func()int stupidFunction -> @giveMeA3
+int thisIsAThree = stupidFunction()
+
+func addNums(float num1, float num2)float
+  ...
+}
+ptr func(float, float)float func2
+func2 -> @addNums
+float result = func2(1, 2)
+
+
+*** defining functions ***
+
+//no () on functions that take no arguments
+func doStuff
+  ...
+}
+
+
+*** adjuncts ***
+
+//an adjunct is an additional function for an existing class that doesn't modifying the class
+
+//example: Class1 is defined previously, number is a private member
+
+adjunct Class1:setNumber(int num1)
+  number = num1
+}
+Class1 inst1
+inst1.setNumber(3)
+
+//setNumber is similar to a function like this:
+func setNumber(ptr Class1 this, int num1)
+  this.number = num1
+}
+
+//adjunts are not automatically inherited
+
+class Class2
+  inherit Class1
+  ...
+}
+Class2 inst2
+inst2.setNumber(5) //doesn't compile
+
+class Class2b
+  inherit Class1, Class1 adjunt
+  ...
+}
+Class2b inst2b
+inst2b.setNumber(5) //works
+
+//adjuncts can also be created for built-in types
+adjunct array:reverse()
+  std:reverse(this)
+}
+array(100) int myNumbers
+...
+myNumbers.reverse()
+
+
+*** comparison ***
+
+//C++
+if(a < 5 || b <= 5 || c == 5 || d >= 5 || e > 5 || f != 5)
+
+//Desal
+//IDE should convert "lteql" to "?", "gteql" to "?", and "uneql" to "?"
+if a < 5 or b ? 5 or c eql 5 or d ? 5 or e > 5 or f ? 5
+
+
+*** entry point ***
+
+//always named main
+//can be a standalone function or in a singleton class
+//the classes constructor will be called before main
+
+sngltn(centralBrain) class CentralBrain
+  privread
+    Engine engine
+    array string arguments
+
+  priv
+    func main(array string args) int
+      arguments = args
+      try, engine.run()
+      catch default
+        print "A fatal error occurred."
+        return 1
+      }
+      return 0
+    }
+  }
+}
+
+func main(array string arguments) int
+  Engine engine
+  try, engine.run()
+  catch default
+    print "A fatal error occurred."
+    return 1
+  }
+  return 0
+}
+
+
+*** automatic conversion ***
+
+class MyClass1
+  public
+    cnvrt int
+      return 3
+    }
+  }
+}
+MyClass1 instance
+int num1 = instance //num1 now equals 3
+
+//a class's ability to accept a type is given greater precedence over a class's ablity to convert
+
+class WrappedInt
+  public
+    operator =(int argNum)
+      num = argNum
+    }
+    operator =(WrappedFloat floatNum)
+      num = round(floatNum.get())
+    }
+  }
+  private
+    int num
+  }
+}
+class WrappedFloat
+  public
+    operator =(float argNum)
+      num = argNum
+    }
+    cnvrt WrappedInt
+      return truncate(num)
+    }
+    func get() float
+      return num
+    }
+  }
+  private
+    float num
+  }
+}
+WrappedFloat floatNum
+floatNum = 3.7
+WrappedInt intNum = floatNum //intNum now equals 4, not 3
+
+
+*** bare ***
+
+//bare keyword differentiates between native types and built-in types, creates a bare block
+//bare blocks ensures that code inside only uses native types
+//it attempts to ensure that the contained code is as fast and light as C++
+//in a bare block, if a bare type exists (ex: ptr and bare ptr) then it will be used
+
+bare
+  ptr func(int)int function1 -> @testFunction //bare ptr func is automatically used instead, so it compiles
+  bare ptr func(int)int function2 -> @testFunction //but being explicit is okay
+  int num1 //doesn't compile - int isn't a native type
+  uint32 num1 //compiles
+}
+
+func sort(ref array safeNames)
+  //create unchecked array of unchecked pointers to unchecked arrays of a native type
+  bare array bare ptr bare array uint8 names
+  names = safeNames //doesn't compile - names is a bare array
+  transferNames(names, safeNames)
+  bare //compiler warns when anything in this block uses a slower safer type
+    //sort names
+    ...
+  }
+  safeNames = names
+}
+
+func sort(ref array safeNames)
+  bare
+    array ptr array uint8 names
+    transferNames(names, safeNames) //compiler warning - use of checked type
+    //sort names
+    ...
+  }
+  safeNames = names
+}
+
+bare, array ptr array uint8 names //same as if in a bare block
+
+
+*** lambda ***
+
+//Desal should support inline lambda functions
+
+array int numbers = (1, 2, 3, 4, 5)
+foreach numbers as num
+  num =+ 1
+}
+
+//numbers now equals: 2, 3, 4, 5, 6
+
+
+*** inline functions ***
+
+func forEach(Int[] numbers, func(Int)String action) {
+	Int i = 0
+	while i < numbers.length {
+		String text = action(numbers[i])
+		print(text)
+	}
+}
+
+Int[] numbers = {1,2,3,4,5}
+forEach(numbers, func(Int value)String { return stringFromInt(value) })
+
+Int[] numbers
+Int firstNumberFrom2to7 = findFirst(numbers, func()Bool{ return (number >= 2 and number <= 7) })
+
+
+
+*** dual function usage ***
+
+** ex 1 **
+
+class ThingA
+  public, int prop
+}
+
+func modifyThingA(ref ThingA thing, int value)
+  thing.prop = value
+}
+
+ThingA thing1
+
+//equivalent
+modifyThing(thing1, 3)
+thing1.modifyThing(3)
+
+** ex 2 **
+
+class ThingB
+  public, int prop
+}
+
+func ThingB.modify(int value)
+  prop = value
+}
+
+ThingB thing2
+
+//equivalent
+modify(thing2, 3)
+thing2.modify(3)
+
+** ex 3 **
+
+class ThingC
+  public
+    int prop
+}
+
+func ThingC.modify(int value)
+  prop = value
+}
+
+func modify(ref ThingC thing, int value)
+  thing.prop = value
+}
+  
+//compile error! ThingC.modify and modiy are the same!
+
+//equivalent
+func ThingC.modify(int)
+func modify(ref ThingC, int)
+
+generic?type Type1, type Type2, type Type3?
+func callThings(ref Type1 t1, ref Type2 t2, ref Type3 t3)
+  t1.call(t2, t3)
+}
+MyClass obj
+Dog doggy
+Cat kitty
+obj.callThings(doggy, kitty)  
+
+
+*** functions in functions ***
+
+func doStuffToAll(ref array int numbers)
+  func doStuff(ref int number)
+    ...
+  }
+  
+  foreach numbers as number
+    doStuff(number)
+  }
+}
+
+//functions in functions can modify variables in the outer function
+  //but if they do so, nothing can point to the function unless it says so
+
+func ex1()
+  func inner()
+    number = 3
+  }
+  int number
+  inner()
+  ptr func() pointerToFunc -> inner //compile error
+}
+
+func ex2()
+  func inner(int number)
+    number = 3
+  }
+  int number
+  inner(number)
+  ptr func() pointerToFunc -> inner //works fine
+}
+
+func ex3() ptr func()
+  func inner()
+    number = 3
+  }
+  int number
+  inner()
+  return @inner
+}
+ptr func() test -> ex3()
+...
+test()
+
+
+*** interface ***
+
+List of functions, setters, and getters.
+If a class implements an interface that specifies a getter, the class can just provide a pubread or public member of the same name and the compiler will create the getter automatically. The same for setters.
+
+interface ITest
+  public getter value int
+	
+class Test
+  :implements(ITest)
+  pubread
+	  int value
+	
+Test test
+int val = test.value //calls the implicit getter
+
+
+
+interface IMyInterface
+  public constructor(ref MyType1)
+  public func getClassID() int
+
+class MyClass1
+  :implements(IMyInterface)
+  float value
+  const int ID = 3258134813247
+  
+func MyClass1.constructor(ref MyType1 arg)
+  value = MyType1.value
+
+func MyClass1.getClassID() int
+  return ID
+
+
+class MyClass2
+  :implements(IMyInterface)
+
+func MyClass2.constructor(ref MyType1 arg)
+  print MyType1.secretArea().password
+
+func MyClass2.getClassID() int
+  return 16548139124478
+
+
+MyClass1 obj1
+MyClass2 obj2
+print obj1.getClassID()
+print obj2.getClassID()
+
+
+*** defaults ***
+
+func test(int arg1 = 1, float arg2 = 2.2, string arg3 = "three", int arg4 = 4000)
+  print "$arg1, $arg2, $arg3, $arg4"
+
+test(default, default, "eleventy") //prints "1, 2.2, eleventy, 4000"
+
+
+*** named arguments ***
+
+func test(int arg1 = 1, float arg2 = 2.2, string arg3 = "three", int arg4 = 4000)
+  print "$arg1, $arg2, $arg3, $arg4"
+
+test(arg3 = "eleventy") //prints "1, 2.2, eleventy, 4000"
+
+
+*** tuples ***
+
+func getData() tuple<int, float>
+  tuple<int, float> data = (3, 5.76)
+  return data
+
+int dataA
+float dataB
+dataA, dataB = getData()
+-or-
+tuple<int, float> data( getData() )
+int dataA = data.get<int>[0]
+float dataB = data.get<float>[0]
+-or-
+int dataA, float dataB = getData() //initialization only, no assignment?
+-or-
+tuple<int, float> data = getData()
+int dataA = data.get<0>
+float dataB = data.get<1>
+
+
+
+*** member object availability ***
+
+class MyClass
+  public
+    string outMessage
+
+  pubread //can be read outside of class, but only written by member functions (constants cannot be pubread)
+    int num1
+    float num2
+    string someText
+
+  private
+    bool isSetup
+    int id
+
+func MyClass.constructor()
+  num1 = 3
+  num2 = 4.567
+  someText = "about of the alochrothe"
+  setupID()
+
+private func MyClass.setupID()
+  id = 1647513248
+
+
+
+*** bare strings ***
+
+barearray uint16 = barestring("test text saying stuff") //barestring is a keyword; a string is never created
+
+bare
+  string text = "text with letters" //causes compiler warning since this is not bare, won't work outside of a bare block
+  array uint16 = "text with words" //no warning (array is a barearray)
+}
+
+
+
+*** bare arrays ***
+
+//length can be obtained at compile time if known
+
+barearray?8? uint8 numbers
+...
+print numbers.length //prints "8"
+
+ptr barearray uint8 numbersLocation //can point to barearrays or any length
+numbersLocation = new barearray?20? uint8
+...
+print numbersLocation.length //works
+
+int length = getIntInput()
+barearray?length? ages
+...
+ages.length //compiler error - barearray doesn't hold length and compiler doesn't know length
+
+
+*** multi-line statements ***
+  
+//compile error
+int num0 = 1 + 2
+  + 3 + 4
+  
+//works
+int num1 = 1 + 2 +
+  3 + 4
+  
+//works
+int num2 = 1 + 2 \
+  + 3 + 4
+
+//works
+int num3 = (1 + 2
+  + 3 + 4)
+
+
+*** calling inline functions inline ***
+
+func(){print "test"} //creates a function -- functions are called with () so
+func(){print "test"}() //creates a function and calls it
+func(int a){return a*2}(3) //returns 6
+int value = func()int{ if num1 < 0: return num1, else: return num2 }()
+
+  
+*** private members of namespaces ***
+
+namespace mystuff
+  func doStuff1() MyClass
+    ...
+    privDoStuff()
+    ...
+  }
+  
+  func doStuff2() MyClass
+    ...
+    privDoStuff()
+    ...
+  }
+  
+  private
+    //needed by doStuff1 and doStuff2, but not useful to anything else
+    func privDoStuff()
+      ...
+    }
+  }
+}
+
+mystuff:doStuff1()
+mystuff:doStuff2()
+mystuff:privDoStuff() //compile error
+
+
+*** per-object functions ***
+
+//Note that obj2.getSentence must be in scope to use it
+
+MyClass obj1("blah")
+MyClass obj2("blah")
+func obj2.getSentence() string
+  return this.getWords().join(" ") + "."
+}
+obj2.getSentence()
+MyClass obj3("blah")
+obj1.getSentence() //compile error
+obj3.getSentence() //compile error
+
+
+*** automatically typed variables ***
+
+var number = 3
+var text = "example"
+print typeof number //prints "int"
+print typeof text //prints "string"
+
+
+
+*** private members of namespaces ***
+
+namespace num
+  private
+    array int numbers = [1, 2, 3]
+  }
+  
+  func getNumbers() array int
+    ...
+  }
+  
+  func addNumber(int number)
+    ...
+  }
+}
+
+//anything can call num:getNumbers() or num:addNumber(), but nothing but those 2 functions can access num:numbers
+
+
+*** anonymous namespaces ***
+
+//same as naming a namespace and then saying "using namespace XXX" or "import XXX"
+
+anon namespace
+  private
+    array int numbers = [1, 2, 3]
+  }
+  
+  func getNumbers() array int
+    ...
+  }
+  
+  func addNumber(int number)
+    ...
+  }
+}
+
+//anything can call getNumbers() or addNumber(), but nothing but those 2 functions can access numbers
+
+
+
+*** warning supression ***
+
+//the "known" preprocessor directive tells the compile that certain issues are known and don't need to be mentioned
+//compilers may chose to ignore this or provide an option to ignore this
+
+array string names
+bare
+  for name in names //compiler should give a warning that a bare block is accessing a non-bare object
+    name = name.toLowerCase()
+  }
+}
+
+array string names
+bare
+  for name in names #ignore(overhead) //no warnings given about overhead
+    name = name.toLowerCase()
+  }
+}
+
+#ignore() tells the implementation to not warn about certain things
+example:
+  #ignore(roundingLoss, overhead, safety, deprecation)
+
+
+*** universal member functions ***
+
+generic<type t1>
+func t1.getType() string
+  return typeof t1
+}
+
+3.getType()
+"test".getType()
+MyCLass obj
+obj.getType()
+
+
+*** keywords ***
+
+keyword print(string text)
+  system.printLine(text)
+}
+
+keyword This(string text)
+  print text
+}
+
+keyword does(int number) string
+  return lexcast?string? number
+}
+
+keyword stuff(int num1, int num2) int
+  return num1 + num2
+}
+
+This does stuff (2, 3) //prints "5"
+
+ptr func(string) printFunc -> print
+printFunc("some text")
+printFunc "some text" //compile error
+
+
+*** calling functions ***
+
+//The parenthesis must follow directly after the identifier unless the function is a keyword or an operator
+
+doStuff(3, 5) //doStuff must be a function
+doStuff (3, 5) //doStuff must be a keyword
+thing=(3, 5) //"=" is an operator
+thing =(3, 5)
+thing= (3, 5)
+thing = (3, 5)
+thing + (3, 5)
+thing += (3, 5)
+
+//the arguments must be seprated by commas, and can optionally also be separated by commas
+
+doStuff(3,5)
+doStuff(3, 5)
+doStuff(   3   ,      5  )
+doStuff(
+  3,
+  5)
+doStuff(
+  3
+  ,
+  5
+)
+doStuff(3 ,5)
+doStuff(3 5) //compile error
+
+
+
+*** other string classes ***
+
+"some text" //calls string.constructor(ref array uint16)
+
+//the standard library defines a string class and member functions
+//if the standard library isn't used and a string type isn't defined, "some text" will just return an array of uint16
+//however, the standard library will assume the standard string class is being used
+
+Example string class:
+
+unimport std:string
+
+class string
+  private array uint16 values
+}
+
+public func string.constructor(ref array uint16 values)
+  this.values = values
+}
+
+
+
+*** overwriting library functions ***
+
+overwrite explicit func string.constructor(ref array uint16 values)
+  std:string.constructor(this, values)
+}
+
+//string constructor is now explicit, so "some text" will return an array of uint16
+//but string("some text") will return an std:string
+
+
+
+*** preparsed source files ***
+
+For speed, IDEs should stored a parsed source file. When the source file is viewed, if the pre-parsed source file is more recent, the file should not be parsed again.
+
+
+
+*** loops again ***
+
+array int numbers
+
+for number in numbers
+  number =* 2
+}
+
+
+*** block ***
+
+block 
+  ...
+}
+
+//the ... can define variables that go out of scope with the block ends
+
+int number = 5
+
+block
+  int number = 333
+}
+
+print number //prints "5"
+
+
+*** macros ***
+
+If (ONLY IFFFF!!!!) macros are available, they should be as powerful and flexible as the language itself. The best would be if macros weren't available at all, but if they are, they should be just as powerful. There should be no middle ground.
+
+Macros should definately be denoted in some way, either through syntax highlighting or a required starting character or something.
+
+int number = @macro@MyMacro( a, b, c )
+
+
+
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
+Users should be able to define semantic macros
+a.k.a. syntax-free macros
+a.k.a. the macros should work with any syntax
+
+
+
+
+
+
+
+//users should be able to add stuff to the language that is free and powerful as the language itself
+
+//example 1
+macro "SafeTry" block
+  try
+    print "entering SafeTry block"
+    block[1]
+    print "block executed successfully"
+  }
+  catch: print "Error!"
+}
+
+SafeTry
+  int inNumber = getInput()
+  int outNumber = inNumber / 0
+  print outNumber
+}
+
+//equivalent to
+block
+  try
+    print "entering SafeTry block"
+    block
+      int inNumber = getInput()
+      int outNumber = inNumber / 0
+      print outNumber
+    }
+  }
+  catch: print "Error!"
+}
+
+
+//example 2
+macro "NormalTry" block "NormalCatch" block
+  try: block[1]
+  catch: block[2]
+}
+
+NormalTry
+  int inNumber = getInput()
+  int outNumber = inNumber / 0
+  print outNumber
+}
+NormalCatch
+  print "Error!"
+}
+
+//equivalent to
+block
+  try
+    block
+      int inNumber = getInput()
+      int outNumber = inNumber / 0
+      print outNumber
+    }
+  }
+  catch
+    block
+      print "Error!"
+    }
+  }
+}
+
+
+//example 3
+macro "toEach" object "as" token block //token can't be an identifier or an object
+  for token[1] in object[1]
+    block[1]
+  }
+}
+  
+array int numbers = [1, 2, 3]
+array string texts = ["1", "2", "3"]
+
+toEach numbers as number
+  number = 0
+}
+
+//equivalent to
+block
+  for number in numbers
+    block
+      number = 0
+    }
+  }
+}
+
+
+//example 4
+macro "Try" block optional(multiple("Catch" type block)) optional("Finally" block)
+  try
+    print "beginning try block"
+    block[1]
+    print "reached end of try block"
+  }
+  optional[1]
+    multiple[1]
+      catch type
+        print "beginning catch block number " + multiple[1].index
+        block[2]
+        print "reached end of try block"
+      }
+    }
+  }
+  optional[2]
+    finally
+      print "beginning finally block"
+      block[3]
+      print "reached end of finally block"
+    }
+  }
+}
+
+Try
+  doStuff()
+}
+Catch string
+  print "caught error of type string"
+}
+Catch int
+  print "caught error of type int"
+}
+Catch MyClass
+  print "caught error of type MyClass"
+}
+Finally
+  doMoreStuff()
+}
+
+//equivalent to
+block
+  try
+    print "beginning try block"
+    block
+      doStuff()
+    }
+    print "reached end of try block"
+  }
+  catch string
+    print "beginning catch block number " + 1
+    block
+      print "caught error of type string"
+    }
+    print "reached end of try block"
+  }
+  catch int
+    print "beginning catch block number " + 2
+    block
+      print "caught error of type int"
+    }
+    print "reached end of try block"
+  }
+  catch MyClass
+    print "beginning catch block number " + 3
+    block
+      print "caught error of type MyClass"
+    }
+    print "reached end of try block"
+  }
+  finally
+    print "beginning finally block"
+    block
+      doMoreStuff()
+    }
+    print "reached end of finally block"
+  }
+}
+
+
+*** consider ***
+
+//xxx spec out
+
+double dispatch
+multimethod
+
+
+*** member function declaration ***
+
+class MyClass1
+  public func(int arg)int square
+  //or
+  declare public func square(int arg) int
+}
+
+public func MyClass1.square(int arg) int
+  ...
+}
+
+
+class MyClass2
+  public func square(int arg)
+    ...
+  }
+}
+
+
+class MyClass3?
+
+public func MyClass3.square(int arg) int
+  ...
+}
+
+
+*** changing a member's access policy ***
+
+class Class1
+  private int number
+}
+
+class Class2
+inherit Class1
+  setaccess Class1.number public
+}
+
+Class2 obj
+print obj.number
+ref Class1 pointer -> obj
+print pointer.number //compile error - "number" is a private member of Class1 
+
+
+
+*** constructor reduction ***
+
+MyClass obj = MyClass(1) + MyClass(2)
+
+/*
+by default:
+  two instances of MyClass are created
+  which are sent to the + function
+  which returns a value (assume another instance of MyClass)
+  and that value is copied to "obj" (assume the default copy constructor is used)
+*/
+
+//but if constructor reduction is turned on:
+
+class MyClass  
+  :allows(constructorReduction)
+  ...
+
+//the example is equivalent to:
+
+MyClass obj = MyClass(1 + 2)
+-or-
+MyClass obj = MyClass(3)
+-or-
+MyClass obj(3)
+
+//this can give a huge performence boost on code like:
+const int MAX_OBJECTS = 3
+...
+string text = "text1 " + MAX_OBJECTS + " text2"
+
+//if type "int" has a converter function to the uint16 type, the last line can be reduced to:
+string text("text1 3 text2") //assuming the execution converter function returned "3"
+
+
+
+*** selective inheritance ***
+
+class Ellipse
+  float width
+  float height
+  
+  func setDimensions(float _width, float _height)
+}
+
+class Circle
+inherit Alpha except setDimensions
+
+  func setRadius(float _radius)
+}
+
+Circle circ
+circ.setRadius(3)
+circ.setDimensions(3, 3) //compile error
+ptr Ellipse ell -> circ
+ell.setRadius(3) //compile error
+ell.setDimensions(3, 3)
+
+
+*** preventing adjuncts ***
+
+class MyClass
+  :implements(iMyClassStuff)
+  #prevent(adjuncts)
+}
+
+func MyClass.doStuff() //error: adjunts not allowed on MyClass
+  ...
+}
+
+
+*** subscripts ***
+
+//see http://en.wikipedia.org/wiki/Unicode_subscripts_and_superscripts
+
+class MyClass {}
+
+func MyClass.sub(int arg)
+  ...
+}
+
+MyClass x
+x
+ 3 //equivalent to MyClass.sub(3)
+
+func MyClass.subs.num() //must take no arguments
+  ...
+}
+ 
+int num = 555
+x
+ (num) //equivalent to MyClass.sub(555)
+x
+ num //equivalent to MyClass.subs.num()
+ 
+ 
+*** aliases ***
+
+//objects
+class Alpha
+  public static int value
+}
+alias Alpha.value as x
+x = 3
+
+//types
+alias float as number
+number a = 123.456
+
+alias return as give
+alias macro as define
+
+explicit aliases are not implicitly equivalent to the original type
+
+  explicit alias uint8 as byte
+
+  byte a
+  a = 3 //compile error
+  a = byte(3)
+  byte b
+  a = b
+
+
+*** pointers ***
+
+int a
+ptr int b ? a
+
+
+*** assignment ***
+
+int a <- 3 //use unicode arrows
+
+
+*** testing equality ***
+
+if a = b
+  print "a equals b"
+}
+
+
+*** functions as an object ***
+
+func func(int)int.apply(int arg) int
+  return this(arg)
+}
+
+func getDouble(int arg) int
+  return arg * 2
+}
+
+int num = getDouble.apply(3)
+ptr func(int)int anyOldFunction = getDouble
+string name = anyOldFunction.name //returns "getDouble"
+
+//functions are functors
+
+
+*** known & dontCare ***
+
+if test //warning: empty block without full-stop
+}
+
+if test #ignore(emptyBlock) //no warning
+}
+
+if test #ignore(emptyBlock) //warning: block is not empty
+  doStuff()
+}
+
+if test #ignore(emptyBlock, ignoringNonexistantStuff) //no warning
+  doStuff()
+}
+
+//this is useful when you don't know if a block will be empty, and you don't want to be warned when it is
+
+
+*** pure member functions ***
+
+//1. pure functions always return the save value when given the same data
+//2. member functions are given a reference to an instance of their class
+//3. so if the instance doesn't change any, the compiler knows the pure member function will return the same value
+
+class MyClass
+  priv int length
+  ...
+}
+
+pure getter MyClass.length int
+  return length
+}
+
+//equivalent to
+func length(ref MyClass obj) int
+  return obj.objects.legth
+}
+
+MyClass inst
+...
+int i = 0
+while(i < inst.length)
+  inst.doStuff()
+  i++
+}
+
+//if doStuff is a pure function, inst.length is guaranteed to return the same value every time
+  //so the compiler can cache the result and only call the getter once
+//otherwise inst.length may change
+
+//note that if length was declared pubread, the same situation would arise,
+//an int is guaranteed to return the same value as long as nothing sets a new value on it
+
+getter MyClass.length int #treatAs(pure)
+  return length
+}
+
+func MyClass.doStuff() #treatAs(pure)
+  ...
+}
+
+
+*** outer scope access ***
+
+block
+  int number = 1
+  block
+    int number = 2
+    block
+      int number = 3
+      print number //prints "3"
+      print outer.number //prints "2"
+      print outer.outer.number //prints "1"
+      print outer(2).number //prints "1"
+    }
+  }
+}
+
+
+*** macros ***
+
+macro "ex" obj(inheritFrom="MyClass")
+  type(obj[0]) join ".doStuff()"
+}
+
+class MyClass
+  static func doStuff()
+    ...
+  }
+}
+
+class MyClass2
+inherit MyClass
+  ...
+}
+
+MyClass2 inst
+ex inst //calls MyClass.doStuff()
+
+
+*** adjuncts block ***
+
+class MyClass
+  func alpha()
+    ...
+  }
+}
+
+adjunts MyClass
+  func beta()
+    ...
+  }
+  
+  func gamma()
+    ...
+  }
+}
+
+
+*** standard lib - int adjunct "lowerTo" ***
+
+if thing.width > 3
+  thing.width = 3
+}
+
+becomes
+
+thing.width.lowerTo(3) //if it's higher than 3, it's lowered to 3
+
+also:
+  raiseTo
+
+
+*** looping techniques ***
+
+//requires type a singular form of the array
+for background in background
+  background.doStuff()
+}
+
+//"backgrounds" representing only one of the items could be confusing
+//can't access backgrounds as easily
+for backgrounds
+  backgrounds.doStuff()
+}
+
+//strange syntax
+for backgrounds
+  backgrounds..doStuff()
+}
+
+//doesn't follow English very well
+for backgrounds
+  it.doStuff()
+}
+
+
+*** nested comments ***
+
+/**
+  /* ... */
+**/
+
+/***
+  /**
+    /* ... */
+  **/
+***/
+
+
+*** private macro variables ***
+
+ex:
+macro "foreach" ... codeblock[0]
+  priv int i = 0
+  while i < length
+    codeblock[0]
+  }
+}
+
+
+*** warn on call ***
+
+func float.convert int
+  #warnOnCall("may cause loss of data")
+  ...
+}
+
+int a = 3.3 #ignore("may cause loss of data")
+
+
+*** default warn types ***
+
+dataLoss
+slow
+buggy
+
+func doStuff
+  #warnOnCall(buggy)
+  ...
+}
+
+doStuff() #ignore(buggy)
+
+
+*** copy or not problem ***
+
+point identifer at object
+	unexpected for multiple identifiers to refer to the same object
+	
+	string name1 = "Bob"
+	string name2 = name1
+	name1.capitalize!()
+	print name2 //prints "BOB"
+	
+point identifier at copy of object
+	how to make bind identifiers to separate interfaces of object?
+
+	Foo foo = getFoo() //foo.assign(getFoo()) -- copies the object
+	Bar bar = foo //bar.assign(foo) -- copies the object
+	bar.mutateObject()
+	foo.doSomething() //doesn't show mutations from bar, because it's a different object
+	
+allowing both makes things confusing and difficult
+	Foo foo := getFoo() //copy
+	Bar bar -> foo //point to same object
+	string name1 := "Bob" //copy
+	string name2 := name1 //copy
+
+Why isn't this a problem in other languages?
+-or-
+How do other languages deal with this problem?
+
+C#/Java/JavaScript
+	native types - always copied
+		after assigning, multiple identifiers refer to different 'objects'
+	objects - never copied
+		after assigning, multiple identifiers refer to the same object
+	problem - separation between native and object types
+C++
+	assignment always copies
+		but when assigning address, only the address is copied. The pointed to object isn't copied.
+	pointers and "references" used to point to the same object
+	problem - have to decide whether to copy; doesn't solve the problem
+Ruby
+	objects never copied - always refer to same object
+	objects have a dup method to manually create copies
+	problem - have to decide whether to copy; doesn't solev the problem
+	
+solution:
+Because objects must be accessed through interfaces, there is no way for an implementation to know whether an object should be copied or not. Therefore, Desal should put extra importance on making it easy to copy objects.
+
+The = operator (assignment) points an identifier at an object.
+The := operator (copy and assignment) copies an object and points the identifier at the copy.
+The copy method of interfaces is defined as making a copy of the object.
+The copy method may take an number and type of parameters, but the return interface must be the same as the interface for which the method belongs.
+
+interface foo
+	func copy() foo
+	
+interface{I} bar
+	func copy() bar{I}
+
+
+*** isTruthful? property ***
+
+When testing to see if an object is truthful, the object's isTruthful? property is accessed. This property should return a reference to the prevalent object true or false.
+
+if foo //same as foo.isTruthful?
+	foo.doStuff()
+
+The above code is very different from the below code, because the object may be truthful even if it isn't equivalent to true. The foo interface would probably not even declare an equal? method with a boolean parameter. 
+
+if foo == true //same as foo.equal?(true)
+	foo.doStuff()
+
+
+*** optional interface members ***
+
+Members of interfaces can be marked as optional. If an object doesn't implement the method, an exception is thrown when trying to access the member.
+
+This is intended to make adding new members to interfaces easier, so classes can implement the new member one by one instead of all in one go. It should not be used permanently, and should not be used in release builds. Implementations should emit a warning for each optional member of every interface.
+
+interface Foo
+	optional func doStuff()
+
+class CFoo {}
+
+Foo foo = CFoo()
+foo.doStuff() // throws exception
+
+
+*** object address ***
+
+An implementation may chose to make the address of an object equal to the object's memory address (assuming it's static) or something more complicated like a randomly generated number.
+
+anonymous namespace {
+
+private AssociativeArray<int, set int> info
+
+func int.dissallowValue(int value)
+	if info.hasKey(@this)
+		info[@this] += value
+	else
+		info[@this] = Set(value)
+
+onCall int.operator=(int value)
+	if info.hasKey(@this) and info[@this].contains(value)
+		send "assignment to integer prevented"
+		cancel call
+		
+}
+
+int number
+number = 1
+number.dissallowValue(3)
+number = 5
+...
+number = 3 //assignment isn't made and logWarning is called
+...
+
+
+*** interfaces ***
+
+interface iMyStuff
+  public func doStuffA()
+  public func doStuffB() int
+  public func doStuffC(float, float)
+
+class MyClass
+  :implements(iMyStuff)
+  ...
+
+func testStuff()
+  MyClass classInst
+  ref iMyStuff interfaceInst -> @classInst
+
+func testStuff2(ref IMyStuff object)
+  object.doStuffA()
+  int value = object.doStuffB()
+  object.doStuffC(3.3, 4.4)
+
+
+*** for each operators ***
+
+return int - number of elements in the container on the left that matches to true with the value on the right
+
+"|" join ...
+
+array int numbers
+...
+int num3 = (numbers |= 3) //number of elements in "numbers" that is 3
+
+
+int numLt3 = (numbers |< 3) //numbers of elements in "numbers" with a value less than 3
+
+
+*** iterating through a containers elements ***
+
+//used for for-each-operators, foreach loops, for in loops, etc
+//also intended to be used for user-defined looping methods
+
+//MyClass is a container of int's
+
+func MyClass.getIterator array ptr int
+  ...
+}
+
+generator MyClass.iterator int
+  ...
+}
+
+
+
+
+
+*** class inheritance ***
+
+traditional kind is not allowed
+
+------
+
+interface Pet
+	func feed()
+	r int weight
+
+class CPet
+	int _weight
+	
+	func construct()
+		_weight = 1
+
+	interface Pet
+		func feed()
+			_weight++
+		
+		weight = _weight
+
+interface Dog
+	inherit Pet
+	func takeForWalk()
+	r int happyness
+
+class CDog
+	Pet _pet
+	int _happyness
+	
+	func construct()
+		_pet = CPet()
+		_happyness = 1
+	
+	interface Dog
+		interface Pet = _pet
+		
+		func takeForWalk()
+			_happyness++
+		
+		happyness = _happyness
+
+Dog dog = CDog()
+println dog.weight
+println dog.happyness
+dog.feed()
+dog.takeForWalk()
+println dog.weight
+println dog.happyness
+
+------
+
+interface Foo
+	...
+
+interface Bar
+	...
+
+class ImpFooBar
+	Int _i
+	String _j
+
+	func construct()
+		_i = CInt()
+		_j = CString()
+
+	func construct(inout Int i, inout String j)
+		_i = i
+		_j = j
+
+	interface Foo
+		...
+
+	interface Bar
+		...
+
+-or maybe-
+
+implementation ImpFooBar
+	Int i
+	String j
+	
+	interface Foo
+		...
+	
+	interface Bar
+		...
+
+class Alpha
+	int number
+	string text
+	
+	interface Foo, interface Bar = ImpFooBar(number, text)
+
+Foo+Bar foobar = Alpha()
+foobar.propOfFoo()
+foobar.propOfBar()
+
+
+
+*** singletons ***
+
+mostly just like classes, identifier is bound to an instance of the class
+that means no identifier is bound to the function created by the class
+that means no other instances can be created of the class
+
+differences from classes:
+	no parameters for construct function
+
+singleton foo
+	interface A
+		...
+	
+	interface B
+		...
+
+foo.propOfA()
+foo.propOfB()
+
+
+*** binding scopes to identifiers ***
+
+outer: for i from 0 to 100
+	inner: for i from 0 to 5
+		println outer.i + inner.i
+
+
+*** "scope" prevalent identifier ***
+
+xxx how is this useful in any way?
+
+refers to the current scope
+
+func foo()
+	int i = 5
+	print scope.i //same as print i
+
+
+*** "this" identifier ***
+
+refers to an instance of a class
+
+class CFoo
+	int i
+	
+	interface Foo
+		func getAnInt() int
+			return this.i
+
+
+
+*** generics ***
+
+interface{T} foo
+	ref T inst
+
+class{T} bar
+	ref T inst
+
+
+
+object references are immutable
+
+const identifiers always point to the same object
+
+const objects can't be modified
+
+
+
+
+*** importing libraries/files ***
+
+import lib "Simple DirectMedia Layer" 1.5.3 as SDL
+//identifier SDL is bound to a namespace
+Thing thing = SDL.CThing()
+
+import lib "system" 1.1 //imports all identifiers into the current scope
+
+import "stuff.dextr" //file
+
+To make importing easier, it's recommened that projects create a "libraries.ext" file that imports all libraries, and other files import libraries from it.
+
+import system, SDL from "libraries.ext"
+
+Imported files don't have access to anything from the importing file. Importing files only have access to things defined in the imported file, not things imported by the imported file.
+
+Example 1:
+
+--- libraries.dextr ---
+import lib "Simple DirectMedia Layer" as _SDL
+alias _SDL as SDL
+import lib "system" 1.1 as _system
+alias _system as system
+
+In files that import libraries.dextr, the identifiers "SDL" and "system" will be defined, but the identifiers "_SDL" and "_system" will not be defined.
+
+Example 2:
+
+--- A.dextr ---
+import "B.dextr"
+func doStuffA()
+	doStuffB()
+
+--- B.dextr ---
+import "OpenGL" 3 as OpenGL
+func doStuffB()
+	print OpenGL.something
+
+---
+
+In doStuffA(), the identifier "OpenGL" is undefined. In doStuffB(), the identifier "doStuffA" is undefined.
+
+
+
+
+
+*** treating complete Desal trees as standalone programs ***
+
+XXXXXX note: section id="node.global" references this section!
+
+The global node is an expression node. Execution of the program involves setting up the global node and evaluating it. (Note that setup of the global node involves implementation-specific identifiers and objects.)
+
+Behavior of evaluating the global node:
+
+<simplelist>
+	<member>1. If the identifier "main" is not declared, a NoMain error results. If the identifier "main" is not bound to a function, a MainNotFunction error results. If the identifier is bound to a function, but the signature of that function does not match func() or func()int, a BadMainSignature error results. If additional functions are bound the the main identifier, emit a warning.</member>
+	<member>2. If main returns an integer, evaluate a function-call-expression with main as the function, and evaluate the global node to what is returned. Otherwise, execute a function-call-statement with main as the function, and evaluate the global node to 0. (No parameters should be passed to the main function.)</member>
+</simplelist>
+
+If the program can return a value, the value that the global node evaluates to should be used as the return value of the program when possible.
+
+
+
+
+
+
+*** standalone interface functions ***
+
+interface Foo
+	func doStuff(string) int
+
+Foo foo = CFoo()
+
+Foo::doStuff(foo, "test")
+//has the same result as
+foo.doStuff("test")
+
+This is useful for functional programming, like map, reduce, etc.
+
+This also works for dyn.
+dyn::doStuff(foo, "test")
+
+
+Example 1:
+
+IList<ObjectReference> evaledArgs = new List<ObjectReference>();
+foreach( Node_IExpression argument in _arguments ) {
+	evaledArgs.Add( argument.evaluate(ref scope) );
+}
+//would become
+auto evaledArgs = map(_arguments, dyn::evaluate, inout scope);
+
+
+Example 2:
+
+_arguments = new List<Node_IExpression>();
+foreach( XmlElement child in element.SelectNodes("*[label='argument']") ) {
+	_arguments.Add( ExpressionFactory.create(child) );
+}
+//would become
+_arguments = map(
+	element.SelectNodes("*[label='argument']"),
+	ExpressionFactory.create );
+
+
+
+
+
+
+*** cast methods ***
+
+Uses generic function specialization.
+
+interface Foo
+	func{I=Int}()I cast
+
+singleton bar
+	interface Foo
+		func{I=Int}()I cast
+			return 3
+
+Int baz = (Int bar)
+print baz //prints "3"
+
+???
+Function interfaces have a cast method for an object with a call method that has an interface of itself.
+
+

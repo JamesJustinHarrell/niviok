@@ -1,0 +1,44 @@
+The Native namespace contains:
+
+	interface LimInt
+		func floorDivide(Int) Int
+		func floorDivide!(Int) Int
+	interface LimRat
+	func SInt(Int value, Int bits) LimInt
+	func UInt(Int value, Int bits) LimInt
+	func Float(Rat value, Int bits) LimRat
+	func Fixed(Rat value, Int bitsBefore, Int bitsAfter) LimRat
+
+If the Native namespace is present, it must contain these 6 members. (Additional members are allowed.)
+
+If there is no native type with the number of bits specified, but there is a native type with more bits than specified, the native type with more bits should be used.
+	example: UInt(0, 30) might use an unsigned 32-bit integer
+
+If all native types have fewer bits than specified, the implementation should still return a type capable of representing an integer with at least that much precision. The returned type may be capable of arbitrary-precision, but is not required to be.
+	example: SInt(0, 9000) would probably use the same arbitrary-precision library that CInt uses
+
+If the value cannot fit in the specified number of bits, a type with more bit should be used.
+
+LimInt inherits from Int. LimRat inherits from Rat.
+
+The values retured by these functions, when cast to Object, should specify that they are built-in.
+	(UInt(0, 0) as Object).builtin? should evaluate to true
+
+func doStuff(Int foo)
+	if foo is LimInt
+		print (foo as LimInt).precision
+	elif foo is BigInt
+		print "arbitrary"
+	else print "WTF?"
+
+The values returned by UInt() might not be limited to unsigned integers, but should still be capable of representing all numbers that an unsigned integer with the specified number of bits could represent.
+	example: UInt(0, 8) might use a signed 16 bit integer (Note that a signed 8-bit integer could not be used, because it cannot represent all the values that an unsigned 8-bit integer can represent.)
+
+The returned values should throw errors if they cannot represent a value as large or as small as requested. Loss of precision should not throw errors.
+	example: UInt(0, 32).decrement() would probably throw an error
+	example: SInt(3, 8).multiply!(10000000000000000) would probably throw an error
+	example: Float(2, 8) / Float(3, 8) will not accurately represent 2/3, but should not throw an error.
+
+Implementations should try to select the fastest type available that conforms to these requirements.
+
+Native.LimInt foo = Native.UInt32(1234)

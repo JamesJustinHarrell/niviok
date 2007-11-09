@@ -1,0 +1,3 @@
+Desal Visual Representation (Desual, or Desal Desual) describes how Desal semantics can be displayed by a visual agent, such as a monitor, sheet of paper, or projector.
+
+Desual is intended to be an "output only" representation. Desal semantics should not be stored in Desual format. Another format, such as Desal Desible or Desal Dextr should be used for storage.

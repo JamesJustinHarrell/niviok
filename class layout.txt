@@ -1,0 +1,80 @@
+class Foo
+	//declaration
+	Int i
+	func Int a
+	dyn z0
+	meta z1
+
+	//declaration-bind
+	Int j = 2
+	const Int l = 3
+	func Int b = func(){ return 6 }
+	const func Int c = func() { return 7 }
+	auto q1 = getSomething1()
+	const auto q2 = getSomething2()
+	dyn z2 = getSomething3()
+	meta z3 = getSomething4()
+	const meta z4 = getSomething5()
+
+	//declaration-pervasive
+	pervasive Int m = 5
+	pervasive func Int d = func() { return 8 }
+	func e() Int { return 9 }
+	pervasive auto foo = getStuff1()
+	pervasive meta poop = getStuff2()
+
+	//class-only kind of declaration
+	const Int k
+	const func Int f
+	const meta mud
+	
+	static constructor {
+		k = 8
+		f = func(){ return 10 }
+		mud = getMeta()
+	}
+
+
+--- types
+
+declaration-class (same for every instance; can't access instance state)
+	identifier
+	identifier-type
+	interface
+	bool const
+	bool pervasive
+	value
+	access (private, read, write, read+write)
+
+declaration-instance-pervasive (same for every instance, but can access instance state)
+	identifier
+	identifier-type
+	? expression interface
+	value
+
+declaration-instance (different for every instance; value set by constructor; can access instance state)
+	identifier
+	identifier-type
+	expression interface
+	bool const
+
+
+--- class child nodes
+
+* declaration-class
+
+static constructor
+
+static getters/setters
+
+static callees
+
+* declaration-instance-pervasive
+
+* declaration-instance
+
+instance constructors
+	some exposed as static callees; others private
+
+instance interface-implementations
+
