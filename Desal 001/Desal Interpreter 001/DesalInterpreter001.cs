@@ -2,7 +2,7 @@ using System; //for System.Console
 using System.Collections.Generic;
 
 class DesalInterpreter001 {
-	static string testPath = "/media/files/source/Desal 001/test.desible";
+	static string testPath = "/media/files/Desal/Desal 001/test.desible";
 
 	static int Main(string[] arguments) {
 		//arguments have the form: -key=value -key=value
