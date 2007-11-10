@@ -55,7 +55,7 @@ class DesalInterpreter001 {
 		};
 		//xxx use better binding stuff
 		IFunction printFunction = new NativeFunction(
-			printFunctionNative, printParameters, null, ref scope );
+			printFunctionNative, printParameters, null, scope );
 		IValue printFunctor =
 			FunctionWrapper.wrap(printFunction);
 		scope.declarePervasive(
@@ -80,7 +80,7 @@ class DesalInterpreter001 {
 		return scope;
 	}
 	
-	void printFunctionNative(ref Scope args) {
+	void printFunctionNative(Scope args) {
 		IValue arg = args.evaluateLocalIdentifier( new Identifier("value") );
 		
 		if( arg.activeInterface == Wrapper.String )

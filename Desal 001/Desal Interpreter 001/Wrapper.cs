@@ -46,20 +46,14 @@ static class Wrapper {
 			</wrapper>
 		");
 	
-		DesibleParser desibleParser = new DesibleParser();
-		Scope scope = new Scope();
-		Bool = desibleParser
-			.parseInterface( (XmlElement)doc.GetElementsByTagName("interface")[0] )
-			.evaluateInterface(ref scope);
-		Int = desibleParser
-			.parseInterface( (XmlElement)doc.GetElementsByTagName("interface")[1] )
-			.evaluateInterface(ref scope);
-		Rat = desibleParser
-			.parseInterface( (XmlElement)doc.GetElementsByTagName("interface")[2] )
-			.evaluateInterface(ref scope);
-		String = desibleParser
-			.parseInterface( (XmlElement)doc.GetElementsByTagName("interface")[3] )
-			.evaluateInterface(ref scope);
+		Bool = DesibleParser.extractInterface(
+			(XmlElement)doc.GetElementsByTagName("interface")[0] );
+		Int = DesibleParser.extractInterface(
+			(XmlElement)doc.GetElementsByTagName("interface")[1] );
+		Rat = DesibleParser.extractInterface(
+			(XmlElement)doc.GetElementsByTagName("interface")[2] );
+		String = DesibleParser.extractInterface(
+			(XmlElement)doc.GetElementsByTagName("interface")[3] );
 	
 		InterfaceImplementationBuilder<Client_String> stringBuilder =
 			new InterfaceImplementationBuilder<Client_String>();
@@ -75,7 +69,7 @@ static class Wrapper {
 					new Parameter( new Identifier("value"), String )
 				},
 				new ReferenceType( ReferenceCategory.VALUE, String ) ),
-			delegate(Client_String o, ref Scope args) {
+			delegate(Client_String o, Scope args) {
 				return wrapCodePoints(
 					o.concat(
 						unwrapCodePoints(
@@ -90,7 +84,7 @@ static class Wrapper {
 					new Parameter( new Identifier("value"), String )
 				},
 				null),
-			delegate(Client_String o, ref Scope args) {
+			delegate(Client_String o, Scope args) {
 				o.concat(
 					unwrapCodePoints(
 						args.evaluateIdentifier(
@@ -104,7 +98,7 @@ static class Wrapper {
 					new Parameter( new Identifier("start"), Int )
 				},
 				new ReferenceType( ReferenceCategory.VALUE, String ) ),
-			delegate(Client_String o, ref Scope args) {
+			delegate(Client_String o, Scope args) {
 				return wrapCodePoints(
 						o.substring(
 							unwrapInteger(
@@ -120,7 +114,7 @@ static class Wrapper {
 					new Parameter( new Identifier("limit"), Int )
 				},
 				new ReferenceType( ReferenceCategory.VALUE, String ) ),
-			delegate(Client_String o, ref Scope args) {
+			delegate(Client_String o, Scope args) {
 				return wrapCodePoints(
 						o.substring(
 							unwrapInteger(
@@ -143,7 +137,7 @@ static class Wrapper {
 					new Parameter( new Identifier("value"), Int )
 				},
 				new ReferenceType( ReferenceCategory.VALUE, Int ) ),
-			delegate(Client_Integer o, ref Scope args) {
+			delegate(Client_Integer o, Scope args) {
 				return wrapInteger(
 						o.add(
 							unwrapInteger(
@@ -163,7 +157,7 @@ static class Wrapper {
 					new Parameter( new Identifier("value"), Bool )
 				},
 				new ReferenceType( ReferenceCategory.VALUE, Bool ) ),
-			delegate(Client_Boolean o, ref Scope args) {
+			delegate(Client_Boolean o, Scope args) {
 				return wrapBoolean(
 					o.equals(
 						unwrapBoolean(

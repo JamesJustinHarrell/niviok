@@ -1,5 +1,5 @@
 class Node_DeclarationConstEmpty : INode_DeclarationAny {
-	public void execute(ref Scope scope) {
+	public void execute(Scope scope) {
 		throw new Error_Unimplemented();
 	}
 	

@@ -13,18 +13,18 @@ class Node_Property : INode {
 		get { return _name.identifier; }
 	}
 	
-	public ReferenceType evaluateType(ref Scope scope) {
-		return _type.evaluateType(ref scope);
+	public ReferenceType evaluateType(Scope scope) {
+		return _type.evaluateType(scope);
 	}
 	
 	public Access access {
 		get { return _access.access; }
 	}
 	
-	public PropertyInfo evaluatePropertyInfo(ref Scope scope) {
+	public PropertyInfo evaluatePropertyInfo(Scope scope) {
 		return new PropertyInfo(
 			_name.identifier,
-			_type.evaluateType(ref scope),
+			_type.evaluateType(scope),
 			_access.access );
 	}
 	

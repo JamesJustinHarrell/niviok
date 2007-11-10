@@ -1,18 +1,28 @@
 class Node_Parameter : INode {
-	public Node_Identifier name;
-	public INode_Expression interface_;
-	public INode_Expression defaultValue;
+	Node_Identifier _name;
+	Node_ReferenceType _type;
+	INode_Expression _defaultValue;
+	Node_Bool _nullable;
 
 	public Node_Parameter(
-	Node_Identifier aName, INode_Expression aInterface,
-	INode_Expression aDefaultValue) {
-		name = aName;
-		interface_ = aInterface;
-		defaultValue = aDefaultValue;
+	Node_Identifier name, Node_ReferenceType type,
+	INode_Expression defaultValue, Node_Bool nullable ) {
+		_name = name;
+		_type = type;
+		_defaultValue = defaultValue;
+		_nullable = nullable;
+	}
+	
+	public Parameter evaluateParameter(Scope scope) {
+		return new Parameter(
+			_name.identifier,
+			_type.evaluateType(scope),
+			_defaultValue.evaluate(scope),
+			_nullable.val);
 	}
 	
 	public void getInfo(out string name, out object objs) {
 		name = "parameter";
-		objs = new object[]{ name, interface_, defaultValue };
+		objs = new object[]{ _name, _type, _defaultValue, _nullable };
 	}
 }

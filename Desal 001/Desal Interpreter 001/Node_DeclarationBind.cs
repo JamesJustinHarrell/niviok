@@ -13,15 +13,15 @@ class Node_DeclarationBind : INode_DeclarationAny, INode_Expression {
 		_value = val;
 	}
 
-	public void execute(ref Scope scope) {
-		evaluate(ref scope);
+	public void execute(Scope scope) {
+		evaluate(scope);
 	}
 	
-	public IValue evaluate(ref Scope scope) {
-		IValue val = _value.evaluate(ref scope);
+	public IValue evaluate(Scope scope) {
+		IValue val = _value.evaluate(scope);
 		scope.declareBind(
 			_name.identifier,
-			_type.evaluateType(ref scope),
+			_type.evaluateType(scope),
 			( _const == null ? false : _const.val ),
 			val );
 		return val;

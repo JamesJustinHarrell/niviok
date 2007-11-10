@@ -18,7 +18,7 @@ class Reference {
 	public Reference( ReferenceType type ) {
 		_type = type;
 		_constant = false;
-		_value = new NullValue(type.iface);
+		_value = new NullValue(type.face);
 	}
 	
 	public ReferenceType type {
@@ -34,7 +34,7 @@ class Reference {
 	}
 	
 	public void setValue(IValue val) {
-		if( _type.category == ReferenceCategory.DYN || val.activeInterface == _type.iface )
+		if( _type.category == ReferenceCategory.DYN || val.activeInterface == _type.face )
 			_value = val;
 		throw new Error_ArgumentInterface();
 	}
@@ -51,11 +51,21 @@ enum IdentifierCategory {
 }
 
 class ReferenceType {
-	public ReferenceCategory category;
-	public IInterface iface;
+	ReferenceCategory _category;
+	IInterface _face;
 	
-	public ReferenceType(ReferenceCategory cat, IInterface @interface) {
-		category = cat;
-		iface = @interface;
+	public ReferenceType(ReferenceCategory cat, IInterface face) {
+		if( cat == ReferenceCategory.DYN && face != null )
+			throw new System.Exception("dyn ref associated with an interface");
+		_category = cat;
+		_face = face;
+	}
+
+	public ReferenceCategory category {
+		get { return _category; }
+	}
+	
+	public IInterface face {
+		get { return _face; }
 	}
 }

@@ -7,13 +7,13 @@ class Node_ConditionalBlock : INode_Statement {
 		_actionNode = actionNode;
 	}
 	
-	public void execute(ref Scope scope) {
-		IValue testVal = _testNode.evaluate(ref scope);
+	public void execute(Scope scope) {
+		IValue testVal = _testNode.evaluate(scope);
 
 		if( testVal.activeInterface == Wrapper.Bool ) {
 			bool test = Wrapper.unwrapBoolean(testVal);
 			if( test )
-				_actionNode.execute(ref scope);
+				_actionNode.execute(scope);
 		}
 		else {
 			throw new ClientException("test must be a boolean");

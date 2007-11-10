@@ -14,18 +14,18 @@ class Node_ForRange : INode_Statement {
 		_block = block;
 	}
 	
-	public void execute(ref Scope scope) {		
-		IValue start = _start.evaluate(ref scope);
+	public void execute(Scope scope) {		
+		IValue start = _start.evaluate(scope);
 		long current = Wrapper.unwrapInteger(start);
-		IValue limit = _limit.evaluate(ref scope);
+		IValue limit = _limit.evaluate(scope);
 		while( current < Wrapper.unwrapInteger(limit) ) {
-			Scope innerScope = new Scope(ref scope);
+			Scope innerScope = new Scope(scope);
 			innerScope.declareBind(
 				_ident.identifier,
 				new ReferenceType( ReferenceCategory.VALUE, null),
 				true,
 				Wrapper.wrapInteger(current) );
-			_block.execute(ref innerScope);
+			_block.execute(innerScope);
 			current++;
 		}
 	}

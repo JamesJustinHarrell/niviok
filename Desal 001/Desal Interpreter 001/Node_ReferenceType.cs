@@ -12,10 +12,10 @@ class Node_ReferenceType : INode {
 		get { return _nodeCategory.category; }
 	}
 	
-	public ReferenceType evaluateType(ref Scope scope) {
+	public ReferenceType evaluateType(Scope scope) {
 		IValue ifaceValue = null;
 		if( _nodeInterface != null )
-			ifaceValue = _nodeInterface.evaluate(ref scope);
+			ifaceValue = _nodeInterface.evaluate(scope);
 
 		IInterface iface = null;
 		if( ifaceValue != null )

@@ -8,7 +8,7 @@ class Scope {
 		_binds = new Dictionary<Identifier, Reference>();
 	}
 	
-	public Scope(ref Scope parentScope) {
+	public Scope(Scope parentScope) {
 		_binds = new Dictionary<Identifier, Reference>();
 		_parent = parentScope;
 	}

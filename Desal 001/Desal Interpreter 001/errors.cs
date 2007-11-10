@@ -28,10 +28,6 @@ class Error_ArgumentCount : ApplicationException {
 class Error_ArgumentInterface : ApplicationException {
 }
 
-class Error_TagName : ApplicationException {
-	public Error_TagName(string message) : base(message) {}
-}
-
 class Error_Unimplemented : ApplicationException {
 	public Error_Unimplemented() {}
 	public Error_Unimplemented(string message) : base(message) {}

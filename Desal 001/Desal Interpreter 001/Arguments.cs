@@ -29,17 +29,17 @@ class Arguments {
 		return innerScope;
 	}
 	
-	public Scope setup(IList<Parameter> parameters, ref Scope outerScope) {
+	public Scope setup(IList<Parameter> parameters, Scope outerScope) {
 		if( _labeled.Count != 0 )
 			throw new Error_Unimplemented();
 		if( _unlabeled.Count != parameters.Count )
 			throw new System.ApplicationException("argument count");
 
-		Scope innerScope = new Scope(ref outerScope);
+		Scope innerScope = new Scope(outerScope);
 		
 		for( int i = 0; i < parameters.Count; i++ ) {
 			if( parameters[i].type.category == ReferenceCategory.VALUE &&
-			parameters[i].type.iface != _unlabeled[i].activeInterface )
+			parameters[i].type.face != _unlabeled[i].activeInterface )
 				throw new System.ApplicationException("interface mismatch");
 		
 			innerScope.declarePervasive(

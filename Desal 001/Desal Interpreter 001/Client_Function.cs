@@ -12,7 +12,7 @@ class Client_Function : IFunction {
 	
 	public Client_Function(
 	IList<Parameter> parameters, ReferenceType returnType,
-	Node_Block block, ref Scope scope) {
+	Node_Block block, Scope scope) {
 		_block = block;
 		_parameters = parameters;
 		_returnType = returnType;
@@ -28,18 +28,18 @@ class Client_Function : IFunction {
 	}
 	
 	public void executeCall(Arguments arguments) {
-		Scope functionScope = new Scope(ref _scope);
+		Scope functionScope = new Scope(_scope);
 		//xxx bind arguments to parameter identifiers
-		_block.execute(ref functionScope);
+		_block.execute(functionScope);
 	}
 	
 	public IValue evaluateCall(Arguments arguments) {
-		Scope functionScope = new Scope(ref _scope);
+		Scope functionScope = new Scope(_scope);
 		
 		//xxx bind arguments to parameter identifiers
 		
 		//xxx try {
-			_block.execute(ref functionScope);
+			_block.execute(functionScope);
 		/* xxx
 		}
 		catch(ReturnStatement statement) {

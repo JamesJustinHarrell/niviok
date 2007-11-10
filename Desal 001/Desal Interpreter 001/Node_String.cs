@@ -8,11 +8,11 @@ class Node_String : INode_Expression {
 		_str = str;
 	}
 	
-	public IValue evaluate(ref Scope scope) {
+	public IValue evaluate(Scope scope) {
 		return Wrapper.wrapString(_str);
 	}
 	
-	public void execute(ref Scope scope) {
+	public void execute(Scope scope) {
 		//xxx create better warning system
 		System.Console.WriteLine("WARNING: executing a string node has no effect");
 	}

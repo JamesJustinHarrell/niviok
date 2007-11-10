@@ -19,24 +19,24 @@ class Node_Interface : INode_Expression {
 		_methods = methods;
 	}
 
-	public IValue evaluate(ref Scope scope) {
+	public IValue evaluate(Scope scope) {
 		throw new Error_Unimplemented();
-		//xxx return InterfaceWrapper.wrap( evaluateInterface(ref scope) );
+		//xxx return InterfaceWrapper.wrap( evaluateInterface(scope) );
 	}
 	
-	public IInterface evaluateInterface(ref Scope scope) {
+	public IInterface evaluateInterface(Scope scope) {
 		IList<PropertyInfo> props = new List<PropertyInfo>();
 		foreach( Node_Property prop in _properties ) {
-			props.Add( prop.evaluatePropertyInfo(ref scope) );
+			props.Add( prop.evaluatePropertyInfo(scope) );
 		}
 		IList<MethodInfo> meths = new List<MethodInfo>();
 		foreach( Node_Method meth in _methods ) {
-			meths.Add( meth.evaluateMethodInfo(ref scope) );
+			meths.Add( meth.evaluateMethodInfo(scope) );
 		}
 		return new Interface( props, meths );
 	}
 	
-	public void execute(ref Scope scope) {
+	public void execute(Scope scope) {
 		throw new Error_Unimplemented();
 	}
 	

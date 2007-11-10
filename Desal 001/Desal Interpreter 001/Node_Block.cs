@@ -7,10 +7,10 @@ class Node_Block : INode_Statement {
 		_statements = statements;
 	}	
 	
-	public void execute(ref Scope scope) {
-		Scope innerScope = new Scope(ref scope);
+	public void execute(Scope scope) {
+		Scope innerScope = new Scope(scope);
 		foreach( INode_Statement statement in _statements ) {
-			statement.execute(ref innerScope);
+			statement.execute(innerScope);
 		}
 	}
 

@@ -7,12 +7,12 @@ class Node_GetProperty : INode_Expression {
 		_propertyName = propertyName;
 	}
 	
-	public void execute(ref Scope scope) {
+	public void execute(Scope scope) {
 		throw new System.Exception("does nothing");
 	}
 	
-	public IValue evaluate(ref Scope scope) {
-		return _value.evaluate(ref scope).getProperty(_propertyName.identifier);
+	public IValue evaluate(Scope scope) {
+		return _value.evaluate(scope).getProperty(_propertyName.identifier);
 	}
 	
 	public void getInfo(out string name, out object children) {

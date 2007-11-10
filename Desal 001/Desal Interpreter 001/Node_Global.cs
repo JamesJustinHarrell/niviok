@@ -19,7 +19,7 @@ class Node_Global : INode {
 			throw new System.Exception("scope not set");
 	
 		foreach( INode_Statement statement in _binds ) {
-			statement.execute(ref _scope);
+			statement.execute(_scope);
 		}
 	
 		IValue val = _scope.evaluateIdentifier( new Identifier("main") );

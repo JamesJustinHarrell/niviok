@@ -7,10 +7,10 @@ class Node_Method : INode {
 		_iface = iface;
 	}
 	
-	public MethodInfo evaluateMethodInfo(ref Scope scope) {
+	public MethodInfo evaluateMethodInfo(Scope scope) {
 		return new MethodInfo(
 			_name.identifier,
-			null ); //InterfaceFromValue.wrap( _iface.evaluate(ref scope) ) );
+			null ); //InterfaceFromValue.wrap( _iface.evaluate(scope) ) );
 	}
 	
 	public void getInfo(out string name, out object children) {

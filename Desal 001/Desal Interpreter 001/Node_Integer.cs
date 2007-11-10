@@ -5,11 +5,11 @@ class Node_Integer : INode_Expression {
 		_int = integer;
 	}
 	
-	public IValue evaluate(ref Scope scope) {
+	public IValue evaluate(Scope scope) {
 		return Wrapper.wrapInteger(_int);
 	}
 	
-	public void execute(ref Scope scope) {
+	public void execute(Scope scope) {
 		//xxx create better warning system
 		System.Console.WriteLine("WARNING: executing an integer node has no effect");
 	}

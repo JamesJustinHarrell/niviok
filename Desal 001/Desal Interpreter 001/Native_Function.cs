@@ -5,10 +5,10 @@ using System.Collections.Generic;
 
 class NativeFunction : IFunction {
 	/*xxx enable
-	public delegate void FunctionStatement(ref Scope scope);
-	public delegate IValue FunctionExpression(ref Scope scope);
+	public delegate void FunctionStatement(Scope scope);
+	public delegate IValue FunctionExpression(Scope scope);
 	*/
-	public delegate void FunctionType(ref Scope scope);
+	public delegate void FunctionType(Scope scope);
 
 	FunctionType _function;
 	IList<Parameter> _parameters;
@@ -17,7 +17,7 @@ class NativeFunction : IFunction {
 	
 	public NativeFunction(
 	FunctionType function, IList<Parameter> parameters,
-	ReferenceType returnType, ref Scope scope ) {
+	ReferenceType returnType, Scope scope ) {
 		_function = function;
 		_parameters = parameters;
 		_returnType = returnType;
@@ -33,18 +33,18 @@ class NativeFunction : IFunction {
 	}
 	
 	public void executeCall(Arguments arguments) {
-		Scope innerScope = arguments.setup(_parameters, ref _scope);		
-		_function(ref innerScope);
+		Scope innerScope = arguments.setup(_parameters, _scope);		
+		_function(innerScope);
 	}
 	
 	public IValue evaluateCall(Arguments arguments) {
 		throw new System.Exception("native functions cannot yet return values");
 	
 		/*
-		Scope functionScope = arguments.setup(ref _scope);
+		Scope functionScope = arguments.setup(_scope);
 
 		if( _function is FunctionExpression )
-			return ((FunctionExpression)_function)(ref functionScope, arguments);
+			return ((FunctionExpression)_function)(functionScope, arguments);
 			
 		throw new Exception("function is not an expression");
 		*/

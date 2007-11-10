@@ -3,8 +3,8 @@ using System.Collections.Generic;
 abstract class IfaceImplDelegates<T> {
 	public delegate IValue PropGetter(T o);
 	public delegate void PropSetter(T o, IValue val);
-	public delegate void VoidFunction(T o, ref Scope args);
-	public delegate IValue ValueFunction(T o, ref Scope args);
+	public delegate void VoidFunction(T o, Scope args);
+	public delegate IValue ValueFunction(T o, Scope args);
 }
 
 class InterfaceImplementation<T> : IfaceImplDelegates<T>, IInterfaceImplementation<T> {
@@ -94,13 +94,13 @@ class InterfaceImplementation<T> : IfaceImplDelegates<T>, IInterfaceImplementati
 		KeyValuePair<IFunctionInterface, VoidFunction> pair =
 			getFunction(_voidMethods[name], arguments);
 		Scope scope = arguments.setup(pair.Key.parameters);
-		pair.Value(obj, ref scope);
+		pair.Value(obj, scope);
 	}
 	
 	public IValue evaluateMethod(T obj, Identifier name, Arguments arguments) {
 		KeyValuePair<IFunctionInterface, ValueFunction> pair =
 			getFunction(_valueMethods[name], arguments);
 		Scope scope = arguments.setup(pair.Key.parameters);
-		return pair.Value(obj, ref scope);
+		return pair.Value(obj, scope);
 	}
 }

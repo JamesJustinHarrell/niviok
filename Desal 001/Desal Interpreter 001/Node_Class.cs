@@ -25,8 +25,8 @@ class Node_Class : INode_Expression {
 		_interfaceImplementations = interfaceImplementations;
 	}	
 
-	public IValue evaluate(ref Scope scope) {
-		Scope staticScope = new Scope(ref scope);
+	public IValue evaluate(Scope scope) {
+		Scope staticScope = new Scope(scope);
 			
 		//xxx Add instance constructors as free functions to STATIC_SCOPE.
 	
@@ -41,19 +41,19 @@ class Node_Class : INode_Expression {
 		//declaration-pervasive
 		foreach( Node_DeclarationClass declClass in _staticDeclarations ) {
 			if( declClass.decl is Node_DeclarationPervasive )
-				declClass.execute(ref staticScope);
+				declClass.execute(staticScope);
 		}
 		
 		//not declaration-const-empty
 		foreach( Node_DeclarationClass declClass in _staticDeclarations ) {
 			if( !(declClass.decl is Node_DeclarationConstEmpty) )
-				declClass.execute(ref staticScope);
+				declClass.execute(staticScope);
 		}
 		
 		//declaration-const-empty
 		foreach( Node_DeclarationClass declClass in _staticDeclarations ) {
 			if( declClass.decl is Node_DeclarationConstEmpty )
-				declClass.execute(ref staticScope);
+				declClass.execute(staticScope);
 		}
 		
 		//xxx static callees as free functions
@@ -61,15 +61,15 @@ class Node_Class : INode_Expression {
 		//xxx add static callees and properties to classInterface
 		
 		if( _staticConstructor != null )
-			_staticConstructor.execute(ref staticScope);
+			_staticConstructor.execute(staticScope);
 		
 		//xxx staticScope.seal();
 	
 		throw new Error_Unimplemented();
 	}
 	
-	public void execute(ref Scope scope) {
-		evaluate(ref scope);
+	public void execute(Scope scope) {
+		evaluate(scope);
 	}
 	
 	public void getInfo(out string name, out object objs) {
@@ -118,7 +118,7 @@ class ClassValue : IValue {
 	ClassInterfaceImplementation _interfaceImpl;
 
 	public ClassValue(
-	ref Scope staticScope,
+	Scope staticScope,
 	//Node_Class classNode,
 	ClassInterfaceImplementation faceImpl) {
 		_state = new ClassState();
@@ -165,12 +165,12 @@ class ClassInterfaceImplementation {
 	}
 	
 	public IValue evaluateCall(ClassState state, Arguments args) {
-		Scope instanceScope = new Scope(ref state.staticScope);
+		Scope instanceScope = new Scope(state.staticScope);
 		foreach( INode_DeclarationAny decl in state.instanceDeclarations ) {
-			decl.execute(ref instanceScope);
+			decl.execute(instanceScope);
 		}
-		_callee.evaluate(ref instanceScope).executeCall(args);
-		return new ClassValue(ref state.staticScope, state.defaultInterfaceImplementation);
+		_callee.evaluate(instanceScope).executeCall(args);
+		return new ClassValue(state.staticScope, state.defaultInterfaceImplementation);
 	}
 }
 
@@ -179,7 +179,7 @@ class InstanceConstructor {
 	Scope _staticScope;
 	Node_Function _func;
 
-	public InstanceConstructor(	ref Scope staticScope, ref Node_Function func) {
+	public InstanceConstructor(	Scope staticScope, Node_Function func) {
 		_staticScope = staticScope;
 		_func = func;
 	}

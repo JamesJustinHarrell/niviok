@@ -1,7 +1,10 @@
+//xxx too many constructors
+
 class Parameter {
 	Identifier _name;
 	ReferenceType _type;
 	IValue _defaultValue;
+	bool _nullable;
 	
 	//equivalent to having default parameters on the real constructor
 	public Parameter(Identifier name, IInterface face)
@@ -15,18 +18,18 @@ class Parameter {
 	
 	public Parameter(
 	Identifier name, ReferenceCategory cat,
-	IInterface face, IValue defaultValue) {
+	IInterface face, IValue defaultValue)
+		: this(name, new ReferenceType(cat, face), defaultValue, false) {}
+	
+	public Parameter(
+	Identifier name, ReferenceType type,
+	IValue defaultValue, bool nullable) {
 		if( name == null )
 			throw new System.Exception("name can't be null");
-		if( cat == ReferenceCategory.DYN && face != null )
-			throw new System.Exception("dyn parameters are associated with an interface");
-		if( cat != ReferenceCategory.DYN &&
-		cat != ReferenceCategory.FUNCTION &&
-		cat != ReferenceCategory.VALUE )
-			throw new System.Exception("bad reference type");
 		_name = name;
-		_type = new ReferenceType(cat, face);
+		_type = type;
 		_defaultValue = defaultValue;
+		_nullable = nullable;
 	}
 	
 	public Identifier name {

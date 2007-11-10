@@ -15,28 +15,24 @@ class Node_Function : INode_Expression {
 	}
 	
 	//creates a function; does not evaluate the function
-	public IValue evaluate(ref Scope scope) {
+	public IValue evaluate(Scope scope) {
 		//evaluate parameters
 		IList<Parameter> evaledParams = new List<Parameter>();
 		foreach( Node_Parameter paramNode in _parameters ) {
-			evaledParams.Add( new Parameter(
-				paramNode.name.identifier,
-				InterfaceFromValue.wrap(
-					paramNode.interface_.evaluate(ref scope) ),
-				paramNode.defaultValue.evaluate(ref scope) ) );
+			evaledParams.Add( paramNode.evaluateParameter(scope) );
 		}
 		
 		ReferenceType returnType = ( _returnType == null ?
 			null :
-			_returnType.evaluateType(ref scope) );
+			_returnType.evaluateType(scope) );
 		
 		IFunction function = new Client_Function(
-			evaledParams, returnType, _block, ref scope );		
+			evaledParams, returnType, _block, scope );		
 		
 		return FunctionWrapper.wrap(function);
 	}
 	
-	public void execute(ref Scope scope) {
+	public void execute(Scope scope) {
 		//xxx create better warning system
 		System.Console.WriteLine("WARNING: executing a function node has no effect");
 		System.Console.WriteLine("         (it's not the same as executing a function)");

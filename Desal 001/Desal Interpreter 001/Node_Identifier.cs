@@ -9,11 +9,11 @@ class Node_Identifier : INode_Expression {
 		get { return _identifier; }
 	}
 	
-	public IValue evaluate(ref Scope scope) {
+	public IValue evaluate(Scope scope) {
 		return scope.evaluateIdentifier(_identifier);
 	}
 	
-	public void execute(ref Scope scope) {
+	public void execute(Scope scope) {
 		//xxx create better warning system
 		System.Console.WriteLine("WARNING: executing an identifier node has no effect");
 	}

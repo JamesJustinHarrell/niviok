@@ -111,7 +111,7 @@
 			
 			<simplelist role="layout">
 				<member>identifier name</member>
-				<member>expression interface</member>
+				<member>reference-type type</member>
 				<member>? expression default-value</member>
 				<member>? bool nullable</member>
 			</simplelist>

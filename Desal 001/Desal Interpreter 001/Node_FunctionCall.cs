@@ -9,19 +9,19 @@ class Node_FunctionCall : INode_Expression {
 		_arguments = arguments;
 	}
 	
-	public IValue evaluate(ref Scope scope) {
+	public IValue evaluate(Scope scope) {
 		return _function
-			.evaluate(ref scope)
+			.evaluate(scope)
 			.evaluateCall( new Arguments(
-				evaluateArguments(ref scope),
+				evaluateArguments(scope),
 				evaluateLabeledArguments() ) );
 	}
 	
-	public void execute(ref Scope scope) {
+	public void execute(Scope scope) {
 		_function
-			.evaluate(ref scope)
+			.evaluate(scope)
 			.executeCall( new Arguments(
-				evaluateArguments(ref scope),
+				evaluateArguments(scope),
 				evaluateLabeledArguments() ) );
 	}
 
@@ -30,10 +30,10 @@ class Node_FunctionCall : INode_Expression {
 		objs = new object[]{ _function, _arguments };
 	}
 	
-	IList<IValue> evaluateArguments(ref Scope scope) {
+	IList<IValue> evaluateArguments(Scope scope) {
 		IList<IValue> evaledArgs = new List<IValue>();
 		foreach( INode_Expression argument in _arguments ) {
-			evaledArgs.Add( argument.evaluate(ref scope) );
+			evaledArgs.Add( argument.evaluate(scope) );
 		}
 		return evaledArgs;
 	}
