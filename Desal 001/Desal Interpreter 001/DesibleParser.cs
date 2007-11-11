@@ -22,6 +22,12 @@ parseFoo is replaced with
 map.Add( Node_Foo, delegate(XmlElement){...} )
 */
 
+/* xxx - diff between parse tree funcs
+Node_Foo
+"foo"
+"label", Node_Bar, amount
+*/
+
 class DesibleParser {
 	public static IInterface extractInterface(XmlElement element) {
 		DesibleParser parser = new DesibleParser();
@@ -52,25 +58,25 @@ class DesibleParser {
 		}
 	}
 	
-	public Node_Global parsePath(string path) {
+	public Node_Bundle parsePath(string path) {
 		XmlDocument doc = new XmlDocument();
 		doc.Load(path);
 		return parse(doc);
 	}
 	
-	public Node_Global parseMarkup(string markup) {
+	public Node_Bundle parseMarkup(string markup) {
 		XmlDocument doc = new XmlDocument();
 		doc.LoadXml(markup);
 		return parse(doc);
 	}
 
-	public Node_Global parse(XmlDocument doc) {
+	public Node_Bundle parse(XmlDocument doc) {
 		setupParser(doc);
 		//xxx check XML with Relax NG
 		setLabels(doc.DocumentElement);
-		Node_Global global = parseGlobal(doc.DocumentElement);
+		Node_Bundle bundle = parseBundle(doc.DocumentElement);
 		warnAboutUnhandled(doc.DocumentElement);
-		return global;
+		return bundle;
 	}
 	
 	void setupParser(XmlDocument doc) {
@@ -289,6 +295,18 @@ class DesibleParser {
 		return new Node_Block(
 			parseChildren<INode_Statement>(element, parseStatement));
 	}
+
+	Node_Bundle parseBundle(XmlElement element) {
+		checkElement(element, "bundle");
+		IList<Node_Plane> inlinePlanes =
+			parseAll<Node_Plane>(element, "inline-plane", parseInlinePlane);
+		/* xxx
+		IList<Node_Plane> otherPlanes =
+			parseAll<Node_Plane>(element, "plane-reference", parsePlaneReference);
+		IList<Node_Plane> allPlanes = inlinePlanes.Concat(otherPlanes);
+		*/
+		return new Node_Bundle(inlinePlanes);
+	}
 	
 	Node_Callee parseCallee(XmlElement element) {
 		checkElement(element, "callee");
@@ -382,10 +400,10 @@ class DesibleParser {
 			parseFirst<INode_Expression>(element, "value", parseExpression),
 			parseFirst<Node_Identifier>(element, "property-name", parseIdentifier));
 	}
-	
-	Node_Global parseGlobal(XmlElement element) {
-		checkElement(element, "global");
-		return new Node_Global(
+
+	Node_Plane parseInlinePlane(XmlElement element) {
+		checkElement(element, "inline-plane");
+		return new Node_Plane(
 			parseChildren<Node_DeclarationPervasive>(element, parseDeclarationPervasive));
 	}
 	

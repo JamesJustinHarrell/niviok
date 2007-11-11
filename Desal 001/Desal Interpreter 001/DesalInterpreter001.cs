@@ -32,15 +32,15 @@ class DesalInterpreter001 {
 		
 		DesibleParser parser = new DesibleParser();
 		parser.unhandledWarnLevel = Int32.Parse(args["unhandled-warn-level"]);
-		Node_Global globalNode = parser.parsePath(args["path"]);
-		globalNode.setup( program.createGlobalScope() );
+		Node_Bundle bundleNode = parser.parsePath(args["path"]);
+		bundleNode.setup( program.createGlobalScope() );
 		
 		if( Boolean.Parse(args["print-tree"]) ) {
-			program.printTree(globalNode);
+			program.printTree(bundleNode);
 		}
 		
 		if( Boolean.Parse(args["run"]) ) {
-			return globalNode.run();
+			return bundleNode.run();
 		}
 		
 		return 0;
@@ -130,7 +130,7 @@ class DesalInterpreter001 {
 			Console.Write("    ");
 	}
 
-	void printTree(Node_Global root) {
+	void printTree(Node_Bundle root) {
 		printNode(0, root);
 	}
 }

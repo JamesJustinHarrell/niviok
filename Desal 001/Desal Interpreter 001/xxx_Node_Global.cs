@@ -1,3 +1,4 @@
+/*
 using System.Collections.Generic;
 
 class Node_Global : INode {
@@ -34,3 +35,4 @@ class Node_Global : INode {
 		children = _binds;
 	}
 }
+*/

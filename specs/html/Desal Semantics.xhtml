@@ -666,6 +666,8 @@ a &lt;&lt; &quot;gaz&quot;</code>
 			</ul>
 			
 			<p>This node has scope, but only private identifiers are bound to it. Public and exported identifiers are bound to the scope of the bundle node.</p>
+			
+			<p>Planes aren't statements because the declaration-pervasive nodes make rely on declaration-pervasive nodes in other planes, so all the declaration-pervasive nodes in a single plane can't just be executed all together.</p>
 		</div>
 		
 		<div id="node.bool">
