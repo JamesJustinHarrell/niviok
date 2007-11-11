@@ -1,0 +1,21 @@
+Q: Is this just a copy of .NET?
+
+A: Desal may have turned out quite similar to the Common Language Infrastructure, but that was definitely never my intention.
+
+I began wanting to create a new language that was like C++ but cleaner (similar to the aims of the D programming language). I started with writing examples of C++ code followed by possibilites of how the same thing might be written with nicer syntax.
+
+After I had decided on a few things I wanted to change, I started trying to spec them out. But the coupling of syntax and and semantics make it nearly impossible for me to think. I would often spend much time wrestling over an issue only to realize this coupling was preventing me from considering the real problem. Apparently my mind works very differently from many others, since in most language specifications the syntax and semantics are so strongly coupled that they're practicaly treated like they're the same.
+
+So I separated the syntax from the semantics. After that I was able to think clearly, and designing my language was much easier. Then I realized that, due to the separation, I could represent the semantics using XML. That would allow me to start working on an interpreter long before I had to think about the syntax. I wanted the semantics mostly complete before I really seriously started work on the syntax, and I wanted an implementation to work on the semantics, so being able to work on the interpreter before I started working on the syntax was a huge bonus.
+
+So now I had a system where the same semantics could be represented in all kinds of ways. Thinking separately about semantics and how those semantics are represented naturally lead me in the same direction as the Common Language Ifrastructure.
+
+
+Q: How are .NET and Desal different?
+
+A: The thinking behind the Common Language Infrastructure (CLI) is taking any language and translating it into the same bytecode (Common Intermediate Language, or CIL). CIL was designed to be general enough to work well for almost every programming language. Each language that is translated to CIL defines its own semantics.
+
+The thinking behind Desal is representing the same semantics in several different ways. Desal itself is a language, just an abstract one. Representations of Desal may define additional semantics, but the intention was that the mapping from representation to Desal nodes would be very direct. There was never any intention to make Desal semantics general enough that any programming language could be easily mapped to Desal nodes. Unless something has been designed as a representation of Desal semantics, it will probably not translate very directly into Desal nodes.
+
+CIL: any language -> concrete bytecode
+Desal: concrete Desal representation -> abstract Desal nodes

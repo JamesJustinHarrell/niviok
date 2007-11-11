@@ -1,0 +1,70 @@
+assembly
+	imports
+	planes
+
+An assembly could be an executable program, but it doesn't have to be. It may just be a library. An assembly can both be executable and act as a library.
+
+Planes contain declaration-pervasives. Each declaration-pervasive is visible to either only that plane, all planes within that assebly, or (if exported) visible to other assemblies.
+
+
+----- Desible assembly
+
+<assembly>
+	<import/>
+	<import/>
+	...
+	
+	<inline-plane>
+		<declaration-pervasive/>
+		<declaration-pervasive/>
+		...
+	</inline-plane>
+	
+	<plane-reference>
+		<type>desible file</type>
+		<path>foo.desible</path>
+	</plane-reference>
+	
+	<plane-reference>
+		<type>dextr file</type>
+		<path>foo.dextr</path>
+	</plane-reference>
+</assembly>
+
+
+----- Desible plane
+
+<plane>
+	<declaration-pervasive/>
+	<declaration-pervasive/>
+	...
+</plane>
+
+
+----- Dextr assembly
+
+#standalone
+
+import ...
+import ...
+
+func main()
+	...
+
+func doStuff()
+	...
+
+
+----- Dextr plane
+
+func main()
+	...
+
+func doStuff()
+	...
+
+
+A compiler/interpreter could also take on the command line
+	* paths to files representing planes
+	* references to libraries
+and construct the assembly node itself from this. This would make the interface to a Desal compiler very similar to the compilers of other languages.

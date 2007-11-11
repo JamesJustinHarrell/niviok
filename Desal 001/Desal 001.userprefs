@@ -1,9 +1,6 @@
 <?xml version="1.0"?>
 <UserCombinePreferences filename="/media/files/Desal/Desal 001/Desal 001.mds">
-  <Files>
-    <File filename="Welcome" />
-    <File filename="./Desal Interpreter 001/DesalInterpreter001.cs" />
-  </Files>
+  <Files />
   <Views>
     <ViewMemento Id="MonoDevelop.Ide.Gui.Pads.ProjectPad">
       <TreeView>
@@ -23,7 +20,7 @@
   <Properties>
     <Properties>
       <Property key="ActiveConfiguration" value="Debug" />
-      <Property key="ActiveWindow" value="/media/files/Desal/Desal 001/Desal Interpreter 001/DesalInterpreter001.cs" />
+      <Property key="ActiveWindow" value="" />
     </Properties>
   </Properties>
 </UserCombinePreferences>

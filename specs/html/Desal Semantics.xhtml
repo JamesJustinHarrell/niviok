@@ -12,7 +12,7 @@
 		<p>Permission is granted to use, copy, display, modify, sell, and distribute this document. This document is provided &quot;as is&quot; without warrany of any kind. In no event shall anyone be liable for any damages or other liability arising from use of this document.</p>
 	
 	
-	<ol class="toc"><li><a href="#introduction">1. Introduction</a><ol><li><a href="#specification-version">1.1. Version</a></li><li><a href="#specification-scope">1.2. Scope</a></li><li><a href="#compliance">1.3. Compliance</a></li><li><a href="#executing-desal-tree-rep">1.4. Executing a Desal tree representation</a></li><li><a href="#definitions">1.5. Definitions</a></li></ol></li><li><a href="#overview">2. Overview</a><ol><li><a href="#ext-namespace">2.1. ext namespace</a></li><li><a href="#expressions">2.2. Expressions</a></li><li><a href="#references">2.3. references</a><ol><li><a href="#value-identifiers">2.3.1. value identifier</a></li><li><a href="#reference-identifiers">2.3.2. Reference identifiers</a></li><li><a href="#function-identifiers">2.3.3. function identifier</a></li><li><a href="#namespace-identifiers">2.3.4. namespace identifier</a></li><li><a href="#dynamic-identifiers">2.3.5. dynamic identifier</a></li><li><a href="#meta-identifiers">2.3.6. meta identifier</a></li></ol></li><li><a href="#execution">2.4. Execution</a></li><li><a href="#builtin-numbers">2.5. Built-in numbers</a></li></ol></li><li><a href="#objects">3. Objects</a></li><li><a href="#functions">4. Functions</a></li><li><a href="#interfaces">5. Interfaces</a><ol><li><a href="#adding-interfaces">5.1. Adding and Subtracting Interfaces</a></li></ol></li><li><a href="#special-members">6. Special members</a><ol><li><a href="#member.add">6.1. add</a></li><li><a href="#member.equals">6.2. equals?</a></li><li><a href="#member.extract">6.3. extract</a></li><li><a href="#member.insert">6.4. insert</a></li><li><a href="#member.throwDivide">6.5. throwDivide</a></li></ol></li><li><a href="#object-references">7. Object references</a></li><li><a href="#scopes">8. Scopes</a></li><li><a href="#nodes">9. Nodes</a><ol><li><a href="#node-terminology">9.1. Node terminology</a></li><li><a href="#tree-node-layout">9.2. Tree node layout</a></li><li><a href="#node-supertypes">9.3. Node supertypes</a></li></ol></li><li><a href="#node-types">10. Node types</a><ol><li><a href="#base-node-types">10.1. Base node types</a></li><li><a href="#tree-node-layout-representation">10.2. Tree node layout representation</a></li><li><a href="#nonexecuted-node-types">10.3. Nonexecuted node types</a><ol><li><a href="#node.comment">10.3.1. comment</a></li><li><a href="#node.namespace-reference">10.3.2. namespace-reference</a></li><li><a href="#node.reference-type">10.3.3. reference-type</a></li><li><a href="#node.reference-category">10.3.4. referenc-category</a></li><li><a href="#node.identifier-category">10.3.5. identifier-category</a></li><li><a href="#node.parameter">10.3.6. parameter</a></li></ol></li><li><a href="#node.statement">10.4. Statement node types</a><ol><li><a href="#node.block">10.4.1. block</a></li><li><a href="#node.conditional-block">10.4.2. conditional-block</a></li><li><a href="#node.declaration">10.4.3. declaration</a></li><li><a href="#node.do-while">10.4.4. do-while</a></li><li><a href="#node.do-times">10.4.5. do-times</a></li><li><a href="#node.enum">10.4.6. enum</a></li><li><a href="#node.for">10.4.7. for</a></li><li><a href="#node.for-key">10.4.8. for-key</a></li><li><a href="#node.for-pair">10.4.9. for-pair</a></li><li><a href="#node.for-range">10.4.10. for-range</a></li><li><a href="#node.for-value">10.4.11. for-value</a></li><li><a href="#node.if-else">10.4.12. if-else</a></li><li><a href="#node.import">10.4.13. import</a><ol><li><a href="#node.alias-member">10.4.13.1. alias-member</a></li></ol></li><li><a href="#node.import-all">10.4.14. import-all</a></li><li><a href="#node.loop">10.4.15. loop</a></li><li><a href="#node.return">10.4.16. return</a></li><li><a href="#node.while">10.4.17. while</a></li></ol></li><li><a href="#node.expression">10.5. Expression tree node types</a><ol><li><a href="#boolean-logic-nodes">10.5.1. Boolean logic nodes</a><ol><li><a href="#node.and">10.5.1.1. and</a></li><li><a href="#node.nand">10.5.1.2. nand</a></li><li><a href="#node.or">10.5.1.3. or</a></li><li><a href="#node.nor">10.5.1.4. nor</a></li><li><a href="#node.xor">10.5.1.5. xor</a></li><li><a href="#node.xnor">10.5.1.6. xnor</a></li></ol></li><li><a href="#node.array">10.5.2. array</a></li><li><a href="#node.bind">10.5.3. bind</a></li><li><a href="#node.bind-meta">10.5.4. bind-meta</a></li><li><a href="#node.bool">10.5.5. bool</a></li><li><a href="#node.method-call">10.5.6. method-call</a><ol><li><a href="#node.labeled-argument">10.5.6.1. labeled-argument</a></li></ol></li><li><a href="#node.cast">10.5.7. cast</a></li><li><a href="#node.class">10.5.8. class</a><ol><li><a href="#node.declaration-class">10.5.8.1. declaration-class</a></li><li><a href="#node.declaration-any">10.5.8.2. declaration-any</a></li><li><a href="#node.declaration-const-empty">10.5.8.3. declaration-const-empty</a></li><li><a href="#node.interface-implementation">10.5.8.4. interface-implementation</a></li><li><a href="#node.named-function">10.5.8.5. named-function</a></li><li><a href="#node.class-property">10.5.8.6. class-property</a></li></ol></li><li><a href="#node.conditional">10.5.9. conditional</a></li><li><a href="#node.declaration-bind">10.5.10. declaration-bind</a></li><li><a href="#node.declaration-pervasive">10.5.11. declaration-pervasive</a></li><li><a href="#node.function">10.5.12. function</a></li><li><a href="#node.function-call">10.5.13. function-call</a></li><li><a href="#node.function-interface">10.5.14. function-interface</a></li><li><a href="#node.function-template-instantion">10.5.15. function-template-instantion</a></li><li><a href="#node.identifier">10.5.16. identifier</a></li><li><a href="#node.curry-function">10.5.17. curry-function</a></li><li><a href="#node.bind-method">10.5.18. bind-method</a></li><li><a href="#node.namespaced-identifier">10.5.19. namespaced-identifier</a></li><li><a href="#node.chain">10.5.20. chain</a></li><li><a href="#node.implements">10.5.21. implements?</a></li><li><a href="#node.integer">10.5.22. integer</a></li><li><a href="#node.interface">10.5.23. interface</a><ol><li><a href="#node.callee">10.5.23.1. callee</a></li><li><a href="#node.property">10.5.23.2. property</a></li><li><a href="#node.method">10.5.23.3. method</a></li><li><a href="#node.access">10.5.23.4. access</a></li></ol></li><li><a href="#node.interface-template-instantion">10.5.24. interface-template-instantion</a></li><li><a href="#node.same-object">10.5.25. same-object</a></li><li><a href="#node.list">10.5.26. list</a></li><li><a href="#node.object-number">10.5.27. object-number</a></li><li><a href="#node.rational">10.5.28. rational</a></li><li><a href="#node.get-property">10.5.29. get property</a></li><li><a href="#node.string">10.5.30. string</a></li><li><a href="#node.unbind">10.5.31. unbind</a></li><li><a href="#node.unbind-function">10.5.32. unbind-function</a></li></ol></li><li><a href="#unsorted-tree-node-types">10.6. Unsorted tree node types</a><ol><li><a href="#node.global">10.6.1. global</a></li><li><a href="#node.alias">10.6.2. alias</a></li></ol></li></ol></li><li><a href="#prevalent-identifiers">11. Prevalent identifiers</a><ol><li><a href="#object.cast">11.1. func{I}(obj)I cast</a></li><li><a href="#object.generator">11.2. interface generator</a></li><li><a href="#object.implements_q">11.3. func(obj, interface)bool implements?</a></li><li><a href="#ident.Int">11.4. interface Int</a></li><li><a href="#object.BigInt">11.5. interface BigInt</a></li><li><a href="#object.BigRat">11.6. interface BigRat</a></li><li><a href="#ident.Interface">11.7. interface Interface</a></li><li><a href="#object.Object">11.8. interface Object</a></li><li><a href="#interface.rat">11.9. interface rat</a></li></ol></li><li><a href="#preexisting-global-identifiers">12. Other preexisting global identifiers</a><ol><li><a href="#InterfaceBuilder">12.1. InterfaceBuilder</a></li><li><a href="#Iterator">12.2. Iterator</a></li><li><a href="#CInterfaceBuilder">12.3. CInterfaceBuilder</a></li><li><a href="#getFuncInterface">12.4. getFuncInterface</a></li></ol></li><li><a href="#evaluation">13. Evaluation</a><ol><li><a href="#error-handling">13.1. Error handling</a></li></ol></li><li><a href="#unsorted-stuff">14. unsorted stuff</a><ol><li><a href="#closures">14.1. Closures</a></li><li><a href="#tree-examples">14.2. Tree examples</a><ol><li><a href="#tree-example-1">14.2.1. Example 1</a></li><li><a href="#tree-example-2">14.2.2. Example 2</a></li><li><a href="#tree-example-3">14.2.3. Example 3</a></li></ol></li><li><a href="#get-interface">14.3. get interface</a></li><li><a href="#obj-interface">14.4. obj interface</a></li><li><a href="#identifier-binding">14.5. Binding to identifiers</a></li><li><a href="#print-println-return-interfaces">14.6. Return interfaces of print and println</a></li><li><a href="#adjuncts">14.7. Adjuncts</a></li><li><a href="#runtime-inteface">14.8. runtime interface implementation</a></li><li><a href="#runtime-interface-creation">14.9. Runtime interface creation</a></li><li><a href="#self-return-type">14.10. &quot;self&quot; return type</a></li><li><a href="#bind">14.11. Bind</a></li><li><a href="#classes">14.12. Classes</a></li><li><a href="#noninstantiated-interface-templates">14.13. Noninstantiated interface templates</a></li><li><a href="#dynamic-library-loading">14.14. Dynamic library loading</a></li><li><a href="#static-typing">14.15. Static typing</a></li></ol></li><li><a href="#rationales">15. Rationales</a><ol><li><a href="#rationale.dynamic-static-typing">15.1. Dynamic static typing</a></li><li><a href="#rationale.terms">15.2. Terms</a><ol><li><a href="#rationale.get-set">15.2.1. get/set</a></li></ol></li></ol></li></ol><div id="introduction">
+	<ol class="toc"><li><a href="#introduction">1. Introduction</a><ol><li><a href="#specification-version">1.1. Version</a></li><li><a href="#specification-scope">1.2. Scope</a></li><li><a href="#compliance">1.3. Compliance</a></li><li><a href="#executing-desal-tree-rep">1.4. Executing a Desal tree representation</a></li><li><a href="#definitions">1.5. Definitions</a></li></ol></li><li><a href="#overview">2. Overview</a><ol><li><a href="#ext-namespace">2.1. ext namespace</a></li><li><a href="#expressions">2.2. Expressions</a></li><li><a href="#references">2.3. references</a><ol><li><a href="#value-identifiers">2.3.1. value identifier</a></li><li><a href="#reference-identifiers">2.3.2. Reference identifiers</a></li><li><a href="#function-identifiers">2.3.3. function identifier</a></li><li><a href="#namespace-identifiers">2.3.4. namespace identifier</a></li><li><a href="#dynamic-identifiers">2.3.5. dynamic identifier</a></li><li><a href="#meta-identifiers">2.3.6. meta identifier</a></li></ol></li><li><a href="#execution">2.4. Execution</a></li><li><a href="#builtin-numbers">2.5. Built-in numbers</a></li></ol></li><li><a href="#objects">3. Objects</a></li><li><a href="#functions">4. Functions</a></li><li><a href="#interfaces">5. Interfaces</a><ol><li><a href="#adding-interfaces">5.1. Adding and Subtracting Interfaces</a></li></ol></li><li><a href="#special-members">6. Special members</a><ol><li><a href="#member.add">6.1. add</a></li><li><a href="#member.equals">6.2. equals?</a></li><li><a href="#member.extract">6.3. extract</a></li><li><a href="#member.insert">6.4. insert</a></li><li><a href="#member.throwDivide">6.5. throwDivide</a></li></ol></li><li><a href="#object-references">7. Object references</a></li><li><a href="#scopes">8. Scopes</a></li><li><a href="#nodes">9. Nodes</a><ol><li><a href="#node-terminology">9.1. Node terminology</a></li><li><a href="#tree-node-layout">9.2. Tree node layout</a></li><li><a href="#node-supertypes">9.3. Node supertypes</a></li></ol></li><li><a href="#node-types">10. Node types</a><ol><li><a href="#base-node-types">10.1. Base node types</a></li><li><a href="#tree-node-layout-representation">10.2. Tree node layout representation</a></li><li><a href="#nonexecuted-node-types">10.3. Nonexecuted node types</a><ol><li><a href="#node.bundle">10.3.1. bundle</a></li><li><a href="#node.plane">10.3.2. plane</a></li><li><a href="#node.bool">10.3.3. bool</a></li><li><a href="#node.comment">10.3.4. comment</a></li><li><a href="#node.namespace-reference">10.3.5. namespace-reference</a></li><li><a href="#node.reference-type">10.3.6. reference-type</a></li><li><a href="#node.reference-category">10.3.7. referenc-category</a></li><li><a href="#node.identifier-category">10.3.8. identifier-category</a></li><li><a href="#node.parameter">10.3.9. parameter</a></li></ol></li><li><a href="#node.statement">10.4. Statement node types</a><ol><li><a href="#node.block">10.4.1. block</a></li><li><a href="#node.conditional-block">10.4.2. conditional-block</a></li><li><a href="#node.declaration">10.4.3. declaration</a></li><li><a href="#node.do-while">10.4.4. do-while</a></li><li><a href="#node.do-times">10.4.5. do-times</a></li><li><a href="#node.enum">10.4.6. enum</a></li><li><a href="#node.for">10.4.7. for</a></li><li><a href="#node.for-key">10.4.8. for-key</a></li><li><a href="#node.for-pair">10.4.9. for-pair</a></li><li><a href="#node.for-range">10.4.10. for-range</a></li><li><a href="#node.for-value">10.4.11. for-value</a></li><li><a href="#node.if-else">10.4.12. if-else</a></li><li><a href="#node.import">10.4.13. import</a><ol><li><a href="#node.alias-member">10.4.13.1. alias-member</a></li></ol></li><li><a href="#node.import-all">10.4.14. import-all</a></li><li><a href="#node.loop">10.4.15. loop</a></li><li><a href="#node.return">10.4.16. return</a></li><li><a href="#node.while">10.4.17. while</a></li></ol></li><li><a href="#node.expression">10.5. Expression tree node types</a><ol><li><a href="#boolean-logic-nodes">10.5.1. Boolean logic nodes</a><ol><li><a href="#node.and">10.5.1.1. and</a></li><li><a href="#node.nand">10.5.1.2. nand</a></li><li><a href="#node.or">10.5.1.3. or</a></li><li><a href="#node.nor">10.5.1.4. nor</a></li><li><a href="#node.xor">10.5.1.5. xor</a></li><li><a href="#node.xnor">10.5.1.6. xnor</a></li></ol></li><li><a href="#node.array">10.5.2. array</a></li><li><a href="#node.bind">10.5.3. bind</a></li><li><a href="#node.bind-meta">10.5.4. bind-meta</a></li><li><a href="#node.method-call">10.5.5. method-call</a><ol><li><a href="#node.labeled-argument">10.5.5.1. labeled-argument</a></li></ol></li><li><a href="#node.cast">10.5.6. cast</a></li><li><a href="#node.class">10.5.7. class</a><ol><li><a href="#node.declaration-class">10.5.7.1. declaration-class</a></li><li><a href="#node.declaration-any">10.5.7.2. declaration-any</a></li><li><a href="#node.declaration-const-empty">10.5.7.3. declaration-const-empty</a></li><li><a href="#node.interface-implementation">10.5.7.4. interface-implementation</a></li><li><a href="#node.named-function">10.5.7.5. named-function</a></li><li><a href="#node.class-property">10.5.7.6. class-property</a></li></ol></li><li><a href="#node.conditional">10.5.8. conditional</a></li><li><a href="#node.declaration-bind">10.5.9. declaration-bind</a></li><li><a href="#node.declaration-pervasive">10.5.10. declaration-pervasive</a></li><li><a href="#node.function">10.5.11. function</a></li><li><a href="#node.function-call">10.5.12. function-call</a></li><li><a href="#node.function-interface">10.5.13. function-interface</a></li><li><a href="#node.function-template-instantion">10.5.14. function-template-instantion</a></li><li><a href="#node.identifier">10.5.15. identifier</a></li><li><a href="#node.curry-function">10.5.16. curry-function</a></li><li><a href="#node.bind-method">10.5.17. bind-method</a></li><li><a href="#node.namespaced-identifier">10.5.18. namespaced-identifier</a></li><li><a href="#node.chain">10.5.19. chain</a></li><li><a href="#node.implements">10.5.20. implements?</a></li><li><a href="#node.integer">10.5.21. integer</a></li><li><a href="#node.interface">10.5.22. interface</a><ol><li><a href="#node.callee">10.5.22.1. callee</a></li><li><a href="#node.property">10.5.22.2. property</a></li><li><a href="#node.method">10.5.22.3. method</a></li><li><a href="#node.access">10.5.22.4. access</a></li></ol></li><li><a href="#node.interface-template-instantion">10.5.23. interface-template-instantion</a></li><li><a href="#node.same-object">10.5.24. same-object</a></li><li><a href="#node.list">10.5.25. list</a></li><li><a href="#node.object-number">10.5.26. object-number</a></li><li><a href="#node.rational">10.5.27. rational</a></li><li><a href="#node.get-property">10.5.28. get property</a></li><li><a href="#node.string">10.5.29. string</a></li><li><a href="#node.unbind">10.5.30. unbind</a></li><li><a href="#node.unbind-function">10.5.31. unbind-function</a></li></ol></li><li><a href="#unsorted-tree-node-types">10.6. Unsorted tree node types</a><ol><li><a href="#node.alias">10.6.1. alias</a></li></ol></li></ol></li><li><a href="#prevalent-identifiers">11. Prevalent identifiers</a><ol><li><a href="#object.cast">11.1. func{I}(obj)I cast</a></li><li><a href="#object.generator">11.2. interface generator</a></li><li><a href="#object.implements_q">11.3. func(obj, interface)bool implements?</a></li><li><a href="#ident.Int">11.4. interface Int</a></li><li><a href="#object.BigInt">11.5. interface BigInt</a></li><li><a href="#object.BigRat">11.6. interface BigRat</a></li><li><a href="#ident.Interface">11.7. interface Interface</a></li><li><a href="#object.Object">11.8. interface Object</a></li><li><a href="#interface.rat">11.9. interface rat</a></li></ol></li><li><a href="#preexisting-global-identifiers">12. Other preexisting global identifiers</a><ol><li><a href="#InterfaceBuilder">12.1. InterfaceBuilder</a></li><li><a href="#Iterator">12.2. Iterator</a></li><li><a href="#CInterfaceBuilder">12.3. CInterfaceBuilder</a></li><li><a href="#getFuncInterface">12.4. getFuncInterface</a></li></ol></li><li><a href="#evaluation">13. Evaluation</a><ol><li><a href="#error-handling">13.1. Error handling</a></li></ol></li><li><a href="#unsorted-stuff">14. unsorted stuff</a><ol><li><a href="#closures">14.1. Closures</a></li><li><a href="#tree-examples">14.2. Tree examples</a><ol><li><a href="#tree-example-1">14.2.1. Example 1</a></li><li><a href="#tree-example-2">14.2.2. Example 2</a></li><li><a href="#tree-example-3">14.2.3. Example 3</a></li></ol></li><li><a href="#get-interface">14.3. get interface</a></li><li><a href="#obj-interface">14.4. obj interface</a></li><li><a href="#identifier-binding">14.5. Binding to identifiers</a></li><li><a href="#print-println-return-interfaces">14.6. Return interfaces of print and println</a></li><li><a href="#adjuncts">14.7. Adjuncts</a></li><li><a href="#runtime-inteface">14.8. runtime interface implementation</a></li><li><a href="#runtime-interface-creation">14.9. Runtime interface creation</a></li><li><a href="#self-return-type">14.10. &quot;self&quot; return type</a></li><li><a href="#bind">14.11. Bind</a></li><li><a href="#classes">14.12. Classes</a></li><li><a href="#noninstantiated-interface-templates">14.13. Noninstantiated interface templates</a></li><li><a href="#dynamic-library-loading">14.14. Dynamic library loading</a></li><li><a href="#static-typing">14.15. Static typing</a></li></ol></li><li><a href="#rationales">15. Rationales</a><ol><li><a href="#rationale.dynamic-static-typing">15.1. Dynamic static typing</a></li><li><a href="#rationale.terms">15.2. Terms</a><ol><li><a href="#rationale.get-set">15.2.1. get/set</a></li></ol></li></ol></li></ol><div id="introduction">
 		<h1>Chapter 1. Introduction</h1>
 		
 		<div id="specification-version">
@@ -633,15 +633,58 @@ a &lt;&lt; &quot;gaz&quot;</code>
 		
 		<p>These nodes cannot be executed (and thus also cannot be evaluated).</p>
 		
+		<div id="node.bundle">
+			<h3>10.3.1. bundle</h3>
+			
+			<ul class="layout">
+				<li>* <a href="#node.import">import</a> </li>
+				<li>* <a href="#node.alias">alias</a> </li>
+				<li>+ <a href="#node.plane">plane</a> </li>
+			</ul>
+			
+			<p>The bundle node type is the type of the root node. No node can contain an bundle node. All Desal nodes that are executed in any way must be part of a complete Desal tree, which means having an bundle node as the root node.</p>
+			
+			<p>xxx Program arguments are no longer passed to the main function, because developers should have a choice of accessing program arguments in different ways, and some implementations may not have program arguments, or have non-string program arguments, etc. The old way just isn't flexible enough. Implementations should give program arguments through some API instead of passing them to the main function.</p>
+
+			<ol class="exec">
+				<li>1. Bind the global objects defined in XXX to the specified identifiers for this node's scope.</li>
+				<li>2. Bind any implementation-specific identifiers.</li>
+				<li>3. Execute each child identifier-const node in order.</li>
+			</ol>
+			
+			<p>When the complete Desal tree is treated as a standalone program, section XXX applies. Otherwise, besides layout and setup, the abilities and behaviour of the bundle node is implementation-specific, and execution or evaluation of Desal nodes may occur directly, without going through the bundle node.</p>
+			
+			<p>The section XXX mentioned above should specify a value bound to &quot;main&quot; with a callee that takes no arguments and either returns nothing or returns an Int.</p>
+		</div>
+		
+		<div id="node.plane">
+			<h3>10.3.2. plane</h3>
+			
+			<ul class="layout">
+				<li>* <a href="#node.alias">alias</a> </li>
+				<li>+ <a href="#node.declaration-pervasive">declaration-pervasive</a> </li>
+			</ul>
+			
+			<p>This node has scope, but only private identifiers are bound to it. Public and exported identifiers are bound to the scope of the bundle node.</p>
+		</div>
+		
+		<div id="node.bool">
+			<h3>10.3.3. bool</h3>
+			
+			<p>Base node. Must specify either true or false.</p>
+			
+			<p>Cannot be evaluated because that would conflict with the prevalent &quot;true&quot; and &quot;false&quot; identifiers. Use &quot;true&quot; and &quot;false&quot; identifiers for expressions instead.</p>
+		</div>
+		
 		<div id="node.comment">
-			<h3>10.3.1. comment</h3>
+			<h3>10.3.4. comment</h3>
 			
 			<p>Comments are text nodes. Comments nodes may appear as children of any tree node. Comment nodes describe the node that they are contained in. Comment nodes must not have any affect on execution or evaluation.</p>
 		</div>
 		
 		
 		<div id="node.namespace-reference">
-			<h3>10.3.2. namespace-reference</h3>
+			<h3>10.3.5. namespace-reference</h3>
 			
 			<ul class="layout">
 				<li>+ <a href="#node.identifier">identifier</a> </li>
@@ -651,7 +694,7 @@ a &lt;&lt; &quot;gaz&quot;</code>
 		</div>
 		
 		<div id="node.reference-type">
-			<h3>10.3.3. reference-type</h3>
+			<h3>10.3.6. reference-type</h3>
 			
 			<ul class="layout">
 				<li><a href="#node.reference-category">reference-category</a> </li>
@@ -662,24 +705,25 @@ a &lt;&lt; &quot;gaz&quot;</code>
 		</div>
 		
 		<div id="node.reference-category">
-			<h3>10.3.4. referenc-category</h3>
+			<h3>10.3.7. referenc-category</h3>
 			
 			<p>Specifies one of: value, function, dyn</p>
 		</div>
 		
 		<div id="node.identifier-category">
-			<h3>10.3.5. identifier-category</h3>
+			<h3>10.3.8. identifier-category</h3>
 			
 			<p>Specifies one of: value, function, dyn, namespace, alias</p>
 		</div>
 
 		<div id="node.parameter">
-			<h3>10.3.6. parameter</h3>
+			<h3>10.3.9. parameter</h3>
 			
 			<ul class="layout">
 				<li><a href="#node.identifier">identifier</a> name</li>
-				<li><a href="#node.expression">expression</a> interface</li>
+				<li><a href="#node.reference-type">reference-type</a> type</li>
 				<li>? <a href="#node.expression">expression</a> default-value</li>
+				<li>? <a href="#node.bool">bool</a> nullable</li>
 			</ul>
 			
 			<p>A function parameter.</p>
@@ -1015,7 +1059,9 @@ from &quot;XmlLib&quot; as Xml import
 		<div id="node.import-all">
 			<h3>10.4.14. import-all</h3>
 			
-			<p class="layout">string library</p>
+			<ul class="layout">
+				<li><a href="#node.string">string</a> library</li>
+			</ul>
 			
 			<p>Imports every identifier-reference in the library.</p>
 			
@@ -1026,7 +1072,9 @@ from &quot;XmlLib&quot; as Xml import
 		<div id="node.loop">
 			<h3>10.4.15. loop</h3>
 			
-			<p class="layout">block</p>
+			<ul class="layout">
+				<li><a href="#node.block">block</a> </li>
+			</ul>
 			
 			<p>Executes block continuously. Can only be exited by statements in the block such as break and return.</p>
 		</div>
@@ -1034,7 +1082,9 @@ from &quot;XmlLib&quot; as Xml import
 		<div id="node.return">
 			<h3>10.4.16. return</h3>
 			
-			<p class="layout">expression</p>
+			<ul class="layout">
+				<li><a href="#node.expression">expression</a> </li>
+			</ul>
 			
 			<p>Function call ends and evaluates to expression.</p>
 		</div>
@@ -1201,14 +1251,8 @@ meta-bind foo to bar
 bar.doStuff(&quot;test&quot;) //prints out &quot;test&quot;</code>
 		</div>
 		
-		<div id="node.bool">
-			<h3>10.5.5. bool</h3>
-			
-			<p>Base node. Must specify either true or false. Evaluates to the same identifier as &quot;true&quot; or the same identifier as &quot;false&quot;.</p>
-		</div>
-		
 		<div id="node.method-call">
-			<h3>10.5.6. method-call</h3>
+			<h3>10.5.5. method-call</h3>
 			
 			<ul class="layout">
 				<li><a href="#node.expression">expression</a> value</li>
@@ -1223,7 +1267,7 @@ bar.doStuff(&quot;test&quot;) //prints out &quot;test&quot;</code>
 			<p>If mutable isn't present, it defaults to false.</p>
 			
 			<div id="node.labeled-argument">
-				<h4>10.5.6.1. labeled-argument</h4>
+				<h4>10.5.5.1. labeled-argument</h4>
 				
 				<ul class="layout">
 					<li><a href="#node.identifier">identifier</a> label</li>
@@ -1233,7 +1277,7 @@ bar.doStuff(&quot;test&quot;) //prints out &quot;test&quot;</code>
 		</div>
 		
 		<div id="node.cast">
-			<h3>10.5.7. cast</h3>
+			<h3>10.5.6. cast</h3>
 			
 			<ul class="layout">
 				<li><a href="#node.expression">expression</a> [object]</li>
@@ -1247,7 +1291,7 @@ print (o as String).length</code>
 		</div>
 		
 		<div id="node.class">
-			<h3>10.5.8. class</h3>
+			<h3>10.5.7. class</h3>
 			
 			<p>Evaluates to a value that, when called, produces other values. The interfaces supported by the produced values are implemented in the way specified by this class node. The active interface of the produced value is specified by this class.</p>
 			
@@ -1367,7 +1411,7 @@ print (o as String).length</code>
 			</ol>
 			
 			<div id="node.declaration-class">
-				<h4>10.5.8.1. declaration-class</h4>
+				<h4>10.5.7.1. declaration-class</h4>
 				
 				<ul class="layout">
 					<li><a href="#node.declaration-any">declaration-any</a> </li>
@@ -1378,7 +1422,7 @@ print (o as String).length</code>
 			</div>
 			
 			<div id="node.declaration-any">
-				<h4>10.5.8.2. declaration-any</h4>
+				<h4>10.5.7.2. declaration-any</h4>
 				
 				<p>declaration-any is a family of node types, like expression or statement. The node types included in this family are:</p>
 				
@@ -1391,7 +1435,7 @@ print (o as String).length</code>
 			</div>
 			
 			<div id="node.declaration-const-empty">
-				<h4>10.5.8.3. declaration-const-empty</h4>
+				<h4>10.5.7.3. declaration-const-empty</h4>
 				
 				<ul class="layout">
 					<li><a href="#node.identifier">identifier</a> </li>
@@ -1404,7 +1448,7 @@ print (o as String).length</code>
 			</div>
 	
 			<div id="node.interface-implementation">
-				<h4>10.5.8.4. interface-implementation</h4>
+				<h4>10.5.7.4. interface-implementation</h4>
 				
 				<ul class="layout">
 					<li>* <a href="#node.interface-implementation">interface-implementation</a> children</li>
@@ -1418,7 +1462,7 @@ print (o as String).length</code>
 			</div>
 			
 			<div id="node.named-function">
-				<h4>10.5.8.5. named-function</h4>
+				<h4>10.5.7.5. named-function</h4>
 				
 				<ul class="layout">
 					<li><a href="#node.identifier">identifier</a> name</li>
@@ -1427,7 +1471,7 @@ print (o as String).length</code>
 			</div>
 			
 			<div id="node.class-property">
-				<h4>10.5.8.6. class-property</h4>
+				<h4>10.5.7.6. class-property</h4>
 				
 				<ul class="layout">
 					<li><a href="#node.identifier">identifier</a> </li>
@@ -1441,7 +1485,7 @@ print (o as String).length</code>
 		</div>
 			
 		<div id="node.conditional">
-			<h3>10.5.9. conditional</h3>
+			<h3>10.5.8. conditional</h3>
 			
 			<ul class="layout">
 				<li><a href="#node.expression">expression</a> [test]</li>
@@ -1453,12 +1497,12 @@ print (o as String).length</code>
 		</div>
 		
 		<div id="node.declaration-bind">
-			<h3>10.5.10. declaration-bind</h3>
+			<h3>10.5.9. declaration-bind</h3>
 			
 			<ul class="layout">
-				<li><a href="#node.identifier">identifier</a> </li>
-				<li><a href="#node.reference-type">reference-type</a> </li>
-				<li>? <a href="#node.bool">bool</a> const</li>
+				<li><a href="#node.identifier">identifier</a> name</li>
+				<li><a href="#node.reference-type">reference-type</a> type</li>
+				<li>? <a href="#node.bool">bool</a> constant</li>
 				<li><a href="#node.expression">expression</a> value</li>
 			</ul>
 			
@@ -1468,7 +1512,7 @@ print (o as String).length</code>
 		</div>
 		
 		<div id="node.declaration-pervasive">
-			<h3>10.5.11. declaration-pervasive</h3>
+			<h3>10.5.10. declaration-pervasive</h3>
 			
 			<ul class="layout">
 				<li><a href="#node.identifier">identifier</a> </li>
@@ -1480,12 +1524,12 @@ print (o as String).length</code>
 		</div>
 
 		<div id="node.function">
-			<h3>10.5.12. function</h3>
+			<h3>10.5.11. function</h3>
 			
 			<ul class="layout">
-				<li>* <a href="#node.identifier">identifier</a> [template-parameter]</li>
+				<li>* <a href="#node.identifier">identifier</a> template parameter</li>
 				<li>* <a href="#node.parameter">parameter</a> </li>
-				<li>? <a href="#node.expression">expression</a> [return-type]</li>
+				<li>? <a href="#node.reference-type">reference-type</a> return type</li>
 				<li><a href="#node.block">block</a> </li>
 			</ul>
 			
@@ -1501,10 +1545,12 @@ print (o as String).length</code>
 &lt;/function&gt;</pre>
 			
 			<p>When this node is evaluated, it evaluates to a function object. Only the [template-parameter], [parameter], and [return-type] nodes are evaluated at this time. When the function object is called, the [block] member is evaluated, in the scope of this function node, not the scope of the function-call node.</p>
+			
+			<p>If the return type is not given, the function does not return anything.</p>
 		</div>
 		
 		<div id="node.function-call">
-			<h3>10.5.13. function-call</h3>
+			<h3>10.5.12. function-call</h3>
 			
 			<ul class="layout">
 				<li><a href="#node.expression">expression</a> function</li>
@@ -1532,7 +1578,7 @@ print (o as String).length</code>
 		</div>
 		
 		<div id="node.function-interface">
-			<h3>10.5.14. function-interface</h3>
+			<h3>10.5.13. function-interface</h3>
 			
 			<ul class="layout">
 				<li>? <a href="#node.expression">expression</a> [template-argument-count]</li>
@@ -1542,7 +1588,7 @@ print (o as String).length</code>
 		</div>
 		
 		<div id="node.function-template-instantion">
-			<h3>10.5.15. function-template-instantion</h3>
+			<h3>10.5.14. function-template-instantion</h3>
 			
 			<ul class="layout">
 				<li><a href="#node.expression">expression</a> [function-template]</li>
@@ -1553,7 +1599,7 @@ print (o as String).length</code>
 		</div>
 		
 		<div id="node.identifier">
-			<h3>10.5.16. identifier</h3>
+			<h3>10.5.15. identifier</h3>
 			
 			<p>Base node. Identifiers can sometimes evaluate to object references. Object references point to an object and have an active interface. Only properties declared by the active interface can be accessed, even if the object implements other interfaces.</p>
 			
@@ -1561,7 +1607,7 @@ print (o as String).length</code>
 		</div>
 		
 		<div id="node.curry-function">
-			<h3>10.5.17. curry-function</h3>
+			<h3>10.5.16. curry-function</h3>
 			
 			<ul class="layout">
 				<li><a href="#node.expression">expression</a> function</li>
@@ -1577,7 +1623,7 @@ doStuff2(&quot;test&quot;)</code>
 		</div>
 		
 		<div id="node.bind-method">
-			<h3>10.5.18. bind-method</h3>
+			<h3>10.5.17. bind-method</h3>
 			
 			<ul class="layout">
 				<li><a href="#node.expression">expression</a> value</li>
@@ -1597,7 +1643,7 @@ doStuff() //same as calling foo.doStuff()</code>
 		</div>
 		
 		<div id="node.namespaced-identifier">
-			<h3>10.5.19. namespaced-identifier</h3>
+			<h3>10.5.18. namespaced-identifier</h3>
 			
 			<ul class="layout">
 				<li>+ <a href="#node.identifier">identifier</a> namespaces</li>
@@ -1615,7 +1661,7 @@ Int alpha = foo::bar::alpha</code>
 		</div>
 		
 		<div id="node.chain">
-			<h3>10.5.20. chain</h3>
+			<h3>10.5.19. chain</h3>
 			
 			<ul class="layout">
 				<li>? <a href="#node.bool">bool</a> namespaced-identifier</li>
@@ -1721,7 +1767,7 @@ Here, alpha must be a namespace, and beta must be an identifer-reference within 
 		</div>
 		
 		<div id="node.implements">
-			<h3>10.5.21. implements?</h3>
+			<h3>10.5.20. implements?</h3>
 			
 			<ul class="layout">
 				<li><a href="#node.expression">expression</a> [object]</li>
@@ -1735,13 +1781,13 @@ Here, alpha must be a namespace, and beta must be an identifer-reference within 
 		</div>
 		
 		<div id="node.integer">
-			<h3>10.5.22. integer</h3>
+			<h3>10.5.21. integer</h3>
 			
 			<p>Base node. Evaluates to an object reference with BigInt as the active interface. The object may implement other interfaces if they do not conflict with the BigInt interface. Must not implement the LimInt interface.</p>
 		</div>
 		
 		<div id="node.interface">
-			<h3>10.5.23. interface</h3>
+			<h3>10.5.22. interface</h3>
 			
 			<ul class="layout">
 				<li>* <a href="#node.expression">expression</a> inheritees</li>
@@ -1752,7 +1798,7 @@ Here, alpha must be a namespace, and beta must be an identifer-reference within 
 			</ul>
 			
 			<div id="node.callee">
-				<h4>10.5.23.1. callee</h4>
+				<h4>10.5.22.1. callee</h4>
 				
 				<ul class="layout">
 					<li>* <a href="#node.parameter">parameter</a> parameters</li>
@@ -1760,7 +1806,7 @@ Here, alpha must be a namespace, and beta must be an identifer-reference within 
 			</div>
 			
 			<div id="node.property">
-				<h4>10.5.23.2. property</h4>
+				<h4>10.5.22.2. property</h4>
 				
 				<ul class="layout">
 					<li><a href="#node.identifier">identifier</a> name</li>
@@ -1770,7 +1816,7 @@ Here, alpha must be a namespace, and beta must be an identifer-reference within 
 			</div>
 			
 			<div id="node.method">
-				<h4>10.5.23.3. method</h4>
+				<h4>10.5.22.3. method</h4>
 				
 				<ul class="layout">
 					<li><a href="#node.identifier">identifier</a> name</li>
@@ -1779,14 +1825,14 @@ Here, alpha must be a namespace, and beta must be an identifer-reference within 
 			</div>
 			
 			<div id="node.access">
-				<h4>10.5.23.4. access</h4>
+				<h4>10.5.22.4. access</h4>
 				
 				<p>Access nodes must specify one of three access levels: only reading, only writing, or both reading and writing.</p>
 			</div>
 		</div>
 
 		<div id="node.interface-template-instantion">
-			<h3>10.5.24. interface-template-instantion</h3>
+			<h3>10.5.23. interface-template-instantion</h3>
 			
 			<ul class="layout">
 				<li><a href="#node.expression">expression</a> [interface-template]</li>
@@ -1797,7 +1843,7 @@ Here, alpha must be a namespace, and beta must be an identifer-reference within 
 		</div>
 		
 		<div id="node.same-object">
-			<h3>10.5.25. same-object</h3>
+			<h3>10.5.24. same-object</h3>
 			
 			<ul class="layout">
 				<li><a href="#node.expression">expression</a> </li>
@@ -1813,7 +1859,7 @@ if( a === b )
 		</div>
 		
 		<div id="node.list">
-			<h3>10.5.26. list</h3>
+			<h3>10.5.25. list</h3>
 			
 			<ul class="layout">
 				<li><a href="#node.expression">expression</a> [interface]</li>
@@ -1826,21 +1872,23 @@ if( a === b )
 		</div>
 		
 		<div id="node.object-number">
-			<h3>10.5.27. object-number</h3>
+			<h3>10.5.26. object-number</h3>
 			
-			<p class="layout">Expression value</p>
+			<ul class="layout">
+				<li><a href="#node.expression">expression</a> value</li>
+			</ul>
 			
 			<p>Every object is associated with a constant non-negative integer. No two objects that are still accessible can have the same object number. This node evaluates to a value, with Int as the active interface, that encodes the object number for the object associated with the given value.</p>
 		</div>
 		
 		<div id="node.rational">
-			<h3>10.5.28. rational</h3>
+			<h3>10.5.27. rational</h3>
 			
 			<p>Base node. Evaluates to an object with BigRat as the active interface. The object may implement other interfaces if they do not conflict with the BigRat interface. Must not implement the LimRat interface.</p>
 		</div>
 		
 		<div id="node.get-property">
-			<h3>10.5.29. get property</h3>
+			<h3>10.5.28. get property</h3>
 			
 			<ul class="layout">
 				<li><a href="#node.expression">expression</a> value</li>
@@ -1851,7 +1899,7 @@ if( a === b )
 		</div>
 
 		<div id="node.string">
-			<h3>10.5.30. string</h3>
+			<h3>10.5.29. string</h3>
 			
 			<p>string nodes consist of text</p>
 			
@@ -1861,7 +1909,7 @@ if( a === b )
 		</div>
 		
 		<div id="node.unbind">
-			<h3>10.5.31. unbind</h3>
+			<h3>10.5.30. unbind</h3>
 			
 			<ul class="layout">
 				<li><a href="#node.expression">expression</a> </li>
@@ -1871,7 +1919,7 @@ if( a === b )
 		</div>
 		
 		<div id="node.unbind-function">
-			<h3>10.5.32. unbind-function</h3>
+			<h3>10.5.31. unbind-function</h3>
 			
 			<ul class="layout">
 				<li><a href="#node.expression">expression</a> </li>
@@ -1885,32 +1933,8 @@ if( a === b )
 	<div id="unsorted-tree-node-types">
 		<h2>10.6. Unsorted tree node types</h2>
 
-		<div id="node.global">
-			<h3>10.6.1. global</h3>
-			
-			<p class="layout">+ identifier-const</p>
-			
-			<p>has scope</p>
-			
-			<p>xxx Some nodes, like global nodes, have scope. Spec this out and specify with nodes have scope.</p>
-			
-			<p>The global type is the type of the root node. No node can contain a global node. All Desal nodes that are executed in any way must be part of a complete Desal tree, which means having a global node as the root node.</p>
-			
-			<p>xxx Program arguments are no longer passed to the main function, because developers should have a choice of accessing program arguments in different ways, and some implementations may not have program arguments, or have non-string program arguments, etc. The old way just isn't flexible enough. Implementations should give program arguments through some API instead of passing them to the main function.</p>
-			
-			<p>Unlike other nodes, the global node has a setup procedure. This setup must occur before any evaluation or execution of any nodes takes place, and must only occur once.</p>
-
-			<ol class="exec">
-				<li>1. Bind the global objects defined in XXX to the specified identifiers for this node's scope.</li>
-				<li>2. Bind any implementation-specific identifiers.</li>
-				<li>3. Execute each child identifier-const node in order.</li>
-			</ol>
-			
-			<p>When the complete Desal tree is treated as a standalone program, section XXX applies. Otherwise, besides layout and setup, the abilities and behaviour of the global node is implementation-specific, and execution or evaluation of Desal nodes may occur directly, without going through the global node.</p>
-		</div>
-		
 		<div id="node.alias">
-			<h3>10.6.2. alias</h3>
+			<h3>10.6.1. alias</h3>
 			
 			<ul class="layout">
 				<li><a href="#node.chain">chain</a> target</li>

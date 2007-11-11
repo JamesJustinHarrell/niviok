@@ -1,16 +1,41 @@
 put a directory into a new repository
 	get init
 
-after updating source files, to push changes to repository
-add files to index
+add files to index (including new files; xxx does it git-rm deleted files?)
 	git add .
+
 commit indexed changes
 	git commit
 
+create index and commit (doesn't add new files; xxx does it git-rm deleted files?)
+	git commit -a
+
 see changes that haven't been added to index
 	git diff
+
 see changes that have been added to index, but not commited
 	git diff --cached
 
+view other info about the index (tells which files are untracked)
+	git status
+
 get history of commits
 	git log
+
+get list of branches
+	git branch
+
+make a new branch (but don't switch to it)
+	git branch foo
+
+switch to a different branch
+	git checkout foo
+
+merge a different branch into the active branch
+	git merge foo
+
+delete a branch only if its changes have been merged into a different branch
+	git branch -d foo
+
+delete a branch even if its changes haven't been merged into a different branch
+	git branch -D foo

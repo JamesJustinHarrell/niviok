@@ -58,6 +58,41 @@
 		
 		<para>These nodes cannot be executed (and thus also cannot be evaluated).</para>
 		
+		<section xml:id="node.bundle">
+			<title>bundle</title>
+			
+			<simplelist role="layout">
+				<member>* import</member>
+				<member>* alias</member>
+				<member>+ plane</member>
+			</simplelist>
+			
+			<para>The bundle node type is the type of the root node. No node can contain an bundle node. All Desal nodes that are executed in any way must be part of a complete Desal tree, which means having an bundle node as the root node.</para>
+			
+			<para>xxx Program arguments are no longer passed to the main function, because developers should have a choice of accessing program arguments in different ways, and some implementations may not have program arguments, or have non-string program arguments, etc. The old way just isn't flexible enough. Implementations should give program arguments through some API instead of passing them to the main function.</para>
+
+			<orderedlist role="exec">
+				<listitem>1. Bind the global objects defined in XXX to the specified identifiers for this node's scope.</listitem>
+				<listitem>2. Bind any implementation-specific identifiers.</listitem>
+				<listitem>3. Execute each child identifier-const node in order.</listitem>
+			</orderedlist>
+			
+			<para>When the complete Desal tree is treated as a standalone program, section XXX applies. Otherwise, besides layout and setup, the abilities and behaviour of the bundle node is implementation-specific, and execution or evaluation of Desal nodes may occur directly, without going through the bundle node.</para>
+			
+			<para>The section XXX mentioned above should specify a value bound to "main" with a callee that takes no arguments and either returns nothing or returns an Int.</para>
+		</section>
+		
+		<section xml:id="node.plane">
+			<title>plane</title>
+			
+			<simplelist role="layout">
+				<member>* alias</member>
+				<member>+ declaration-pervasive</member>
+			</simplelist>
+			
+			<para>This node has scope, but only private identifiers are bound to it. Public and exported identifiers are bound to the scope of the bundle node.</para>
+		</section>
+		
 		<section xml:id="node.bool">
 			<title>bool</title>
 			
@@ -469,7 +504,9 @@ from "XmlLib" as Xml import
 		<section xml:id="node.import-all">
 			<title>import-all</title>
 			
-			<para role="layout">string library</para>
+			<simplelist role="layout">
+				<member>string library</member>
+			</simplelist>
 			
 			<para>Imports every identifier-reference in the library.</para>
 			
@@ -482,7 +519,9 @@ import all from "XmlLib"
 		<section xml:id="node.loop">
 			<title>loop</title>
 			
-			<para role="layout">block</para>
+			<simplelist role="layout">
+				<member>block</member>
+			</simplelist>
 			
 			<para>Executes block continuously. Can only be exited by statements in the block such as break and return.</para>
 		</section>
@@ -490,7 +529,9 @@ import all from "XmlLib"
 		<section xml:id="node.return">
 			<title>return</title>
 			
-			<para role="layout">expression</para>
+			<simplelist role="layout">
+				<member>expression</member>
+			</simplelist>
 			
 			<para>Function call ends and evaluates to expression.</para>
 		</section>
@@ -1315,7 +1356,9 @@ if( a === b )
 		<section xml:id="node.object-number">
 			<title>object-number</title>
 			
-			<para role="layout">Expression value</para>
+			<simplelist role="layout">
+				<member>Expression value</member>
+			</simplelist>
 			
 			<para>Every object is associated with a constant non-negative integer. No two objects that are still accessible can have the same object number. This node evaluates to a value, with Int as the active interface, that encodes the object number for the object associated with the given value.</para>
 		</section>
@@ -1372,30 +1415,6 @@ if( a === b )
 	<section xml:id="unsorted-tree-node-types">
 		<title>Unsorted tree node types</title>
 
-		<section xml:id="node.global">
-			<title>global</title>
-			
-			<para role="layout">+ identifier-const</para>
-			
-			<para>has scope</para>
-			
-			<para>xxx Some nodes, like global nodes, have scope. Spec this out and specify with nodes have scope.</para>
-			
-			<para>The global type is the type of the root node. No node can contain a global node. All Desal nodes that are executed in any way must be part of a complete Desal tree, which means having a global node as the root node.</para>
-			
-			<para>xxx Program arguments are no longer passed to the main function, because developers should have a choice of accessing program arguments in different ways, and some implementations may not have program arguments, or have non-string program arguments, etc. The old way just isn't flexible enough. Implementations should give program arguments through some API instead of passing them to the main function.</para>
-			
-			<para>Unlike other nodes, the global node has a setup procedure. This setup must occur before any evaluation or execution of any nodes takes place, and must only occur once.</para>
-
-			<orderedlist role="exec">
-				<listitem>1. Bind the global objects defined in XXX to the specified identifiers for this node's scope.</listitem>
-				<listitem>2. Bind any implementation-specific identifiers.</listitem>
-				<listitem>3. Execute each child identifier-const node in order.</listitem>
-			</orderedlist>
-			
-			<para>When the complete Desal tree is treated as a standalone program, section XXX applies. Otherwise, besides layout and setup, the abilities and behaviour of the global node is implementation-specific, and execution or evaluation of Desal nodes may occur directly, without going through the global node.</para>
-		</section>
-		
 		<section xml:id="node.alias">
 			<title>alias</title>
 			
