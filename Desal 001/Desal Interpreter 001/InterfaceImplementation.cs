@@ -1,38 +1,70 @@
 using System.Collections.Generic;
 
-abstract class IfaceImplDelegates<T> {
+abstract class FaceImplBase<T> {
 	public delegate IValue PropGetter(T o);
 	public delegate void PropSetter(T o, IValue val);
 	public delegate void VoidFunction(T o, Scope args);
 	public delegate IValue ValueFunction(T o, Scope args);
+
+	protected IDictionary<IFunctionInterface, VoidFunction> _voidCallees;
+	protected IDictionary<IFunctionInterface, ValueFunction> _valueCallees;
+	protected IDictionary<Identifier, PropGetter> _propGetters;
+	protected IDictionary<Identifier, PropSetter> _propSetters;
+	protected IDictionary<Identifier, IDictionary<IFunctionInterface, VoidFunction> > _voidMethods;
+	protected IDictionary<Identifier, IDictionary<IFunctionInterface, ValueFunction> > _valueMethods;
+	
+	public FaceImplBase() {}
+	
+	public FaceImplBase(FaceImplBase<T> data) {
+		_voidCallees = data._voidCallees;
+		_valueCallees = data._valueCallees;
+		_propGetters = data._propGetters;
+		_voidMethods = data._voidMethods;
+		_valueMethods = data._valueMethods;
+	}
 }
 
-class InterfaceImplementation<T> : IfaceImplDelegates<T>, IInterfaceImplementation<T> {
-	IDictionary<IFunctionInterface, VoidFunction> _voidCallees;
-	IDictionary<IFunctionInterface, ValueFunction> _valueCallees;
-	IDictionary<Identifier, PropGetter> _propGetters;
-	IDictionary<Identifier, PropSetter> _propSetters;
-	IDictionary<Identifier, IDictionary<IFunctionInterface, VoidFunction> > _voidMethods;
-	IDictionary<Identifier, IDictionary<IFunctionInterface, ValueFunction> > _valueMethods;
-	IInterface _interface;
+class InterfaceImplementation<T> : FaceImplBase<T>, IInterfaceImplementation<T> {
+	IInterface _face;
 	
-	//have IfaceImpl and IfaceImplBuilder inherit from common base
-	public InterfaceImplementation(
-		IDictionary<IFunctionInterface, VoidFunction> voidCallees,
-		IDictionary<IFunctionInterface, ValueFunction> valueCallees,
-		IDictionary<Identifier, PropGetter> propGetters,
-		IDictionary<Identifier, PropSetter> propSetters,
-		IDictionary<Identifier, IDictionary<IFunctionInterface, VoidFunction> > voidMethods,
-		IDictionary<Identifier, IDictionary<IFunctionInterface, ValueFunction> > valueMethods,
-		IInterface face
-	) {
-		_voidCallees = voidCallees;
-		_valueCallees = valueCallees;
-		_propGetters = propGetters;
-		_propSetters = propSetters;
-		_voidMethods = voidMethods;
-		_valueMethods = valueMethods;
-		_interface = face;
+	public InterfaceImplementation( FaceImplBase<T> members, IInterface face )
+	: base(members)
+	{
+		_face = face;
+		
+		//xxx check inheritees
+		
+		foreach( MethodInfo meth in _face.methods ) {
+			if(
+				(! _voidMethods.ContainsKey(meth.name) ||
+				! _voidMethods[meth.name].ContainsKey(meth.iface) ) &&
+				(! _valueMethods.ContainsKey(meth.name) ||
+				! _valueMethods[meth.name].ContainsKey(meth.iface) )
+			) {
+				throw new System.Exception(
+					"method with name '" + meth.name + "' not implemented");
+			}
+		}
+		
+		/* xxx enable
+		//ensure FaceImpl doesn't implement anything not defined in Face
+		foreach( Identifier ident in _voidMethods.Keys ) {
+			foreach( IFunctionInterface faceImpl in _voidMethods[ident].Keys ) {
+				bool found = false;
+				foreach( MethodInfo meth in _face.methods ) {
+					if( meth.name == ident && meth.iface == faceImpl ) {
+						found = true;
+						break;
+					}
+				}
+				if( ! found )
+					throw new System.Exception(
+						"implemented method '" + ident.str + "' not defined");
+			}
+		}
+		*/
+		
+		//xxx checking
 	}
 
 	//xxx does this belong here?
@@ -62,7 +94,7 @@ class InterfaceImplementation<T> : IfaceImplDelegates<T>, IInterfaceImplementati
 	}
 
 	public IInterface @interface {
-		get { return _interface; }
+		get { return _face; }
 	}
 	
 	public IInterfaceImplementation<T> cast(IInterface @interface) {
@@ -90,7 +122,7 @@ class InterfaceImplementation<T> : IfaceImplDelegates<T>, IInterfaceImplementati
 	}
 
 	public void executeMethod(T obj, Identifier name, Arguments arguments) {
-		//xxx can also execute value methods
+		//xxx should alse be able to execute value methods
 		KeyValuePair<IFunctionInterface, VoidFunction> pair =
 			getFunction(_voidMethods[name], arguments);
 		Scope scope = arguments.setup(pair.Key.parameters);

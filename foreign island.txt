@@ -1,0 +1,42 @@
+Desal Islands
+
+Desal "island" nodes contain text which is given to handlers that perform actions based on the text. This is more semantic than calling functions with strings, can make optimization easier, can make syntax more flexible, and can find errors before execution begins. How the implementation and handler communicate is out of scope of the Desal Semantics spec.
+
+----- processing:
+* implementation gives contents of string node of island node to handler, and tells the handler whether the node will be executed and/or evaluated
+* handler and implementation agree on what will take place when the island node is executed or evaluated
+* the handler may tell the implementation that the text is invalid, in which case the implementation should prevent execution from occuring after processing
+
+----- execution/evaluation of foreign-island:
+* the behavior previously agreed upon between implementation and handler takes place. If the handler behaves unexpectedly, the implementation should throw an error.
+
+
+expected uses:
+	SQL
+	regular expressions
+	XML and HTML (e.g. evaluate to a DOM node)
+
+
+<bundle>
+	<island-handler>
+		<language>MySQL</language>
+		<string>/usr/lib/mysql-desal-handler</string>
+	</island-handler>
+	...
+</bundle>
+
+...
+
+<block>
+	<declaration-bind>
+		<identifier label='name'>dbData</identifier>
+		<island label='value'>
+			<language>MySQL</language>
+			<argument-list>...</argument-list> <!-- optional -->
+			<string>
+SELECT * FROM foo
+WHERE a = 3
+			</string>
+		</island>
+	</declaration-bind>
+</block>

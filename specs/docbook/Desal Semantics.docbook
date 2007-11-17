@@ -175,6 +175,35 @@ xmlns:xi="http://www.w3.org/2003/XInclude">
 		
 		<para>This node tree has scopes attached at various places. These scopes contain identifiers that are bound to namespaces and references. Thus, a Desal implementation must code for a node tree, scopes, objects, and functions.</para>
 		
+		<section xml:id="identikeys">
+			<title>identikeys</title>
+			
+			<para>An identikey is associated with a scope, an identifier, and zero or more values. An identikey may place restrictions on what values in can be associated with. It may be mutable so that what values it is associated with can change, or immutable so that in cannot be reassociated with different values.</para>
+
+			<para>Every scope is assocciated with zero or more identikeys. Identikeys associated with the same scope must each be associated with a different identifier.</para>
+
+			<para>When an identifier is evaluated, every identikey in the scope the identifier node resides in is checked to see if the identikey is associated with an equivalent identifier. If it is, the value of evaluating the identifier is obtained from the identikey. The identifier evaluation process moves up through the scope tree (not to be confused with the scope formula tree) looking for an identikey associated with an equivalent identifier.</para>
+			
+			<screen>
+identikey types:
+	namespace or alias
+	bound to any one value
+	bound to any one value with this interface as active interface
+	bound to any function
+		active interface must be function interface
+	bound to any functions
+		active interfaces must be function interfaces
+		may specify interface that functions have to return
+
+examples:
+	dyn foo
+	Int foo
+	func-one foo
+	func foo
+	func Int foo
+			</screen>
+		</section>
+		
 		<section xml:id="ext-namespace">
 			<title>ext namespace</title>
 			

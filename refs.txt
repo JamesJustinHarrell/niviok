@@ -1,0 +1,19 @@
+PROBLEM:
+
+reference-category
+reference-type
+identifier-category
+identifier-type
+
+Where does FUNCTION fit into this?
+
+Are there function references, where a single reference is bound to multiple callable values, or does a reference only refer to one value? That would require that a function identifier be associated with multiple references.
+
+Problem: Identifiers are only supposed to be associated with one reference.
+
+Problem: A reference should be able to evaluate to a value and the type of that value is the same as the reference.
+
+Perhaps there's just some mixing of reference and value.
+
+
+SEPARATE AND SPEC

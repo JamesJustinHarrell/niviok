@@ -1,13 +1,6 @@
 using System.Collections.Generic;
 
-class InterfaceImplementationBuilder<T> : IfaceImplDelegates<T> {
-	
-	IDictionary<IFunctionInterface, VoidFunction> _voidCallees;
-	IDictionary<IFunctionInterface, ValueFunction> _valueCallees;
-	IDictionary<Identifier, PropGetter> _propGetters;
-	IDictionary<Identifier, PropSetter> _propSetters;
-	IDictionary<Identifier, IDictionary<IFunctionInterface, VoidFunction> > _voidMethods;
-	IDictionary<Identifier, IDictionary<IFunctionInterface, ValueFunction> > _valueMethods;
+class InterfaceImplementationBuilder<T> : FaceImplBase<T> {
 
 	public InterfaceImplementationBuilder() {
 		_voidCallees = new Dictionary<IFunctionInterface, VoidFunction>();
@@ -38,12 +31,7 @@ class InterfaceImplementationBuilder<T> : IfaceImplDelegates<T> {
 		_valueMethods[ident].Add(face, func);
 	}
 	
-	//xxx should have parameters and do checking
 	public IInterfaceImplementation<T> compile(IInterface face) {
-		return new InterfaceImplementation<T>(
-			_voidCallees, _valueCallees,
-			_propGetters, _propSetters,
-			_voidMethods, _valueMethods,
-			face );
+		return new InterfaceImplementation<T>( this, face );
 	}
 }

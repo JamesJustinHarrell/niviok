@@ -5,18 +5,43 @@ Error_* - errors in implementation
 */
 
 using System;
+using System.Collections.Generic;
 
 class ClientException : ApplicationException {
 	public IValue e;
+	public Stack<string> stackTrace;
 	
 	public ClientException(string message)
 	:base(message)
 	{
 		this.e = Wrapper.wrapString(message);
+		stackTrace = new Stack<string>();
 	}
 	
 	public ClientException(IValue e) {
 		this.e = e;
+		stackTrace = new Stack<string>();
+	}
+	
+	public void pushFunc(string name) {
+		stackTrace.Push(name);
+	}
+	
+	public string clientMessage {
+		get {
+			string message = "";
+			message += "\nUncaught exception:\n";
+			if( e.activeInterface == Wrapper.String ) {
+				message += Wrapper.unwrapString(e) + "\n";
+			}
+			message += "\nStack trace:\n";
+			foreach( string s in stackTrace ) {
+				message += s + "\n";
+			}
+			message += "\nImplementation stack trace:\n";
+			message += this.ToString();
+			return message;
+		}
 	}
 }
 

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using WeakRef = System.WeakReference;
 
 class FunctionInterface : IFunctionInterface {
+	// params -> { RefType -> FunctionInterface }
 	static IDictionary<
 		IList<Parameter>,
 		IDictionary<ReferenceType, WeakRef> > _funcFaces;

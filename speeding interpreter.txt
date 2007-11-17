@@ -1,0 +1,37 @@
+The purpose of the interpreter is testing out features of the language. It's not supposed to be a serious interpreter and there should be almost zero emphasis on speed. Speed is not important here! Plus, I haven't done any profiling so it's doubly stupid to think about optimization when I don't know what would benefit most from being optimized.
+
+However, like many people I suffer from premature optimization. But if I'm going to come up with these stupid useless optimization ideas, it would at least be better to write them down here instead of adding them to the implementation.
+
+If they have to go somewhere, let them go here.
+
+
+--- identifier comparison
+
+Comparing strings is slower than comparing integers. Perhaps in a program with thousands of identifiers that all start with the same few hundred characters, this would show a slight speedup.
+
+class Identifier {
+	static dict<int, string> _identMap;
+	static uint _nextNum;
+	
+	static Identifier {
+		_nextNum = 0;
+	}
+	
+	uint _identNum;
+	
+	public Identifier(string s) {
+		_identNum = nextNum;
+		nextNum++;
+		map.add( _identNum, s );
+	}
+	
+	//rare
+	public string ToString() {
+		return _identMap[_identNum];
+	}
+	
+	//common
+	public bool Equal(Identifier i) {
+		return i._identNum == _identNum;
+	}
+}

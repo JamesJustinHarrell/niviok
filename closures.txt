@@ -1,0 +1,68 @@
+When a closure is created, the function (or other thing) creating the closure gains permanent access to scoped-identifiers that were visible when the closure was created.
+
+In functional languages, all scoped-identifiers are immutable, so once declared they are always associated with the same vaule. Therefore, after a scoped-identifier is captured, the scoped-identifier is always associated with the same value.
+
+In programming languages with "variables", scope-identifiers can be mutated to become associated with different values. Therefore, after a scoped-identifier is captured, the scoped-identifier may be mutated to become associated with different values.
+
+This difference has lead to confusion and disagreement. Some people argue that the second type of closures are not "real" closures, while others say that they are the exact same thing and only appear different due to other features of the language.
+
+Regardless of whether they should both be considered closures, their effect is definitely different, and each one has its detriments and benefits. Therefore, Desal provides both.
+
+The first type has been named "closure-copy". The second type has been named "closure-reference".
+
+
+----- example of closure-copy
+
+func()(Int)[] funcs = ArrayClass<func()(Int)>()
+
+Int i = 0
+while i < 5 {
+	funcs.push(
+		func() Int {
+			closure-copy i
+			return i
+		}
+	)
+	i = i + 1
+}
+
+for func in funcs {
+	println func()
+}
+
+----- output of closure-copy
+
+0
+1
+2
+3
+4
+
+
+----- example of closure-reference
+
+func()(Int)[] funcs = ArrayClass<func()(Int)>()
+
+Int i = 0
+while i < 5 {
+	funcs.push(
+		func() Int {
+			closure-reference i
+			return i
+		}
+	)
+	i = i + 1
+}
+
+for func in funcs {
+	println func()
+}
+
+----- output of closure-reference
+
+4
+4
+4
+4
+4
+

@@ -14,7 +14,8 @@ function main() {
 <declaration-pervasive>
 	<identifier>main</identifier>
 	<reference-type>
-		<reference-category>function</reference-category>
+		<reference-category>value</reference-category>
+		<function-interface label='interface'/>
 	</reference-type>
 	<function label='value'>
 		<block>
@@ -50,7 +51,8 @@ function doStuff() {
 <declaration-pervasive>
 	<identifier>doStuff</identifier>
 	<reference-type>
-		<reference-category>function</reference-category>
+		<reference-category>value</reference-category>
+		<function-interface label='interface'/>
 	</reference-type>
 	<function label='value'>
 		<block>
@@ -66,7 +68,7 @@ function doStuff() {
 			<declaration-bind>
 				<identifier label='name'>str</identifier>
 				<reference-type label='type'>
-					<reference-category>value</reference-category>
+					<reference-category>dyn</reference-category>
 				</reference-type>
 				<method-call label='value'>
 					<string label='value'>&#x1FFF0; Hello,</string>

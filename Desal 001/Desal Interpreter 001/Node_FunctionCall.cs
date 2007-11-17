@@ -10,19 +10,37 @@ class Node_FunctionCall : INode_Expression {
 	}
 	
 	public IValue evaluate(Scope scope) {
-		return _function
-			.evaluate(scope)
-			.evaluateCall( new Arguments(
-				evaluateArguments(scope),
-				evaluateLabeledArguments() ) );
+		try {
+			return _function
+				.evaluate(scope)
+				.evaluateCall( new Arguments(
+					evaluateArguments(scope),
+					evaluateLabeledArguments() ) );
+		}
+		catch(ClientException e) {
+			if( _function is Node_Identifier )
+				e.pushFunc( ((Node_Identifier)_function).identifier.str );
+			else
+				e.pushFunc( "(anonymous)" );
+			throw e;
+		}
 	}
 	
 	public void execute(Scope scope) {
-		_function
-			.evaluate(scope)
-			.executeCall( new Arguments(
-				evaluateArguments(scope),
-				evaluateLabeledArguments() ) );
+		try {
+			_function
+				.evaluate(scope)
+				.executeCall( new Arguments(
+					evaluateArguments(scope),
+					evaluateLabeledArguments() ) );
+		}
+		catch(ClientException e) {
+			if( _function is Node_Identifier )
+				e.pushFunc( ((Node_Identifier)_function).identifier.str );
+			else
+				e.pushFunc( "(anonymous)" );
+			throw e;
+		}
 	}
 
 	public void getInfo(out string name, out object objs) {

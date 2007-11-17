@@ -40,7 +40,13 @@ class DesalInterpreter001 {
 		}
 		
 		if( Boolean.Parse(args["run"]) ) {
-			return bundleNode.run();
+			try {
+				return bundleNode.run();
+			}
+			catch(ClientException e) {
+				System.Console.WriteLine(e.clientMessage);
+				//xxx return ERROR_CODE;
+			}
 		}
 		
 		return 0;

@@ -14,23 +14,35 @@ class Node_MethodCall : INode_Expression {
 	}
 	
 	public IValue evaluate(Scope scope) {
-		return _value
-			.evaluate(scope)
-			.evaluateMethod(
-				_methodName.identifier,
-				new Arguments(
-					evaluateArguments(scope),
-					evaluateLabeledArguments() ) );
+		try {
+			return _value
+				.evaluate(scope)
+				.evaluateMethod(
+					_methodName.identifier,
+					new Arguments(
+						evaluateArguments(scope),
+						evaluateLabeledArguments() ) );
+		}
+		catch(ClientException e) {
+			e.pushFunc(_methodName.identifier.str);
+			throw e;
+		}
 	}
 	
 	public void execute(Scope scope) {
-		_value
-			.evaluate(scope)
-			.executeMethod(
-				_methodName.identifier,
-				new Arguments(
-					evaluateArguments(scope),
-					evaluateLabeledArguments() ) );
+		try {
+			_value
+				.evaluate(scope)
+				.executeMethod(
+					_methodName.identifier,
+					new Arguments(
+						evaluateArguments(scope),
+						evaluateLabeledArguments() ) );
+		}
+		catch(ClientException e) {
+			e.pushFunc(_methodName.identifier.str);
+			throw e;
+		}
 	}
 
 	public void getInfo(out string name, out object objs) {

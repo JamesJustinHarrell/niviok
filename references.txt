@@ -1,0 +1,39 @@
+Should references be removed? They don't abstract much away and just end up making things more confusing. They take much of the work away from scoped-identifiers so that scoped-identifiers just end up being associated with references.
+
+decision: move semantics of references into scoped-identifiers and get rid of references.
+
+
+----- 1
+expressions evaluate to values
+scoped-identifiers are associated with zero or more values
+a function scoped-identifier is associated with multiple values
+
+func foo() Int ...
+func foo(Int, Int) Rat ...
+func foo(MyFace) ...
+
+dyn bar = foo
+
+func doStuff(obj a) //or
+func doStuff(dyn a)
+doStuff(foo)
+
+(bind-each-func
+	'maz
+	(getFuncs))
+
+
+----- 2
+expressions evaluate to references
+scoped-identifiers are associated with a single reference
+a function scoped-identifier is associated with a single function reference
+
+func foo() Int ...
+func foo(Int, Int) Rat ...
+func foo(MyFace) ...
+
+dyn bar = (combine foo)
+
+doStuff( (combine foo) )
+
+func maz = getFuncs()

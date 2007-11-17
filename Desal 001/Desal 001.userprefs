@@ -1,12 +1,24 @@
 <?xml version="1.0"?>
 <UserCombinePreferences filename="/media/files/Desal/Desal 001/Desal 001.mds">
-  <Files />
+  <Files>
+    <File filename="Welcome" />
+    <File filename="./Desal Interpreter 001/DesibleParser.cs" />
+    <File filename="./Desal Interpreter 001/InterfaceImplementation.cs" />
+    <File filename="./Desal Interpreter 001/Wrapper.cs" />
+    <File filename="./Desal Interpreter 001/DesalInterpreter001.cs" />
+    <File filename="./Desal Interpreter 001/errors.cs" />
+    <File filename="./Desal Interpreter 001/Node_MethodCall.cs" />
+    <File filename="./Desal Interpreter 001/Node_FunctionCall.cs" />
+    <File filename="./Desal Interpreter 001/Scope.cs" />
+    <File filename="./Desal Interpreter 001/Value.cs" />
+    <File filename="./Desal Interpreter 001/Node_Bundle.cs" />
+  </Files>
   <Views>
     <ViewMemento Id="MonoDevelop.Ide.Gui.Pads.ProjectPad">
       <TreeView>
         <Node expanded="True">
           <Node name="Desal Interpreter 001" expanded="True">
-            <Node name="DesalInterpreter001.cs" expanded="False" selected="True" />
+            <Node name="Node_Bundle.cs" expanded="False" selected="True" />
           </Node>
         </Node>
       </TreeView>
@@ -20,7 +32,7 @@
   <Properties>
     <Properties>
       <Property key="ActiveConfiguration" value="Debug" />
-      <Property key="ActiveWindow" value="" />
+      <Property key="ActiveWindow" value="/media/files/Desal/Desal 001/Desal Interpreter 001/Node_Bundle.cs" />
     </Properties>
   </Properties>
 </UserCombinePreferences>

@@ -1,0 +1,52 @@
+This document concerns plans to create an interpreter, sometime in the far future, where the focus will be on speed. This is oppossed to the current interpreter which is only intended to be used to test out and define Desal semantics.
+
+--- language
+
+C
+	simple
+	common for this kind of stuff
+	low level
+	doesn't have exceptions
+
+C++
+	has exceptions
+	has lots of nasty stuff that could be dangerous
+
+D
+	not well proven
+
+current choice:
+	a subset of C++
+	make a list of what features to use and not use
+
+
+--- garbage collection
+
+have several modes and options which can be chosen at compile time
+
+mode:
+	no GC or reference counting
+	memory will leak like a mofo
+
+mode:
+	reference counting only
+	memory will still leak pretty badly for some code
+
+mode:
+	combine GC with reference counting
+	when an object has no more references to it, free the object
+	GC only serves to free cyclic references
+
+mode:
+	GC only
+	may be more CPU efficient that the combined GC+reference counting
+
+GC options:
+	moving and non-moving
+
+reference counting options:
+	???
+
+Perhaps eventually allow Desal bundles to specify certain things, like whether reference counting is used in addition to GC, whether moving or non-moving is used, or the algorithm of the GC (e.g. mark-and-sweep, tri-color).
+
+Making GC algorithms easy to add may bring in lots of work from people wanting to try out new GC algorithms.

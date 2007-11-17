@@ -23,10 +23,16 @@ class Node_Bundle : INode {
 		}
 		
 		IValue val = _scope.evaluateIdentifier( new Identifier("main") );
-		val.executeCall(
-			new Arguments(
-				new IValue[]{},
-				new Dictionary<Identifier, IValue>() ));
+		try {
+			val.executeCall(
+				new Arguments(
+					new IValue[]{},
+					new Dictionary<Identifier, IValue>() ));
+		}
+		catch(ClientException e) {
+			e.pushFunc("main");
+			throw e;
+		}
 		
 		//xxx if main returns something, evaluateCall and return the result
 		return 0;

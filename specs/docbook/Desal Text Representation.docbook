@@ -3,26 +3,39 @@
 	<title>Desal Text Representation</title>
 	<subtitle>Dextr</subtitle>
 	
-	<chapter xml:id="introduction">
-		<title>Introduction</title>
-	
-		<para>This document defines a means of representing Desal semantics, and a means for extracting the semantics by a computer agent.</para>
+	<chapter xml:id="overview">
+		<title>Overview</title>
+		
+		<section>
+			<title>Introduction</title>
+		
+			<para>This document defines a means of representing Desal semantics, and a means for extracting the semantics by a computer agent.</para>
+		</section>
 	</chapter>
 	
 	<chapter xml:id="tokenization">
 		<title>Tokenization</title>
-		
+
 		<para>How to break up Dextr source code into tokens.</para>
-		
+	
 		<section xml:id="token-types">
 			<title>Token types</title>
+			
+			<simplelist>
+				<member>xxx</member>
+				<member>xxx</member>
+			</simplelist>
 		</section>
 		
 		<section xml:id="tokenization-modes">
 			<title>Tokenization modes</title>
+			
+			<simplelist>
+				<member>xxx</member>
+			</simplelist>
 		</section>
 	</chapter>
-	
+<!-- xxx
 	<chapter xml:id="parsing">
 		<title>Parsing</title>
 		
@@ -36,6 +49,7 @@
 			<title>Parse modes</title>
 		</section>
 	</chapter>
+xxx -->
 	
 	<chapter xml:id="unsorted-stuff">
 		<title>unsorted stuff</title>

@@ -4,24 +4,23 @@
 	<para>This chapter describes the various types of nodes.</para>
 	
 	<section xml:id="base-node-types">
-		<title>Base node types</title>
+		<title>Base nodes</title>
 		
 		<para>These node types do not contain child nodes, and are thus the only nodes that must encode information themselves (as opposed to containing child nodes which together provide information).</para>
 		
 		<simplelist>
 			<member linkend="node.access">access</member>
-			<member linkend="node.bool">bool</member>
+			<member linkend="node.boolean">bool</member>
 			<member linkend="node.identifier">identifier</member>
-			<member linkend="node.reference-category">reference-category</member>
-			<member linkend="node.identifier-category">identifier-category</member>
+			<member linkend="node.identikey-category">identifier-category</member>
 			<member linkend="node.integer">integer</member>
 			<member linkend="node.rational">rational</member>
 			<member linkend="node.string">string</member>
 		</simplelist>
 	</section>
 	
-	<section xml:id="tree-node-layout-representation">
-		<title>Tree node layout representation</title>
+	<section xml:id="tree-node-layout-key">
+		<title>Tree node layout key</title>
 		
 		<para>This section describes how the layout of a node type is represented in this specification.</para>
 		
@@ -29,7 +28,7 @@
 		
 		<para>Each item in these lists first specifies how many child nodes with that meaning may appear, or it says nothing about the number, which means there must be one (and only one). The ways of representing these amounts is described below.</para>
 		
-		<variablelist spacing="compact">
+		<variablelist>
 			<varlistentry>
 				<term>?</term>
 				<listitem>0 or 1</listitem>
@@ -53,10 +52,18 @@
 		<para>Lastly comes a label for refering to the child nodes with that meaning. These labels carry no semantic information, and are only a means used to refer to specific nodes. The meaning of child nodes can certainly be represented by other means. However, people creating representations for Desal trees are encouraged to at least consider using these same labels when it makes sense to do so.</para>
 	</section>
 	
-	<section xml:id="nonexecuted-node-types">
-		<title>Nonexecuted node types</title>
+	<section xml:id="nonexecuted-nodes">
+		<title>Nonexecuted nodes</title>
 		
 		<para>These nodes cannot be executed (and thus also cannot be evaluated).</para>
+		
+		<section xml:id="node.boolean">
+			<title>boolean</title>
+			
+			<para>Base node. Must specify either true or false.</para>
+			
+			<para>Cannot be evaluated because that would conflict with the prevalent "true" and "false" identifiers. Use "true" and "false" identifiers for expressions instead.</para>
+		</section>
 		
 		<section xml:id="node.bundle">
 			<title>bundle</title>
@@ -82,31 +89,35 @@
 			<para>The section XXX mentioned above should specify a value bound to "main" with a callee that takes no arguments and either returns nothing or returns an Int.</para>
 		</section>
 		
-		<section xml:id="node.plane">
-			<title>plane</title>
+		<section xml:id="node.identikey-category">
+			<title>identikey-category</title>
+			
+			<para>Specifies one of: namespace, dyn, face, function, functions</para>
+			
+			<para>
+				dyn: any value;
+				face: any value with the specified interface as the active interface;
+				function: any value with a function interface as the active interface;
+				functions: any values with a function interface as the active interface
+			</para>
+			
+			<para>The functions type may specify an interface that must be the return interface of the functions bound to it.</para>
+		</section>
+		
+		<section xml:id="node.identikey-type">
+			<title>identikey-type</title>
 			
 			<simplelist role="layout">
-				<member>* alias</member>
-				<member>+ declaration-pervasive</member>
+				<member>identikey-category</member>
+				<member>? expression interface</member>
 			</simplelist>
 			
-			<para>This node has scope, but only private identifiers are bound to it. Public and exported identifiers are bound to the scope of the bundle node.</para>
+			<para>The interface must be given if the category is face, and may be given if the category is functions. If the category is face, the active interface of any object bound to the identikey must be that interface. If the category is functions, the interface of return values of the functions bound to it must be that interface.</para>
 			
-			<para>Planes aren't statements because the declaration-pervasive nodes make rely on declaration-pervasive nodes in other planes, so all the declaration-pervasive nodes in a single plane can't just be executed all together.</para>
-		</section>
-		
-		<section xml:id="node.bool">
-			<title>bool</title>
-			
-			<para>Base node. Must specify either true or false.</para>
-			
-			<para>Cannot be evaluated because that would conflict with the prevalent "true" and "false" identifiers. Use "true" and "false" identifiers for expressions instead.</para>
-		</section>
-		
-		<section xml:id="node.comment">
-			<title>comment</title>
-			
-			<para>Comments are text nodes. Comments nodes may appear as children of any tree node. Comment nodes describe the node that they are contained in. Comment nodes must not have any affect on execution or evaluation.</para>
+			<programlisting>
+Int a = 3
+func Int a = func()Int { return 3 }
+			</programlisting>
 		</section>
 		
 		<!-- xxx is this used anywhere? -->
@@ -119,46 +130,36 @@
 			
 			<para>Used to refer to a namespace that is the child of another namespace.</para>
 		</section>
-		
-		<section xml:id="node.reference-type">
-			<title>reference-type</title>
-			
-			<simplelist role="layout">
-				<member>reference-category</member>
-				<member>? expression interface</member>
-			</simplelist>
-			
-			<para role="process">If [reference-category] is dyn, [interface] must not be present. (If [reference-category] is function or value, [interface] may be required by a parent node, but not necesarrily, so its not required here.)</para>
-		</section>
-		
-		<section xml:id="node.reference-category">
-			<title>referenc-category</title>
-			
-			<para>Specifies one of: value, function, dyn</para>
-		</section>
-		
-		<section xml:id="node.identifier-category">
-			<title>identifier-category</title>
-			
-			<para>Specifies one of: value, function, dyn, namespace, alias</para>
-		</section>
 
 		<section xml:id="node.parameter">
 			<title>parameter</title>
 			
 			<simplelist role="layout">
 				<member>identifier name</member>
-				<member>reference-type type</member>
-				<member>? expression default-value</member>
-				<member>? bool nullable</member>
+				<member>? expression interface constraint</member>
+				<member>? expression default value</member>
+				<member>? boolean nullable</member>
 			</simplelist>
 			
 			<para>A function parameter.</para>
 		</section>
+				
+		<section xml:id="node.plane">
+			<title>plane</title>
+			
+			<simplelist role="layout">
+				<member>* alias</member>
+				<member>+ declaration-pervasive</member>
+			</simplelist>
+			
+			<para>This node has scope, but only private identifiers are bound to it. Public and exported identifiers are bound to the scope of the bundle node.</para>
+			
+			<para>Planes aren't statements because the declaration-pervasive nodes make rely on declaration-pervasive nodes in other planes, so all the declaration-pervasive nodes in a single plane can't just be executed all together.</para>
+		</section>
 	</section>
 
 	<section xml:id="node.statement">
-		<title>Statement node types</title>
+		<title>Statement nodes</title>
 		
 		<section xml:id="node.block">
 			<title>block</title>
@@ -190,12 +191,12 @@
 			
 			<simplelist role="layout">
 				<member>identifier</member>
-				<member>reference-type</member>
+				<member>identikey-type</member>
 			</simplelist>
 			
-			<para>Declares an identifier in the current scope. The reference-type must declare an interface if the category is function or value.</para>
+			<para>Declares an identifier in the current scope.</para>
 			
-			<para>when [reference-type] is function:</para>
+			<para>when [identikey-type] is function:</para>
 
 			<para>Declares a variable function identifier in the current scope, which can later be bound and unbound from various functions. A function identifier can be bound to multiple functions (objects that implement the function interface) at the same time. Every function it is bound to must have the return type specified by this node.</para>
 			
@@ -210,9 +211,9 @@ print foo(2) //prints 4
 foo = func()int { return 5 } //error - already pointing at function with this interface
 			</programlisting>
 			
-			<para>when [reference-type] is value:</para>
+			<para>when [identikey-type] is value:</para>
 				
-			<para>Declares a variable object identifier in the current scope. It does not yet point at on object; i.e. it "points at" null. The identifier can only refer to values that implement the interface specified by the [reference-type].</para>
+			<para>Declares a variable object identifier in the current scope. It does not yet point at on object; i.e. it "points at" null. The identifier can only refer to values that implement the interface specified by the [identikey-type].</para>
 			
 			<programlisting>
 func()int foo //object-identifier-declaration
@@ -223,7 +224,7 @@ print foo() //prints 5
 foo = func(int a)int { return a * 2 } //error - interface mismatch
 			</programlisting>
 			
-			<para>when [reference-type] is dyn:</para>
+			<para>when [identikey-type] is dyn:</para>
 				
 			<para>Declares a variable object identifier in the current scope. It does not yet point at on object; i.e. it "points at" null. The identifier can refer to any value.</para>
 		</section>
@@ -401,7 +402,7 @@ for pair x y in coords
 				<member>? identifier carrier</member>
 				<member>expression start</member>
 				<member>expression limit</member>
-				<member>? bool inclusive</member>
+				<member>? boolean inclusive</member>
 				<member>? expression test</member>
 				<member>block</member>
 			</simplelist>
@@ -549,7 +550,7 @@ import all from "XmlLib"
 	</section>
 
 	<section xml:id="node.expression">
-		<title>Expression tree node types</title>
+		<title>Expression nodes</title>
 		
 		<section xml:id="boolean-logic-nodes">
 			<title>Boolean logic nodes</title>
@@ -566,15 +567,14 @@ import all from "XmlLib"
 				<title>and</title>
 				
 				<para>Evaluates to false if either child expression evaluates to false.</para>
-				
-				<para>Evaluation:</para>
+
 				<orderedlist role="eval">
-					<listitem>1. Evaluate the first [expression] node.</listitem>
-					<listitem>2. Cast [1] to Bool.</listitem>
-					<listitem>3. If [2] is false, evaluate this node to false.</listitem>
-					<listitem>4. Evaluate the second [expression] node.</listitem>
-					<listitem>5. Cast [4] to Bool.</listitem>
-					<listitem>6. Evaluate this node to [5].</listitem>
+					<listitem>Evaluate the first [expression] node.</listitem>
+					<listitem>Cast [1] to Bool.</listitem>
+					<listitem>If [2] is false, evaluate this node to false.</listitem>
+					<listitem>Evaluate the second [expression] node.</listitem>
+					<listitem>Cast [4] to Bool.</listitem>
+					<listitem>Evaluate this node to [5].</listitem>
 				</orderedlist>
 			</section>
 			
@@ -582,15 +582,14 @@ import all from "XmlLib"
 				<title>nand</title>
 				
 				<para>Evaluates to true if either child expression evaluates to false.</para>
-				
-				<para>Evaluation:</para>
+
 				<orderedlist role="eval">
-					<listitem>1. Evaluate the first [expression] node.</listitem>
-					<listitem>2. Cast [1] to Bool.</listitem>
-					<listitem>3. If [2] is false, evaluate this node to true.</listitem>
-					<listitem>4. Evaluate the second [expression] node.</listitem>
-					<listitem>5. Cast [4] to Bool.</listitem>
-					<listitem>6. Evaluate this node to the inverse of [5].</listitem>
+					<listitem>Evaluate the first [expression] node.</listitem>
+					<listitem>Cast [1] to Bool.</listitem>
+					<listitem>If [2] is false, evaluate this node to true.</listitem>
+					<listitem>Evaluate the second [expression] node.</listitem>
+					<listitem>Cast [4] to Bool.</listitem>
+					<listitem>Evaluate this node to the inverse of [5].</listitem>
 				</orderedlist>
 			</section>
 			
@@ -598,15 +597,14 @@ import all from "XmlLib"
 				<title>or</title>
 				
 				<para>Evaluates to true if either child expression evaluates to true.</para>
-				
-				<para>Evaluation:</para>
+
 				<orderedlist role="eval">
-					<listitem>1. Evaluate the first [expression] node.</listitem>
-					<listitem>2. Cast [1] to Bool.</listitem>
-					<listitem>3. If [2] is true, evaluate this node to true.</listitem>
-					<listitem>4. Evaluate the second [expression] node.</listitem>
-					<listitem>5. Cast [4] to Bool.</listitem>
-					<listitem>6. Evaluate this node to [5].</listitem>
+					<listitem>Evaluate the first [expression] node.</listitem>
+					<listitem>Cast [1] to Bool.</listitem>
+					<listitem>If [2] is true, evaluate this node to true.</listitem>
+					<listitem>Evaluate the second [expression] node.</listitem>
+					<listitem>Cast [4] to Bool.</listitem>
+					<listitem>Evaluate this node to [5].</listitem>
 				</orderedlist>
 			</section>
 			
@@ -614,15 +612,14 @@ import all from "XmlLib"
 				<title>nor</title>
 				
 				<para>Evaluates to false if either child expression evaluates to true.</para>
-				
-				<para>Evaluation:</para>
+
 				<orderedlist role="eval">
-					<listitem>1. Evaluate the first [expression] node.</listitem>
-					<listitem>2. Cast [1] to Bool.</listitem>
-					<listitem>3. If [2] is true, evaluate this node to false.</listitem>
-					<listitem>4. Evaluate the second [expression] node.</listitem>
-					<listitem>5. Cast [4] to Bool.</listitem>
-					<listitem>6. Evaluate this node to the inverse of [5].</listitem>
+					<listitem>Evaluate the first [expression] node.</listitem>
+					<listitem>Cast [1] to Bool.</listitem>
+					<listitem>If [2] is true, evaluate this node to false.</listitem>
+					<listitem>Evaluate the second [expression] node.</listitem>
+					<listitem>Cast [4] to Bool.</listitem>
+					<listitem>Evaluate this node to the inverse of [5].</listitem>
 				</orderedlist>
 			</section>
 			
@@ -630,14 +627,13 @@ import all from "XmlLib"
 				<title>xor</title>
 				
 				<para>Evaluates to true if the child expressions evaluate to different values.</para>
-				
-				<para>Evaluation:</para>
+
 				<orderedlist role="eval">
-					<listitem>1. Evaluate the first [expression] node.</listitem>
-					<listitem>2. Cast [1] to Bool.</listitem>
-					<listitem>3. Evaluate the second [expression] node.</listitem>
-					<listitem>4. Cast [3] to Bool.</listitem>
-					<listitem>5. If [2] and [4] are different, evalute to true. Otherwise, evaluate to false.</listitem>
+					<listitem>Evaluate the first [expression] node.</listitem>
+					<listitem>Cast [1] to Bool.</listitem>
+					<listitem>Evaluate the second [expression] node.</listitem>
+					<listitem>Cast [3] to Bool.</listitem>
+					<listitem>If [2] and [4] are different, evalute to true. Otherwise, evaluate to false.</listitem>
 				</orderedlist>
 			</section>
 			
@@ -645,14 +641,13 @@ import all from "XmlLib"
 				<title>xnor</title>
 				
 				<para>Evaluates to true if the child expressions evaluate to the same value.</para>
-				
-				<para>Evaluation:</para>
+
 				<orderedlist role="eval">
-					<listitem>1. Evaluate the first [expression] node.</listitem>
-					<listitem>2. Cast [1] to Bool.</listitem>
-					<listitem>3. Evaluate the second [expression] node.</listitem>
-					<listitem>4. Cast [3] to Bool.</listitem>
-					<listitem>5. If [2] and [4] are the same, evalute to true. Otherwise, evaluate to false.</listitem>
+					<listitem>Evaluate the first [expression] node.</listitem>
+					<listitem>Cast [1] to Bool.</listitem>
+					<listitem>Evaluate the second [expression] node.</listitem>
+					<listitem>Cast [3] to Bool.</listitem>
+					<listitem>If [2] and [4] are the same, evalute to true. Otherwise, evaluate to false.</listitem>
 				</orderedlist>
 			</section>
 		</section>
@@ -708,7 +703,7 @@ bar.doStuff("test") //prints out "test"
 			<simplelist role="layout">
 				<member>expression value</member>
 				<member>identifier method name</member>
-				<member>? bool mutable</member>
+				<member>? boolean mutable</member>
 				<member>* expression arguments</member>
 				<member>* labeled-argument</member>
 			</simplelist>
@@ -843,7 +838,7 @@ print (o as String).length
 				<listitem>Create an interface, CLASS_INTERFACE.</listitem>
 				<listitem>Add instance constructors as free functions to STATIC_SCOPE.</listitem>
 				<listitem>Add instance constructors as callees to CLASS_INTERFACE.</listitem>
-				<listitem>Evaluate every declaration-class that has a declaration-prevalent in the scope of STATIC_SCOPE. If the reference-type of the declaration-prevalent is function, and it has access of get, add a method to CLASS_INTERFACE with the same function interface and name. Otherwise, create a property with a getter if declared public.</listitem>
+				<listitem>Evaluate every declaration-class that has a declaration-prevalent in the scope of STATIC_SCOPE. If the identikey-type of the declaration-prevalent is function, and it has access of get, add a method to CLASS_INTERFACE with the same function interface and name. Otherwise, create a property with a getter if declared public.</listitem>
 				<listitem>Evaluate the rest of the declaration-class nodes in the scope of STATIC_SCOPE, except for the declaration-class nodes with a declaration-const-empty. Create properties as appropriate when the access nodes specify to do so.</listitem>
 				<listitem>In the scope of STATIC_SCOPE, evaluate the declaration-class nodes that have declaration-const-empty nodes. Create properties as appropriate when the access nodes specify to do so.</listitem>
 				<listitem>Add the static callees as free functions in STATIC_SCOPE.</listitem>
@@ -892,12 +887,12 @@ print (o as String).length
 				
 				<simplelist role="layout">
 					<member>identifier</member>
-					<member>reference-type</member>
+					<member>identikey-type</member>
 				</simplelist>
 				
-				<para role="process">If reference-type is function, the interface is the return type. (xxx why?)</para>
+				<para role="process">If identikey-type is function, the interface is the return type. (xxx why?)</para>
 				
-				<para>Identifiers created by this node are always const. [idenifier-type] must be value, function, or meta. The class's static constructor is allowed to bind values to static identifiers created by this node. If anthing tries to bind a value to an identifier-reference create by this node, and the identifier-reference is already bound to something, throw an error. The class's instance constructors are allowed to bind values to instance identifiers created by this node. An error results if identifier-references produced by declaration-const-empty nodes are dereferenced before being bound to anything.</para>
+				<para>Identifiers created by this node are always const. [identikey-type] must be value, function, or meta. The class's static constructor is allowed to bind values to static identifiers created by this node. If anthing tries to bind a value to an identifier-reference create by this node, and the identifier-reference is already bound to something, throw an error. The class's instance constructors are allowed to bind values to instance identifiers created by this node. An error results if identifier-references produced by declaration-const-empty nodes are dereferenced before being bound to anything.</para>
 			</section>
 	
 			<section xml:id="node.interface-implementation">
@@ -910,7 +905,7 @@ print (o as String).length
 					<member>* named-function getter</member>
 					<member>* named-function setter</member>
 					<member>* named-function method</member>
-					<member>? bool default</member>
+					<member>? boolean default</member>
 				</simplelist>
 			</section>
 			
@@ -928,12 +923,12 @@ print (o as String).length
 				
 				<simplelist role="layout">
 					<member>identifier</member>
-					<member>reference-type</member>
+					<member>identikey-type</member>
 					<member>? function getter</member>
 					<member>? function setter</member>
 				</simplelist>
 				
-				<para role="process">Must have a getter and/or setter. If only identifier and reference-type are given, an error results.</para>
+				<para role="process">Must have a getter and/or setter. If only identifier and identikey-type are given, an error results.</para>
 			</section>
 		</section>
 			
@@ -954,12 +949,12 @@ print (o as String).length
 			
 			<simplelist role="layout">
 				<member>identifier name</member>
-				<member>reference-type type</member>
-				<member>? bool constant</member>
+				<member>identikey-type type</member>
+				<member>? boolean constant</member>
 				<member>expression value</member>
 			</simplelist>
 			
-			<para>reference-type cannot be namespace or alias. If the reference-type comes in const and var versions, [const] determines whether the identifier-reference created is const. If reference-type is value or function, and interface is not given, the interface is determined from [value]. If reference-type is dyn, [const] must not be present. (an error results if it is)</para>
+			<para>identikey-type cannot be namespace or alias. If the identikey-type comes in const and var versions, [const] determines whether the identifier-reference created is const. If identikey-type is value or function, and interface is not given, the interface is determined from [value]. If identikey-type is dyn, [const] must not be present. (an error results if it is)</para>
 			
 			<para>If [const] is true, the identifier thereafter always refers to the same value. The identifier cannot be bound to a different value. The active interface also cannot be changed.</para>
 		</section>
@@ -969,7 +964,7 @@ print (o as String).length
 			
 			<simplelist role="layout">
 				<member>identifier</member>
-				<member>reference-type</member>
+				<member>identikey-type</member>
 				<member>expression value</member>
 			</simplelist>
 			
@@ -982,7 +977,7 @@ print (o as String).length
 			<simplelist role="layout">
 				<member>* identifier template parameter</member>
 				<member>* parameter</member>
-				<member>? reference-type return type</member>
+				<member>? expression return interface</member>
 				<member>block</member>
 			</simplelist>
 			
@@ -1001,7 +996,7 @@ print (o as String).length
 ]]>
 			</screen>
 			
-			<para>When this node is evaluated, it evaluates to a function object. Only the [template-parameter], [parameter], and [return-type] nodes are evaluated at this time. When the function object is called, the [block] member is evaluated, in the scope of this function node, not the scope of the function-call node.</para>
+			<para>When this node is evaluated, it evaluates to a function object. Only the [template-parameter], [parameter], and [return interface] nodes are evaluated at this time. When the function object is called, the [block] member is evaluated, in the scope of this function node, not the scope of the function-call node.</para>
 			
 			<para>If the return type is not given, the function does not return anything.</para>
 		</section>
@@ -1038,9 +1033,9 @@ print (o as String).length
 			<title>function-interface</title>
 			
 			<simplelist role="layout">
-				<member>? expression [template-argument-count]</member>
-				<member>* expression [parameter-interface]</member>
-				<member>? expression [return-interface]</member>
+				<member>? expression template-argument-count</member>
+				<member>* parameter</member>
+				<member>? expression return interface</member>
 			</simplelist>
 		</section>
 		
@@ -1053,6 +1048,76 @@ print (o as String).length
 			</simplelist>
 			
 			<para>For a function with template arguments, pass template arguments in to get back a function. All required template arguments must be passed at once; Desal does not support currying of template arguments.</para>
+		</section>
+		
+		<section xml:id="node.generic-class">
+			<title>generic-class</title>
+			
+			<simplelist role="layout">
+				<member>+ generic-parameter parameters</member>
+				<member>class</member>
+			</simplelist>
+			
+			<para>Evaluates to a value with an active interface that inherits from GenericClass and one or more function interfaces. When called, the value returns the value returned from evaluating the class node.</para>
+		</section>
+		
+		<section xml:id="node.generic-function">
+			<title>generic-function</title>
+			
+			<simplelist role="layout">
+				<member>+ generic-parameter parameters</member>
+				<member>function</member>
+			</simplelist>
+			
+			<para>Evaluates to a value with an active interface that inherits from GenericClass and one or more function interfaces. When called, the value returns the value returned from evaluating the function node.</para>
+			
+			<programlisting>
+generic(T)
+func larger(T a, T b) T {
+	if a &lt; b
+		return b
+	return a
+}
+
+println larger(2, 7) //prints "7"
+			</programlisting>
+		</section>
+		
+		<section xml:id="node.generic-interface">
+			<title>generic-interface</title>
+			
+			<simplelist role="layout">
+				<member>+ generic-parameter parameters</member>
+				<member>interface</member>
+			</simplelist>
+			
+			<para>Evaluates to a value with an active interface that inherits from GenericClass and one or more function interfaces. When called, the value returns the value returned from evaluating the interface node.</para>
+			
+			<programlisting>
+generic(T)
+interface List {
+	func addFront(T)
+	func addBack(T)
+	func removeFront() T
+	func removeBack() T
+}
+
+List(Int) list = ...
+list.addFront(2)
+list.addBack(3)
+list.addFront(1)
+println list.removeFront() //prints "1"
+println list.removeBack() //prints "3"
+			</programlisting>
+		</section>
+		
+		<section xml:id="node.generic-parameter">
+			<title>generic-parameter</title>
+			
+			<simplelist role="layout">
+				<member>identifier name</member>
+				<member>? expression default interface</member>
+			</simplelist>
 		</section>
 		
 		<section xml:id="node.identifier">
@@ -1075,7 +1140,7 @@ print (o as String).length
 			<para>Evaluates to a function. The specified parameters now have values, so they do not appear on the resultant function.</para>
 			
 			<programlisting>
-func doStuff(int a, string b, bool alpha) {...}
+func doStuff(Int a, String b, Bool alpha) {...}
 func doStuff2 = (curry doStuff (3, alpha=false))
 doStuff2("test")
 			</programlisting>
@@ -1127,9 +1192,9 @@ Int alpha = foo::bar::alpha
 			<title>chain</title>
 			
 			<simplelist role="layout">
-				<member>? bool namespaced-identifier</member>
-				<member>? bool get-property</member>
-				<member>? bool bind-method</member>
+				<member>? boolean namespaced-identifier</member>
+				<member>? boolean get-property</member>
+				<member>? boolean bind-method</member>
 				<member>? expression starting value</member>
 				<member>+ identifier</member>
 			</simplelist>
@@ -1274,7 +1339,7 @@ if (o imps Foo)
 			<simplelist role="layout">
 				<member>* expression inheritees</member>
 				<member>* callee callees</member>
-				<member>? reference-type return type</member>
+				<member>? expression return interface</member>
 				<member>* property properties</member>
 				<member>* method methods</member>
 			</simplelist>
@@ -1292,7 +1357,7 @@ if (o imps Foo)
 				
 				<simplelist role="layout">
 					<member>identifier name</member>
-					<member>reference-type type</member>
+					<member>? expression interface</member>
 					<member>access access</member>
 				</simplelist>
 			</section>
@@ -1414,8 +1479,8 @@ if( a === b )
 		</section>
 	</section>
 	
-	<section xml:id="unsorted-tree-node-types">
-		<title>Unsorted tree node types</title>
+	<section xml:id="unsorted-nodes">
+		<title>Unsorted nodes</title>
 
 		<section xml:id="node.alias">
 			<title>alias</title>

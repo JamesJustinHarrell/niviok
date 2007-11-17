@@ -1,0 +1,42 @@
+add option for processing mode to Desal Impl
+	off
+	warn
+	normal (default)
+
+in spec, split processing into 3 things
+	checking scope/scoped-identifier tree
+		define scope tree
+	checking types (but not member access)
+		assignments
+		type of arguments to methods (also involves getting face of method)
+	checking member access
+		property set/get
+		method call
+		calling values (callees)
+	node-specific processing stuff
+
+spec times that libraries can be imported (import nodes handled)
+	* before processing
+	* between processing
+	* during runtime (after processing)
+example 1:
+	import static libraries (before processing)
+	compile to machine code (processing)
+	save machine code
+	open machine code
+	import dynamic libraries (between processing)
+	check stuff again (processing)
+example 2:
+	import static libraries (before processing)
+	compile to machine code (processing)
+	save machine code
+	open machine code
+	import dynamic libraries (after processing)
+	run code
+
+how to check member access and shit
+	ScopeFormula to produce scope tree
+	Node_Expression.processRefCat()
+		returns ReferenceCategory (or null? would that ever be possible?)
+	Node_Expression.processFace()
+		returns IInterface or null if can't figure out

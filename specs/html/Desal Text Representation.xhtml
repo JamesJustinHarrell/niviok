@@ -3,45 +3,45 @@
 	<h1>Desal Text Representation</h1>
 	<h2>Dextr</h2>
 	
-	<ol class="toc"><li><a href="#introduction">1. Introduction</a></li><li><a href="#tokenization">2. Tokenization</a><ol><li><a href="#token-types">2.1. Token types</a></li><li><a href="#tokenization-modes">2.2. Tokenization modes</a></li></ol></li><li><a href="#parsing">3. Parsing</a><ol><li><a href="#current-item">3.1. Current item</a></li><li><a href="#parse-modes">3.2. Parse modes</a></li></ol></li><li><a href="#unsorted-stuff">4. unsorted stuff</a><ol><li><a href="#get-interface">4.1. get interface</a></li><li><a href="#postfix-operator">4.2. postfix incrementation operator</a></li><li><a href="#casting-sugar">4.3. Dextr casting sugar</a></li></ol></li><li><a href="#not-marked-up">5. not marked-up</a></li></ol><div id="introduction">
-		<h1>Chapter 1. Introduction</h1>
-	
-		<p>This document defines a means of representing Desal semantics, and a means for extracting the semantics by a computer agent.</p>
+	<ol class="toc"><li><a href="#overview">1. Overview</a><ol><li><a href="#">1.1. Introduction</a></li></ol></li><li><a href="#tokenization">2. Tokenization</a><ol><li><a href="#token-types">2.1. Token types</a></li><li><a href="#tokenization-modes">2.2. Tokenization modes</a></li></ol></li><li><a href="#unsorted-stuff">3. unsorted stuff</a><ol><li><a href="#get-interface">3.1. get interface</a></li><li><a href="#postfix-operator">3.2. postfix incrementation operator</a></li><li><a href="#casting-sugar">3.3. Dextr casting sugar</a></li></ol></li><li><a href="#not-marked-up">4. not marked-up</a></li></ol><div id="overview">
+		<h1>Chapter 1. Overview</h1>
+		
+		<div>
+			<h2>1.1. Introduction</h2>
+		
+			<p>This document defines a means of representing Desal semantics, and a means for extracting the semantics by a computer agent.</p>
+		</div>
 	</div>
 	
 	<div id="tokenization">
 		<h1>Chapter 2. Tokenization</h1>
-		
+
 		<p>How to break up Dextr source code into tokens.</p>
-		
+	
 		<div id="token-types">
 			<h2>2.1. Token types</h2>
+			
+			<ul>
+				<li>xxx</li>
+				<li>xxx</li>
+			</ul>
 		</div>
 		
 		<div id="tokenization-modes">
 			<h2>2.2. Tokenization modes</h2>
+			
+			<ul>
+				<li>xxx</li>
+			</ul>
 		</div>
 	</div>
-	
-	<div id="parsing">
-		<h1>Chapter 3. Parsing</h1>
-		
-		<p>How to extract Desal semantics from Dextr tokens.</p>
-		
-		<div id="current-item">
-			<h2>3.1. Current item</h2>
-		</div>
-		
-		<div id="parse-modes">
-			<h2>3.2. Parse modes</h2>
-		</div>
-	</div>
+
 	
 	<div id="unsorted-stuff">
-		<h1>Chapter 4. unsorted stuff</h1>
+		<h1>Chapter 3. unsorted stuff</h1>
 		
 		<div id="get-interface">
-			<h2>4.1. get interface</h2>
+			<h2>3.1. get interface</h2>
 			
 			<p>It's always possible to bind the interface of an object to an identifier.</p>
 			
@@ -55,7 +55,7 @@ i o2 = o</code>
 		</div>
 		
 		<div id="postfix-operator">
-			<h2>4.2. postfix incrementation operator</h2>
+			<h2>3.2. postfix incrementation operator</h2>
 			
 			<p>&quot;object++&quot; doesn't create a temporary. The object has its increment method called after the object is accessed. The below two groups of code represent the same semantics.</p> 
 			
@@ -68,7 +68,7 @@ int b = a
 		</div>
 		
 		<div id="casting-sugar">
-			<h2>4.3. Dextr casting sugar</h2>
+			<h2>3.3. Dextr casting sugar</h2>
 			
 			<p>Although interface objects do not have call methods, syntactially they appear to, although the syntax is translated into ordinary Desal semantics.</p>
 			
@@ -85,7 +85,7 @@ int b = a
 	
 
 	<div id="not-marked-up">
-		<h1>Chapter 5. not marked-up</h1>
+		<h1>Chapter 4. not marked-up</h1>
 		
 		<pre>foo
 

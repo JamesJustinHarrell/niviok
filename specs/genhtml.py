@@ -1,6 +1,5 @@
 # coding: utf-8
 
-#libraries
 import os
 import re
 from exceptions import Exception
@@ -48,35 +47,50 @@ xhtmlNS = "http://www.w3.org/1999/xhtml"
 domImpl = dom.getDOMImplementation()
 relaxngSchema = libxml2.relaxNGNewParserCtxt("%s/docbook.rng" % docbookDir).relaxNGParse()
 
-def addElement(parentOutElement, tagName, inElement) :
+#adds a tagName element to parentOutElement and returns the new element
+#if inElement given, its contents copied to that new element
+def transferElement(parentOutElement, tagName, inElement) :
 	outDocument = parentOutElement.ownerDocument
 	newOutElement = outDocument.createElement(tagName)
 	parentOutElement.appendChild(newOutElement)
 	if inElement != None :
-		i = 0
-		while i < inElement.attributes.length :
-			name = inElement.attributes.item(i).name
-			value = inElement.getAttribute(name)
-			if name == "xml:id" :
-				newOutElement.setAttribute("id", value)
-				#required for getElementById to work
-				#note that the W3C version has a second parameter
-				newOutElement.setIdAttribute("id")
-			elif name == "role" :
-				if value not in knownRoles :
-					print "WARNING: unknown role %s" % value
-				newOutElement.setAttribute("class", value)
-			elif name == "linkend" :
-				if tagName != "a" :
-					newLink = outDocument.createElement("a")
-					newOutElement.appendChild(newLink)
-					newOutElement = newLink #!!!
-				newOutElement.setAttribute("href", '#' + value)
-			else :
-				print "WARNING: Unrecognized attribute " + name
-			i += 1
+		newOutElement = transferAttributes(inElement, newOutElement)
 		copyContent(inElement, newOutElement)
 	return newOutElement
+
+#adds an appropriate HTML attribute/element for each docbook attribute
+#returns the lowest element
+def transferAttributes(source, destination) :
+	rv = destination
+	i = 0
+	while i < source.attributes.length :
+		name = source.attributes.item(i).name
+		value = source.getAttribute(name)
+		
+		if name == "xml:id" :
+			destination.setAttribute("id", value)
+			#required for getElementById to work
+			#note that the W3C version has a second parameter
+			destination.setIdAttribute("id")
+		elif name == "role" :
+			if value not in knownRoles :
+				print "WARNING: unknown role %s" % value
+			destination.setAttribute("class", value)
+		elif name == "linkend" :
+			if destination.tagName == 'a' :
+				link = destination
+			else :
+				link = destination.ownerDocument.createElement("a")
+				destination.appendChild(link)
+				rv = link
+			link.setAttribute("href", '#' + value)
+		elif name == "xmlns" or name == "version":
+			pass
+		else :
+			print "WARNING: Unrecognized attribute " + name
+		
+		i += 1
+	return rv
 
 def setupLayoutMember(member) :
 	doc = member.ownerDocument
@@ -111,15 +125,15 @@ def copyElement(docbookElement, htmlElement) :
 		if tagMap[tagName] == None :
 			copyContent(docbookElement, htmlElement)
 		else :
-			addElement(htmlElement, tagMap[tagName], docbookElement)
+			transferElement(htmlElement, tagMap[tagName], docbookElement)
 	elif tagName == 'listitem' and \
 	'orderedlist' == docbookElement.parentNode.tagName :
-		addElement(htmlElement, 'li', docbookElement)
+		transferElement(htmlElement, 'li', docbookElement)
 	elif tagName == 'listitem' and \
 	'varlistentry' == docbookElement.parentNode.tagName :
-		addElement(htmlElement, 'dd', docbookElement)
+		transferElement(htmlElement, 'dd', docbookElement)
 	elif 'copyright' == tagName :
-		element = addElement(htmlElement, 'p', None)
+		element = transferElement(htmlElement, 'p', None)
 		appendText(u'Copyright © ', element)
 		for node in docbookElement.childNodes :
 			if node.nodeType == node.ELEMENT_NODE :
@@ -127,15 +141,15 @@ def copyElement(docbookElement, htmlElement) :
 			elif node.nodeType == node.TEXT_NODE :
 				copyText(node, element)
 			else :
-				raise Error('unknown node type')	
+				raise Exception('unknown node type')	
 	elif 'programlisting' == tagName :
-		element = addElement(htmlElement, 'code', docbookElement)
+		element = transferElement(htmlElement, 'code', docbookElement)
 		element.setAttribute('xml:space', 'preserve')
 	elif 'title' == tagName :
 		parentName = docbookElement.parentNode.tagName
 		if ["book", "chapter", "section"].count(parentName) == 0 :
 			raise ("Error: %s elements cannot have titles" % parentName).__str__()
-		addElement(htmlElement, "h%d" % docbookElement.nestLevel, docbookElement)
+		transferElement(htmlElement, "h%d" % docbookElement.nestLevel, docbookElement)
 	else :
 		print "WARNING: DocBook '%s' element not recognized (child of '%s')" \
 		% ( tagName, docbookElement.parentNode.tagName )
@@ -149,6 +163,7 @@ def appendText(text, htmlElement) :
 def copyText(docbookNode, htmlElement) :
 	appendText( docbookNode.data, htmlElement )
 
+#copies child nodes of docbook element to html element
 def copyContent(docbookElement, htmlElement) :
 	for docbookNode in docbookElement.childNodes :
 		if docbookNode.nodeType == docbookNode.ELEMENT_NODE :
@@ -164,7 +179,13 @@ def copyContent(docbookElement, htmlElement) :
 
 #tocList is HTML, sectionElement is DocBook
 def setupSection(tocList, sectionElement, prefix, index) :
-	titleText = sectionElement.getElementsByTagName("title")[0].firstChild.data
+	try :
+		titleText = sectionElement\
+			.getElementsByTagName("title")[0]\
+			.firstChild.data
+	except :
+		"WARNING: section doesn't have title"
+		return
 	
 	htmlDocument = tocList.ownerDocument
 	#title is a DocBook element
@@ -267,17 +288,23 @@ def writeXmlDocument(xmlDocument, outputPath) :
 
 #document is a libxml2 XML document
 def relaxngValidate(document) :
+	def relaxngOutput(type, message) :
+		print "RelaxNG %s" % type
+		e = libxml2.lastError()
+		print "\t%s:%s" % (e.file(), e.line())
+		print "\t%s" % message.strip()
+	
 	def relaxngWarning(message, unused) :
-		print "RelaxNG validation warning: " + message.strip()
+		relaxngOutput("warning", message)
 	
 	def relaxngError(message, unused) :
-		print "RelaxNG validation error: " + message.strip()
+		relaxngOutput("error", message)
 	
 	relaxngValidator = relaxngSchema.relaxNGNewValidCtxt()
 	relaxngValidator.setValidityErrorHandler(relaxngWarning, relaxngError)
 	result = relaxngValidator.relaxNGValidateDoc(document)
-	if result == -1 : #0 means no problems, 1+ means problem
-		print "internal error while validating document"
+	if result == -1 : #0 means no problems, 1+ means problem, -1 is internal problem
+		print "internal error while validating document with RelaxNG"
 
 def schematronValidate(path) :
 	command = '''
@@ -319,6 +346,8 @@ def getDocbookDom(path) :
 	
 	docbookDom = dom.parseString(docbookDocument.serialize())
 	normalize(docbookDom.documentElement)
+	if docbookDom.documentElement.getAttribute("version") != "5.0" :
+		raise Exception("docbook not labeled as version 5.0")
 	return docbookDom
 
 def crushCommand(command) :

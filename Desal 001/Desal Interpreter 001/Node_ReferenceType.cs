@@ -6,6 +6,20 @@ class Node_ReferenceType : INode {
 	Node_ReferenceCategory nodeCategory, INode_Expression nodeInterface) {
 		_nodeCategory = nodeCategory;
 		_nodeInterface = nodeInterface;
+		
+		//xxx should be in processing
+		if( _nodeCategory.category == ReferenceCategory.DYN ) {
+			if( _nodeInterface != null ) {
+				throw new System.Exception(
+					"interface can't be given for dyn references");
+			}
+		}
+		else {
+			if( _nodeInterface == null ) {
+				throw new System.Exception(
+					"interface must be given for specified reference category");
+			}
+		}
 	}
 	
 	public ReferenceCategory category {

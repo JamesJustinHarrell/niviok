@@ -33,11 +33,23 @@ class Value<T> : IValue {
 	}
 	
 	public void executeCall( Arguments arguments ) {
-		_faceimpl.executeCall( _object.state, arguments );
+		try {
+			_faceimpl.executeCall( _object.state, arguments );
+		}
+		catch(ClientException e) {
+			e.pushFunc( "unknown" );
+			throw e;
+		}
 	}
 	
 	public IValue evaluateCall( Arguments arguments ) {
-		return _faceimpl.evaluateCall(_object.state, arguments);
+		try {
+			return _faceimpl.evaluateCall(_object.state, arguments);
+		}
+		catch(ClientException e) {
+			e.pushFunc( "unknown" );
+			throw e;
+		}
 	}
 	
 	public IValue getProperty(Identifier name) {
@@ -49,10 +61,22 @@ class Value<T> : IValue {
 	}
 	
 	public void executeMethod( Identifier name, Arguments arguments ) {
-		_faceimpl.executeMethod(_object.state, name, arguments);
+		try {
+			_faceimpl.executeMethod(_object.state, name, arguments);
+		}
+		catch(ClientException e) {
+			e.pushFunc( "." + name.str );
+			throw e;
+		}
 	}
 	
 	public IValue evaluateMethod( Identifier name, Arguments arguments ) {
-		return _faceimpl.evaluateMethod(_object.state, name, arguments);
+		try {
+			return _faceimpl.evaluateMethod(_object.state, name, arguments);
+		}
+		catch(ClientException e) {
+			e.pushFunc( "." + name.str );
+			throw e;
+		}
 	}
 }

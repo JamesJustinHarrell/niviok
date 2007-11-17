@@ -37,11 +37,32 @@ static class Wrapper {
 			<wrapper xmlns='urn:desible1'>
 				<interface xml:id='bool'>
 				</interface>
+				
 				<interface xml:id='int'>
 				</interface>
+				
 				<interface xml:id='rat'>
 				</interface>
+				
+				<interface/> <!-- xxx -->
+				
 				<interface xml:id='string'>
+					<method>
+						<identifier label='name'>concat!</identifier>
+						<function-interface label='interface'>
+							<parameter>
+								<identifier label='name'>value</identifier>
+								<reference-type label='type'>
+									<reference-category>value</reference-category>
+									<identifier label='interface'>String</identifier>
+								</reference-type>
+							</parameter>
+							<reference-type label='return-type'>
+								<reference-category>value</reference-category>
+								<identifier label='interface'>String</identifier>
+							</reference-type>
+						</function-interface>
+					</method>
 				</interface>
 			</wrapper>
 		");
