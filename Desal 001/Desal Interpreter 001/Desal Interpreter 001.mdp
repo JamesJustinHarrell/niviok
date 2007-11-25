@@ -27,7 +27,7 @@
     <File name="./Interface.cs" subtype="Code" buildaction="Compile" />
     <File name="./xxx_InterfaceImplementation.cs" subtype="Code" buildaction="Compile" />
     <File name="./IObject.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Native_Function.cs" subtype="Code" buildaction="Compile" />
+    <File name="./NativeFunction.cs" subtype="Code" buildaction="Compile" />
     <File name="./xxx_CString.cs" subtype="Code" buildaction="Compile" />
     <File name="./Node_Block.cs" subtype="Code" buildaction="Compile" />
     <File name="./Node_Function.cs" subtype="Code" buildaction="Compile" />
@@ -52,7 +52,7 @@
     <File name="./Node_Parameter.cs" subtype="Code" buildaction="Compile" />
     <File name="./xxx_Native_FunctionInterface.cs" subtype="Code" buildaction="Compile" />
     <File name="./xxx_Client_Object.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Wrapper.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Bridge.cs" subtype="Code" buildaction="Compile" />
     <File name="./IValue.cs" subtype="Code" buildaction="Compile" />
     <File name="./xxx_Native_Class.cs" subtype="Code" buildaction="Compile" />
     <File name="./xxx_Native_Object.cs" subtype="Code" buildaction="Compile" />

@@ -51,6 +51,7 @@ class Scope {
 		throw new Error_Unimplemented();
 	}
 	
+	//xxx should this use bridge?
 	public void printIdentifiers() {
 		foreach( Identifier ident in _binds.Keys ) {
 			System.Console.WriteLine("'" + ident.str + "'");

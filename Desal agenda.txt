@@ -10,27 +10,55 @@ terms
 	data model
 	abstract infoset/structure/tree/etc
 	hierarchy
-leaf/terminal nodes
-tree nodes
-layout
+	leaf/terminal nodes
+	tree nodes
+
 generics
-const/immutable objects
-scope
-closures
-multiple dispatch
-	made possible with dynamic identifiers (Dyns)
-	Do I need to say anything? I should probably mention it, although multiple dispatch should exist without specifically specifying it.
-interfaces that require (implementations also (implement (other specified interfaces)))
+something like C++'s template specialization
+
+interfaces that require that (implementations also (implement other specified interfaces))
 	interface Foo
 		require Bar
 	An implementation of Foo must also implement Bar.
 	That way, a Foo can be cast to a Bar without producing a warning about an unsafe cast.
+	This is different from inheritance, in that a reference to Foo can't user Bar members directly.
+		Foo foo = ...
+		foo.methodOfBar() //error
+		(foo as Bar).methodOfBar() //known during processing to be okay
+
+conversion methods
+	interface Foo
+		convert String
+	Foo foo = ...
+	String string = (foo to String)
+	(foo sameobject string) == false, even if Foo inherited from String
+
+layout
+
+const/immutable objects/values
+
+objects
+values
+
+scope
+
+closures
+
+multiple dispatch
+	made possible with dynamic identikeys
+	Do I need to say anything? I should probably mention it, although multiple dispatch should exist without specifically specifying it.
+	Dyn a = ..., b = ..., c = ...
+	doSomething(a, b, c) //type of a,b,c used to decide what method to call
+
 requirements on arguments
-	func doStuff(Int a where 3 < a and a < 10, Int b where a < b)
+	func doStuff(Int a where (3 < a and a < 10), Int b where (a < b))
+	func doStuff(Foo foo where testArg(foo))
+
 requirements on identifiers
 	Foo foo where foo impls Bar = getFoo()
 		//or: Foo|Bar foo = getFoo()
 	Bar bar = foo //safe cast
+
 adding interfaces
 	//adding 2 interfaces must always produce same interface
 	Foo+Bar obj = getFooBar()
@@ -141,9 +169,9 @@ handle these comments pulled from the Impl:
 
 possibly spec out common conventions
 	Interface
-	object
 	returnsBoolean?
-	CClass
+	FooFactory / CFoo / ClassFoo
+	other
 
 ensure Desal has all features of lambda calculus
 
@@ -152,8 +180,8 @@ create ScopeFormulas from declarations
 check all interfaces to ensure correctness
 
 make list of significant features
-	full specifications
-		extremely permissive license
+	specifications
+		permissive license
 	working implementation
 		LGPL-like license
 		access to many libraries
@@ -169,7 +197,7 @@ make list of significant features
 	allows global functions and objects
 	non-nullable parameters
 	no value types (only reference types)
-		distinction is a big deal in C#
+		distinction causes big problems C#
 
 add to rationale section
 	why lang?
@@ -192,7 +220,7 @@ class
 	faceimpl __priv
 !!! NEW !!!
 
-spect otu creating objects without classes (singletons)
+spec out creating objects without classes (singletons)
 
 Look at Java's way of handling multiple source files and libraries:
 	import java.util.Random;

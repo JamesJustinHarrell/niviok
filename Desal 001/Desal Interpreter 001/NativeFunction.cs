@@ -8,16 +8,19 @@ class NativeFunction : IFunction {
 	public delegate void FunctionStatement(Scope scope);
 	public delegate IValue FunctionExpression(Scope scope);
 	*/
-	public delegate void FunctionType(Scope scope);
+	public delegate void FunctionType(Bridge bridge, Scope scope);
 
+	Bridge _bridge;
 	FunctionType _function;
 	IList<Parameter> _parameters;
 	ReferenceType _returnType;
 	Scope _scope;
 	
 	public NativeFunction(
+	Bridge bridge,
 	FunctionType function, IList<Parameter> parameters,
 	ReferenceType returnType, Scope scope ) {
+		_bridge = bridge;
 		_function = function;
 		_parameters = parameters;
 		_returnType = returnType;
@@ -34,7 +37,7 @@ class NativeFunction : IFunction {
 	
 	public void executeCall(Arguments arguments) {
 		Scope innerScope = arguments.setup(_parameters, _scope);		
-		_function(innerScope);
+		_function(_bridge, innerScope);
 	}
 	
 	public IValue evaluateCall(Arguments arguments) {

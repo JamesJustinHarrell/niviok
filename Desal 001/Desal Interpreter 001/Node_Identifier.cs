@@ -1,7 +1,9 @@
 class Node_Identifier : INode_Expression {
+	Bridge _bridge;
 	Identifier _identifier;
 
-	public Node_Identifier(string identifier) {
+	public Node_Identifier(Bridge bridge, string identifier) {
+		_bridge = bridge;
 		_identifier = new Identifier(identifier);
 	}
 	
@@ -14,8 +16,7 @@ class Node_Identifier : INode_Expression {
 	}
 	
 	public void execute(Scope scope) {
-		//xxx create better warning system
-		System.Console.WriteLine("WARNING: executing an identifier node has no effect");
+		_bridge.warning("executing an identifier node has no effect");
 	}
 	
 	public void getInfo(out string name, out object objs) {

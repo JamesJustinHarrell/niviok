@@ -1,17 +1,20 @@
 using System.Collections.Generic;
 
 class Node_FunctionInterface : INode_Expression {
+	Bridge _bridge;
 	IList<Node_Parameter> _parameters;
 	Node_ReferenceType _type;
 
 	public Node_FunctionInterface(
+	Bridge bridge,
 	IList<Node_Parameter> parameters, Node_ReferenceType type ) {
+		_bridge = bridge;
 		_parameters = parameters;
 		_type = type;
 	}
 	
 	public IValue evaluate(Scope scope) {
-		System.Console.WriteLine("xxx Node_FunctionInterface.evaluate called");
+		_bridge.warning("Node_FunctionInterface.evaluate called; returning null");
 		return new NullValue(null);
 	}
 	

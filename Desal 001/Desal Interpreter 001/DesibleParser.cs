@@ -5,15 +5,16 @@ class DesibleParser {
 	delegate T ParseFunc<T>(XmlElement element);
 	static string desible1NS = "urn:desible1";
 
-	public static IInterface extractInterface(XmlElement element) {
+	public static IInterface extractInterface(Bridge aBridge, XmlElement element) {
 		DesibleParser parser = new DesibleParser();
-		parser.setupParser(element.OwnerDocument);
+		parser.setupParser(aBridge, element.OwnerDocument);
 		parser.unhandledWarnLevel = 0;
 		//xxx set labels?
 		Scope scope = new Scope();
 		return parser.parseInterface(element).evaluateInterface(scope);
 	}
 	
+	Bridge bridge;
 	XmlNamespaceManager nsManager; //maps tag name prefixes to namespace URIs
 	IList<XmlElement> handledElements;
 	int _unhandledWarnLevel = 2; //2 outputs lots, 0 outputs none
@@ -34,20 +35,20 @@ class DesibleParser {
 		}
 	}
 	
-	public Node_Bundle parsePath(string path) {
+	public Node_Bundle parsePath(Bridge aBridge, string path) {
 		XmlDocument doc = new XmlDocument();
 		doc.Load(path);
-		return parse(doc);
+		return parse(aBridge, doc);
 	}
 	
-	public Node_Bundle parseMarkup(string markup) {
+	public Node_Bundle parseMarkup(Bridge aBridge, string markup) {
 		XmlDocument doc = new XmlDocument();
 		doc.LoadXml(markup);
-		return parse(doc);
+		return parse(aBridge, doc);
 	}
 
-	public Node_Bundle parse(XmlDocument doc) {
-		setupParser(doc);
+	public Node_Bundle parse(Bridge aBridge, XmlDocument doc) {
+		setupParser(aBridge, doc);
 		//xxx check XML with Relax NG
 		setLabels(doc.DocumentElement);
 		Node_Bundle bundle = parseBundle(doc.DocumentElement);
@@ -59,7 +60,9 @@ class DesibleParser {
 		parseFuncs.Add(typeof(T), func);
 	}
 	
-	void setupParser(XmlDocument doc) {
+	void setupParser(Bridge aBridge, XmlDocument doc) {
+		bridge = aBridge;
+		
 		nsManager = new XmlNamespaceManager(doc.NameTable);
 		nsManager.AddNamespace("desible1", desible1NS);
 		handledElements = new List<XmlElement>();
@@ -95,6 +98,7 @@ class DesibleParser {
 		
 		addParser<Node_FunctionInterface>(delegate(XmlElement element) {
 			return new Node_FunctionInterface(
+				bridge,
 				parseMult<Node_Parameter>(element, "parameter"),
 				parseOpt<Node_ReferenceType>(element, "return-type"));
 		});
@@ -153,10 +157,12 @@ class DesibleParser {
 					warnAboutUnhandled(child);
 			}
 		}
-		else
-			System.Console.WriteLine(
-				"WARNING: unhandled element with tag name '{0}' in namespace '{1}'",
-				element.LocalName, element.NamespaceURI );
+		else {
+			bridge.warning(
+				System.String.Format(
+					"unhandled element with tag name '{0}' in namespace '{1}'",
+					element.LocalName, element.NamespaceURI ) );
+		}
 	}
 	
 	XmlElement selectFirst(XmlElement element, string label) {
@@ -313,18 +319,18 @@ class DesibleParser {
 
 	Node_Identifier parseIdentifier(XmlElement element) {
 		checkElement(element, "identifier");
-		return new Node_Identifier(element.InnerText);
+		return new Node_Identifier(bridge, element.InnerText);
 	}
 	
 	Node_Integer parseInteger(XmlElement element) {
 		checkElement(element, "integer");
 		//xxx bignum
-		return new Node_Integer( System.Int64.Parse(element.InnerText) );
+		return new Node_Integer( bridge, System.Int64.Parse(element.InnerText) );
 	}
 	
 	Node_String parseString(XmlElement element) {
 		checkElement(element, "string");		
-		return new Node_String(element.InnerText);
+		return new Node_String(bridge, element.InnerText);
 	}
 	
 	Node_ReferenceCategory parseReferenceCategory(XmlElement element) {
@@ -436,6 +442,7 @@ class DesibleParser {
 	Node_Function parseFunction(XmlElement element) {
 		checkElement(element, "function");
 		return new Node_Function(
+			bridge,
 			parseMult<Node_Parameter>(element, "parameter"),
 			parseOpt<Node_ReferenceType>(element, "return-type"),
 			parseOne<Node_Block>(element, "block") );

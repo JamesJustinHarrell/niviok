@@ -2,16 +2,13 @@ using System; //for System.Console
 using System.Collections.Generic;
 
 class DesalInterpreter001 {
-	static string testPath = "/media/files/Desal/Desal 001/test.desible";
-
 	static int Main(string[] arguments) {
 		//arguments have the form: -key=value -key=value
 		
 		IDictionary<string,string> args =
 			new Dictionary<string,string>();
 		
-		args.Add("path", testPath);
-		args.Add("unhandled-warn-level", "0");
+		args.Add("unhandled-warn-level", "2");
 		args.Add("print-tree", "false");
 		args.Add("run", "true");
 		
@@ -30,10 +27,11 @@ class DesalInterpreter001 {
 		
 		DesalInterpreter001 program = new DesalInterpreter001();
 		
+		Bridge bridge = new Bridge();
 		DesibleParser parser = new DesibleParser();
 		parser.unhandledWarnLevel = Int32.Parse(args["unhandled-warn-level"]);
-		Node_Bundle bundleNode = parser.parsePath(args["path"]);
-		bundleNode.setup( program.createGlobalScope() );
+		Node_Bundle bundleNode = parser.parsePath(bridge, args["path"]);
+		bundleNode.setup( program.createGlobalScope(bridge) );
 		
 		if( Boolean.Parse(args["print-tree"]) ) {
 			program.printTree(bundleNode);
@@ -44,7 +42,7 @@ class DesalInterpreter001 {
 				return bundleNode.run();
 			}
 			catch(ClientException e) {
-				System.Console.WriteLine(e.clientMessage);
+				bridge.error(e.clientMessage);
 				//xxx return ERROR_CODE;
 			}
 		}
@@ -52,7 +50,7 @@ class DesalInterpreter001 {
 		return 0;
 	}
 	
-	Scope createGlobalScope() {
+	Scope createGlobalScope(Bridge bridge) {
 		Scope scope = new Scope();
 
 		//func print(dyn value)
@@ -61,7 +59,7 @@ class DesalInterpreter001 {
 		};
 		//xxx use better binding stuff
 		IFunction printFunction = new NativeFunction(
-			printFunctionNative, printParameters, null, scope );
+			bridge, printFunctionNative, printParameters, null, scope );
 		IValue printFunctor =
 			FunctionWrapper.wrap(printFunction);
 		scope.declarePervasive(
@@ -72,29 +70,29 @@ class DesalInterpreter001 {
 		//true
 		scope.declareBind(
 			new Identifier("true"),
-			new ReferenceType( ReferenceCategory.VALUE,	Wrapper.Bool ),
+			new ReferenceType( ReferenceCategory.VALUE,	Bridge.Bool ),
 			true,
-			Wrapper.wrapBoolean(true) );
+			Bridge.wrapBoolean(true) );
 		
 		//false
 		scope.declareBind(
 			new Identifier("false"),
-			new ReferenceType( ReferenceCategory.VALUE,	Wrapper.Bool ),
+			new ReferenceType( ReferenceCategory.VALUE,	Bridge.Bool ),
 			true,
-			Wrapper.wrapBoolean(false) );
+			Bridge.wrapBoolean(false) );
 
 		return scope;
 	}
 	
-	void printFunctionNative(Scope args) {
+	void printFunctionNative(Bridge bridge, Scope args) {
 		IValue arg = args.evaluateLocalIdentifier( new Identifier("value") );
 		
-		if( arg.activeInterface == Wrapper.String )
-			Console.WriteLine( Wrapper.unwrapString(arg) );
-		else if( arg.activeInterface == Wrapper.Int )
-			Console.WriteLine( Wrapper.unwrapInteger(arg) );
-		else if( arg.activeInterface == Wrapper.Bool )
-			Console.WriteLine( Wrapper.unwrapBoolean(arg) );
+		if( arg.activeInterface == Bridge.String )
+			bridge.output( Bridge.unwrapString(arg).ToString() );
+		else if( arg.activeInterface == Bridge.Int )
+			bridge.output( Bridge.unwrapInteger(arg).ToString() );
+		else if( arg.activeInterface == Bridge.Bool )
+			bridge.output( Bridge.unwrapBoolean(arg).ToString() );
 		else
 			throw new Error_Unimplemented();
 	}
@@ -103,7 +101,7 @@ class DesalInterpreter001 {
 		string name;
 		object children;	
 		printTabs(level);
-		node.getInfo(out name, out children);
+		node.getInfo(out name, out children); //xxx should this use bridge?
 		Console.WriteLine(name);
 		printObject(level+1, children);
 	}

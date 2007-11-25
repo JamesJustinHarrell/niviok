@@ -2,7 +2,7 @@ This file contains stuff from the Desal Semantics spec that wasn't marked up. Ev
 
 
 
-=== function overloading ===
+=== const function binding ===
 
 func foo()
 	...
@@ -13,60 +13,31 @@ func foo(int a) float
 func foo(string b, string c) bool
 	...
 
-Does this create 3 objects, or 1 object with 3 call methods?
-Is there a difference?
-How do you refer to just one?
+What nodes would this produce? Three declaration-first nodes? That would mean binding to a constant identikey.
 
-
-
-mulitple functions can be bound to the same identifier in the same scope
-
-to refer to a specific function, cast the the identifier and the signature are used, together know as the function-identifier
-
-func foo() int
-	return 3
-
-func foo(int a) int
-	return a * 2
-
-func()int b = foo.call{int}
-
-
- 
-
-
-====== EXPRESSIONS AND STATEMENTS =====
-
-an "expression" evaluates to some value
-a "statement" does not evaluate to a value
-an "expression statement" is an expression where the value is ignored
-an "effective statement" is either a statement or an expression statement
-
-===== END =====
-=== source code ===
-
-forms a tree/hierarchy
 
 
 === generic functions / function interface parameters ===
 
 --- example 1 ---
 
-interface foo
-	func call{I}(I o) string
-		return (o < 3).toString()
+interface Foo
+	call<I>(I o) String
 
-foo bar = getFoo()
-bar{int}(2)
-bar(2)
-bar 2
-func{I}(I)string f1 = bar.call
-func(int)string f2 = bar.call{int}
-func{I}(foo,I)string f3 = foo::call
-func(foo, int)string f4 = foo::call{int}
+class FooFactory
+	interface Foo
+		call<I>(I o) String
+			return ((o < 3) to String)
 
-not allowed due to possible ambiguity:
-	bar int 2
+Foo foo = FooFactory()
+foo(Int)(2)
+foo(2) //???
+
+//what if there's something named "I"?
+func<I>String f1 = foo.call
+func<Int>String f2 = foo.call(Int)
+func<I>(foo,I)String f3 = Foo::call
+func(foo, Int)String f4 = Foo::call<Int>
 
 --- example 2 ---
 
@@ -101,7 +72,6 @@ problems
 		"println 3" wouldn't work
 	not as semantic
 
-=== END ===
 
 
 === function static memebers ===
@@ -308,7 +278,7 @@ class MyClass
 		...
 		//if( myClassInst1 < myClassInst2 ) { ... }
 
-=== /end ===
+
 
 
 === method calling ===
@@ -326,155 +296,32 @@ MyClass inst = MyClass(5)
 int val1 = inst.foo(3)
 int val2 = MyClass.foo(inst, 3)
 
-=== /end ===
-
 
 
 === caller function ===
 
-caller functions call a certain method of their first argument with the rest of their arguments
+Caller functions call a certain method of their first argument, sending the rest of the caller function's arguments as arguments to the method. Dynamic caller functions also exist.
 
-interface intery
-	func methy(int paramy)
-		...
+interface Foo
+	func doStuff(Int param1, Int param2)
 
-intery objecty = getIntery()
-func(intery, int) funcy -> @intery::methy
+Foo foo = getFoo()
+func(Foo, Int, Int) callerFunction = Foo::doStuff
+func(dyn, dyn[] params) dynCallerFunction = dyn::doStuff
 
 //following 3 lines equivalent:
-funcy(objecty, 3)
-intery::methy(objecty, 3)
-objecty.methy(3)
+foo.doStuff(7, 9)
+Foo::doStuff(foo, 7, 9)
+callerFunction(foo, 7, 9)
+dyn::doStuff(foo, 7, 9)
+dynCallerFunction(foo, 7, 9)
 
-
-<interface>::<identifier> produces a function
-paramaters: an object with interface <interface> named "o" or "obj" or "object" plus all the parameters of <interface>::<identifer>
-action: calls the object's <identifer> method with any other arguments it receives
-
-
+Caller functions exist to make functional programming mix easier with OOP.
 
 
 
 
 
-source code consists of items
-some items container other items
-
-types of items:
-	declaration
-		int foo
-		class MyClass
-	container
-		for shoe in shoes: ...
-		while boy.horny?: me .fuck boy
-	expressions
-		3
-		getSomeValue()
-		foo = "bar"
-
-
-
-
-
-objects have type
-values have type
-objects hold values
-values are information of a defined type
-types tell how to get information from values
-
-
---- superset inheritance ---
-
-+ inheritance +
-if foo inherits from bar
-	all foo's are bar's
-		foo is just one kind of bar
-	but not all bar's are foo's
-
-barRef -> barInstance
-fooRef -> fooInstance
-barRef -> fooInstance //legal -- foo is a bar
-fooRef -> barInstance //not allowed -- not all bar's are foo's
-
-+ superset +
-if foo is a superset of bar
-	all bar's are foo's
-		bar is just one kind of foo
-	but not all foo's are bar's
-
-barRef -> barInstance
-fooRef -> fooInstance
-barRef -> fooInstance //not allowed -- not all foo's are bar's
-fooRef -> barInstance //legal -- bar is a foo
-
-if rat is superset of int
-
-intRef -> intInst
-ratRef -> ratInst
-intRef -> ratInst //not allowed -- not all rational numbers are integers
-ratRef -> intInst //legal -- all integers are rational numbers
-
-+ example +
-interface integer
-	greater-than comparison
-	less-than comparison
-	equality comparison
-
-interface rational_number
-	supsetof integer //rationalnumber has all the member functions of integer
-
-interface complex_number_approximation
-	supersetof rational_number
-
---- subset inheritance ---
-
-Defines an interface that is a limitation of another interface.
-
-if foo is a subset of bar
-	all bar's are foo's
-		bar's are just a type of foo
-
-interface ImmutableString
-	subsetof MutableString
-		//declare which fields aren't inherited
-
-
---- classes/interfaces/constructors ---
-
-problems:
-	implement multiple interfaces
-	multiple constructors
-		repetition of all methods required?
-	inheritance
-	virtual methods
-	abstract classes
-	static methods
-
-C++
-	classes define types and constructors
-
-Desal
-	classes become type/interface definitions
-	constructors become overloaded functions that return the same type
-
-interface Kitten
-	readonly string name
-	readonly Health health
-	func sleep(int time)
-	func feed()
-
-func makeKitten(string kittensName) Kitten {
-	return new Kitten object {
-		pubread string name: kittensName,
-		pubread Health health: makeHealth(0),
-		pub func(int) sleep: func(int time) {
-			health += 3 },
-		pub func() feed: func() {
-			health += 2 }
-	}
-}
-
-Kitten kitty = makeKitten("Lucky")
 
 
 --- classes as objects ---
@@ -4573,26 +4420,5 @@ _arguments = map(
 	ExpressionFactory.create );
 
 
-
-
-
-
-*** cast methods ***
-
-Uses generic function specialization.
-
-interface Foo
-	func{I=Int}()I cast
-
-singleton bar
-	interface Foo
-		func{I=Int}()I cast
-			return 3
-
-Int baz = (Int bar)
-print baz //prints "3"
-
-???
-Function interfaces have a cast method for an object with a call method that has an interface of itself.
 
 

@@ -1,36 +1,41 @@
-//xxx move other wrapping functions into this class
+/* xxx
+Add constructor to StringClass that takes a list of code points.
+This may make converting to builtin strings easier.
 
-		/* xxx
-		Add constructor to StringClass that takes a list of code points.
-		This may make converting to builtin strings easier.
-		
-		interface of StringClass
-			call()
-			call(String)
-			call(List<Int> codePoints)
-		
-		IList<IValue> codePointVals = ...
-		IList<int> codePoints = new List<int>();
-		foreach( IValue codePointVal in codePointVals ) {
-			codePoints.Add( unwrapInteger(codePointVal) );
-		}
-		return Wrapper.wrapString( stringFromCodePoints(codePoints) );
-		*/
+interface of StringClass
+	call()
+	call(String)
+	call(List<Int> codePoints)
+
+IList<IValue> codePointVals = ...
+IList<int> codePoints = new List<int>();
+foreach( IValue codePointVal in codePointVals ) {
+	codePoints.Add( unwrapInteger(codePointVal) );
+}
+return Bridge.wrapString( stringFromCodePoints(codePoints) );
+*/
+
+/* xxx Should this be merge with Node_Bundle or renamed to Bundle ? */
+
+/* security note:
+This class defines static objects that are shared across Bundles.
+Be careful to not let one Bundle affect other Bundles.
+*/
 
 using System.Xml;
 using System.Collections.Generic;
 
-static class Wrapper {
-	public static IInterface Bool;
-	public static IInterface Int;
-	public static IInterface Rat;
-	public static IInterface String;
-	static IInterfaceImplementation<Client_Boolean> boolImpl;
-	static IInterfaceImplementation<Client_Integer> intImpl;
-	static IInterfaceImplementation<Client_Rational> ratImpl;
-	static IInterfaceImplementation<Client_String> stringImpl;
+class Bridge {
+	static IInterface _boolFace;
+	static IInterface _intFace;
+	static IInterface _ratFace;
+	static IInterface _stringFace;
+	static IInterfaceImplementation<Client_Boolean> _boolImpl;
+	static IInterfaceImplementation<Client_Integer> _intImpl;
+	static IInterfaceImplementation<Client_Rational> _ratImpl;
+	static IInterfaceImplementation<Client_String> _stringImpl;
 	
-	static Wrapper() {
+	static Bridge() {
 		XmlDocument doc = new XmlDocument();
 		
 		doc.LoadXml(@"
@@ -67,13 +72,14 @@ static class Wrapper {
 			</wrapper>
 		");
 	
-		Bool = DesibleParser.extractInterface(
+		//xxx bridge parameter is null
+		_boolFace = DesibleParser.extractInterface( null,
 			(XmlElement)doc.GetElementsByTagName("interface")[0] );
-		Int = DesibleParser.extractInterface(
+		_intFace = DesibleParser.extractInterface( null,
 			(XmlElement)doc.GetElementsByTagName("interface")[1] );
-		Rat = DesibleParser.extractInterface(
+		_ratFace = DesibleParser.extractInterface( null,
 			(XmlElement)doc.GetElementsByTagName("interface")[2] );
-		String = DesibleParser.extractInterface(
+		_stringFace = DesibleParser.extractInterface( null,
 			(XmlElement)doc.GetElementsByTagName("interface")[3] );
 	
 		InterfaceImplementationBuilder<Client_String> stringBuilder =
@@ -146,7 +152,7 @@ static class Wrapper {
 									new Identifier("limit"))) ));
 			});
 		
-		stringImpl = stringBuilder.compile(String);
+		_stringImpl = stringBuilder.compile(String);
 		
 		InterfaceImplementationBuilder<Client_Integer> intBuilder =
 			new InterfaceImplementationBuilder<Client_Integer>();
@@ -166,7 +172,7 @@ static class Wrapper {
 									new Identifier("value"))) ));
 			} );
 			
-		intImpl = intBuilder.compile(Int);
+		_intImpl = intBuilder.compile(Int);
 		
 		InterfaceImplementationBuilder<Client_Boolean> boolBuilder =
 			new InterfaceImplementationBuilder<Client_Boolean>();
@@ -186,13 +192,29 @@ static class Wrapper {
 								new Identifier("value"))) ));
 			} );
 		
-		boolImpl = boolBuilder.compile(Bool);
+		_boolImpl = boolBuilder.compile(Bool);
+	}
+
+	public static IInterface Bool {
+		get { return _boolFace; }
+	}
+	
+	public static IInterface Int {
+		get { return _intFace; }
+	}
+	
+	public static IInterface Rat {
+		get { return _ratFace; }
+	}
+	
+	public static IInterface String {
+		get { return _stringFace; }
 	}
 
 	public static IValue wrapBoolean(bool val) {
 		return new Value<Client_Boolean>(
 			new Object<Client_Boolean>( new Client_Boolean(val) ),
-			boolImpl );
+			_boolImpl );
 	}
 	
 	public static bool unwrapBoolean(IValue val) {
@@ -214,7 +236,7 @@ static class Wrapper {
 	public static IValue wrapInteger(long val) {
 		return new Value<Client_Integer>(
 			new Object<Client_Integer>( new Client_Integer(val) ),
-			intImpl );
+			_intImpl );
 	}
 	
 	public static long unwrapInteger(IValue val) {
@@ -230,7 +252,7 @@ static class Wrapper {
 	public static IValue wrapCodePoints(IList<uint> codePoints) {
 		return new Value<Client_String>(
 			new Object<Client_String>( new Client_String(codePoints) ),
-			stringImpl );
+			_stringImpl );
 	}
 
 	public static IList<uint> unwrapCodePoints(IValue val) {
@@ -257,5 +279,17 @@ static class Wrapper {
 	
 	public static bool isBuiltinString(IValue val) {
 		return (val is Value<Client_String>);
+	}
+	
+	public void output(string message) {
+		System.Console.Out.WriteLine(message);
+	}
+	
+	public void warning(string message) {
+		System.Console.Error.WriteLine("WARNING: " + message);
+	}
+	
+	public void error(string message) {
+		System.Console.Error.WriteLine("ERROR: " + message);
 	}
 }

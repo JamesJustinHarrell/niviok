@@ -10,8 +10,8 @@ class Node_ConditionalBlock : INode_Statement {
 	public void execute(Scope scope) {
 		IValue testVal = _testNode.evaluate(scope);
 
-		if( testVal.activeInterface == Wrapper.Bool ) {
-			bool test = Wrapper.unwrapBoolean(testVal);
+		if( testVal.activeInterface == Bridge.Bool ) {
+			bool test = Bridge.unwrapBoolean(testVal);
 			if( test )
 				_actionNode.execute(scope);
 		}

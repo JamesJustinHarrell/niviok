@@ -14,7 +14,7 @@ class ClientException : ApplicationException {
 	public ClientException(string message)
 	:base(message)
 	{
-		this.e = Wrapper.wrapString(message);
+		this.e = Bridge.wrapString(message);
 		stackTrace = new Stack<string>();
 	}
 	
@@ -31,8 +31,8 @@ class ClientException : ApplicationException {
 		get {
 			string message = "";
 			message += "\nUncaught exception:\n";
-			if( e.activeInterface == Wrapper.String ) {
-				message += Wrapper.unwrapString(e) + "\n";
+			if( e.activeInterface == Bridge.String ) {
+				message += Bridge.unwrapString(e) + "\n";
 			}
 			message += "\nStack trace:\n";
 			foreach( string s in stackTrace ) {

@@ -16,15 +16,15 @@ class Node_ForRange : INode_Statement {
 	
 	public void execute(Scope scope) {		
 		IValue start = _start.evaluate(scope);
-		long current = Wrapper.unwrapInteger(start);
+		long current = Bridge.unwrapInteger(start);
 		IValue limit = _limit.evaluate(scope);
-		while( current < Wrapper.unwrapInteger(limit) ) {
+		while( current < Bridge.unwrapInteger(limit) ) {
 			Scope innerScope = new Scope(scope);
 			innerScope.declareBind(
 				_ident.identifier,
 				new ReferenceType( ReferenceCategory.VALUE, null),
 				true,
-				Wrapper.wrapInteger(current) );
+				Bridge.wrapInteger(current) );
 			_block.execute(innerScope);
 			current++;
 		}
