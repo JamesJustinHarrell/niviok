@@ -2,9 +2,9 @@
 xmlns:xi="http://www.w3.org/2003/XInclude">
 	
 	<title>Desal Semantics 1.0</title>
-	<subtitle>Edition 1 Draft 20071018</subtitle>
+	<subtitle>Edition 1 Draft 20071124</subtitle>
 	
-	<info>	
+	<info>
 		<copyright>
 			<year>2007</year>
 			<holder>James Justin Harrell</holder>
@@ -185,23 +185,67 @@ xmlns:xi="http://www.w3.org/2003/XInclude">
 			<para>When an identifier is evaluated, every identikey in the scope the identifier node resides in is checked to see if the identikey is associated with an equivalent identifier. If it is, the value of evaluating the identifier is obtained from the identikey. The identifier evaluation process moves up through the scope tree (not to be confused with the scope formula tree) looking for an identikey associated with an equivalent identifier.</para>
 			
 			<screen>
-identikey types:
-	namespace or alias
-	bound to any one value
-	bound to any one value with this interface as active interface
-	bound to any function
-		active interface must be function interface
-	bound to any functions
-		active interfaces must be function interfaces
-		may specify interface that functions have to return
+dyn foo = 123
+foo = "bar"
+foo = getSomething()
 
-examples:
-	dyn foo
-	Int foo
-	func-one foo
-	func foo
-	func Int foo
+auto foo = getSomething()
+
+Int foo
+foo = 2
+foo = 89
+
+func foo
+
+func Int foo //bound functions must return an Int
 			</screen>
+			
+			
+			<glosslist>
+				<glossentry>
+					<glossterm>namespace</glossterm>
+					<glossdef>cannot be evaluated</glossdef>
+				</glossentry>
+				
+				<glossentry>
+					<glossterm>dynamic</glossterm>
+					<glossdef>any value</glossdef>
+				</glossentry>
+				
+				<glossentry>
+					<glossterm>automatic</glossterm>
+					<glossdef>interface taken from first value bound to it, then behaves like strict</glossdef>
+				</glossentry>
+				
+				<glossentry>
+					<glossterm>strict</glossterm>
+					<glossdef>all values bound to it must have the specified interface as a downcast-able interface</glossdef>
+				</glossentry>
+				
+				<glossentry>
+					<glossterm>function</glossterm>
+					<glossdef>any value with a function interface as the active interface, or any value with a function interface as the active interface that specifies the specified return interface</glossdef>
+				</glossentry>
+			</glosslist>
+			
+			<para>These identikey types come in constant and variable forms:</para>
+			<simplelist>
+				<member>automatic</member>
+				<member>strict</member>
+				<member>function</member>
+			</simplelist>
+			
+			<para>Dynamic identikeys are always variable.</para>
+			
+			<para>A function identikey can be bound to multiple functions (objects that implement a function interface; xxx link) at the same time. A function identikey can never be bound to multiple functions with the same interface.</para>
+			
+			<para>If the value does not implement the interface of the identifier, a cast error results (doesn't apply to dyn).</para>
+			
+			<para>If a value has multiple callees, the active interface is not a function interface, and thus it cannot be bound to a function identikey. The value must be cast to each function interface, and each resulting value bound individually to the function identikey.</para>
+
+			<para>Overloading an identifier means binding multiple object references to it.</para>
+
+			<para>Const identikeys can never be unbound from what they're bound to. Function, strict, and automatic identikeys can be const.</para>
 		</section>
 		
 		<section xml:id="ext-namespace">

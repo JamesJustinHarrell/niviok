@@ -1,0 +1,17 @@
+//see http://www.tbray.org/ongoing/When/200x/2007/09/20/Wide-Finder
+
+//Regular Expression island handler used for \...\
+
+import DictDefault
+import FileIterator
+
+auto Regex regex = \GET /ongoing/When/\\d{3}x/(\\d{4}/\\d{2}/\\d{2}/[^ .]+)\
+
+func main(List(String) args)
+	//a DictDefault has default values ; here it's 0
+	auto dict = DictDefaultFactory(String,UInt)(0)
+	for match in regex.match( iterateFile(args[1]) )
+		dict[ match[1] ] += 1
+	dict.sortValues().forEachReverse(
+		|count, key| { println key ": " count },
+		10 )

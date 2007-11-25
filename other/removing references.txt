@@ -1,0 +1,64 @@
+history of problem:
+
+* identikeys and identifiers were both called "identfiers"
+	identifier (text) + scope -> identifier (identikey)
+	identifier (identikey) -> value(s)
+
+* then identikeys were called "references"
+	identifier (text) + scope -> reference (identikey)
+	reference (identikey) -> value(s)
+
+* then identikeys started being called "identifiers" again, and "references" started acting like links to values
+	identifier (text) + scope -> identifer (identikey)
+	identifier (identikey) -> reference(s) (identikey)
+	reference -> value(s)
+	Expressions started evaluating to references.
+	At this stage, it was never clear how an identikey was supposed to be associated with multiple values. (multiple references each associated with a single value, or a single reference associated with multiple values?)
+
+At some point, identikeys were called "identifier-references". Eventually, identikeys started being called "scoped-identifiers", a term which has been used on-and-off several times. Seaking out a shorted name for "scoped-identifier" lead to "identikey". After that, I looked into the history of this mess and discovered what had happend.
+
+"reference" was supposed to be the new term for identikeys, to differentiate them from identifiers. But instead, references was never properly defined. They were sometimes thought of like identikeys, and sometimes thought of like useless middlemen that just linked to values.
+
+This is the current setup:
+	identifier + scope -> identikey
+	identikey -> value(s)
+	An expression evaluates to a single value.
+
+
+----- 1
+expressions evaluate to values
+identikeys are associated with zero or more values
+a function identikey is associated with multiple values
+
+func foo() Int ...
+func foo(Int, Int) Rat ...
+func foo(MyFace) ...
+
+dyn bar = foo
+
+func doStuff(obj a) //or
+func doStuff(dyn a)
+doStuff(foo)
+
+//getFuncs() returns a value with multiple callees
+(bind-each-callee
+	(identifier "maz")
+	(call
+		(identifier "getFuncs")))
+
+
+----- 2
+expressions evaluate to references
+identikeys are associated with a single reference
+a function identikey is associated with a single function reference
+
+func foo() Int ...
+func foo(Int, Int) Rat ...
+func foo(MyFace) ...
+
+dyn bar = (combine foo)
+
+doStuff( (combine foo) )
+
+//getFuncs() returns a single reference that is bound to multiple functions
+func maz = getFuncs()

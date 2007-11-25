@@ -1,0 +1,114 @@
+Further helping to prevent memory leaks.
+
+Let's say you have an object (value in Desal) and you no longer need it. You want to make sure it gets freed, i.e. that there are no more references to it. How do you do that? Most GC languages don't have any direct means of determining whether an object has references to it.
+
+Problem: Some of these solutions would result in a lot of repetition that would be hard to abstract away.
+Problem: Some of these solutions require specific types of garbage collection.
+Problem: Some of these solutions require the implementation to implement garbage collection itself instead of allowing the environment it's running in to handle it.
+Problem: Most of these require obtaining a weak reference before removing the strong reference.
+
+Decision: Add event stuff to spec now, and implement after learning about threading (or some other parallel programming technique).
+
+
+----- weak references and time
+
+WeakReference<Object> foo = WeakReferenceClass<Object>( container.first() )
+container.removeFirst()
+//sometime later, but how much later?
+if foo.isAvailable
+	//error handling
+
+Foo foo = {{expression}}
+//use foo
+WeakReference<Object> weakFoo = WeakReferenceClass<Object>( foo )
+foo = null
+//sometime later, but how much later?
+if weakFoo.isAvailable
+	//error handling
+
+
+----- reference counting
+
+Foo f = ...
+if refCount(f) > 1
+	//error handling
+else
+	f = null
+
+
+----- bidirectional references
+i.e. if value A references value B, value B will also internally reference value A
+
+WeakReference<Object> foo = WeakReferenceClass<Object>( container.first() )
+container.removeFirst()
+if foo.isAvailable
+	//error handling
+
+
+----- manual delete and exceptions
+
+delete container.getFirst()
+container.getFirst() //error thrown
+
+
+----- events
+
+interface FreeChecker {
+	Collection< func(RefFoundEvent) > onFindRef //only called once per FreeCheckerClass instance
+}
+
+FreeChecker o = FreeCheckerClass( container.first() )
+container.removeFirst()
+o.onFindRef += func(e) { /* error handling */ }
+
+Foo foo = getFoo()
+FreeChecker o = FreeCheckerClass( foo )
+foo = null
+o.onFindRef += func(e) { /* error handling */ }
+
+func checkedDelete( Object o, func()* delete ) {
+	FreeChecker checker = FreeCheckerClass(o)
+	delete()
+	checker.onFindRef += handleFindRef
+}
+
+func checkedDelete<T>(inout T o) {
+	checkedDelete( o, || o = null )
+}
+
+checkedDelete( container.first(), || container.removeFirst() )
+
+Foo foo = getFoo()
+checkedDelete(foo)
+
+
+func()+
+	means "any function that takes no arguments and returns something"
+	possible name: FuncNullaryValue
+func()*
+	means "any function that takes no arguments. it may return something, but it doesn't have to"
+	possible name: FuncNullary
+
+|| <expression> is the same as func(){ <expression> }
+similar to they syntax for Ruby's blocks
+|Int a| <expression> would be equal to func(Int a){ <expression> }
+
+
+--- C# implementation:
+class Client_FreeChecker instance holds a weak reference to an IValue
+class Client_FreeCheckerClass instance holds a reference to a Client_FreeChecker
+create global collection of Client_FreeChecker
+when the FreeCheckerClass is called/instantiated
+	create Client_FreeChecker
+	add Client_FreeChecker to global collection
+in thread that runs every second
+	call GC.Collect()
+	for every Client_FreeChecker in the global collection
+	if the WeakReference is active
+		call all the event handlers
+	else
+		remove from collection (event handlers will never be called)
+When a Client_FreeCheckerClass is destroyed, remove the associated Client_FreeChecker from the global collection
+
+This would require a lot of stuff to be thread-safe, and I currently know almost nothing about threading.
+

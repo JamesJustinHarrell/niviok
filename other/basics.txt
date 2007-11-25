@@ -1,24 +1,3 @@
--------- identifiers
-
-An identifier in a certain scope (scoped-identifier) can be associated with one of:
-	* a namespace
-	* an alias
-	* any value
-		- with a specified active interface
-		- any value (dyn)
-		- values that implement the Meta interface
-		- multiple values that all have:
-			* a function interface as the active interface
-			* the same return type
-
-Note: If a value has multiple callees, the active interface is not a function interface, and thus it cannot be bound to a function identifier. The object reference must be cast to each function interface, and each resulting object reference bound individually to the function identifier.
-
-Overloading an identifier means binding multiple object references to it.
-
-Identifier nodes can be evaluated. xxx spec out evaluating identifiers
-
-Const identifiers can never be unbound from what they're bound to. Only object identifiers can be declared const. Function identifiers are always const, and namespace identifiers can never be const. Const object identifiers must be bound to something when defined.
-
 
 -------- interface
 

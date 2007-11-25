@@ -1,109 +1,100 @@
-define how files see each other
-	packages
-		files are grouped into packages
-		files in the same package can see stuff in each other
-		import scoped identifiers from libraries
-		packages can be libraries
-		example: C#
-	files
-		import individual files
-		example: C++
 
-to spec out:
-	terms
-		infoset
-		structure
-		layout
-		tree
-		semantics
-		data model
-		abstract infoset/structure/tree/etc
-		hierarchy
-	leaf/terminal nodes
-	tree nodes
+----- STUFF TO SPEC OUT -----
+
+terms
+	infoset
+	structure
 	layout
-	generics
-	const/immutable objects
-	scope
-	closures
-	multiple dispatch
-		made possible with dynamic identifiers (Dyns)
-		Do I need to say anything? I should probably mention it, although multiple dispatch should exist without specifically specifying it.
-	interfaces that require (implementations also (implement (other specified interfaces)))
-		interface Foo
-			require Bar
-		An implementation of Foo must also implement Bar.
-		That way, a Foo can be cast to a Bar without producing a warning about an unsafe cast.
-	requirements on arguments
-		func doStuff(Int a where 3 < a and a < 10, Int b where a < b)
-	requirements on identifiers
-		Foo foo where foo impls Bar = getFoo()
-			//or: Foo|Bar foo = getFoo()
-		Bar bar = foo //safe cast
-	adding interfaces
-		//adding 2 interfaces must always produce same interface
-		Foo+Bar obj = getFooBar()
-		obj.propOfFoo()
-		obj.propOfBar()
-		Foo foo = obj
-		Bar bar = obj
-	function parameters are immutable
-	clone/copy method
-		func clone() Self
-	conversion methods (or "copy as" methods)
-		Int a = 3
-		Rat b = a.convert<Rat>()
-		Rab c = a copyas Rat
-	performance interfaces
-		that tells the growth rate of various actions
-		example: an array would implement the List interface and specify with an object that implements the performance interface that the array supports O(1) (constant time) key lookups (ie. random access)
-	add callees to classes
-	blocks in functions
-		how does return work?
-	"in" parameters
-		they're immutable
-	nullable in/inout parameters
-		it must be explicit, and not by default
-		func foo(null Int value) ...
-			...
-	consider: objects can't be immutable, but object references can
-	implementing const/immutable versions of interfaces that aren't normally const/immutable
-		Q: should the mutable version of the interface inherit from the immutable one?
-	immutable object references can only be cast to immutable object references
-	Q: how to cast a mutable type to an immutable type?
-	immutability and generics need much more specing
-	encouragement:
-		mode where any dynamic typing produces a warning, like for/when
-		Dyn identifiers
-		generics use methods not defined by Desal (eg add, add!)
-		object identifiers are cast to interfaces that are not inherited by the previous interface
-	the "!" part of identifiers is syntax
-		it should not be a part of Desal semantics
-		mutator methods should only be a way for Dextr to specify that the method produces mutations
-		in Desal, there should be some other way
-		it shouldn't be part of the identifiers!
-	adding interfaces
-	make object identifiers and function identifiers more similar
-		make sure functions can be boud to function identifiers in child scopes
-	identifier declarations
-		take place before scope is executed
-		binding may also occur here
-		differentiate between bindings that happen later
-		warn when identifier is referenced before being bound to a value
-			//okay - bound at decl time
-			Int a = b * 2
-			def Int b = 5
-			//produce warning - not bound yet
-			Int a = b * 2
-			Int b = 5
-	const function identifiers
-		can't have further functions bound
-			rational: call on that identifier may change when a function is added that requires fewer casts
-		can't unbind functions
-			rational: call on identifiers that were valid may become invalid
-	unbinding functions
-		(from non-const identifiers only)
-	all interfaces are implementable, even enums, function interfaces and Object
+	tree
+	semantics
+	data model
+	abstract infoset/structure/tree/etc
+	hierarchy
+leaf/terminal nodes
+tree nodes
+layout
+generics
+const/immutable objects
+scope
+closures
+multiple dispatch
+	made possible with dynamic identifiers (Dyns)
+	Do I need to say anything? I should probably mention it, although multiple dispatch should exist without specifically specifying it.
+interfaces that require (implementations also (implement (other specified interfaces)))
+	interface Foo
+		require Bar
+	An implementation of Foo must also implement Bar.
+	That way, a Foo can be cast to a Bar without producing a warning about an unsafe cast.
+requirements on arguments
+	func doStuff(Int a where 3 < a and a < 10, Int b where a < b)
+requirements on identifiers
+	Foo foo where foo impls Bar = getFoo()
+		//or: Foo|Bar foo = getFoo()
+	Bar bar = foo //safe cast
+adding interfaces
+	//adding 2 interfaces must always produce same interface
+	Foo+Bar obj = getFooBar()
+	obj.propOfFoo()
+	obj.propOfBar()
+	Foo foo = obj
+	Bar bar = obj
+function parameters are immutable
+clone/copy method
+	func clone() Self
+conversion methods (or "copy as" methods)
+	Int a = 3
+	Rat b = a.convert<Rat>()
+	Rab c = a copyas Rat
+performance interfaces
+	that tells the growth rate of various actions
+	example: an array would implement the List interface and specify with an object that implements the performance interface that the array supports O(1) (constant time) key lookups (ie. random access)
+add callees to classes
+blocks in functions
+	how does return work?
+"in" parameters
+	they're immutable
+nullable in/inout parameters
+	it must be explicit, and not by default
+	func foo(null Int value) ...
+		...
+consider: objects can't be immutable, but object references can
+implementing const/immutable versions of interfaces that aren't normally const/immutable
+	Q: should the mutable version of the interface inherit from the immutable one?
+immutable object references can only be cast to immutable object references
+Q: how to cast a mutable type to an immutable type?
+immutability and generics need much more specing
+encouragement:
+	mode where any dynamic typing produces a warning, like for/when
+	Dyn identifiers
+	generics use methods not defined by Desal (eg add, add!)
+	object identifiers are cast to interfaces that are not inherited by the previous interface
+the "!" part of identifiers is syntax
+	it should not be a part of Desal semantics
+	mutator methods should only be a way for Dextr to specify that the method produces mutations
+	in Desal, there should be some other way
+	it shouldn't be part of the identifiers!
+adding interfaces
+make object identifiers and function identifiers more similar
+	make sure functions can be boud to function identifiers in child scopes
+identifier declarations
+	take place before scope is executed
+	binding may also occur here
+	differentiate between bindings that happen later
+	warn when identifier is referenced before being bound to a value
+		//okay - bound at decl time
+		Int a = b * 2
+		def Int b = 5
+		//produce warning - not bound yet
+		Int a = b * 2
+		Int b = 5
+const function identifiers
+	can't have further functions bound
+		rational: call on that identifier may change when a function is added that requires fewer casts
+	can't unbind functions
+		rational: call on identifiers that were valid may become invalid
+unbinding functions
+	(from non-const identifiers only)
+all interfaces are implementable, even enums, function interfaces and Object
 
 
 handle these comments pulled from the Impl:
@@ -144,6 +135,8 @@ handle these comments pulled from the Impl:
 	//but multiple methods can be bound to the same identifier!
 	//this means we need something like multi_map from C++
 	//or to bind identifiers to a list of functions
+
+----- /END -----
 
 
 possibly spec out common conventions
@@ -257,19 +250,8 @@ dual expression/statement nodes "do something" when executed
 only-expression nodes cannot be executed
 
 
-stop overloading the term "identifier"
-current, it refers to:
-	string
-		can be evaluated
-		not typed (value, function, meta, dyn, namespace)
-	reference
-		cannot be evaluated
-		associated with a string-identifier and a value/functions/namespace
-		typed
-one possibility:
-	use "identifier" for the string identifier
-	use "value" for what is currently called an "object reference"
-	use "reference" for the reference identifier
+Q: Why are namespaces not values? Everything else is. Interfaces, classes, functions, and generics of them are all values, but namespaces aren't?
+Write up rationale. Create for/against list.
 
 
 spec out representing numbers in bases besides base 10
@@ -427,7 +409,7 @@ this means every implementation of IObject should not be handling being called l
 
 in the implementation, many times nodes that should have scopes don't
 
-ultimate optimer test:
+ultimate optimizer test:
 	replace slow sorting algorithm with fast sorting algorithm
 	bubble sort -> quick/heap/merge sort
 
@@ -437,3 +419,5 @@ tree -
 	2) a computer data structure
 hierarchy -
 	objects ranked so that every one but the topmost is subordinate to a specified one above it
+
+hierarchies are abstract while trees are concrete

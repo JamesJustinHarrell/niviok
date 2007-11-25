@@ -1,3 +1,0 @@
-finish writing "implementing objects" and "implementing strings"
-move relevant information to Desal semantics spec
-work on Desal interpreter

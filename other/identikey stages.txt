@@ -1,0 +1,19 @@
+non-pervasive identikeys have a "before declaration" stage and an "after declaration" stage
+
+when executing scope:
+
+declare all identikeys with specified types
+define all pervasive identikeys
+execute statements step by step
+	when executing a ... do ...
+	pervasive declaration
+		ignore it
+	declaration+bind
+		set identikey stage to after
+		bind the value to the identikey
+	declaration
+		set identiey stage to after
+	bind
+		bind the value
+	unbind
+		unbind the value

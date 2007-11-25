@@ -92,16 +92,9 @@
 		<section xml:id="node.identikey-category">
 			<title>identikey-category</title>
 			
-			<para>Specifies one of: namespace, dyn, face, function, functions</para>
+			<para>specifies one of: namespace, dynamic, automatic, strict, function</para>
 			
-			<para>
-				dyn: any value;
-				face: any value with the specified interface as the active interface;
-				function: any value with a function interface as the active interface;
-				functions: any values with a function interface as the active interface
-			</para>
-			
-			<para>The functions type may specify an interface that must be the return interface of the functions bound to it.</para>
+			<para>See the <link linkend="identikeys">section on identikeys</link>.</para>
 		</section>
 		
 		<section xml:id="node.identikey-type">
@@ -110,9 +103,14 @@
 			<simplelist role="layout">
 				<member>identikey-category</member>
 				<member>? expression interface</member>
+				<member>? boolean constant</member>
 			</simplelist>
+
+			<para role="process">[constant] must not be specified if identikey-category is namespace. [constant] must be false (or not specified) if category is dynamic. The interface must be given if the category is strict. The interface must not be given if the catgeory is namespace, dynamic, or automatic.</para>
+
+			<para>If the category is strict, the active interface of any value bound to the identikey must be that interface. If the category is function, and the interface is given, functions bound to the identikey must specify that interface as the return type.</para>
 			
-			<para>The interface must be given if the category is face, and may be given if the category is functions. If the category is face, the active interface of any object bound to the identikey must be that interface. If the category is functions, the interface of return values of the functions bound to it must be that interface.</para>
+			<para>The default value of [constant] is false. If [constant] is true, the identifier thereafter always refers to the same value. The identifier cannot be bound to a different value, or unbound. The active interface also cannot be changed.</para>
 			
 			<programlisting>
 Int a = 3
@@ -149,12 +147,12 @@ func Int a = func()Int { return 3 }
 			
 			<simplelist role="layout">
 				<member>* alias</member>
-				<member>+ declaration-pervasive</member>
+				<member>+ declaration-first</member>
 			</simplelist>
 			
 			<para>This node has scope, but only private identifiers are bound to it. Public and exported identifiers are bound to the scope of the bundle node.</para>
 			
-			<para>Planes aren't statements because the declaration-pervasive nodes make rely on declaration-pervasive nodes in other planes, so all the declaration-pervasive nodes in a single plane can't just be executed all together.</para>
+			<para>Planes aren't statements because the declaration-first nodes make rely on declaration-first nodes in other planes, so all the declaration-first nodes in a single plane can't just be executed all together.</para>
 		</section>
 	</section>
 
@@ -190,43 +188,62 @@ func Int a = func()Int { return 3 }
 			<title>declaration</title>
 			
 			<simplelist role="layout">
-				<member>identifier</member>
+				<member>identifier name</member>
 				<member>identikey-type</member>
 			</simplelist>
 			
-			<para>Declares an identifier in the current scope.</para>
+			<para role="process">The identikey-type must not be constant.</para>
 			
-			<para>when [identikey-type] is function:</para>
-
-			<para>Declares a variable function identifier in the current scope, which can later be bound and unbound from various functions. A function identifier can be bound to multiple functions (objects that implement the function interface) at the same time. Every function it is bound to must have the return type specified by this node.</para>
-			
-			<para>After this node executes, identifier does not yet point to a function object; i.e. it "points at" null. A function identifier can never be bound to multiple functions with the same interface (meaning each function must have different parameters).</para>
+			<para>Creates an identikey in the parent scope with the specified type. After this node executes, the produced identikey does not yet point to any values.</para>
 
 			<programlisting>
-decl func int foo //function-identifier-declaration
-foo = func()int { return 3 }
-foo = func(int a)int { return a * 2 }
+decl func Int foo
+foo = func()Int { return 3 }
+foo = func(Int a)Int { return a * 2 }
 print foo() //prints 3
 print foo(2) //prints 4
-foo = func()int { return 5 } //error - already pointing at function with this interface
+
+//xxx does this produce error or replace?
+foo = func()Int { return 5 }
 			</programlisting>
+
+			<programlisting>
+decl func()Int foo
+foo = func()Int { return 3 }
+print foo() //prints 3
+foo = func()Int { return 5 }
+print foo() //prints 5
+foo = func(Int a)Int { return a * 2 } //error - interface mismatch
+			</programlisting>
+		</section>
+		
+		<section xml:id="node.declaration-first">
+			<title>declaration-first</title>
 			
-			<para>when [identikey-type] is value:</para>
-				
-			<para>Declares a variable object identifier in the current scope. It does not yet point at on object; i.e. it "points at" null. The identifier can only refer to values that implement the interface specified by the [identikey-type].</para>
+			<simplelist role="layout">
+				<member>identifier name</member>
+				<member>identikey-type</member>
+				<member>expression value</member>
+			</simplelist>
+			
+			<para role="process">The identikey-type must be constant, and must have a category of automatic, strict, or function.</para>
+			
+			<para>Creates an identikey in the parent scope with the specified type, then binds the specified value to it.</para>
+			
+			<para>When a block contains declaration-first nodes, the declaration-first nodes are executed before the other statements in the block are executed. The value expressions of declaration-first nodes may depend on the values of other declaration-first nodes in the same block. For example, two interfaces could reference each other.</para>
 			
 			<programlisting>
-func()int foo //object-identifier-declaration
-foo = func()int { return 3 }
-print foo() //prints 3
-foo = func()int { return 5 }
-print foo() //prints 5
-foo = func(int a)int { return a * 2 } //error - interface mismatch
+decl-first auto Foo = interface {
+	get Bar bar
+}
+
+decl-first auto Bar = interface {
+	get Foo foo
+}
+
+Foo foo = ...
+foo.bar.foo.bar...
 			</programlisting>
-			
-			<para>when [identikey-type] is dyn:</para>
-				
-			<para>Declares a variable object identifier in the current scope. It does not yet point at on object; i.e. it "points at" null. The identifier can refer to any value.</para>
 		</section>
 		
 		<section xml:id="node.do-while">
@@ -673,7 +690,7 @@ import all from "XmlLib"
 				<member>expression value</member>
 			</simplelist>
 			
-			<para>Binds the value to the identifier. If the identifier's type is not function, the identifier will be unbound first if it is already bound to something. The identifier's type must be value, dyn, meta, or function. If the type is value, meta, or function, the identiifer must be variable. If the value does not implement the interface of the identifier, a cast error results (doesn't apply to dyn).</para>
+			<para>Binds the value to the identikey. If the identikey's type is not function, the identikey will be unbound first if it is already bound to something. The identikey's type must be dynamic, automatic, strict, or function. If the identikey's type is automatic, strict, or function, identiifer must be variable.</para>
 		</section>
 		
 		<section xml:id="node.bind-meta">
@@ -877,7 +894,7 @@ print (o as String).length
 				<simplelist role="family-members">
 					<member>declaration</member>
 					<member>declaration-bind</member>
-					<member>declaration-pervasive</member>
+					<member>declaration-first</member>
 					<member>declaration-const-empty</member>
 				</simplelist>
 			</section>
@@ -949,26 +966,13 @@ print (o as String).length
 			
 			<simplelist role="layout">
 				<member>identifier name</member>
-				<member>identikey-type type</member>
-				<member>? boolean constant</member>
-				<member>expression value</member>
-			</simplelist>
-			
-			<para>identikey-type cannot be namespace or alias. If the identikey-type comes in const and var versions, [const] determines whether the identifier-reference created is const. If identikey-type is value or function, and interface is not given, the interface is determined from [value]. If identikey-type is dyn, [const] must not be present. (an error results if it is)</para>
-			
-			<para>If [const] is true, the identifier thereafter always refers to the same value. The identifier cannot be bound to a different value. The active interface also cannot be changed.</para>
-		</section>
-		
-		<section xml:id="node.declaration-pervasive">
-			<title>declaration-pervasive</title>
-			
-			<simplelist role="layout">
-				<member>identifier</member>
 				<member>identikey-type</member>
 				<member>expression value</member>
 			</simplelist>
 			
-			<para>reference-type cannot be dyn. If the reference-type comes in const and var versions, the identifier-reference created is const. If reference-type is value or function, and interface is not given, the interface is determined from [value].</para>
+			<para role="process">The identikey-category of the identikey-type node must be dynamic, automatic, strict, or function.</para>
+			
+			<para>Creates an identikey in the parent scope with the specified type, then binds the specified value to it.</para>
 		</section>
 
 		<section xml:id="node.function">
@@ -1464,7 +1468,9 @@ if( a === b )
 				<member>expression</member>
 			</simplelist>
 			
-			<para>Unbinds the values bound to the given reference. If the reference is a function reference, all bound functions are unbound. XXX why not just bind null?</para>
+			<para>Unbinds the values bound to the given reference. If the identikey is a function identikey, all bound functions are unbound.</para>
+			
+			<para>XXX Is this needed? Why not just bind null?</para>
 		</section>
 		
 		<section xml:id="node.unbind-function">

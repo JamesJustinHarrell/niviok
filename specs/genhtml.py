@@ -5,6 +5,7 @@ import re
 from exceptions import Exception
 import libxml2 #see /var/lib/python-support/python2.5/libxml2.py for documentation
 import xml.dom.minidom as dom
+from random import random
 
 #constants
 specsDir = "/media/files/Desal/specs"
@@ -46,6 +47,9 @@ knownRoles = ( 'exec', 'eval', 'family-members', 'layout', 'process' )
 xhtmlNS = "http://www.w3.org/1999/xhtml"
 domImpl = dom.getDOMImplementation()
 relaxngSchema = libxml2.relaxNGNewParserCtxt("%s/docbook.rng" % docbookDir).relaxNGParse()
+
+def warning(message) :
+	print "WARNING: %s" % message
 
 #adds a tagName element to parentOutElement and returns the new element
 #if inElement given, its contents copied to that new element
@@ -184,19 +188,24 @@ def setupSection(tocList, sectionElement, prefix, index) :
 			.getElementsByTagName("title")[0]\
 			.firstChild.data
 	except :
-		"WARNING: section doesn't have title"
+		print "WARNING: section doesn't have title"
 		return
 	
 	htmlDocument = tocList.ownerDocument
 	#title is a DocBook element
 	title = sectionElement.getElementsByTagName("title")[0]
 	if title == None or title.parentNode != sectionElement :
-		print "WARNING: chapter/section with " + \
-		"id '%s' doesn't have a title" % \
-		chapterElement.getAttribute("xml:id")
+		warning(
+			"chapter/section with id '%s' doesn't have a title" % \
+			chapterElement.getAttribute("xml:id") )
 	listItem = htmlDocument.createElement("li")
 	link = htmlDocument.createElement("a")
-	link.setAttribute("href", "#" + sectionElement.getAttribute("xml:id"))
+	sectionID = sectionElement.getAttribute("xml:id")
+	if sectionID == '' :
+		warning( "section with title '%s' doesn't have ID" % title.firstChild.data )
+		sectionID = str(random())
+		sectionElement.setAttribute("xml:id", sectionID)
+	link.setAttribute("href", "#" + sectionID)
 	copyContent(title, link)
 	listItem.appendChild(link)
 	tocList.appendChild(listItem)
