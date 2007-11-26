@@ -1,0 +1,38 @@
+For two declaration-first nodes, the expression of one may reference or evaluate the identikey of the other.
+If there is an evaluation and a reference, the expression counts as 1 evaluation.
+number of Ref + number of Eval is less than or equal to 2 (Ref + Eval <= 2)
+
+//possible - 0xReference, 0xEvaluate
+decl-first Int a = 123
+decl-first Int b = 789
+
+//possible - 0xReference, 1xEvaluate
+decl-first Int a = b + 2
+decl-first Int b = 789
+
+//not possible - 0xReference, 2xEvaluate
+decl-first Int a = b + 2
+decl-first Int b = a + 6
+
+//possible - 1xReference, 0xEvaluate
+decl-first Bool b = true
+decl-first Bool[] boolArray = array{true, false, b}
+
+//not possible - 1xReference, 1xEvaluate
+decl-first Bool b = boolArray[0]
+decl-first Bool[] boolArray = array{b}
+
+//possible - 2xReference, 0xEvaluate
+decl-first dyn[] alpha = array{123, "text", beta}
+decl-first dyn[] beta = array{true, false, alpha}
+
+
+For two declaration-first nodes:
+* if neither expression needs to evaluate the identikey of the other, the expressions can both be evaluated and the result values bound.
+* if one expression needs to evaluate the identikey of the other:
+	* if the other expression does not reference/evaluate the first expression, the expressions can both be evaluated and the result values bound
+	* if the other expression does reference or evaluate the first expression, the expressions can not be evaluated
+
+not possible when:
+* both evaluating each other
+* one evaluating and other referencing

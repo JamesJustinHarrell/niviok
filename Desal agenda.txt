@@ -15,6 +15,12 @@ terms
 
 generics
 something like C++'s template specialization
+how can generics be instantiatiated with "dyn" as an interface?
+	interface Array<I>
+	Int[] is the same as Array<Int> is the same as Array.instantiate(Int)
+	dyn[] would be what? Array<null> i.e. Array.instantiate(null) ?
+	perhaps nullable type parameters, just like nullable function parameters
+	interface Array<nullable I> i.e. func instantiate(nullable Interface face)
 
 interfaces that require that (implementations also (implement other specified interfaces))
 	interface Foo

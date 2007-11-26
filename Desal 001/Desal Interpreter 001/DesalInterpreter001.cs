@@ -14,15 +14,15 @@ class DesalInterpreter001 {
 		
 		foreach( string arg in arguments ) {
 			if( arg[0] == '-' ) {
-				string[] parts = arg.Split(new char[]{'='}, 2);
+				string[] parts = arg.Split('=');
 				if( parts.Length != 2 )
-					throw new Exception();
+					throw new Exception("bad argument: " + arg);
 				string key = parts[0].Substring(1);
 				string val = parts[1];
 				args.Remove(key);
 				args.Add(key, val);
 			}
-			else throw new Exception();
+			else throw new Exception("bad argument: " + arg);
 		}
 		
 		DesalInterpreter001 program = new DesalInterpreter001();
@@ -30,21 +30,27 @@ class DesalInterpreter001 {
 		Bridge bridge = new Bridge();
 		DesibleParser parser = new DesibleParser();
 		parser.unhandledWarnLevel = Int32.Parse(args["unhandled-warn-level"]);
-		Node_Bundle bundleNode = parser.parsePath(bridge, args["path"]);
-		bundleNode.setup( program.createGlobalScope(bridge) );
 		
-		if( Boolean.Parse(args["print-tree"]) ) {
-			program.printTree(bundleNode);
+		if( args.ContainsKey("path") ) {
+			Node_Bundle bundleNode = parser.parsePath(bridge, args["path"]);
+			bundleNode.setup( program.createGlobalScope(bridge) );
+			
+			if( Boolean.Parse(args["print-tree"]) ) {
+				program.printTree(bundleNode);
+			}
+			
+			if( Boolean.Parse(args["run"]) ) {
+				try {
+					return bundleNode.run();
+				}
+				catch(ClientException e) {
+					bridge.error(e.clientMessage);
+					//xxx return ERROR_CODE;
+				}
+			}
 		}
-		
-		if( Boolean.Parse(args["run"]) ) {
-			try {
-				return bundleNode.run();
-			}
-			catch(ClientException e) {
-				bridge.error(e.clientMessage);
-				//xxx return ERROR_CODE;
-			}
+		else {
+			bridge.warning("no path set");
 		}
 		
 		return 0;

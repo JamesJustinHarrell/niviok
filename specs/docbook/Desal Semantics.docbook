@@ -56,68 +56,54 @@ xmlns:xi="http://www.w3.org/2003/XInclude">
 			<para>This specification also has "encourgements". These encouragements are considered good ideas by the specficiation author(s), but may not always be appropriate or may not be necessary for interoperability. Complying with these encouragements does not increase an implementation's compliance.</para>
 		</section>
 		
-		<section xml:id="executing-desal-tree-rep">
-			<title>Executing a Desal tree representation</title>
+		<section xml:id="executing-bundle">
+			<title>Executing a bundle</title>
 			
-			<para>Note: This section is very new. Its contents might not be reflected yet in other sections.</para>
-			
-			<para>Remember: The main tree might not have a main function. The main tree might just expose it's members, such as for scripting or a library.</para>
+			<para>Note: A bundle might not have a main function. It might just expose its members, such as for scripting or a library.</para>
 			
 			<para>interpreted:</para>
 			<orderedlist>
-				<listitem>a Desal tree representation is parsed to extract a Desal Semantics tree</listitem>
-				<listitem>tree is processed
-					<orderedlist>
-						<listitem>imported files are parsed into trees</listitem>
-						<listitem>libraries are loaded and linked</listitem>
-					</orderedlist>
-				</listitem>
+				<listitem>a bundle representation is parsed to extract a tree of Desal Semantics nodes</listitem>
+				<listitem>libraries are loaded and linked</listitem>
+				<listitem>tree is processed</listitem>
 				<listitem>optimization</listitem>
-				<listitem>execution of main global node, which produces an exit status</listitem>
+				<listitem>execution of the planes' declaration-first nodes</listitem>
+				<listitem>execution of the function bound to "main" attached to the bundle node's scope, which may return an exit status</listitem>
+				<listitem>returning exit status, or 0 if none specified</listitem>
 			</orderedlist>
 			
 			<para>runtime compilation:</para>
 			<orderedlist>
-				<listitem>a Desal tree representation is parsed to extract a Desal Semantics tree</listitem>
-				<listitem>tree is processed
-					<orderedlist>
-						<listitem>imported files are parsed into trees</listitem>
-						<listitem>libraries are loaded and linked</listitem>
-					</orderedlist>
-				</listitem>
+				<listitem>a bundle representation is parsed to extract a tree of Desal Semantics nodes</listitem>
+				<listitem>libraries are loaded and linked</listitem>
+				<listitem>tree is processed</listitem>
 				<listitem>optimization</listitem>
-				<listitem>trees translated to bytecode and/or machine code</listitem>
+				<listitem>tree translated to bytecode and/or machine code</listitem>
 				<listitem>execution of bytecode and/or machine code, which produces an exit status</listitem>
 			</orderedlist>
 			
 			<para>beforehand compilation:</para>
 			<orderedlist>
-				<listitem>a Desal tree representation is parsed to extract a Desal Semantics tree</listitem>
-				<listitem>tree is processed
-					<orderedlist>
-						<listitem>imported files are parsed into trees</listitem>
-						<listitem>static libraries are loaded and linked</listitem>
-						<listitem>information about shared libraries is loaded and linked</listitem>
-					</orderedlist>
-				</listitem>
+				<listitem>a bundle representation is parsed to extract a tree of Desal Semantics nodes</listitem>
+				<listitem>static libaries are loaded</listitem>
+				<listitem>information about shared libraries is obtained</listitem>
+				<listitem>tree is processed</listitem>
 				<listitem>optimization</listitem>
-				<listitem>trees translated to bytecode and/or machine code and stored</listitem>
-				<listitem>code is loaded and processed
-					<orderedlist>
-						<listitem>shared libraries are loaded and linked</listitem>
-					</orderedlist>
-				</listitem>
+				<listitem>tree translated to bytecode and/or machine code and stored</listitem>
+				<listitem>code is loaded</listitem>
+				<listitem>shared libraries are loaded and linked</listitem>
+				<listitem>processing</listitem>
 				<listitem>execution of bytecode and/or machine code, which produces an exit status</listitem>
 			</orderedlist>
 			
-			<para>This specification is defined with an interpreter in mind. This spec will define how to:</para>
+			<para>This spec should define how to:</para>
 			<simplelist>
-				<member>process a tree. a fully processed tree should contain no identifiers. identifier nodes should be replaced with direct associations with references.</member>
+				<member>process a bundle (a valid tree of Desal Semantics nodes with a bundle node as the root node)</member>
 				<member>execute/evaluated nodes of a processed tree</member>
-				<member>execute a processed main global tree</member>
+				<member>execute a bundle</member>
 			</simplelist>
 			
-			<para>Implementations that aren't interpreters must produce equivalent behavior when being executed.</para>
+			<para>Implementations that aren't interpreters should produce equivalent behavior when being executed.</para>
 		</section>
 		
 		<section xml:id="definitions">
@@ -135,18 +121,33 @@ xmlns:xi="http://www.w3.org/2003/XInclude">
 				</glossentry>
 				
 				<glossentry>
-					<glossterm>reference</glossterm>
-					<glossdef>References can be bound to one or more values. An identifier in a certain scope is often associated with references, although they aren't always.</glossdef>
+					<glossterm>identikey</glossterm>
+					<glossdef>bound to one or more values. An identifier in a certain scope is associated with an identikey.</glossdef>
 				</glossentry>
 			
 				<glossentry>
 					<glossterm>value</glossterm>
-					<glossdef>Associated with an object and an interface implementation, except for the null value, which is associated with an interface.</glossdef>
+					<glossdef>Associated with an object and an interface implementation, except for the null value, which is associated with nothing or associated with an interface</glossdef>
+				</glossentry>
+				
+				<glossentry>
+					<glossterm>active interface implementation</glossterm>
+					<glossdef>the interface implementation a value is directly associated with</glossdef>
+				</glossentry>
+				
+				<glossentry>
+					<glossterm>active interface</glossterm>
+					<glossdef>the interface that the active interface implementation is associated with</glossdef>
 				</glossentry>
 				
 				<glossentry>
 					<glossterm>prevalent</glossterm>
-					<glossdef>Immutable objects bound to the global scope that exist before source begins execution. No other objects may be bound to the same identifiers, even in inner scopes.</glossdef>
+					<glossdef>values bound to the global scope that exist before source begins execution. No other objects may be bound to the same identifiers, even in inner scopes.</glossdef>
+				</glossentry>
+				
+				<glossentry>
+					<glossterm>global scope</glossterm>
+					<glossdef>the scope of the bundle node. a bundle node has one and only one scope each time the bundle is evaluated</glossdef>
 				</glossentry>
 				
 				<glossentry>
@@ -156,8 +157,7 @@ xmlns:xi="http://www.w3.org/2003/XInclude">
 				
 				<glossentry>
 					<glossterm>member</glossterm>
-					<glossdef>A property or method of an interface.</glossdef>
-					<!-- xxx should it also apply to callees? -->
+					<glossdef>A callee, property, method, or conversion of an interface.</glossdef>
 				</glossentry>
 				
 				<glossentry>
@@ -173,7 +173,7 @@ xmlns:xi="http://www.w3.org/2003/XInclude">
 		
 		<para>Desal semantics are represented by a node tree. The way this node tree is represented is not covered in this specification. This specification explains what kind of node tree a representation can represent, the meaning of the nodes in a Desal node tree, and how to evaluate the node tree.</para>
 		
-		<para>This node tree has scopes attached at various places. These scopes contain identifiers that are bound to namespaces and references. Thus, a Desal implementation must code for a node tree, scopes, objects, and functions.</para>
+		<para>This node tree has scopes attached at various places. These scopes contain identikeys that are bound to namespaces and values.</para>
 		
 		<section xml:id="identikeys">
 			<title>identikeys</title>
@@ -246,56 +246,10 @@ func Int foo //bound functions must return an Int
 			<para>Overloading an identifier means binding multiple object references to it.</para>
 
 			<para>Const identikeys can never be unbound from what they're bound to. Function, strict, and automatic identikeys can be const.</para>
-		</section>
-		
-		<section xml:id="ext-namespace">
-			<title>ext namespace</title>
 			
-			<para>Unofficial features of Desal should appear in the "ext" namespace when possible. Implementations do not have to recognize extensions or support them, although they are encouraged to at least recognize them in order to give more useful error messages.</para>
+			
 			
 			<programlisting>
-import atExit from ext
-
-atExit.add(myfunc)
-			</programlisting>
-		</section>
-		
-		<section xml:id="expressions">
-			<title>Expressions</title>
-			
-			<para>Expressions evaluate to an value.</para>
-		</section>
-		
-		<section xml:id="references">
-			<title>references</title>
-			
-			<para>Identifiers can be associated with values, references, and namespaces. There are multiple types of references. References are created by declaration nodes that associate an identifier with a new reference. Declarations specify what the reference can be bound to.</para>
-			
-			<section xml:id="value-identifiers">
-				<title>value identifier</title>
-				<para>A value identifier is a associated with a value. It can never be reassociated with a different value.</para>
-			</section>
-			 
-			<section xml:id="reference-identifiers">
-				<title>Reference identifiers</title>
-				<para>A reference identifier is associated with a reference. That reference can be bound to values with with the active interface specified by the associated declaration. (i.e. The associated identifier declaration specifies an interface, and the reference can only be bound to values with that interface as the active interface.) References can also be unbound i.e. bound to nothing i.e. bound to null. The identifier can only ever be bound to one object reference at a time.</para>
-			</section>
-			
-			<section xml:id="function-identifiers">
-				<title>function identifier</title>
-				<para>Function identifiers are associated with references that can be bound to multiple values with a specified function interface as the active interface.</para>
-			</section>
-			
-			<section xml:id="namespace-identifiers">
-				<title>namespace identifier</title>
-				<para>Namespace identifiers can be associated with a namespace. (Only 1 at any time.) These and alias identifiers are the only types of identifiers that cannot be evaluated.</para>
-			</section>
-			
-			<section xml:id="dynamic-identifiers">
-				<title>dynamic identifier</title>
-				<para>Dynamic identifiers are associated with references that can be bound to any value, with any active interface. (Only 1 at any time.)</para>
-				
-				<programlisting>
 interface Foo
 	func fooMeth()
 
@@ -306,11 +260,9 @@ Dyn obj = getFoo()
 obj.fooMeth()
 obj = getBar()
 obj.barMeth()
-				</programlisting>
-				
-				<para>Dyn identifiers are associated with references that can point to values. At all times, one of the interface implementations of the object's class is the active interface. When accessing properties of the pointed-to-object, which properties are available and what they do is determined by the active interface. The active interface and the pointed-to object can both be changed.</para>
-			
-				<programlisting>
+			</programlisting>
+
+			<programlisting>
 dyn foo //same as: dyn foo = null
 foo = getBar()
 foo.barProp
@@ -328,14 +280,11 @@ foo = cast {GazInterface} alpha
 foo.gazProp
 (BazInterface foo) .bazProp
 (MazInterface foo) .mazProp
-				</programlisting>
-			</section>
+			</programlisting>s
 			
-			<section xml:id="meta-identifiers">
-				<title>meta identifier</title>
-				<para>Meta identifiers are associated with references that can be bound to vaules with MetaObject as the active interface. The difference between this identifier type and the reference identifier type is that members of the MetaObject (xxx link to MetaObject spec) are not exposed through this reference. Instead, any attempted member access calls methods of the MetaObject implementation.</para>
+			<para>dynamic identikeys can be associated with values with MetaObject values in a special way, where members of the MetaObject are not exposed. Instead, any attempted member access to the value calls methods of the MetaObject implementation.</para>
 				
-				<programlisting>
+			<programlisting>
 interface MetaObject
 	func handleCall(String identifier, Dyn[] arguments) Dyn
 	func handlePropGet(String identifier) Dyn
@@ -343,24 +292,30 @@ interface MetaObject
 	func handleCallMethod(String identifier, Dyn[] arguments) Dyn
 	func handleCast(Interface iface) Dyn
 
-class CMeta
+class MetaFactory
 	interface MetaObject
 		...
 
-Meta obj = CMeta()
+Meta obj = MetaFactory()
 obj.foo = "hey hey he"
 obj.foo = [1, 2, 3]
 obj.bar = obj.notheutnhoetnhu
 obj.heyPeople()
 obj.HowsItGoing?(obj.n789, obj.immaGoNow())
-				</programlisting>
-			</section>
+			</programlisting>
 		</section>
 		
-		<section xml:id="execution">
-			<title>Execution</title>
+		<section xml:id="ext-namespace">
+			<title>ext namespace</title>
 			
-			<para>Some nodes can be executed.</para>
+			<para>Unofficial features of Desal should appear in the "extension" namespace when possible. Implementations do not have to recognize extensions or support them, although they are encouraged to at least recognize them in order to give more useful error messages.</para>
+			
+			<para>Normal library functions that do not portray any special action not possible with normal Desal code should not appear in the "extension" namespace.</para>
+			
+			<programlisting>
+import atExit from extension
+atExit.addListener(myfunc)
+			</programlisting>
 		</section>
 		
 		<section xml:id="builtin-numbers">
@@ -370,34 +325,36 @@ obj.HowsItGoing?(obj.n789, obj.immaGoNow())
 			
 			<para>For example, pow(10, pow(10,100)), must correctly return an Int object reference that accurately represents a googolplex, and must be able to perform operations on this number with perfect accuracy.</para>
 			
-			<para>Implementations may throw errors when they are unable to perfectly represent a number. This is the only alternative to perfectly representing the number, unless user code has explicitly allowed the implementation to introduce errors. Implementations must not introduce errors by default.</para>
+			<para>Implementations may throw errors when they are unable to perfectly represent a number. Implementations must not silently introduce errors. This is the only alternative to perfectly representing the number.</para>
 			
 			<para>For example, if the implementation was directed by user code to print a googolplex without using scientific notation (i.e. a "1" followed by a googol "0"), the implementation may throw an error specifying that it is unable to create such a representation.</para>
 		</section>
 	</chapter>
 	
-	<chapter xml:id="objects">
-		<title>Objects</title>
+	<chapter xml:id="values">
+		<title>Values</title>
 		
-		<para>Objects have state which is modified through interfaces. Every object has an ID that never charges. Objects implement interfaces. Each interface implementation consists of the implementation of the members of that interface.</para>
+		<para>Values are associated with an object and an interface implementation.</para>
 		
-		<para>Every objects implements one or more interfaces. Interfaces are objects. Objects are accessed through interfaces.</para>
+		<para>Objects hold which is used by the interface implementation. This state can only be accessed or modified by interface implementations that they object was intented to hold state for. Objects have an ID that never changes. Each interface implementation consists of the implementation of the members of that interface.</para>
+		
+		<para>This specification may speak of values implementing interfaces. In these cases, what is actually refered to is whether the interface implementation the value is associtiated with is in a tree where one of the interface implementations is an implementation of that interface. The value itself does not actually implement any interfaces.</para>
+		
+		<para>Interface implementations form a tree. Multiple interface implementations in the same tree can implement the same iterface. When a value has an active interface that has multiple implementations, the interface implementation that is used when the value is accessed is the interface implementation that the vaule is associated with.</para>
 	</chapter>
 	
 	<chapter xml:id="functions">
 		<title>Functions</title>
 		
-		<para>Functions have an associated object. When identifiers that are bound to functions are evaluated, they evaluted to this object.</para>
-		
-		<para>Functions have a return interface and parameters. Parameters have an interface and an optional default value.</para>
+		<para>Functions are just values with an active interface that defines callees. Functions can be "called". Functions can have a return interface and parameters. Parameters have an interface and an optional default value.</para>
 	</chapter>
 	
 	<chapter xml:id="interfaces">
 		<title>Interfaces</title>
 		
-		<para>Interfaces define a means of interacting with an object. Interfaces declare that implementations will be able to provide object references with specified interfaces when asked for the object reference bound to identifiers specified by the interface and/or that implementations will be able to bind object references with specified interfaces to specified identifiers. Methods are a type of property. Methods are callable and cannot be assigned, only retrieved.</para>
+		<para>Interfaces define a means of interacting with an object's state. Interfaces declare that implementations will be able to provide object references with specified interfaces when asked for the object reference bound to identifiers specified by the interface and/or that implementations will be able to bind object references with specified interfaces to specified identifiers. Methods are a type of property. Methods are callable and cannot be assigned, only retrieved.</para>
 		
-		<para>Interfaces can declare that properties are "read only", "write only", or "read+write".</para>
+		<para>Interfaces can declare that properties are "get only", "set only", or "get and set".</para>
 		
 		<para>Interface member functions can have default values. This differs from a class with abstract members because interfaces cannot have any private members, so these default functions can not store or extract state in the object. These functions are only intended to call other member functions or throw errors.</para>
 		
@@ -440,8 +397,8 @@ print 3 "foo" 1.23
 ]]>
 		</programlisting>
 		
-		<section xml:id="adding-interfaces">
-			<title>Adding and Subtracting Interfaces</title>
+		<section xml:id="interface-operations">
+			<title>Adding and subtracting interfaces</title>
 			
 			<para>Interfaces can be added together to produce other interfaces. How this addition occurs depends on whether the operands were produce through addition, and the inherited interfaces of the operands.</para>
 			
@@ -619,18 +576,10 @@ a << "gaz"
 		</section>
 	</chapter>
 	
-	<chapter xml:id="object-references">
-		<title>Object references</title>
-		
-		<para>Objects are referred to through references. A reference is associated with an interface and an object. Objects may implement multiple interfaces with the same property names, so reference serve to declare from which interface properties can be accessed. References can be cast to other references that are associated with the same object but a different interface to allow accessing properties .</para>
-	</chapter>
-	
 	<chapter xml:id="scopes">
 		<title>Scopes</title>
 		
-		<para>Scopes consist of a collection of identifiers and an optional association with a parent scope. Each identifier is declared to be capable of pointing to one of: a namespace, objects with a certain interface, functions with a certain return interface. Identifiers are also capable of pointing to null. Each identifier is either bound to: a namespace/object/function (depending on which it can point to), or null. Scopes may be associated with a single parent scope.</para>
-		
-		<para>xxx should namespace identifiers and function identifiers be able to point to null?</para>
+		<para>Scopes consist of a collection of identikeys, and unless it is the scope of the bundle node, an association with a parent scope. Scopes form a hierarchy. When identifiers are evaluated, the current scope is searched for an identikey that is associated with that identifier. If one is not found, that scope's parent scope is searched, and so on, until a matching identikey is found. If such an identikey cannot be found, an error results.</para>
 	</chapter>
 	
 	<chapter xml:id="nodes">
@@ -673,16 +622,15 @@ a << "gaz"
 	
 	<xi:include href="Desal%20Semantics%20-%20Nodes.docbook"/>
 	
-	<chapter xml:id="prevalent-identifiers">
-		<title>Prevalent identifiers</title>
+	<chapter xml:id="prevalent-identikeys">
+		<title>Prevalent identikeys</title>
 		
-		<para>Prevalent identifiers are constant identifiers in the global scope that exist before source begins execution. The objects the identifiers are bound to are immutable. Additionaly, these identifiers cannot be declared in any other scope. Therefore, referencing one of these identifiers always refers to the same object no matter the scope. The objects can, however, be bound to additional identifiers with normal scoping rules.</para>
+		<para>Prevalent identikeys are constant identikeys in the global scope that exist before source begins execution. The values the identikeys are bound to are immutable. Identikeys in child scopes cannot be associtiated with the same identifiers. Therefore, evaluating one of these identifiers always refers to the same identikey no matter the scope. The values can, however, be bound to additional identikeys with normal scoping rules.</para>
 		
 		<simplelist>
 			<!-- definitely should be part of the spec -->
 			<member>interface Interface</member>
 			<member>interface Object</member>
-			<member>interface{I} Generator</member>
 			<member>interface{I} List</member> <!-- not resizable -->
 			<member>interface String</member>
 			<member>interface Int</member>
@@ -690,12 +638,14 @@ a << "gaz"
 			<member>interface BigInt</member>
 			<member>interface BigRat</member>
 			
+			<member>interface{I} Generator</member>
+			
 			<member>func{I}(obj)I cast</member>
 			<member>func(obj,interface)bool implements?</member>
 			
 			<member>interface Bool</member>
-			<member>bool true</member>
-			<member>bool false</member>
+			<member>Bool true</member>
+			<member>Bool false</member>
 			
 			<member>namespace global</member> <!-- xxx spec out -->
 			<member>namespace ext</member>
@@ -732,26 +682,8 @@ a << "gaz"
 			<member>interface{I} orderedmultiset</member>
 			
 			<!-- xxx -->
-			<member>interface octet</member>
-			<member>interface blob</member>
-			
-			<!-- xxx spec out - should they really be interfaces, or more like duck/dyn/dynref? -->
-			<!-- specify that the object will be able to store objects with at least this much presion, although more precision may be available -->
-			<member>interface sint8</member>
-			<member>interface uint8</member>
-			<member>interface sint16</member>
-			<member>interface uint16</member>
-			<member>interface sint32</member>
-			<member>interface uint32</member>
-			<member>interface sint64</member>
-			<member>interface uint64</member>
-			<member>interface sint128</member>
-			<member>interface uint128</member>
-			<member>interface float8</member>
-			<member>interface float16</member>
-			<member>interface float32</member>
-			<member>interface float64</member>
-			<member>interface float128</member>
+			<member>interface Octet</member>
+			<member>interface Blob</member>
 
 			<!-- xxx spec out how to use fixed point integers -->
 			<member>interface limitedint</member> <!-- throws error on overflow -->
@@ -905,10 +837,10 @@ if implements(foo, Bar)
 		</section>
 	</chapter>
 	
-	<chapter xml:id="preexisting-global-identifiers">
-		<title>Other preexisting global identifiers</title>
+	<chapter xml:id="preexisting-global-identikeys">
+		<title>Other preexisting global identikeys</title>
 		
-		<para>Constant identifiers in the global scope that exist before source begins execution. The objects the identifiers are bound to are immutable. Unlike prevalent identifers, these identifers follow normal scoping rules. They can always be refered to trough the prevalent global namespace identifier.</para>
+		<para>Constant identikeys in the global scope that exist before source begins execution. The values these identikeys are bound to are immutable. Unlike prevalent identifers, these identifers follow normal scoping rules. They can always be refered to trough the prevalent global namespace identifier.</para>
 		
 		<simplelist>
 			<member>interface InterfaceBuilder</member>
@@ -1029,24 +961,12 @@ func getFuncInterface (
 		</section>
 	</chapter>
 	
-	<chapter xml:id="evaluation">
-		<title>Evaluation</title>
+	<chapter xml:id="error-handling-processing">
+		<title>Error handling during processing</title>
 		
-		<para>Some nodes, when executed, evaluate to an object reference. These are called expressions.</para>
-		
-		<para>Evaluation of a Desal node tree may begin before the tree is fully constructed.</para>
-		
-		<section xml:id="error-handling">
-			<title>Error handling</title>
+		<para>If an error is found during processing, and none of the already generated nodes have been evaluated, all generated nodes in the entire Desal tree should not be used for purposes beyond explaining the source of errors. Construction of the Desal node tree may continue after errors are found. The main() function should not be called, and the members should not be exposed as a library.</para>
 			
-			<para>This section explains how to handle errors.</para>
-			
-			<para>If errors occur while generating the Desal node tree, and none of the already generated nodes have been evaluated, all generated nodes in the entire Desal tree should not be used for purposes beyond explaining the source of errors. Construction of the Desal node tree may continue after errors are found. This applies even if the Desal nodes were not intended to be evaluated.</para>
-			
-			<para>If errors occur while generating the Desal node tree, and evaluation has already begun, a warning should immediately be emitted describing the error. How this warning is emitted is undefined. Generation of the Desal node tree may continue. When evaluation reaches the damaged section of the tree, an error should be thrown describing the error. If evaluation never reaches the damaged section of the tree, the error should have no effect on evaluation.</para>
-		</section>
-		
-		<para>Evaluation of a Desal node tree begins with name bindings in the global namespace. Then, the object bound to "main" in the global namespace is called with an array of strings representing the arguments given to the tree. How these arguments are obtained is undefined. Evalution of the tree ends when main returns or an exception raises out of main.</para>
+		<para>If errors occur while generating the Desal node tree, and evaluation has already begun, a warning should immediately be emitted describing the error. How this warning is emitted is undefined. Generation of the Desal node tree may continue. When evaluation reaches the damaged section of the tree, an error should be thrown describing the error. If evaluation never reaches the damaged section of the tree, the error should have no effect on evaluation.</para>
 	</chapter>
 	
 	<chapter xml:id="unsorted-stuff">
