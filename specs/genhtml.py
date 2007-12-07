@@ -43,12 +43,12 @@ tagMap = {
 	'varlistentry' : None,
 	'variablelist' : 'dl'
 }
-knownRoles = ( 'exec', 'eval', 'family-members', 'layout', 'process' )
+knownRoles = ( 'exec', 'eval', 'family-members', 'layout', 'process', 'xxx' )
 xhtmlNS = "http://www.w3.org/1999/xhtml"
 domImpl = dom.getDOMImplementation()
 relaxngSchema = libxml2.relaxNGNewParserCtxt("%s/docbook.rng" % docbookDir).relaxNGParse()
 
-def warning(message) :
+def warn(message) :
 	print "WARNING: %s" % message
 
 #adds a tagName element to parentOutElement and returns the new element
@@ -78,7 +78,7 @@ def transferAttributes(source, destination) :
 			destination.setIdAttribute("id")
 		elif name == "role" :
 			if value not in knownRoles :
-				print "WARNING: unknown role %s" % value
+				warn("unknown role %s" % value)
 			destination.setAttribute("class", value)
 		elif name == "linkend" :
 			if destination.tagName == 'a' :
@@ -91,7 +91,7 @@ def transferAttributes(source, destination) :
 		elif name == "xmlns" or name == "version":
 			pass
 		else :
-			print "WARNING: Unrecognized attribute " + name
+			warn("unrecognized attribute " + name)
 		
 		i += 1
 	return rv
@@ -152,11 +152,11 @@ def copyElement(docbookElement, htmlElement) :
 	elif 'title' == tagName :
 		parentName = docbookElement.parentNode.tagName
 		if ["book", "chapter", "section"].count(parentName) == 0 :
-			raise ("Error: %s elements cannot have titles" % parentName).__str__()
+			raise Exception("Error: %s elements cannot have titles" % parentName)
 		transferElement(htmlElement, "h%d" % docbookElement.nestLevel, docbookElement)
 	else :
-		print "WARNING: DocBook '%s' element not recognized (child of '%s')" \
-		% ( tagName, docbookElement.parentNode.tagName )
+		warn( "DocBook '%s' element not recognized (child of '%s')" \
+			% ( tagName, docbookElement.parentNode.tagName ) )
 		copyContent(docbookElement, htmlElement)
 
 def appendText(text, htmlElement) :
@@ -179,7 +179,7 @@ def copyContent(docbookElement, htmlElement) :
 		elif docbookNode.nodeType == docbookNode.CDATA_SECTION_NODE :
 			copyText(docbookNode, htmlElement)
 		else :
-			print "WARNING: unknown node type " + `docbookNode.nodeType`
+			warn("unknown node type %s" % docbookNode.nodeType)
 
 #tocList is HTML, sectionElement is DocBook
 def setupSection(tocList, sectionElement, prefix, index) :
@@ -188,21 +188,21 @@ def setupSection(tocList, sectionElement, prefix, index) :
 			.getElementsByTagName("title")[0]\
 			.firstChild.data
 	except :
-		print "WARNING: section doesn't have title"
+		warn("section doesn't have title")
 		return
 	
 	htmlDocument = tocList.ownerDocument
 	#title is a DocBook element
 	title = sectionElement.getElementsByTagName("title")[0]
 	if title == None or title.parentNode != sectionElement :
-		warning(
+		warn(
 			"chapter/section with id '%s' doesn't have a title" % \
 			chapterElement.getAttribute("xml:id") )
 	listItem = htmlDocument.createElement("li")
 	link = htmlDocument.createElement("a")
 	sectionID = sectionElement.getAttribute("xml:id")
 	if sectionID == '' :
-		warning( "section with title '%s' doesn't have ID" % title.firstChild.data )
+		warn( "section with title '%s' doesn't have ID" % title.firstChild.data )
 		sectionID = str(random())
 		sectionElement.setAttribute("xml:id", sectionID)
 	link.setAttribute("href", "#" + sectionID)
@@ -251,7 +251,7 @@ def checkLinks(htmlDocument) :
 			ID = href[1:]
 			element = htmlDocument.getElementById(ID)
 			if element == None :
-				print "WARNING: no element with ID '%s'" % ID
+				warn("no element with ID '%s'" % ID)
 
 def createHtmlDocument(docbookDocument) :
 	docbookRoot = docbookDocument.documentElement

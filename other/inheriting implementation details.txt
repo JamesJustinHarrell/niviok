@@ -1,0 +1,64 @@
+Many languages provide means of inheriting implementation details. For Desal to appeal to programmers used to being able to do this, Desal may also need a means of inheriting implementation details. But how the hell is this supposed to be done in Desal, where everything is accessed through interfaces?
+
+
+
+interface IntList {
+	get IntListNode first
+}
+
+interface IntListNode {
+	get Int value
+	get nullable IntListNode next
+	get nullable IntListNode previous
+}
+
+class IntListClass {
+	class IntListNodeClass {
+		own Int value
+		share IntListNode next
+
+		auto construct
+
+		impl IntListNode {
+			get Int value = value
+			get nullable IntListNode next = next
+		}
+	}
+
+	protected IntListNode first
+	protected IntListNode last
+
+	...
+
+	impl IntList {
+		get IntListNode first = first
+	}
+}
+
+
+
+
+
+interface IntList2 {
+	inherit IntList
+	get IntListNode last
+}
+
+class IntList2Class {
+	inherit IntListClass as intList
+
+	func callee() {
+		(setup-super intList ()) //send no arguments
+	}
+
+	impl IntList2 {
+		IntList = intList
+		get IntListNode last = last
+	}
+}
+
+
+
+
+When a value is inherited as a class, the class inheriting it gets access to its protected members and the protected members of values produced by it.
+

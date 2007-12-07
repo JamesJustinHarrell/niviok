@@ -1,0 +1,20 @@
+generic<Interface params[]>
+interface Grid {
+	inherit List< Struct<params> >
+}
+
+generic<keyT, valT>
+class DictionaryClass {
+	construct( Grid<keyT, valT> grid )
+	...
+}
+
+Grid<Int, String> grid = grid {
+	0, "zero"
+	1, "one"
+	2, "two"
+	3, "three
+}
+
+Dictionary<Int, Strig> dict = DictionaryClass(grid)
+

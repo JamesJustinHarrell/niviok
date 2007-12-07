@@ -11,6 +11,28 @@
 		
 			<para>This document defines a means of representing Desal semantics, and a means for extracting the semantics by a computer agent.</para>
 		</section>
+		
+		<section xml:id="design-goals">
+			<title>Design goals</title>
+			
+			<simplelist>
+				<member>Be easy for current programmers to pick-up. This means a representation that uses text files which are meant to be edited directly (as opposed to something like an XML representation which should be edited through an IDE). It also means keywords should be prefered over special symbols, although some C-style symbols are well-known enough to use.</member>
+				<member>Be easy to parse by humans and computers. This means compromising a bit with the first point.</member>
+				<member>Be able to encode nearly the full set of semantics offered by Desal Semantics, and use a very direct 1-to-1 mapping.</member>
+				<member>Minimalism, where not detrimental. This means if leaving a few characters out doesn't hurt one of the other points, leave them out. This is the rationale for stuff like this:
+				<screen>
+$if a > b
+	doSomething()
+$else
+	doSomethingElse()
+
+$if a > b : doSomething()
+$else : doSomethingElse()
+				</screen>
+				Notice the lack of parenthesis around "a > b". This may be removed if it's too hard to parse.
+				</member>
+			</simplelist>
+		</section>
 	</chapter>
 	
 	<chapter xml:id="tokenization">
@@ -53,6 +75,30 @@ xxx -->
 	
 	<chapter xml:id="unsorted-stuff">
 		<title>unsorted stuff</title>
+		
+		<screen>
+Word ::=
+	WordChar +
+	
+Identifier ::=
+	Word
+	
+Keyword ::=
+	"$" Word
+
+$if else > return {
+	$throw throw
+}
+
+Rationale: Users should be quickly and easily able to tell whether a word is an identifier or a keyword, without having to memorize the list of keywords. Because identifiers are usually more common than keywords, keywords are given the burden of having an extra character instead of identifiers.
+
+Move to IDE guidelines:
+Syntax highlighters are encouraged to hide the $ character in keywords (in display only, not to remove it from source) and differentiate between keywords and identifiers though some other means (e.g. color). Such syntax highlighters must provide a means of switching a word between keyword and identifier.
+
+One possibility would be to display the $ in a particular keyword whenever the cursor has been next to or within the keyword for more than half a second. Such syntax highlighters should automatically and immediately recognize when a word has lost or gained a $ and update the way it is displayed immediately e.g. if the $ is removed from a keyword, the syntax highlighter should recognize the change immediately and not continue displaying the word like it is a keyword.
+
+Another possibility would be to never show the $ after a keyword has been typed, and ignore $ added in front of identifiers, but have a button, menu item, and/or keyboard shortcut that when activated, flips the meaning of the keyword that the cursor is currently in or next to.
+		</screen>
 		
 		<section xml:id="get-interface">
 			<title>get interface</title>

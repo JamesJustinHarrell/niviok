@@ -1,0 +1,59 @@
+Calls a given function for every entry, optionally yielding the result or .insert!()ing the result into a collection.
+Calls the .insert!() method on a collection, with the contents of each entry.
+
+
+call-table-foreach : statement
+	expression function
+	+ call-table-entry
+
+call-table-map : expression (evals to the collection)
+	? expression function
+	expression collection
+	+ call-table-entry
+
+call-table-yield : expression (evals to generator)
+	expression function
+	+ call-table-entry
+
+call-table-entry
+	+ expression
+
+
+(call-table-foreach
+	(identifier.function "doStuff")
+	(call-table-entry
+		(string "Suzy")
+		(string "324-126-4597")
+		(integer 23)
+		(string "Chicago"))
+	(call-table-entry
+		(string "John")
+		(string "127-425-1237")
+		(integer 41)
+		(string "New York"))
+	(call-table-entry
+		(string "Tom")
+		(string "168-765-4354")
+		(integer 32)
+		(string "Denver")))
+
+same as:
+
+(call
+	(identifier.function "doStuff")
+	(string.argument "Suzy")
+	(string.argument "324-126-4597")
+	(integer.argument 23)
+	(string.argument "Chicago"))
+(call
+	(identifier.function "doStuff")
+	(string.argument "John")
+	(string.argument "127-425-1237")
+	(integer.argument 41)
+	(string.argument "New York"))
+(call
+	(identifier.function "doStuff")
+	(string.argument "Tom")
+	(string.argument "168-765-4354")
+	(integer.argument 32)
+	(string.argument "Denver"))

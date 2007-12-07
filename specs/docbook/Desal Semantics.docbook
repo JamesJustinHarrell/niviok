@@ -2,7 +2,7 @@
 xmlns:xi="http://www.w3.org/2003/XInclude">
 	
 	<title>Desal Semantics 1.0</title>
-	<subtitle>Edition 1 Draft 20071124</subtitle>
+	<subtitle>Edition 1 Draft 20071130</subtitle>
 	
 	<info>
 		<copyright>
@@ -110,6 +110,12 @@ xmlns:xi="http://www.w3.org/2003/XInclude">
 			<title>Definitions</title>
 	
 			<glosslist>
+				<glossentry>
+					<glossterm>Desal agent</glossterm>
+					<glossterm>agent</glossterm>
+					<glossdef>An implementation of the Desal language. Could be a source interpreter, a bytecode intepreter, a bytecode compiler, a machine code compiler, etc. If it recognizes the semantics of what it's running, and follows the rules of this document, it could be called a Desal agent. Each agent should define what representations it supports.</glossdef>
+				</glossentry>
+			
 				<glossentry>
 					<glossterm>expression</glossterm>
 					<glossdef>When "evaluated", they produce a value</glossdef>
@@ -280,7 +286,7 @@ foo = cast {GazInterface} alpha
 foo.gazProp
 (BazInterface foo) .bazProp
 (MazInterface foo) .mazProp
-			</programlisting>s
+			</programlisting>
 			
 			<para>dynamic identikeys can be associated with values with MetaObject values in a special way, where members of the MetaObject are not exposed. Instead, any attempted member access to the value calls methods of the MetaObject implementation.</para>
 				
@@ -347,6 +353,46 @@ atExit.addListener(myfunc)
 		<title>Functions</title>
 		
 		<para>Functions are just values with an active interface that defines callees. Functions can be "called". Functions can have a return interface and parameters. Parameters have an interface and an optional default value.</para>
+		
+		<section xml:id="function-interfaces">
+			<title>Function interfaces</title>
+			
+			<para>XXX this needs a lot of work</para>
+			
+			<para>Function interfaces implement FunctionInterface instead of Interface and inherit from Function. FunctionInterface simply inherits from Interface and defines no new members. Function interfaces declare a callee and an "apply" method that hides the members of the Function interface.</para>
+			
+			<screen>
+interface Function
+	callee(dyn[] params) dyn
+	func apply(dyn[] arguments) dyn //actually takes an array
+	func bind(dyn[] params) dyn
+	func call(dyn[] params) dyn
+	func curry(dyn[] params) dyn
+	get List&gt;Parameter> parameters
+	get Bool return?
+	get nullable Interface returnInterface
+
+all function interfaces
+	inherit Function
+	callee(...) ...
+	func apply(dyn[] params) ...
+	func call(...) ...
+
+For example, for func(Int a, Rat b, String c) Bool :
+
+interface (func(Int a, Rat b, String c) Bool)
+	inherit Function
+	callee(Int a, Rat b, String C) Bool
+	func apply(dyn[] params) Bool
+	func call(Int a, Rat b, String C) Bool
+	get parameters returns List {
+		Parameter { "a", Int },
+		Parameter { "b", Rat },
+		Parameter { "c", String } }
+	get return? returns true
+	get returnInterface returns Bool
+			</screen>
+		</section>
 	</chapter>
 	
 	<chapter xml:id="interfaces">
@@ -732,6 +778,7 @@ if implements(foo, Bar)
 			</programlisting>
 		</section>
 		
+		<!-- xxx XML comments contain important information -->
 		<section xml:id="ident.Int">
 			<title>interface Int</title>
 			
@@ -755,6 +802,7 @@ if implements(foo, Bar)
 				<member>func multiply(Rat) Rat</member>
 				<member>func divide(Int) Rat</member>
 				<member>func divide(Rat) Rat</member>
+				<member>func floorDivide(Int) Int</member>
 				<member>func floorDivide(Rat) Int</member>
 				<member>func remainder(Int) Int</member>
 				<member>Int absolute</member>
@@ -765,17 +813,21 @@ if implements(foo, Bar)
 				<member>func multiply!(Int)</member>
 				<member>func increment!()</member>
 				<member>func decrement!()</member>
+				<member>func floorDivide!(Int)</member>
+				<member>func floorDivide!(Rat)</member>
 				
 				<!-- conversion -->
 				<member>func toBuiltin() Int</member>
-				<!-- xxx should this be some kind of "conversion member" instead? arbitrary interfaces need a means of specifying a conversion to another interface -->
-				<member>func toString() String</member>
-				<member>func toString(IntNotationMethod) String</member>
+				<member>convert Int</member> <!-- copy -->
+				<member>convert Rat</member>
+				<member>convert String</member>
 			</simplelist>
 			
-			<para>When Desal implementations need to determine the value of int objects that were implemented by user code, they should call the toBuiltin method to get an int object that was implemented by the implementation. If toBuiltin throws an error, it should raise into user code. If the returned int is not a built-in, an error results that should extend into user code.</para>
+			<para>The non-mutating methods of Int should never throw for precsion reasons, i.e. they should always return an Int that fully represents the result without loss of precision. However, the mutator methods may throw a PrecisionError if the value is not capable of representing the resultant integer.</para>
 			
-			<para>IntNotationMethod is an enum with "normal", "scientific10", "scientificE", "multipleScientific10", and "multipleScientificE". The toString meth may throw an error if the number cannot be represented, such as a googolplex being called with "normal". If called with multipleScientificE, "10E(10E100)" could be returned.</para>
+			<para>When Desal implementations need to determine the value of Int objects that were implemented by user code, they should call the toBuiltin method to get an Int object that was implemented by the implementation. If toBuiltin throws an error, it should raise into user code. If the returned Int is not a built-in, an error results that should extend into user code.</para>
+			
+			<para>The String produced by the String convertee must represent the stored integer absolutely, with no loss of precision. It may throw an error if it is incapable of producing such a representation. There are no restrictions on how the integer should be represented, although Int implementations generally should try to produce a representation that is simple and short. Implementations of Int should prefer exotic and strange representations over throwing an error. For example, implementations should prefer representing a googolplex with e.g. "10E(10E100)" ofer throwing an error.</para>
 		</section>
 		
 		<section xml:id="object.BigInt">

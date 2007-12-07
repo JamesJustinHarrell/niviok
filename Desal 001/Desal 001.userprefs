@@ -1,7 +1,10 @@
 <?xml version="1.0"?>
 <UserCombinePreferences filename="/media/files/Desal/Desal 001/Desal 001.mds">
   <Files>
+    <File filename="Welcome" />
+    <File filename="./Desal Interpreter 001/DesibleParser.cs" />
     <File filename="./Desal Interpreter 001/Bridge.cs" />
+    <File filename="./Desal Interpreter 001/Node_Interface.cs" />
     <File filename="./Desal Interpreter 001/DesalInterpreter001.cs" />
   </Files>
   <Views>
@@ -17,7 +20,11 @@
     </ViewMemento>
     <ViewMemento Id="MonoDevelop.Ide.Gui.Pads.ClassPad">
       <TreeView>
-        <Node expanded="True" />
+        <Node expanded="True">
+          <Node name="Desal Interpreter 001" expanded="True">
+            <Node name="DesibleParser" expanded="True" />
+          </Node>
+        </Node>
       </TreeView>
     </ViewMemento>
   </Views>

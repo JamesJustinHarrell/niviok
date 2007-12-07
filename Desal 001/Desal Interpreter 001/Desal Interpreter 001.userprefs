@@ -5,10 +5,14 @@
   </Files>
   <Views>
     <ViewMemento Id="MonoDevelop.Ide.Gui.Pads.ProjectPad">
-      <TreeView />
+      <TreeView>
+        <Node expanded="True" />
+      </TreeView>
     </ViewMemento>
     <ViewMemento Id="MonoDevelop.Ide.Gui.Pads.ClassPad">
-      <TreeView />
+      <TreeView>
+        <Node expanded="True" />
+      </TreeView>
     </ViewMemento>
   </Views>
   <Properties>

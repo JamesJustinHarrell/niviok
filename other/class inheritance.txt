@@ -1,0 +1,68 @@
+interface Item {
+	...
+}
+
+class ItemClass {
+	...
+	
+	interface Item {
+		...
+	}
+}
+
+Item item = ItemClass(...)
+
+
+Now you want to inherit. Inheriting the interface is easy.
+
+interface NamedItem {
+	inherit Item
+	get String name
+}
+
+But how do you inherit the class? You surely don't want to reimplement the Item interface again! That goes against DRY!
+
+class NamedItemClass {
+	own String name
+	own Item item
+	
+	public auto construct
+	
+	interface NamedItem {
+		interface Item = item
+
+		get name {
+			return this.name
+		}
+	}
+}
+
+NamedItem namedItem = NamedItemClass("thingy", item)
+Item item2 = namedItem
+item2.methOfItem()
+println (item is item2) //false -- NIC owned item, so it was copied when the NIC constructor was called
+
+
+
+Note that members of Item can be overridden.
+
+class NamedItemClass {
+	own String name
+	own Item item
+	
+	public auto construct
+	
+	interface NamedItem {
+		interface Item = item {
+			func foo() {
+				...
+			}
+			//other members taken from item
+		}
+
+		get name {
+			return this.name
+		}
+	}
+}
+

@@ -1,0 +1,67 @@
+iterface Person {
+	copy //same as "convert Person"
+	convert String
+	func handleBirthday()
+	func handleCityNameChange(String newName)
+}
+
+class PersonClass {
+	own Int age
+	share City city
+
+	public automatic constuct
+
+	interface Foo {
+		automatic copy
+
+		convert String {
+			return "age: $age, city: $city"
+		}
+		
+		func handleBirthday() {
+			age.increment()
+		}
+		
+		func handleCityNameChange(String newName) {
+			city.name = newName
+		}
+	}
+}
+
+Person bob = PersonClass( 23, Cities.NewYork )
+Person sam = copy(bob)
+bob.handleBirthday()
+bob.handleCityNameChange("Old Fork")
+println bob // age: 24, Old Fork
+println sam // age: 23, Old Fork
+
+Because the class declared association/copy information (the "own" and "share" keywords), the Desal implementation knew how to create a constructor and how to copy the value. The age is copied while the city is not copied.
+
+This constructor was produced:
+	public construct(in Int age, in-mutable City city) {
+		this.age = age
+		this.city = city
+	}
+
+Variables do not have to specify copy info. If a variable doesn't declare copy info, it will not be include in automatic constructors and copiers, i.e. the variables will be null.
+
+The automatic constructor can also contain manual portions. For example, if the class had a "String name" variable without specified copy info, this could constructor could be created:
+	public automatic construct (in String name) {
+		if name.length == 0
+			throw Error()
+		this.name = name
+	}
+which would be equal to this:
+	public construct(in Int age, in-mutable City city, in String name) {
+		this.age = age
+		this.city = city
+		if name.length == 0
+			throw Error()
+		this.name = name
+	}
+
+
+/*
+The idea for specifying copy info came from here:
+http://www.agiledeveloper.com/articles/cloning072002.htm
+*/

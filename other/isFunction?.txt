@@ -1,0 +1,33 @@
+This is horrifying. Try to make it less so.
+
+
+
+func isFunction?( value ) Bool {
+	return isOrInheritsFunctionInterface?( activeInterface(value) )
+}
+
+//whether the interface is a function interface, or it inherits (possibly indirectly) from a function interface
+func isOrInheritsFunctionInterface?( Interface face ) Bool {
+	return isFunctionInterface?(face) or
+	anyTrue?( isOrInheritsFunctionInterface?, face.inheritees )
+}
+
+//assumes FunctionInterface can't be implemented by client code
+func isFunctionInterface?( Interface face ) Bool {
+	return face impls? FunctionInterface
+}
+
+
+
+func isFunc?( value ) Bool {
+	return isOrInheritsFuncFace?( activeFace(value) )
+}
+
+func isOrInheritsFuncFace?( Face face ) Bool {
+	return isFuncFace?(face) or
+	anyTrue?( isOrInheritsFuncFace?, face.inheritees )
+}
+
+func isFuncFace?( Face face ) Bool {
+	return face impls? FuncFace
+}

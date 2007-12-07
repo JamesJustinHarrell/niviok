@@ -1,5 +1,3 @@
-WARNING: unhandled element with tag name 'function-interface' in namespace 'urn:desible1'
 WARNING: unhandled element with tag name 'ignored-stuff' in namespace 'http://site.com/stuff'
-WARNING: unhandled element with tag name 'function-interface' in namespace 'urn:desible1'
 WARNING: Node_FunctionInterface.evaluate called; returning null
 WARNING: Node_FunctionInterface.evaluate called; returning null

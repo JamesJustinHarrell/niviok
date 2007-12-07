@@ -1,0 +1,240 @@
+My memory is bad, and it's important to learn from the past. So here's some history of my thought:
+
+* When Desal was an upgraded C++, I thought macros were better handled with other stuff.
+
+* When Desal became more original, I thought macros were a very powerful tool.
+
+* When Desal progressed, I thought macros were a failure of the language to provide the user with everything the needed.
+
+* Later, I thought macros were a very powerful tool. I started thinking of semantic macros (or "syntax independant" macros) and how could be specified.
+
+* Then I thought macros had a good enough match in minimal syntax for functions, i.e.
+	myMacro(
+		|| a = 5, //statement
+		|| 2 + 3 ) //expression
+
+* Recently (around mid Nov 2007), I realized that syntax represeting multiple semantics introduces new semantics. Those sementics could come in the form of a new node, like chain, or they could come by translating syntax to a large set of nodes that describe the semantics. I was uncertain overloaded syntax could be translated to Desal nodes.
+
+* Today (Dec 06 2007), after considering what a Desal node tree would look like after translating a Desal representation with overloaded syntax to Desal nodes, I decided that the overloaded syntax made a very good case for semantic macros. So today I decided to add semantic macros to Desal.
+
+This particular type of macro must be able to produce errors during processing in order to solve the overloaded syntax problem. It must be capable of examining its parameters and choosing how they are inserted into the document.
+
+
+rationale for (syntax independant) macros:
+
+* No language can ever offer everything every user wants/needs.
+
+* Overloaded syntax introduces new semantics, and those semantics need a way of being represented. Duplicating these semantics for every instance of the overloaded syntax makes examining the node tree more difficult.
+
+
+macro-definition
+	identifier
+	* macro-parameter
+	? block process
+	? block execute
+	? block evaluate
+
+macro-parameter
+	identifier
+	node-type
+	count
+	
+node-type
+	can specify "identifier", "statement", or "expression" (amoung others)
+
+count
+	integer minimum
+	? integer maximum
+maximum is infinite if not given
+
+macro-application
+	identifier
+	* macro-argument
+
+macro-argument
+	identifier parameter name
+	node argument
+
+
+
+interface IdentifierInfo
+	get String name
+	get Bool isIdentikey?
+	get Bool isNamespace?
+
+macros needs to declare:
+	what it's children can be
+	requirements for those children (process time and runtime)
+	what nodes those children map to
+
+
+
+
+stages of Desal:
+	* representation (XML, text, database)
+	-> parser
+	* unprocessed tree
+	-> processor
+	* processed tree
+	-> agent (interpreter, compiler)
+
+An agent shouldn't have to know anything about macros. Macros should leave no traces of their existance after processing.
+
+The output of a chain node depends on the type of it's arguments. e.g. namespace::alpha or object.alpha ? It must be decided during processing. That means macro-definition nodes can't just have evaluate and execute block. macro-definition blocks must be able to decide the output during processing.
+
+Lookup XSLT and XBL for ideas of what to call the output of a macro-application.
+	replacement content?
+	shadow content?
+
+Need a way of saying "try to make sure of this during processing, but if unable, check it at runtime".
+
+
+
+
+
+--------- example
+
+gets the interface of an expression without evaluating the expression
+may evaluate to null (such as when the expression is a call to a library function without a specified return type)
+
+macro FACE_OF {
+	parameter Expression expr [1] //an Expression value during processing, a func()* during evaluation
+	process {
+		decl-first Interface face = expr.interface
+	}
+	evaluate {
+		return face
+	}
+}
+
+--- usage:
+
+Interface face = #FACE_OF(2 + 3)
+if face != null {
+	println face.parameters.count
+}
+
+Interface face2 = #FACE_OF( lib.getDyn() )
+println face.parameters.count //probably give a runtime NullError
+
+
+
+
+
+
+--------- example
+
+gets the interface of an expression without evaluating the expression
+may evaluate to null (such as when the expression is a call to a library function without a specified return type)
+
+macro FACE_OF {
+	parameter Expression expr [1]
+	evaluate {
+		return expr.interface
+	}
+}
+
+--- usage:
+
+Interface face = #FACE_OF(2 + 3)
+if face != null {
+	println face.parameters.count
+}
+
+Interface face2 = #FACE_OF( lib.getDyn() )
+println face.parameters.count //probably give a runtime NullError
+
+Note that this can give runtime type information.
+
+decl foo = getDyn()
+Interface face = #FACE_OF(foo)
+
+At runtime, the agent should be able to figure out the interface of foo.
+
+
+
+
+--------- example
+
+macro ENSURE_IS_NAMESPACE {
+	parameter Identifier ident [1]
+	process {
+		if ident.isNamespace? == false {
+			throw ProcessErrorClass(
+				"identifier '$(ident as String)' is not associated with a namespace")
+		}
+	}
+}
+
+--- example usage:
+
+func foo() {
+	decl-first Int alpha = 123
+	#ENSURE_IS_NAMESPACE(alpha) //error during processing
+}
+
+
+
+Aguments to macros don't have to be labeled when all parameters have a count of 1 and/or there's only 1 parameter.
+
+parameter Identifier foo [1]
+parameter Expression bar [1]
+parameter Boolean maz [1]
+
+or:
+
+parameter Identifier alpha [0+]
+
+
+
+
+
+----------- example: chain node
+
+namespace::object.property:method
+
+(macro-definition
+	(identifier chain)
+	(boolean.executable true)
+	(boolean.evaluatable true)
+	(macro-parameter
+		(identifier starting_value)
+		(node-type expression)
+		(count
+			(integer.minimum 0)
+			(integer.maximum 1)))
+	(macro-parameter
+		(identifier member)
+		(node-type identifier)
+		(count
+			(integer.minimum 2)))
+	??? )
+
+$macro chain {
+	$evalutable
+	$paramater {
+		$name starting_value
+		$type expression
+		$count 0 - 1
+	}
+	$parameter {
+		$name member
+		$type identifier
+		$count 2
+	}
+	$process {
+		
+	}
+}
+
+
+(macro-application
+	(identifier.name chain)
+	(macro-argument
+		(identifier.parameter-name member)
+		(identifier.argument object))
+	(macro-argument
+		(identifier.parameter-name member)
+		(identifier.argument property)))
+
+

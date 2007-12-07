@@ -1,0 +1,71 @@
+----- partial interface implementations
+
+Let's say there's a huge interface you want to implement, but you surely don't want to implement the whole thing in one go. You want to implement part of it and test, then implement some more. How would you go about doing this?
+
+class FooClass {
+	...
+	
+	partial interface Foo {
+		...
+	}
+}
+
+The "partial" keyword tells the Desal implementation to fill in any missing member implementations with an automatic implementation that throws an Unimplemented error. Desal implementations should output a warning when finding partial interface implementations, as they are only intended to be used temporary.
+
+----- new members
+
+Let's say there's a very important interface that's implemented lots of times, and you want to add a new member. But of course you don't want to have to implement it all at once. You want to test the first few impementations before implementing it in everything else.
+
+Default implementations can help here. Default implementations aren't able to access the state of the objects they become associated with, but they can do other things, like throw an Unimplemented error.
+
+interface Foo {
+	... //old members
+	
+	copy {
+		throw UnimplementedClass()
+	}
+	
+	convert String {
+		throw UnimplementedClass()
+	}
+	
+	callee() {
+		throw UnimplementedClass()
+	}
+	
+	get Int newValue {
+		throw UnimplementedClass()
+	}
+	
+	func newMethod() {
+		throw UnimplementedClass()
+	}
+}
+
+However, this is not as semantic as it could be. Adding some semantics here could reduce the amount of code and repetition. So, we have the "new" status. Marking a member as "new" gives it an automatic default implementation that throws a UnimplementedNewMember error. (The interface can override the default implementation.)
+
+interface Foo {
+	... //old members
+	
+	new copy
+	new convert String
+	new callee()
+	new get Int newValue
+	new func newMethod()
+}
+
+----- deprecated members
+
+What if you want to remove a member from an interface? You could remove every implementation and use of the member, then remove the member, but that's not a very incremental approach.
+
+Something that can help is marking a member as deprecated. This gives it a default implementation that throws an UnimplementedDeprecatedMember error. (The interface can override the default implementation.) That will allow you to remove implementations incrementally from classes.
+
+Desal implementations should warn when finding an implementation of a deprecated member, or when a deprecated member is used. That could be *a lot* or warnings, so Desal implementations are also encouraged to provide an option to lessen the amount.
+
+interface Face {
+	...
+	
+	deprecated func oldMethod
+}
+
+

@@ -13,6 +13,9 @@ terms
 	leaf/terminal nodes
 	tree nodes
 
+generators
+	yield
+
 generics
 something like C++'s template specialization
 how can generics be instantiatiated with "dyn" as an interface?
@@ -181,6 +184,9 @@ possibly spec out common conventions
 
 ensure Desal has all features of lambda calculus
 
+think up new name for "Desal implementation"
+possibilities: realization, attuazione (Italian for implementation)
+
 add processing step to Desal
 create ScopeFormulas from declarations
 check all interfaces to ensure correctness
@@ -210,13 +216,15 @@ add to rationale section
 	why split between semantics and syntax?
 	why not use technology XXX (like ASN.1, LaTeX, etc)
 
-spec out function identifiers that can refer to functions with different return types
+rename Desal Interpreter 001 to Desal Agent 001
+
+spec out function identikeys that can refer to functions with different return types
 spec out methods with the same name that have different return types
 
 write style guidelines for specs
 separate (what stuff *should* do) from (what stuff should *not* do)
 
-!!! NEW !!!
+
 Every class node's interface implementations should be reduced to a single interface implemenatation of the interface that is produced by adding together the interfaces of the provided interface implementations.
 class
 	faceimpl Foo
@@ -224,7 +232,27 @@ class
 __priv = Foo + Bar
 class
 	faceimpl __priv
-!!! NEW !!!
+
+
+figure out how to create closed/sealed interfaces -- interfaces that are inherited already, but can't be inherited any more
+example: a Node interface that is inherited by Tree and Leaf interfaces, but no others
+(decl-first
+	(identifier.name Node)
+	(interface
+		/* ... */
+		(boolean.sealed true)))
+(decl-first
+	(identifier.name Tree)
+	(interface
+		/* ... */
+		(identifer.inheritee Node)))
+(decl-first
+	(identifier.name Leaf)
+	(interface
+		/* ... */
+		(identifer.inheritee Node)))
+Note: For global identikeys, need to prevent other planes from inheriting interface.
+
 
 spec out creating objects without classes (singletons)
 

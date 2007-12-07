@@ -1,0 +1,21 @@
+for-each ::=
+	expression function
+	+ mapping-member
+
+map ::=
+	expression function
+	+ mapping-member
+
+mapping-member ::=
+	+ expression
+
+forEach doSomething
+	"foo", Foo, func(){...}
+	"bar", Bar, func(){...}
+	"abc", Abc, func(){...}
+
+similar to:
+
+doSomething("foo", Foo, func(){...})
+doSomething("bar", Bar, func(){...})
+doSomething("abc", Abc, func(){...})

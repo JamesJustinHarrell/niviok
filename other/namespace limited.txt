@@ -1,15 +1,16 @@
-The Native namespace contains:
+This concerns a namespace named "limited", which contains members that produce numbers that are limited to certain values, i.e. numbers that cannot represent all integers or rational numbers. It is not intended to be used for runtime performance, but rather for programmer efficiency.
+
+The "limited" namespace contains:
 
 	interface LimInt
-		func floorDivide(Int) Int
-		func floorDivide!(Int) Int
 	interface LimRat
 	func SInt(Int value, Int bits) LimInt
 	func UInt(Int value, Int bits) LimInt
 	func Float(Rat value, Int bits) LimRat
 	func Fixed(Rat value, Int bitsBefore, Int bitsAfter) LimRat
+	func SciNum(Rat value, Int significandBits, Int exponentBits) LimRat
 
-If the Native namespace is present, it must contain these 6 members. (Additional members are allowed.)
+If the "limited" namespace is present, it must contain these 7 members. (Additional members are allowed.) 
 
 If there is no native type with the number of bits specified, but there is a native type with more bits than specified, the native type with more bits should be used.
 	example: UInt(0, 30) might use an unsigned 32-bit integer

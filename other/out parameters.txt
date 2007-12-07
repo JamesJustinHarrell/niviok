@@ -1,0 +1,11 @@
+out parameters (and in-out and in-mutable-out members) should work with properties and the key() methods if a value has both a getter and setter
+
+generic<T>
+func swap( in-mutable-out T a, in-mutable-out T b ) {
+	T temp = a
+	a = b
+	b = temp
+}
+
+swap( foo.bar, foo.baz )
+swap( foo[5], foo[6] )

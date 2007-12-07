@@ -1,0 +1,72 @@
+Problem: Parameter names are not expressed in function interfaces.
+(off-topic problem: still haven't defined how multiple functions can be bound to an identikey defined by a decl-first)
+
+
+decl func(Int,Int)Int add
+
+add = func(Int a, Int b) Int {
+	return a + b
+}
+
+decl-first func Int add = func(Int a, Int b) Int {
+	return a + b
+}
+
+
+In either case, add(a = 2, b = 3) wouldn't work, because the func(Int,Int)Int interface does not define parameter names.
+
+
+----- interfaces
+
+function interface
+	defines only type and number of parameters (as well as return type)
+
+named-parameter function interface (napafufa)
+	defines name, type, and number of parameters (as well as return type)
+
+interface napafufa(Int a, Int b) Int
+	inherit func(Int,Int)Int
+	callee(Int a, Int b) Int
+	call(Int a, Int b) Int
+
+interface func(Int,Int)Int
+	inherit Function
+	callee(Int,Int)Int
+	func call(Int,Int)Int
+
+interface Function
+	callee call(dyn[] params) dyn
+	callee apply(dyn[]) dyn
+	get List<Parameter> parameters
+	get ReturnInfo returnInfo
+
+interface Parameter
+	get nullable String name
+	get nullable Interface interface
+	get Bool hasDefault
+
+interface ReturnInfo
+	get Bool returns
+	get nullable Interface interface
+
+Problem: If the arguments do not match any of the callees on a func(Int,Int)Int value, it'll just use the call on Function instead, and the error won't show up untill runtime.
+
+func(Int,Int)Int foo = ...
+foo("won't", "work", "at", "all")
+gets mapped to
+(foo as Function)(...)
+
+
+----- mapping
+
+(note: interface member includes callees and methods)
+
+call -> interface member
+Uses name, type, and number of parameters.
+
+interface member -> implementation
+Uses type and number of arguments.
+
+call -> implementation
+Uses the (call -> interface member) map to see what member is being used, then uses the (interface member -> implementation) map to get the implementation.
+
