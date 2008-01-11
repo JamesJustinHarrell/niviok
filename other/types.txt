@@ -1,0 +1,282 @@
+===== places where type info appears
+
+(6 places)
+
+declaration nodes:
+	when scope created
+		declare-first
+		declare-function
+	when execution reaches node
+		declare-assign
+		declare-empty
+
+
+===== identikey type
+
+the identikey type consist of:
+* the identikey category (constant, dynamic, strict, automatic, function)
+* sometimes, an interface
+
+The dynamic, automatic, and strict identikeys are the same after declaration when const, so instead of repeating stuff, just merge them into the "constant" identikey.
+During processing, agents should emit a warning if the interface of an automatic identikey cannot be determined during processing.
+Agents should add runtime type checking for automatic identikeys where the type cannot be determined during processing. Agents that do not do this must treat automatic identikeys like dynamic identikeys.
+Agents should emit a warning during processing when the output of an expression that always evaluates to null is assigned to an identikey
+
+constant (not explicitly typed)
+	not nullable
+		$declfirst foo = getFoo()
+		$decl $const foo = getFoo()
+	nullable
+		$declfirst ? foo = getFoo()
+		$declfirst ? foo
+		$decl $const ? foo = getFoo()
+		$decl $const ? foo
+constant (explicitly typed)
+	not nullable
+		$declfirst Foo foo = getFoo()
+		$decl $const Foo foo = getFoo()
+	nullable
+		$declfirst Foo ? foo = getFoo()
+		$declfirst Foo ? foo
+		$decl $const Foo ? foo = getFoo()
+		$decl $const Foo ? foo
+dynamic
+	not nullable
+		$decl foo = getFoo()
+	nullable
+		$decl ? foo = getFoo()
+		$decl ? foo
+automatic
+	not nullable
+		$decl $auto foo = getFoo()
+	nullable
+		$decl $auto ? foo = getFoo()
+		$decl $auto ? foo
+strict
+	not nullable
+		$decl Foo foo = getFoo()
+	nullable
+		$decl Foo ? foo = getFoo()
+		$decl Foo ? foo
+function
+	not nullable
+		$declfunc foo = getFuncA()
+		$declfunc foo = getFuncB()
+		$declfunc Int foo = getIntFuncA()
+		$declfunc Int foo = getIntFuncB()
+	nullable
+		$declfunc ? foo = getFuncA()
+		$declfunc foo = getFuncB() //either this or before must be null
+		$decl $func ? foo = getThing()
+null
+	$decl $null foo = (while a : doStuff())
+
+What about nullable function identikeys? Should function identikeys really come in variable forms?
+Proposal: Create new node type declaration-function. Only declaration-function nodes are capable of creating constant function identikeys. Declaration-function nodes work like declaration-first nodes, and in fact declaration-first and declaration-function nodes evaluate together in order node by node (i.e. not all decl-first then all decl-func or vice versa). Regular declaration nodes can create variable function identikeys. Variable function identikeys can be null.
+
+These types:
+	automatic
+	automatic or null
+	strict
+	strict or null
+	any functions
+	any functions with specified return type
+come in constant and variable forms
+
+
+===== expression output type
+
+may be explicitly stated like for function return types
+may be implicitly determined during processing
+
+any value
+	func foo() * {...}
+	foo()
+any value or null
+	func foo() ? {...}
+	foo()
+specified face
+	3
+specified face or null
+	func foo() Int ? {...}
+	foo()
+one of specified faces
+	if a : 12345
+	else : "text"
+one of specified faces or null
+	if a : 12345
+	elif b : "text"
+	else : null
+null
+	while a : doStuff()
+
+
+===== parameter type
+
+stuff like in(-mutable)/out/in(-mutable)-out
+an optional interface
+
+any value
+any value or null
+specified face
+specified face or null
+any value that imples face that inherits from one of specified faces
+any value that imples face that inherits from one of specified faces or null
+
+
+===== generics type parameters
+
+C++ in-the-wild example:
+	template <class Cond, class T = void> struct enable_if;
+
+All type parameters must be expressable as values in Desal.
+
+Problem: How are void and untyped types expressed?
+
+generic <T = Int>
+func foo() T {...}
+
+"Int" means that foo returns an Int.
+
+generic <T = null>
+func foo() T {...}
+
+"null" could mean that foo returns nothing, or than foo can return anything.
+
+But this is part of a larger problem, not just a problem with generics type parameters. The whole idea of types needs to be rethought, unified, and simplified.
+
+
+===== exception-handler type
+
+a list of interfaces that are handled by that handler
+
+
+===== value type
+
+an interface
+doesn't include stuff like "nullable" or "voidable", but may be null or void
+
+
+
+
+question: what is the difference between void and untyped null?
+answer: void is a lack of type (and value), while null is a lack of value
+
+question: so doesn't that mean untyped null is the same as void?
+answer: uhhh...
+
+
+non-null, non-void
+
+non-null, voidable
+
+nullable, non-void
+
+nullable, voidable
+
+void
+
+null
+
+null and typed
+
+
+better question: How does untyped null ever occur?
+
+
+
+
+rationale for typed null: type safety
+
+Example:
+(imagine Foo does not inherit from Bar, and vice versa)
+(imagine "Foo ?" means a nullable Foo)
+
+$decl func getBar() Bar ? {...}
+$decl Foo ? foo = getBar()
+	Without typed nulls, processing couldn't catch this error, because getBar() could return a null, and null can be assigned to foo. The error wouldn't be caught until runtime, and even then it wouldn't be caught if getBar() returned null.
+	With typed nulls, this would produce an error during processing, since getBar() would return a Bar or a Bar null, neither of which can be assigned to foo.
+
+$decl func takeFoo(Foo ? foo) void {...}
+$decl Bar ? bar = getBar()
+takeFoo(bar)
+	Without typed nulls, processing couldn't catch this error, because bar could be null, and the foo parameter can be null. The error wouldn't be caught until runtime, and even then it wouldn't be caught if getBar() returned null.
+	With typed nulls, this would produce an error during processing, since getBar() would return a Bar or a Bar null, neither of which can be used as an argument to takeFoo().
+
+takeFoo( getBar() )
+	Same reasons as previous.
+
+
+
+
+
+
+be clear that null is a value, not a type
+a null value can be associated with an interface
+
+actions that don't raise an errors::Null exception
+	downcasting
+	examining the active interface of typed null values
+		getActiveInterface(), hasProperty(), hasMethod(), etc
+	determining whether the value is null (create an is-null node?)
+
+actions that do raise an errors::Null exception
+	upcasting
+	examining the active interface of untyped null values
+		getActiveInterface(), hasProperty(), hasMethod(), etc
+	accessing members (callees, properties, methods, conversions)
+	assigning a null value to an identikey that does not allow null values
+
+a null vaulue has a type if it was produced by an expression that has a face declared as part of the expression-output
+
+func foo() nullable Int {...}
+func foo() Int ? {...}
+if calling foo results in a null value, that value is associated with the Int face
+
+func foo() dyn {...}
+func foo() * {...}
+if calling foo results in a null value, that value is not associated with any interface
+
+func foo1() nullable Int { return null }
+func foo2() * { return foo1() }
+foo1() evaluates to a type null
+foo2() evaluates to an untype null
+the null had a type, but lost it
+it's as if the type null was downcast to an untyped null
+
+
+
+
+
+--- dynamic function overloading
+
+$decl MultiFunc foo = MultiFunc()
+foo << getFuncA()
+foo << getFuncB()
+foo << getFuncC()
+foo.remove!( $func(Int,Int)Rat )
+foo(123)
+
+
+
+
+
+--- rationale for function identikeys
+
+Function identikeys enable associating multiple functions with the same identikey, i.e. function overloading. Function overloading is such a valuable tool that, in languages that do not support it, programmers fake it, poorly. It is better for a language to have function overloading built-in that to force programmers into fakery.
+
+Additional functions are bound to a function identikey with additional declarations.
+rationale: Assigning to an identikey after declaration is allowed for other identikey types, but it overwrites instead of adding. No other identikey type allows an identikey to be declared multiple times, so doing it this way alerts users that this is different. Users won't be as certain that the declaration will overwrite.
+rationale: Code should be able to define overloaded global functions across planes without one plane containing the sole function identikey declaration, and other planes just adding more functions to it. Users should be able to declare a global function without care of whether the function is an overload or not. (Most languages with function overloading work this way. Global functions definitions look the same whether they are an overload or a standalone.)
+
+Uses its own declaration-function node.
+rationale: Other kinds of declaration nodes always create an identikey. Function declarations only create an identikey sometimes, and just associate more functions with a preexisting identikey other times. Differing semantics requires a different node.
+
+Function identikeys only come in constant forms.
+rationale:
+(1) For variable function identikeys to be useful, you'd need to be able to associated a function identikey with additional functions conditionally. But declaration nodes create identikeys in the same scope that the declaration is evaluated in. (I.e., a declaration in an if-else node will produce an identikey in the scope of the if-else node.) That means a different way would be needed for associating function identikeys with functions.
+(2) But you'd still need function identikey declarations to create the function identikeys in the first place. That means declaring the function identikey would be separate from associating functions with the function identikey.
+(3) Constant and variable function identikeys shouldn't differ unnecissarily. That would mean that constant overloaded functions would have to have one function declaration somewhere. Global overloaded functions would all have to rely on a single function declaration somewhere. This makes global function overloading more error-prone and difficult to understand.
+(4) In other languages with function overloading, function identikeys can usually not be modified at runtime.
+(5) Users can get most of the benefits of variable function identikeys with a function container value that takes multiple functions and calls the appopriate one when directed.
+

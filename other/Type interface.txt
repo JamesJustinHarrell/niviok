@@ -1,0 +1,75 @@
+--- information expressed ---
+
+untyped null
+-or-
+dyn
+-or-
+specific interface
+-or-
+
+opt:
+	(dyn)
+	* inheritees
+opt +:
+	interface
+	nullable
+	* inheritees
+
+
+--- rationale for typed null ---
+
+Runtime type checking that matches checking during processing.
+
+func getFoo() Foo ? {...}
+$decl Bar ? bar = getFoo()
+
+(assume a Foo can't be downcast to a Bar)
+
+Here, it is possibe that getFoo() returns a null. If the null is untyped, the assignment to bar would be allowed. However, during processing, an agent could determine that getFoo() will never return anything that can be downcast to a Bar, and produce an error.
+
+For runtime type checking to do the same, one possibility is for getFoo() to return a typed null. A Foo null cannot be downcast to a Bar null, and thus enables runtime type checking to behave equivalently to processing type checking.
+
+In any case, the spec should explicitly and clearly state that agents are allowed to type checking as if all nullable nodes always produced non-null values.
+
+Agents should not be required to support typed null. If type null is supported, it doesn't have to be supported fully. Agents can use type null however much they want.
+
+
+--- example ---
+
+func getFoo() Foo ? {...}
+func getBar() Bar ? {...}
+
+$decl foo
+foo =
+select a
+case 0 : getFoo()
+case 1 : getBar()
+
+What is the type of the select node?
+
+Foo ? -or- Bar ? -or- untyped null
+
+Foo -or- Bar -or- untyped null
+
+dyn -or- untyped null
+
+
+--- example ---
+
+$decl Foo foo =
+if a < b : a
+else : throw newError()
+
+What is the type of a throw node? It can't be null, because that would make the if-else node nullable, and foo cannot be null, so it would emit a warning (or error).
+
+
+--- example ---
+
+func getFoo() Foo ? {...}
+
+$decl Foo ? foo = getFoo()
+
+if foo isnull
+	foo
+else
+	throw error

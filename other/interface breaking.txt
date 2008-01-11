@@ -1,0 +1,78 @@
+----- interface subsets
+
+$interface Alpha {
+	$getset Int apple
+	$getset Int pineapple
+	$func doStuff1(String a, String b)
+	$func doStuff2(String a)
+}
+
+$interface Beta {
+	$get Int apple
+	$get Int orange
+	$func doStuff1(Rat a, Rat b, Rat c) Rat
+	$func doStuff2(String a)
+}
+
+$interface Delta {
+	$subset Alpha
+	$subset Beta
+	$get Int apple
+	$func doStuff2(String a)
+}
+
+alternatively:
+$decl Interface Delta = intersect(Alpha, Beta)
+
+
+$decl Alpha a1 = getAlpha()
+$decl Beta b1 = getBeta()
+$decl Delta a2 = a1
+$decl Delta b2 = b1
+
+
+a1 and b1 here do not implement the Delta interface. When examining the list of interfaces they implement (e.g. getInterfaces(a1)) they do not list Delta. However, when (down) cast to Delta, they can see that Delta is specified as being a subset of Alpha and Beta. Therefore, if the value implements Alpha or Beta, they can use that implementation to create an implementation of Delta.
+
+
+
+----- wrappers
+
+Let's assume another interface was created with all the members of Delta, and you want to use it as a Delta. However, you can't update Delta to include the interface, and you don't want the interface inheriting from Delta. Can you use the value as a Delta? Yes, with a wrapper.
+
+interface Gamma {
+	$get Int apple
+	$get Int cherry
+	$get Int watermelon
+	$func doStuff1()
+	$func doStuff1(Foo foo) Foo
+	$func doStuff2(Foo foo) Bar
+	$func doStuff2(String a)
+}
+
+$decl Gamma g = getGamma()
+$decl Delta d = wrap<Delta>(g)
+
+The "wrap" function creates a wrapper for the specified interface. Whenever a member of the produced value is accessed, the wrapper accesses the parameter passed to it.
+
+So d.doStuff2("text") would end up calling g.doStuff2("text")
+
+
+
+----- ADT
+
+$func isDelta?( val ) {
+	$return $select interfaceOf val
+	$case Alpha : $eval true
+	$case Beta : $eval true
+	$else : $eval false
+}
+
+$func printType( d where isDelta?(d) ) {
+	print $select interfaceOf(d)
+	$case Alpha : $eval "Alpha"
+	$case Beta : $eval "Beta"
+	$else $throw ErrorClass("this shouldn't happen")
+}
+
+The implementation should be able to determine the possible interfaces of the "d" parameter in printType, and warn when not all are handled.
+

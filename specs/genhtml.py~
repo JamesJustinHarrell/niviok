@@ -356,7 +356,7 @@ def normalize(node) :
 	elif node.COMMENT_NODE == type :
 		parent.removeChild(node)
 	else :
-		raise Exception("unexpected type: %s" % type)
+		raise Exception("error " + `type`)
 		#ENTITY_REFERENCE_NODE = 5
 		#ENTITY_NODE = 6
 

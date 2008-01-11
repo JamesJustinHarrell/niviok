@@ -412,8 +412,6 @@ If "fooo" was not defined, the agent would have reason to refuse to handle the b
 
 Once an agent has begun execution, such reasons are not valid reasons for not continuing execution. Execution must continue normally as described.
 
-Desal spec should define things as if entirely dynamic, but should note that it doesn't have to be treated as dynamic.
-
 
 
 ----- Dextr

@@ -1,0 +1,68 @@
+from http://en.wikipedia.org/wiki/Decorator_pattern
+
+interface Window {
+    func draw()
+    get String description
+}
+
+class SimpleWindow {
+	...
+
+	impl Window {
+		func draw() {...}
+		get String description { "simple window" }
+	}
+}
+
+class VerticalScrollBarDecorator {
+	Window _decoratedWindow
+
+	construct(Window decoratedWindow) {
+		_decoratedWindow = decoratedWindow
+	}
+ 
+	func drawVerticalScrollBar() {...}
+
+	impl Window {
+		func draw() {
+			drawVerticalScrollBar()
+			_decoratedWindow.draw()
+		}
+
+		get String description {
+			_decoratedWindow.description & ", including vertical scrollbars"
+		}
+	}
+}
+
+class HorizontalScrollBarDecorator {
+	Window _decoratedWindow
+
+	construct(Window decoratedWindow) {
+		_decoratedWindow = decoratedWindow
+	}
+
+	func drawHorizontalScrollBar() {...}
+
+	impl Window {
+		func draw() {
+			drawHorizontalScrollBar()
+			_decoratedWindow.draw()
+		}
+
+		get String description {
+			_decoratedWindow.description & ", including horizontal scrollbars"
+		}
+	}
+}
+
+func testWindowDecorators() {
+	Window decoratedWindow =
+		HorizontalScrollBarDecorator(
+			VerticalScrollBarDecorator(
+				SimpleWindow() ))
+	
+	decoratedWindow.draw()
+	println decoratedWindow.description
+}
+

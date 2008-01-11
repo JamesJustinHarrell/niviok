@@ -1,0 +1,78 @@
+functions and interfaces are just implementations of interfaces
+there is a Function interface, several function interfaces, and an Interface interface
+
+but classes are just functions; there is no Class interface
+so make it that way
+
+but remember: the implementation details, just like for functions, should not be reflected through the interface
+
+interface Class
+	get Interface[] faces
+	get Interface masterFace
+	get ExpressionOutput output
+
+"faces" is all the faces that instances of the class implement
+"masterFace" is the interface that results from the addition of all the top-level interfaces.
+"output" is the restrictions that are placed on the interface of the values that are produced by the classe
+
+
+class FooClass {
+	...
+
+	interface Foo1 {
+		...
+	}
+	
+	interface Foo2 {
+		...
+	}
+}
+
+FooClass.faces = [ Foo1, Foo2 ]
+FooClass.masterFace == Foo1+Foo2
+FooClass.output == { face = Foo1+Foo2, ... }
+
+class BarClass {
+	...
+	
+	interface Bar1 {
+		interface Bar1a {...}
+	
+		default interface Bar1b {
+			...
+		}
+		...
+	}
+	
+	interface Bar2 {...}
+}
+
+BarClass.faces = [ Bar1, Bar1a, Bar1b, Bar2 ]
+BarClass.masterFace == Bar1+Bar2
+BarClass.output == { face = Bar1b, ... }
+
+
+
+
+
+
+
+
+class node evaluates to a value with an active interface that inherits from the Interface interface
+implementation of Interface interface: the master face
+also on active interface: callees (constructors) and static properties/methods
+defined interfaces appear as getters on active interface
+
+
+class FooBar {
+	...
+	
+	define interface A {...}
+	define interface B {...}
+	define interface C {...}
+}
+
+(FooBar as Interface) == FooBar.A + FooBar.B + FooBar.C
+
+(FooBar as Interface) == FooBar.masterFace
+

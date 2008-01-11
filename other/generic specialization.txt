@@ -1,0 +1,40 @@
+generic<T>
+func foo(T o) {
+	:error-on-call
+}
+
+specialization<Int>
+func foo(Int o) {
+	pritln "Int"
+}
+
+specialization<Rat>
+func foo(Rat o) {
+	println "Rat"
+}
+
+
+generic-function ::=
+	+ identifier parameters
+	function
+	+ function-specializations
+
+function-specialization ::=
+	+ argument
+	function
+
+
+(generic-function
+	(identifier.parameter T)
+	(function
+		...)
+	(function-specialization
+		(identifier.argument Int)
+		(function
+			...))
+	(function-specialization
+		(identifier.argument Rat)
+		(function
+			...)))
+
+

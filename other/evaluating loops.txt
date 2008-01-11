@@ -1,0 +1,27 @@
+Loops currently never evaluate to anything in Desal because I don't know how to produce a single value. Each iteration through the loop can produce a value, but how do you produce a single value, but how do you get a single value from that?
+
+Idea: Make loops more extensible, so that what is done can be one of several things. This could even be expanded to making loop nodes produce function values.
+
+Example: An "and" loop would "and" together the values produced by each iteration. If an iteration evaluated to false, the remaning iterations would not be executed.
+
+decl String[] strings = getStrings()
+decl Bool noneEmpty =
+	and_loop::: for string in strings {
+		not string.isEmpty?
+	}
+
+decl foo = and_loop::: for string in strings {...}
+interfaceOf(foo) == func(dyn strings)Bool //true
+
+
+Example: A "list" loop would concat the values produced by each iteration to a list and produce the list.
+
+decl String[] strings = getStrings()
+decl String[] uppercaseStrings =
+	list_loop::: for string in strings {
+		toUppercase(string)
+	}
+
+decl foo = list_loop::: for string in strings {...}
+interfaceOf(foo) == func(dyn strings)dyn[] //true
+

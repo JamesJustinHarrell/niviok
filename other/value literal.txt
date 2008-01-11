@@ -1,0 +1,25 @@
+interface Foo {
+	get Int a
+	get+set String b
+	func doStuff()
+}
+
+Foo foo = Foo {
+	a : 5
+	b : 7
+	doStuff : func(){}
+}
+
+
+
+interface Integer {
+	func add(Integer) Integer
+}
+
+Integer int = Integer {
+	__value : 9
+	add : func(Integer i) { return this.__value + i }
+}
+
+keys starting with "__" are ignored unless such a key is specified by the interface
+

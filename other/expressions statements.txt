@@ -1,0 +1,65 @@
+block
+	* statement
+	? expression
+
+{
+	$decl i = 3
+	doStuff( @i )
+	println i
+}
+
+$decl foo = {
+	$decl i = 3
+	doStuff( @i )
+	i
+}
+
+That could be ambiguous.
+
+possibility 1:
+$decl foo = {{
+	$decl i = 3
+	doStuff( @i )
+	i
+}}
+
+possibility 2:
+$decl foo = {
+	$decl i = 3
+	doStuff( @i )
+	eval i
+}
+
+
+
+
+many things are sometimes expressions, and sometimes not
+
+put into "sometimes expression" section
+
+call
+curry
+block
+conditional-block
+if-else
+try-catch
+
+
+$decl Result =
+try {
+	doStuff()
+	Results.SUCESS
+}
+catch(Exception e) {
+	Results.FAILURE
+}
+
+
+func foo(f) dyn {
+	try : f()
+	catch Errors.CantEval : null
+}
+
+$decl a = foo(doSomething)
+println a //"null"
+

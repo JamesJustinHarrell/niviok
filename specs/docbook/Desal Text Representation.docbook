@@ -16,22 +16,37 @@
 			<title>Design goals</title>
 			
 			<simplelist>
-				<member>Be easy for current programmers to pick-up. This means a representation that uses text files which are meant to be edited directly (as opposed to something like an XML representation which should be edited through an IDE). It also means keywords should be prefered over special symbols, although some C-style symbols are well-known enough to use.</member>
-				<member>Be easy to parse by humans and computers. This means compromising a bit with the first point.</member>
-				<member>Be able to encode nearly the full set of semantics offered by Desal Semantics, and use a very direct 1-to-1 mapping.</member>
-				<member>Minimalism, where not detrimental. This means if leaving a few characters out doesn't hurt one of the other points, leave them out. This is the rationale for stuff like this:
-				<screen>
-$if a > b
-	doSomething()
-$else
-	doSomethingElse()
-
-$if a > b : doSomething()
-$else : doSomethingElse()
-				</screen>
-				Notice the lack of parenthesis around "a > b". This may be removed if it's too hard to parse.
-				</member>
+				<member>easy for current programmers to pick-up. This means a representation that uses text files which are meant to be worked with directly by programmers.</member>
+				<member>relatively easy to parse by humans and computers</member>
+				<member>able to encode most semantics offered by Desal Semantics, with a very direct 1-to-1 mapping</member>
+				<member>minimalism where not detrimental. This means if leaving a few characters out doesn't really hurt, leave them out</member>
 			</simplelist>
+		</section>
+		
+		<section xml:id="syntactic-blocks">
+			<title>Syntactic blocks</title>
+			
+			<screen>
+if a > b
+	doSomething1()
+	doSomething2()
+else
+	doSomethingElse1()
+	doSomethingElse2()
+
+if a > b : doSomething1(), doSomething2()
+else : doSomethingElse1(), doSomethingElse2()
+
+if a > b { doSomething()
+  doSomethingElse2() }
+else
+{
+	doSomethingElse1()
+doSomethingElse2()
+}
+			</screen>
+			
+			<para>In the first way, whitespace is significant. In the second and third way, newlines end the block, but otherwise whitespace is not significant.</para>
 		</section>
 	</chapter>
 	

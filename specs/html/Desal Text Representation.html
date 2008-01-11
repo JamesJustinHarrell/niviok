@@ -14,6 +14,12 @@
                     <li>
                         <a href="#introduction">1.1. Introduction</a>
                     </li>
+                    <li>
+                        <a href="#design-goals">1.2. Design goals</a>
+                    </li>
+                    <li>
+                        <a href="#syntactic-blocks">1.3. Syntactic blocks</a>
+                    </li>
                 </ol>
             </li>
             <li>
@@ -51,6 +57,38 @@
                 <h2>1.1. Introduction</h2>
                 <p>This document defines a means of representing Desal semantics, and a means for extracting the semantics by a computer agent.</p>
             </div>
+            <div id="design-goals">
+                <h2>1.2. Design goals</h2>
+                <ul>
+                    <li>easy for current programmers to pick-up. This means a representation that uses text files which are meant to be worked with directly by programmers.</li>
+                    <li>relatively easy to parse by humans and computers</li>
+                    <li>able to encode most semantics offered by Desal Semantics, with a very direct 1-to-1 mapping</li>
+                    <li>minimalism where not detrimental. This means if leaving a few characters out doesn't really hurt, leave them out</li>
+                </ul>
+            </div>
+            <div id="syntactic-blocks">
+                <h2>1.3. Syntactic blocks</h2>
+                <pre>
+if a &gt; b
+        doSomething1()
+        doSomething2()
+else
+        doSomethingElse1()
+        doSomethingElse2()
+
+if a &gt; b : doSomething1(), doSomething2()
+else : doSomethingElse1(), doSomethingElse2()
+
+if a &gt; b { doSomething()
+  doSomethingElse2() }
+else
+{
+        doSomethingElse1()
+doSomethingElse2()
+}
+</pre>
+                <p>In the first way, whitespace is significant. In the second and third way, newlines end the block, but otherwise whitespace is not significant.</p>
+            </div>
         </div>
         <div id="tokenization">
             <h1>Chapter 2. Tokenization</h1>
@@ -71,43 +109,43 @@
         </div>
         <div id="unsorted-stuff">
             <h1>Chapter 3. unsorted stuff</h1>
+            <pre>
+Word ::=
+        WordChar +
+        
+Identifier ::=
+        Word
+        
+Keyword ::=
+        "$" Word
+
+$if else &gt; return {
+        $throw throw
+}
+
+Rationale: Users should be quickly and easily able to tell whether a word is an identifier or a keyword, without having to memorize the list of keywords. Because identifiers are usually more common than keywords, keywords are given the burden of having an extra character instead of identifiers.
+
+Move to IDE guidelines:
+Syntax highlighters are encouraged to hide the $ character in keywords (in display only, not to remove it from source) and differentiate between keywords and identifiers though some other means (e.g. color). Such syntax highlighters must provide a means of switching a word between keyword and identifier.
+
+One possibility would be to display the $ in a particular keyword whenever the cursor has been next to or within the keyword for more than half a second. Such syntax highlighters should automatically and immediately recognize when a word has lost or gained a $ and update the way it is displayed immediately e.g. if the $ is removed from a keyword, the syntax highlighter should recognize the change immediately and not continue displaying the word like it is a keyword.
+
+Another possibility would be to never show the $ after a keyword has been typed, and ignore $ added in front of identifiers, but have a button, menu item, and/or keyboard shortcut that when activated, flips the meaning of the keyword that the cursor is currently in or next to.
+</pre>
             <div id="get-interface">
                 <h2>3.1. get interface</h2>
                 <p>It's always possible to bind the interface of an object to an identifier.</p>
-                <code xml:space="preserve">
-func getInterface{I}(I o) {
-        return I;
-}
-
-dynref o = getMysteryObj()
-interface i = getInterface(o)
-i o2 = o
-</code>
+                <code xml:space="preserve">func getInterface{I}(I o) { return I; } dynref o = getMysteryObj() interface i = getInterface(o) i o2 = o</code>
             </div>
             <div id="postfix-operator">
                 <h2>3.2. postfix incrementation operator</h2>
                 <p>"object++" doesn't create a temporary. The object has its increment method called after the object is accessed. The below two groups of code represent the same semantics.</p>
-                <code xml:space="preserve">
-int a = 3
-int b = a++
-
-int a = 3
-int b = a
-++a
-</code>
+                <code xml:space="preserve">int a = 3 int b = a++ int a = 3 int b = a ++a</code>
             </div>
             <div id="casting-sugar">
                 <h2>3.3. Dextr casting sugar</h2>
                 <p>Although interface objects do not have call methods, syntactially they appear to, although the syntax is translated into ordinary Desal semantics.</p>
-                <code xml:space="preserve">
-(foo bar).fooProp //semantically same as below
-                ( cast{foo}(bar) ).fooProp
-                
-                func(obj)foo toFoo1 = foo.call //semantically same as below
-                func(obj)foo toFoo2 = cast{foo}
-                
-                (toFoo1 bar).fooProp
-</code>
+                <code xml:space="preserve">(foo bar).fooProp //semantically same as below ( cast{foo}(bar) ).fooProp func(obj)foo toFoo1 = foo.call //semantically same as below func(obj)foo toFoo2 = cast{foo} (toFoo1 bar).fooProp</code>
             </div>
         </div>
         <div id="not-marked-up">

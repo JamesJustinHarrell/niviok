@@ -1,0 +1,45 @@
+computed_height =
+	if cell.style.overflow == visible
+		max( cell.style.height, content_height )
+	elif cell.style.height.defined?
+		cell.style.height
+	else
+		content_height
+
+computed_height = {
+	if cell.style.overflow == visible {
+		max( cell.style.height, content_height )
+	}
+	elif cell.style.height.defined? {
+		cell.style.height
+	}
+	else {
+		content_height
+	}
+}
+
+
+Dextr block
+
+lws = line white space
+fws = free white space
+
+block ::=
+	":" lws expression |
+	"{" fws (expression +) fws "}" |
+	/* tab block */
+
+foo
+	alpha
+	beta
+	gamma
+bar
+
+The tabs here create a tab block.
+
+foo {
+alpha
+beta
+gamma
+}
+bar

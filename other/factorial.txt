@@ -1,0 +1,40 @@
+(defun factorial (x)
+   (if (zerop x) 1
+       (* x (factorial (- x 1)))))
+
+(define (factorial x)
+    (if (zero? x) 1
+        (* x (factorial (- x 1)))))
+
+$decl auto const factorial = func(x) {
+	if x == 0 : 1
+	else : x * factorial(x - 1)
+}
+
+(declare-assign
+	(identikey-type
+		(identikey-category strict)
+		(boolean.auto true)
+		(boolean.const true))
+	(identifier.name factorial)
+	(function.value
+		(parameter
+			(identifier x))
+		(block
+			(if-else
+				(conditional-block
+					(call.test
+						(identifier.value x)
+						(identifier.method-name equals?)
+						(identifier.argument true))
+					(integer 1))
+				(block.else
+					(call
+						(identifier.value x)
+						(identifier.method-name times)
+						(call.argument
+							(identifier.value factorial)
+							(call.argument
+								(identifier.value x)
+								(identifier.method-name minus)
+								(integer.argument 1)))))))))

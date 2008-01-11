@@ -706,7 +706,6 @@ interface<I> Collection
 interface<I> List
 	indexed
 	elements can be added to beginning and end
-	dynamic array
 interface<I> FwdChain
 	forward chain, a singly-linked list
 interface<I> Deck

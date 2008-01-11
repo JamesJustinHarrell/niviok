@@ -238,3 +238,236 @@ $macro chain {
 		(identifier.argument property)))
 
 
+
+
+
+
+
+Macro definitions evaluate to functions.
+The first argument is always a ScopeFormula named named "scopeFormula".
+The other arguments are determined by the layout.
+An optional item ("?") is a nullable parameter.
++ and * become List parameters.
+
+Problem: How to get partial interface information?
+	generic<T>
+	interface Foo {
+		get T bar
+	}
+	Foo< lib.getDyn1() > foo = lib.getDyn2()
+	Boolean b = #HAS_PROPERTY( foo, bar )
+
+
+macro CHAIN {
+	layout {
+		? Expression startExpr
+		+ Identifier idents
+	}
+
+	if startExpr != null {
+		return CHAIN_VALUE(scopeFormula, startExpr, idents)
+	}
+	
+	if idents.count == 1 {
+		throw newProcessingError(
+			"must have at least two idents when starting value not given")
+	}
+	
+	if scopeFormula.isNamespace?(idents[0]) {
+		return CHAIN_NAMESPACE(scopeFormula, idents)
+	}
+	
+	if scopeFormula.isIdentikey?(idents[0]) {
+		return CHAIN_IDENTIKEY(scopeFormula, idents);
+	}
+	
+	throw newProcessingError(
+		"if starting value not given, first identifier must refer to namespace or identikey")
+}
+
+macro CHAIN_NAMESPACE {
+	layout {
+		2+ Identifier idents
+	}
+	
+	decl nsIdents = Identifer[]
+	decl currentScopeFormula = scopeFormula
+	
+	while currentScopeFormula.isNamespace?(idents.front) {
+		nsIdents.push_back( idents.pop_font() )
+		currentScopeFormula = currentScopeFormula.getChildFormula(nsIdents.back)
+	}
+	
+	if idents.isEmpty? {
+		throw newProcessingError("result of chain cannot be a namespace")
+	}
+	
+	decl nsedIdentikey = newNamespacedIdentikey(nsIdents, idents.pop_front())
+	
+	if idents.isEmpty? {
+		return nsedIdentikey
+	}
+	else {
+		return CHAIN_VALUE( scopeFormula, nsedIdentikey, idents )
+	}
+}
+
+macro CHAIN_IDENTIKEY {
+	layout {
+		2+ Identifier idents
+	}
+	
+	return CHAIN_VALUE( scopeFormula, idents[0] as Expression, idents.cdr() )
+}
+
+macro CHAIN_VALUE {
+	layout {
+		Expression startExpr
+		+ Idents idents
+	}
+	
+	Interface face = scopeFormula.determineInterface(startExpr)
+	if face != null {
+		if face.properties.contains?(idents[0].textValue) {
+			return CHAIN_VALUE(
+				scopeFormula,
+				newNodeGetProperty( startExpr, idents[0] ),
+				idents.cdr() )
+		}
+		
+		if face.methods.contains?(idents[0].textValue) {
+			return CHAIN_VALUE(
+				scopeFormula,
+				newBind( startExpr, idents[0] ),
+				idents.cdr() )
+		}
+		
+		throw newProccessingError(
+			"interface doesn't have a member named '$(idents[0].textValue)'")
+	}
+	
+	func identToString(NodeIdentifier ident) NodeString {
+		return newNodeString(ident.textValue)
+	}
+
+	//couldn't determine during processing, so determine during runtime
+	return newNodeCall(
+		value = newNodeScopedIdentikey(
+			[ newNodeIdentifier("global") ],
+			newNodeIdentifier("evalChain") ),
+		arguments = [
+			newNodeArgument( value=startExpr ),
+			newNodeArgument( value=newNodeArray(map(identToString, idents)) ) ] )
+}
+
+func evalChain( val, List<String> identTexts ) {
+	if identTexts.count == 1 {
+		return getMember(val, identTexts[0])
+	}
+	return evalChain( getMember(val, identTexts[0]), identTexts.cdr() )
+}
+
+func getMember( val, String name ) * {
+	Interface face = activeInterface(val)
+	
+	if face.properties.contains?(name) {
+		return getProperty(val, name) //assumed to be defined by Agent
+	}
+	
+	if face.methods.contains?(name) {
+		return getMethod(val, name) //assumed to be defined by Agent
+	}
+	
+	throw ErrorClass("value doesn't have a member named '$(identText)'")
+}
+
+Problem: Need way for nodes produced by macros to call functions (like getMember and evalChain) without exposing those functions to nodes not produced by the macros.
+
+
+
+
+
+
+
+macro IDENTIFIER {
+	layout {
+		string text
+	}
+	
+	return newIdentifier(text.textValue)
+}
+
+---
+
+$decl foo = alpha . #IDENTIFIER("\0010FF00")
+
+---
+
+$decl foo = alpha.􏼀
+
+
+
+
+
+
+
+Problem in Desal Impl 001: No processing is done. That means expression nodes can't say what their interface may be. Identifier nodes can't say whether they're associated with identikeys or namespaces. For this macro system to work, this needs to happen.
+
+
+
+enum NodeType {
+	IDENTIFIER, INTEGER, STRING
+}
+
+interface INode {
+	NodeType nodeType { get; }
+}
+
+interface INodeStatement : INode {
+	void execute(Scope scope);
+}
+
+interface INodeExpression : INodeStatement {
+	IValue evaluate(Scope scope);
+}
+
+interface INodeIdentifier : INodeExpression {
+	string textValue { get; }
+}
+
+interface INodeInteger : INodeExpression {
+	//xxx use bigint
+	long integerValue { get; }
+}
+
+interface INodeString : INodeExpression {
+	string textValue { get; }
+}
+
+
+
+
+class NodeIdentifier : INodeIdentifier {
+	string _textValue;
+	
+	public Identifier( textValue ) {
+		_textValue = textValue;
+	}
+
+	string textValue {
+		get { return _textValue; }
+	}
+	
+	IValue evaluate(Scope scope) {
+		return scope.evaluate(this);
+	}
+	
+	void execute(Scope scope) {
+		evaluate(scope);
+	}
+	
+	NodeType nodeType {
+		get { return NodeType.IDENTIFIER; }
+	}
+}
+
