@@ -59,48 +59,67 @@ class DesalInterpreter001 {
 	Scope createGlobalScope(Bridge bridge) {
 		Scope scope = new Scope();
 
-		//func print(dyn value)
+		//func println(dyn value)
 		IList<Parameter> printParameters = new Parameter[] {
-			new Parameter( new Identifier("value"), ReferenceCategory.DYN )
+			new Parameter( new Identifier("text"), ReferenceCategory.DYN )
 		};
 		//xxx use better binding stuff
 		IFunction printFunction = new NativeFunction(
 			bridge, printFunctionNative, printParameters, null, scope );
 		IValue printFunctor =
 			FunctionWrapper.wrap(printFunction);
-		scope.declarePervasive(
+		scope.declareFirst(
 			new Identifier("println"),
-			new ReferenceType( ReferenceCategory.FUNCTION, null ),
 			printFunctor );
-		
+		//xxx new ReferenceType( ReferenceCategory.FUNCTION, null ),
+				
 		//true
-		scope.declareBind(
+		scope.declareAssign(
 			new Identifier("true"),
-			new ReferenceType( ReferenceCategory.VALUE,	Bridge.Bool ),
-			true,
+			//xxx new ReferenceType( ReferenceCategory.VALUE, Bridge.Bool ),
+			//xxx true,
 			Bridge.wrapBoolean(true) );
 		
 		//false
-		scope.declareBind(
+		scope.declareAssign(
 			new Identifier("false"),
-			new ReferenceType( ReferenceCategory.VALUE,	Bridge.Bool ),
-			true,
+			//xxx new ReferenceType( ReferenceCategory.VALUE, Bridge.Bool ),
+			//xxx true,
 			Bridge.wrapBoolean(false) );
+		
+		//Bool
+		scope.declareAssign(
+			new Identifier("Bool"),
+			Bridge.wrapInterface(Bridge.Bool) );
 
 		return scope;
 	}
 	
+	/* Dextr interface notation:
+	func println( Stringable text )
+	note: typing is not yet implemented */
 	void printFunctionNative(Bridge bridge, Scope args) {
-		IValue arg = args.evaluateLocalIdentifier( new Identifier("value") );
+		IValue arg = args.evaluateLocalIdentifier( new Identifier("text") );
+		
+		/* xxx
+		should use String convertee of argument
+		bridge.output(
+			Bridge.unwrapString(
+				arg.convert(Bridge.String) ))
+		*/
 		
 		if( arg.activeInterface == Bridge.String )
-			bridge.output( Bridge.unwrapString(arg).ToString() );
+			bridge.output( Bridge.unwrapString(arg) );
 		else if( arg.activeInterface == Bridge.Int )
 			bridge.output( Bridge.unwrapInteger(arg).ToString() );
 		else if( arg.activeInterface == Bridge.Bool )
 			bridge.output( Bridge.unwrapBoolean(arg).ToString() );
+		else if( arg.activeInterface == Bridge.Rat )
+			bridge.output( Bridge.unwrapRational(arg).ToString() );
+		else if( arg is NullValue )
+			bridge.output( "null" );
 		else
-			throw new Error_Unimplemented();
+			throw new ClientException("unknown type cannot be converted to string");
 	}
 	
 	void printNode(int level, INode node) {

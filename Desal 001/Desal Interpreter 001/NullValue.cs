@@ -1,6 +1,10 @@
 class NullValue : IValue {
 	IInterface _iface;
 	
+	public NullValue()
+	: this(null)
+	{}
+	
 	public NullValue(IInterface iface) {
 		_iface = iface;
 	}
@@ -17,12 +21,8 @@ class NullValue : IValue {
 		//xxx allow casting down to inherited interfaces
 		throw new Error_Unimplemented();
 	}
-	
-	public void executeCall(Arguments arguments) {
-		throw new ClientException("null");
-	}
-	
-	public IValue evaluateCall(Arguments arguments) {
+
+	public IValue call(Arguments arguments) {
 		throw new ClientException("null");
 	}
 	
@@ -34,11 +34,7 @@ class NullValue : IValue {
 		throw new ClientException("null");
 	}
 	
-	public void executeMethod(Identifier name, Arguments arguments) {
-		throw new ClientException("null");
-	}
-	
-	public IValue evaluateMethod(Identifier name, Arguments arguments) {
+	public IValue callMethod(Identifier name, Arguments arguments) {
 		throw new ClientException("null");
 	}
 }

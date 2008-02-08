@@ -2,11 +2,11 @@
 xmlns:xi="http://www.w3.org/2003/XInclude">
 	
 	<title>Desal Semantics 1.0</title>
-	<subtitle>Edition 1 Draft 20071222</subtitle>
+	<subtitle>Edition 1 Draft 2008/02/01</subtitle>
 	
 	<info>
 		<copyright>
-			<year>2007</year>
+			<year>2008</year>
 			<holder>James Justin Harrell</holder>
 		</copyright>
 		
@@ -614,6 +614,78 @@ a << "gaz"
 		<title>Scopes</title>
 		
 		<para>Scopes consist of a collection of identikeys, and unless it is the scope of the bundle node, an association with a parent scope. Scopes form a hierarchy. When identifier nodes are executed, the current scope is searched for an identikey that is associated with that identifier. If one is not found, that scope's parent scope is searched, and so on, until a matching identikey is found. If such an identikey cannot be found, an error results.</para>
+		
+		<para>When execution enters a node that "has scope", before executing that node, all contained declare-first descendant nodes that do not have a closer "with scope" ancestor node, are handled according to <link linkend="handling-declare-first">this section</link>.</para> 
+	</chapter>
+	
+	<chapter xml:id="handling-declare-first">
+		<title>Handling declare-first nodes</title>
+		
+		<para role="xxx">Rename this section to something like "entering node that has scope" or "creating new scope"?</para>
+		
+		<para>This section specifies the actions that must take place when execution first reaches a node that "has scope".</para>
+		
+		<orderedlist role="exec">
+			<listitem>Let scopeNode be the node that "has scope" that execution just reached, i.e., the node that lead to this process being performed.</listitem>
+			<listitem>Let nodeList be an ordered list of all declare-first nodes that:
+				<simplelist>
+					<member>are descendants of scopeNode, and</member>
+					<member>do not have an ancestor node that:
+						<simplelist>
+							<member>"has scope" or "has closure", and</member>
+							<member>is a descendant of scopeNode</member>
+						</simplelist>
+					</member>
+				</simplelist>
+			</listitem>
+			<listitem>Let listCount be the number of elements in nodeList.</listitem>
+			<listitem>Let thisScope be a new scope.</listitem>
+			<listitem>Add the identikeys specified by the nodes in nodeList to thisScope.</listitem>
+			<listitem>Let currentNode be the first node in nodeList. If nodeList is empty, end this process and begin execution of scopeNode with thisScope as the associated scope.</listitem>
+			<listitem>Begin executing the [value] member of currentNode.
+				<simplelist>
+					<member>If execution needs to evaluate an identikey created by this process, and the [value] member of the declare-first node associated with that identikey has not yet been evaluated and the product assigned to that identikey, pause the execution of this [value] member.</member>
+					<member>If execution completes successfully, assign the product to the associated identikey, and remove currentNode from nodeList.</member>
+				</simplelist>
+			</listitem>
+			<listitem>Set currentNode to the next node in nodeList and go to step 6. (If currentNode was removed, the next node would be the node that followed currentNode when currentNode was in the list.) If there is no next node, continue to the next step.</listitem>
+			<listitem>If the number of elements in nodeList is equal to listCount, a cyclical dependency likely exists, where two or more expressions rely on the result of each other to execute. In this case, throw an error. If the number of elements in nodeList is not equal to listCount, set listCount to the number of elements in nodeList and go to step 5.</listitem>
+		</orderedlist>
+		
+		<screen>
+Example 1 of a cyclical dependency:
+
+declfirst a = b + 2
+declfirst b = a + 3
+
+Example 2 of a cyclical dependency:
+
+declfirst a = b + 2
+declfirst b = c + 3
+declfirst c = d + 4
+declfirst d = e + 5
+declfirst e = a + 6
+
+Example 1 of a non-cyclical dependency:
+
+declfirst a = b + 2
+declfirst b = c + 3
+declfirst c = d + 4
+declfirst d = e + 5
+declfirst e = 6
+
+Example 2 of a non-cyclical dependency:
+
+declfirst func foo = func() {
+	bar()
+}
+
+declfirst func bar = func() {
+	foo()
+}
+
+When one of these functions is called, infinite recursion occurs (negating intervention by the agent), but no such cycle is involved in just executing the function nodes. This is because the calls to foo and bar are not executed when the function nodes are executed.
+		</screen>
 	</chapter>
 	
 	<chapter xml:id="nodes">
@@ -668,6 +740,8 @@ a << "gaz"
 
 	<chapter xml:id="standard-library">
 		<title>Standard library</title>
+		
+		<para role="xxx">The standard library should be imported to a namespace by default. That namespace can then be "used" to expose all members. However, what should the name of that namespace be? (The section above uses "std".) Possibilites: standard, system, language, desal, and various capitalizations (Standard, System, Language, Desal) and abbreviations (std, stand, sys, lang) thereof.</para>
 
 		<simplelist>
 			<!-- basic types -->
@@ -706,6 +780,7 @@ interface<I> Collection
 interface<I> List
 	indexed
 	elements can be added to beginning and end
+	dynamic array
 interface<I> FwdChain
 	forward chain, a singly-linked list
 interface<I> Deck
@@ -721,6 +796,9 @@ interface<I> Stack
 interface<I> Dict, SortedDict, MultDict, SortedMultDict, BiDict, SortedBiDict, MiltBiDict, SortedMultiBiDict
 interface<I> Set, OrderdSet, MultiSet, OrderdMultiSect
 
+func getProperty(dyn value, String propertyName) dyn
+func setProperty(dyn value, String propertyName, dyn propertyValue) dyn
+
 fixed-width/fixed-precision numbers
 fixed-point integers
 "limited" namespace
@@ -731,14 +809,51 @@ interface LimRat
 			<para role="xxx">How to differentiate between mutable and unmutable versions?</para>
 		</screen>
 		
+		<screen>
+<![CDATA[
+//T is the type of an entry in this enum
+interface<T : EnumEntry> Enum
+	inherit Collection<T>
+	func fromName(String str) T
+
+//an Enum where every entry has an associated value
+//T is the type of an entry in this enum
+//U is the type of a value of an enum entry
+interface<T : EnumDictEntry, U> EnumDict
+	inherit Enum<T>
+	func fromValue(U val) T
+
+interface EnumEntry
+	get String name
+	func equals?( EnumEntry ) Bool
+
+//U is the type of value each entry is associated with
+interface<U> EnumDictEntry
+	inherit EnumEntry
+	get U value
+]]>
+		</screen>
+
+		<section xml:id="object.activeInterface">
+			<title>activeInterface</title>
+			
+			<screen>
+func activeInterface(dyn) Interface
+
+println( activeInterface(false) == Bool ) //true
+			</screen>
+			
+			<para>Returns the interface that is the active interafce of the specified value.</para>
+		</section>
+		
 		<section xml:id="object.cast">
-			<title>func{I}(obj)I cast</title>
+			<title>func{I}(dyn)I cast</title>
 			
 			<para>The cast function returns an object cast to the specified interface, or throws a cast error. The returned object must be the same object that was passed in.</para>
 			
 			<programlisting>
 if (foo is Bar)
-	(cast {Bar} foo).propOfBar()
+	cast&lt;Bar>(foo).propOfBar()
 			</programlisting>
 		</section>
 		
@@ -759,6 +874,38 @@ MyClass[] objs
 for each o in objs
 	o.doStuff()
 			</programlisting>
+		</section>
+		
+		<section xml:id="object.id">
+			<title>func id</title>
+			
+			<screen>
+func id(obj) Int
+
+println( id(true) )
+			</screen>
+			
+			<para>Every object is associated with a constant non-negative integer. No two objects that are still accessible can have the same object number. This function returns a value, with Int as the active interface, that encodes the object number for the object associated with the given value. Two objects with non-overlapping lifetimes may have the same object id.</para>
+			
+			<para>Returns a different number for every object. Always returns the same number for the same object, even if that object is a part of different values (the same object cast to different interfaces).</para>
+		</section>
+		
+		<section xml:id="object.sameObject_q">
+			<title>func sameObject?</title>
+			
+			<para>Determines whether the two values have the same object.</para>
+			
+			<screen>
+func sameObject?(obj, obj) Bool
+
+println( sameObject?(foo, bar) )
+//same as
+println( (foo as obj) == (bar as obj) )
+//same as
+println( id(foo) == id(bar) )
+			</screen>
+			
+			<para>Tells whether the values are associated with the same object.</para>
 		</section>
 		
 		<section xml:id="object.implements_q">
@@ -896,11 +1043,15 @@ if implements(foo, Bar)
 				</tr>
 				<tr>
 					<td>always null</td>
-					<td>A node that will never produce a value when executed is being used as if it will sometimes produce a value. This warning is produced by the node that attempts to make use of the output, such as an assignment node, and not the node that doesn't produce a value.</td>
+					<td>A node that will never produce a value when executed is being used as if it will sometimes produce a value. This warning is produced by the node that attempts to make use of the output, such as an assignment node, and not the node that doesn't produce.</td>
 				</tr>
 				<tr>
 					<td>unknown warning</td>
-					<td>A warning name is not recognized.</td>
+					<td>A warning name in an ignore node is not recognized.</td>
+				</tr>
+				<tr>
+					<td>no effect</td>
+					<td>The output of a node that does not have side effects is not being used. For example, if a block contains an integer node (that is not last), the integer node has no effect.</td>
 				</tr>
 			</tbody>
 		</table>

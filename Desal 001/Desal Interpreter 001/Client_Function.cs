@@ -7,13 +7,13 @@ using System.Collections.Generic;
 class Client_Function : IFunction {
 	IList<Parameter> _parameters;
 	ReferenceType _returnType;
-	Node_Block _block;
+	INode_Expression _body;
 	Scope _scope;
 	
 	public Client_Function(
 	IList<Parameter> parameters, ReferenceType returnType,
-	Node_Block block, Scope scope) {
-		_block = block;
+	INode_Expression body, Scope scope) {
+		_body = body;
 		_parameters = parameters;
 		_returnType = returnType;
 		_scope = scope;
@@ -27,27 +27,20 @@ class Client_Function : IFunction {
 		get { return _returnType; }
 	}
 	
-	public void executeCall(Arguments arguments) {
-		Scope functionScope = new Scope(_scope);
-		//xxx bind arguments to parameter identifiers
-		_block.execute(functionScope);
-	}
-	
-	public IValue evaluateCall(Arguments arguments) {
-		Scope functionScope = new Scope(_scope);
-		
-		//xxx bind arguments to parameter identifiers
+	public IValue call(Arguments arguments) {	
+		//bind arguments to parameter identifiers
+		Scope functionScope = arguments.setup( _parameters, _scope );
 		
 		//xxx try {
-			_block.execute(functionScope);
+			return _body.execute(functionScope);
 		/* xxx
 		}
 		catch(ReturnStatement statement) {
 			return statement.returnValue;
 		}
-		catch(BreakStatement statement) {}
+		catch(BreakStatement statement) {
+			throw new ClientException("can't break here");
+		}
 		*/
-		
-		throw new System.Exception("function didn't return anything");
 	}
 }

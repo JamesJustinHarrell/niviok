@@ -25,7 +25,7 @@ class Node_Class : INode_Expression {
 		_interfaceImplementations = interfaceImplementations;
 	}	
 
-	public IValue evaluate(Scope scope) {
+	public IValue execute(Scope scope) {
 		Scope staticScope = new Scope(scope);
 			
 		//xxx Add instance constructors as free functions to STATIC_SCOPE.
@@ -40,7 +40,7 @@ class Node_Class : INode_Expression {
 
 		//declaration-pervasive
 		foreach( Node_DeclarationClass declClass in _staticDeclarations ) {
-			if( declClass.decl is Node_DeclarationPervasive )
+			if( declClass.decl is Node_DeclareFirst )
 				declClass.execute(staticScope);
 		}
 		
@@ -66,10 +66,6 @@ class Node_Class : INode_Expression {
 		//xxx staticScope.seal();
 	
 		throw new Error_Unimplemented();
-	}
-	
-	public void execute(Scope scope) {
-		evaluate(scope);
 	}
 	
 	public void getInfo(out string name, out object objs) {

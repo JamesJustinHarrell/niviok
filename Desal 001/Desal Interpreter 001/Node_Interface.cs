@@ -19,7 +19,7 @@ class Node_Interface : INode_Expression {
 		_methods = methods;
 	}
 
-	public IValue evaluate(Scope scope) {
+	public IValue execute(Scope scope) {
 		throw new Error_Unimplemented();
 		//xxx return InterfaceWrapper.wrap( evaluateInterface(scope) );
 	}
@@ -34,10 +34,6 @@ class Node_Interface : INode_Expression {
 			meths.Add( meth.evaluateMethodInfo(scope) );
 		}
 		return new Interface( props, meths );
-	}
-	
-	public void execute(Scope scope) {
-		throw new Error_Unimplemented();
 	}
 	
 	public void getInfo(out string name, out object children) {

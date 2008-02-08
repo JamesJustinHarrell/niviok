@@ -1,0 +1,9 @@
+The document concerns the return node.
+
+* Determine how the return statement should be specified.
+
+Remember to keep interpreter and compiler in mind.
+
+possibilities:
+* return barriers (carry the return up by default)
+* return carriers (block the return by default)

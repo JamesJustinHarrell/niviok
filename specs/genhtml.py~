@@ -190,44 +190,45 @@ def copyContent(docbookElement, htmlElement) :
 
 #tocList is HTML, sectionElement is DocBook
 def setupSection(tocList, sectionElement, prefix, index) :
-	try :
-		titleText = sectionElement\
-			.getElementsByTagName("title")[0]\
-			.firstChild.data
-	except :
-		warn("section doesn't have title")
-		return
-	
-	htmlDocument = tocList.ownerDocument
-	#title is a DocBook element
-	title = sectionElement.getElementsByTagName("title")[0]
-	if title == None or title.parentNode != sectionElement :
+	def warnOfAbsense() :
 		warn(
 			"chapter/section with id '%s' doesn't have a title" % \
-			chapterElement.getAttribute("xml:id") )
+			sectionElement.getAttribute("xml:id") )
+	
+	childTitleElements = sectionElement.getElementsByTagName("title")
+	if childTitleElements.length == 0 :
+		warnOfAbsense()
+		return
+	titleElement = childTitleElements[0]
+	if titleElement.parentNode != sectionElement :
+		warnOfAbsense()
+		return
+	titleText = titleElement.firstChild.data
+
+	htmlDocument = tocList.ownerDocument
 	listItem = htmlDocument.createElement("li")
 	link = htmlDocument.createElement("a")
 	sectionID = sectionElement.getAttribute("xml:id")
 	if sectionID == '' :
-		warn( "section with title '%s' doesn't have ID" % title.firstChild.data )
+		warn( "section with title '%s' doesn't have ID" % titleText )
 		sectionID = str(random())
 		sectionElement.setAttribute("xml:id", sectionID)
-	link.setAttribute("href", "#" + sectionID)
-	copyContent(title, link)
+	link.setAttribute("href", "#%s" % sectionID)
+	appendText(titleText, link)
 	listItem.appendChild(link)
 	tocList.appendChild(listItem)
-	numberChain = prefix + `index` + '.'
+	numberChain = "%s%s." % prefix % index
 	link.insertBefore(
-		htmlDocument.createTextNode(numberChain + ' '),
+		htmlDocument.createTextNode("%s " % numberChain),
 		link.firstChild )
-	title.insertBefore(
-		htmlDocument.createTextNode(numberChain + ' '),
-		title.firstChild )
+	titleElement.insertBefore(
+		htmlDocument.createTextNode("%s " % numberChain),
+		titleElement.firstChild )
 	if sectionElement.tagName == "chapter" :
-		title.insertBefore(
+		titleElement.insertBefore(
 			htmlDocument.createTextNode('Chapter '),
-			title.firstChild )
-	title.nestLevel = numberChain.count('.')
+			titleElement.firstChild )
+	titleElement.nestLevel = numberChain.count('.')
 	
 	childTocList = htmlDocument.createElement("ol")
 	index = 1
@@ -356,7 +357,7 @@ def normalize(node) :
 	elif node.COMMENT_NODE == type :
 		parent.removeChild(node)
 	else :
-		raise Exception("error " + `type`)
+		raise Exception("unexpected type: %s" % type)
 		#ENTITY_REFERENCE_NODE = 5
 		#ENTITY_NODE = 6
 

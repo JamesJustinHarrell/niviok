@@ -28,10 +28,7 @@ class FW_Value : IValue {
 	public IValue cast(IInterface aInterface) {
 		throw new Error_Unimplemented();
 	}
-	public void executeCall(Arguments arguments) {
-		_interfaceImpl.executeCall(arguments);
-	}
-	public IValue evaluateCall(Arguments arguments) {
+	public IValue call(Arguments arguments) {
 		return _interfaceImpl.evaluateCall(arguments);
 	}
 	public IValue getProperty(Identifier name) {
@@ -40,10 +37,7 @@ class FW_Value : IValue {
 	public void setProperty(Identifier propName, IValue aValue) {
 		throw new Error_Unimplemented();
 	}
-	public void executeMethod(Identifier name, Arguments arguments) {
-		throw new Error_Unimplemented();
-	}
-	public IValue evaluateMethod(Identifier name, Arguments arguments) {
+	public IValue callMethod(Identifier name, Arguments arguments) {
 		throw new Error_Unimplemented();
 	}
 }
@@ -55,12 +49,8 @@ class FW_InterfaceImplementation {
 		_func = func;
 	}
 	
-	public void executeCall(Arguments args) {
-		_func.executeCall(args);
-	}
-	
 	public IValue evaluateCall(Arguments args) {
-		return _func.evaluateCall(args);
+		return _func.call(args);
 	}
 }
 

@@ -2,18 +2,75 @@
 <?xml-stylesheet href="desible.css"?>
 <?desible version="1.0"?>
 
+<!--
+All 97 nodes:
+access, alias, and, argument, array, assign, block, boolean, break, bundle, call, callee, case, cast, chain, class, class-property, comprehension, comprehension-type, conditional, continue, convert, convertor, copy, curry, declaration, declare-assign, declare-class, declare-const-empty, declare-empty, declare-first, dictionary, dictionary-entry, direction, do-times, do-while, enum, enum-entry, exception-handler, for-key, for-manual, for-pair, for-range, for-value, function, function-interface, generator, generic-class, generic-function, generic-interface, generic-parameter, get-property, identifier, identifier-chain, identikey-category, identikey-type, ignore, ignore-member, implements, import, instantiate-generic-class, instantiate-generic-interface, intantiate-generic-function, integer, interface, interface-implementation, interface-member, labeled, loop, member-status, method, named-function, namespaced-identikey, nand, nor, or, parameter, plane, possibility, property, rational, return, return-info, select, set-property, statused-member, string, throw, try-catch, type, unassign, unassign-function, using, while, xnor, xor, yield
+
+var map = Array.map;
+var filter = Array.filter;
+
+var elements = document.getElementsByTagName('*');
+var ids = map(elements, function(element) { return element.getAttribute("id") || ""; });
+var wantedIds = filter( ids, function(id) { return id.indexOf("node.") == 0; } );
+var nodeNames = map( wantedIds, function(id) { return id.substr(5); });
+var sortedNodeNames = nodeNames.sort();
+
+var container = document.createElement("p");
+container.innerHTML = "<pre>All " + sortedNodeNames.length + " nodes:\n</pre>";
+container.appendChild( document.createTextNode( sortedNodeNames.join(", ") ) );
+document.body.appendChild(container);
+
+-->
+
 <bundle xmlns="urn:desible1" version="1.0"
 	xmlns:des="urn:desible1" xmlns:foo="http://site.com/stuff">
+	
+	<using>
+		<identifier>std</identifier>
+	</using>
 
 	<inline-plane>
+		<!--
+		function header(title) {
+			println("")
+			println(title + " :")
+		}
+		-->
+		<declare-first>
+			<identifier>header</identifier>
+			<function label='value'>
+				<parameter>
+					<identifier label='name'>title</identifier>
+					<bool label='nullable'>false</bool>
+				</parameter>
+				<block label='body'>
+					<call>
+						<identifier label='value'>println</identifier>
+						<string label='argument'/>
+					</call>
+					<call>
+						<identifier label='value'>println</identifier>
+						<call label='argument'>
+							<identifier label='value'>title</identifier>
+							<identifier label='method-name'>concat</identifier>
+							<string label='argument'> :</string>
+						</call>
+					</call>
+				</block>
+			</function>
+		</declare-first>
 		
 		<!--
 		function main() {
+			header("doStuff()")
 			doStuff()
+			
+			header("testAlwaysProducers()")
+			testAlwaysProducers()
 		}
 		-->
 		<!-- the des prefix shouldn't affect anything -->
-		<des:declaration-pervasive>
+		<des:declare-first>
 			<identifier>main</identifier>
 			<reference-type>
 				<reference-category>value</reference-category>
@@ -21,14 +78,26 @@
 			</reference-type>
 			<function label='value'>
 				<!-- the foo:label shouldn't affect anything -->
-				<block foo:label="stuff">
-					<!-- the des:label shouldn't affect anything -->
-					<function-call des:label="stuff">
-						<identifier label='function'>doStuff</identifier>
-					</function-call>
+				<block foo:label="stuff" label='body'>
+					<call>
+						<identifier label='value'>header</identifier>
+						<string label='argument'>doStuff()</string>
+					</call>
+					<!-- the des:label attribute shouldn't affect anything -->
+					<call des:label="stuff">
+						<identifier label='value'>doStuff</identifier>
+					</call>
+					
+					<call>
+						<identifier label='value'>header</identifier>
+						<string label='argument'>testAlwaysProducers()</string>
+					</call>
+					<call>
+						<identifier label='value'>testAlwaysProducers</identifier>
+					</call>
 				</block>
 			</function>
-		</des:declaration-pervasive>
+		</des:declare-first>
 		
 		<!-- this should be ignored since it's in a different namespace -->
 		<foo:ignored-stuff>
@@ -52,63 +121,374 @@
 			}
 		}
 		-->
-		<declaration-pervasive>
+		<declare-first>
 			<identifier>doStuff</identifier>
 			<reference-type>
 				<reference-category>value</reference-category>
 				<function-interface label='interface'/>
 			</reference-type>
 			<function label='value'>
-				<block>
+				<block label='body'>
 					<conditional-block>
 						<identifier label='test'>true</identifier>
 						<block label='action'>
-							<function-call>
-								<identifier label='function'>println</identifier>
+							<call>
+								<identifier label='value'>println</identifier>
 								<string label='argument'>this is a test</string>
-							</function-call>
+							</call>
 						</block>
 					</conditional-block>
-					<declaration-bind>
+					<declare-assign>
 						<identifier label='name'>str</identifier>
 						<reference-type label='type'>
 							<reference-category>dyn</reference-category>
 						</reference-type>
-						<method-call label='value'>
+						<call label='value'>
 							<string label='value'>&#x1FFF0; Hello,</string>
 							<identifier label='method-name'>concat</identifier>
 							<string label='argument'> World &#x1FFF1;</string>
-						</method-call>
-					</declaration-bind>
-					<function-call>
-						<identifier label='function'>println</identifier>
+						</call>
+					</declare-assign>
+					<call>
+						<identifier label='value'>println</identifier>
 						<identifier label='argument'>str</identifier>
-					</function-call>
-					<function-call>
-						<identifier label='function'>println</identifier>
+					</call>
+					<call>
+						<identifier label='value'>println</identifier>
 						<get-property label='argument'>
 							<identifier label='value'>str</identifier>
 							<identifier label='property-name'>length</identifier>
 						</get-property>
-					</function-call>
+					</call>
 					<for-range>
 						<identifier>x</identifier>
 						<integer label='start'>1</integer>
 						<integer label='limit'>20</integer>
 						<block>
-							<function-call>
-								<identifier label='function'>println</identifier>
-								<method-call label='argument'>
+							<call>
+								<identifier label='value'>println</identifier>
+								<call label='argument'>
 									<identifier label='value'>x</identifier>
 									<identifier label='method-name'>add</identifier>
 									<integer label='argument'>10000</integer>
-								</method-call>
-							</function-call>
+								</call>
+							</call>
 						</block>
 					</for-range>
 				</block>
 			</function>
-		</declaration-pervasive>
+		</declare-first>
+
+		<!--
+		function testAlwaysProducers() {
+			header("testBooleanLogic()")
+			testBooleanLogic()
+
+			header("active-interface")
+			println( activeInterface(true) == Bool )
+			
+			//header("array")
+			//println( array Int { 1, 2, 3, 4 } )
+			
+			header("function")
+			println( (function(){ return "some stuff" })() )
+			
+			header("identifier")
+			println( true )
+			
+			header("rational")
+			println( 123.456 )
+			
+			header("string")
+			println( "This is some text." )
+		}
+		-->
+		<declare-first>
+			<identifier>testAlwaysProducers</identifier>
+			<reference-type>
+				<reference-category>value</reference-category>
+				<function-interface label='interface'/>
+			</reference-type>
+			<function label='value'>
+				<block label='body'>
+					
+					<!-- testBooleanLogic() -->
+					<call>
+						<identifier label='value'>header</identifier>
+						<string label='argument'>testBooleanLogic()</string>
+					</call>
+					<call>
+						<identifier label='value'>testBooleanLogic</identifier>
+					</call>
+					
+					<!-- array - -> xxx generic interface implementations needed
+					<call>
+						<identifier label='value'>header</identifier>
+						<string label='argument'>array</string>
+					</call>
+					<call>
+						<identifier label='value'>println</identifier>
+						<array label='argument'>
+							<integer label='element'>1</integer>
+						</array>
+					</call>
+					-->
+					
+					<!-- cast -->
+					<!-- chain -->
+					<!-- class -->
+					<!-- comprehension -->
+					<!-- copy -->
+					<!-- convert (should make println easier to implement, untill Stringable and other toWhatever interfaces are automatically inherited) -->
+					<!-- dictionary -->
+					<!-- enum -->
+					
+					<!-- function -->
+					<call>
+						<identifier label='value'>header</identifier>
+						<string label='argument'>function</string>
+					</call>
+					<call>
+						<identifier label='value'>println</identifier>
+						<call label='argument'>
+							<function label='value'>
+								<string label='body'>some stuff</string>
+							</function>
+						</call>
+					</call>
+
+					<!-- function-interface -->
+					<!-- generator -->
+					<!-- generic-class -->
+					<!-- generic-function -->
+					<!-- generic-interface -->
+					<!-- get-property -->
+
+					<!-- identifier -->
+					<call>
+						<identifier label='value'>header</identifier>
+						<string label='argument'>identifier</string>
+					</call>
+					<call>
+						<identifier label='value'>println</identifier>
+						<identifier label='argument'>true</identifier>
+					</call>
+					
+					<!-- instantiate-generic-class -->
+					<!-- instantiate-generic-function -->
+					<!-- instantiate-generic-interface -->
+					<!-- implements -->
+					
+					<!-- integer -->
+					<call>
+						<identifier label='value'>header</identifier>
+						<string label='argument'>integer</string>
+					</call>
+					<call>
+						<identifier label='value'>println</identifier>
+						<integer label='argument'>9000</integer>
+					</call>
+					
+					<!-- interface -->
+					<!-- namespaced-identikey -->
+					
+					<!-- rational -->
+					<call>
+						<identifier label='value'>header</identifier>
+						<string label='argument'>rational</string>
+					</call>
+					<call>
+						<identifier label='value'>println</identifier>
+						<rational label='argument'>123.456</rational>
+					</call>
+					
+					<!-- set-property -->
+					
+					<!-- string -->
+					<call>
+						<identifier label='value'>header</identifier>
+						<string label='argument'>string</string>
+					</call>
+					<call>
+						<identifier label='value'>println</identifier>
+						<string label='argument'>This is some text.</string>
+					</call>
+				</block>
+			</function>
+		</declare-first>
+		
+		<!--
+		function testBooleanLogic() {
+			decl t = true
+			decl f = false
+		
+			//for (n)and and (n)or: shortcut, then not shortcut
+
+			header("and")
+			println( f and t )
+			println( t and t )
+
+			header("nand")
+			println( f nand t )
+			println( t nand t )
+
+			header("or")
+			println( t or f )
+			println( f or f )
+
+			header("nor")
+			println( t nor f )
+			println( f nor f )
+			
+			header("xor")
+			println( t xor f )
+			println( t xor t )
+			
+			header("xnor")
+			println( t xnor f )
+			println( t xnor t )
+		}
+		-->
+		<declare-first>
+			<identifier>testBooleanLogic</identifier>
+			<function label='value'>
+				<block label='body'>
+					
+					<!-- decl t = true -->
+					<declare-assign>
+						<identifier label='name'>t</identifier>
+						<identifier label='value'>true</identifier>
+					</declare-assign>
+					
+					<!-- decl f = false -->
+					<declare-assign>
+						<identifier label='name'>f</identifier>
+						<identifier label='value'>false</identifier>
+					</declare-assign>
+					
+					<!-- and -->
+					<call>
+						<identifier label='value'>header</identifier>
+						<string label='argument'>and</string>
+					</call>
+					<call>
+						<identifier label='value'>println</identifier>
+						<and label='argument'>
+							<identifier label='first'>f</identifier>
+							<identifier label='second'>t</identifier>
+						</and>
+					</call>
+					<call>
+						<identifier label='value'>println</identifier>
+						<and label='argument'>
+							<identifier label='first'>t</identifier>
+							<identifier label='second'>t</identifier>
+						</and>
+					</call>
+					
+					<!-- nand -->
+					<call>
+						<identifier label='value'>header</identifier>
+						<string label='argument'>nand</string>
+					</call>
+					<call>
+						<identifier label='value'>println</identifier>
+						<nand label='argument'>
+							<identifier label='first'>f</identifier>
+							<identifier label='second'>t</identifier>
+						</nand>
+					</call>
+					<call>
+						<identifier label='value'>println</identifier>
+						<nand label='argument'>
+							<identifier label='first'>t</identifier>
+							<identifier label='second'>t</identifier>
+						</nand>
+					</call>
+					
+					<!-- or -->
+					<call>
+						<identifier label='value'>header</identifier>
+						<string label='argument'>or</string>
+					</call>
+					<call>
+						<identifier label='value'>println</identifier>
+						<or label='argument'>
+							<identifier label='first'>f</identifier>
+							<identifier label='second'>t</identifier>
+						</or>
+					</call>
+					<call>
+						<identifier label='value'>println</identifier>
+						<or label='argument'>
+							<identifier label='first'>f</identifier>
+							<identifier label='second'>f</identifier>
+						</or>
+					</call>
+					
+					<!-- nor -->
+					<call>
+						<identifier label='value'>header</identifier>
+						<string label='argument'>nor</string>
+					</call>
+					<call>
+						<identifier label='value'>println</identifier>
+						<nor label='argument'>
+							<identifier label='first'>f</identifier>
+							<identifier label='second'>t</identifier>
+						</nor>
+					</call>
+					<call>
+						<identifier label='value'>println</identifier>
+						<nor label='argument'>
+							<identifier label='first'>f</identifier>
+							<identifier label='second'>f</identifier>
+						</nor>
+					</call>
+					
+					<!-- xor -->
+					<call>
+						<identifier label='value'>header</identifier>
+						<string label='argument'>xor</string>
+					</call>
+					<call>
+						<identifier label='value'>println</identifier>
+						<xor label='argument'>
+							<identifier label='first'>t</identifier>
+							<identifier label='second'>f</identifier>
+						</xor>
+					</call>
+					<call>
+						<identifier label='value'>println</identifier>
+						<xor label='argument'>
+							<identifier label='first'>t</identifier>
+							<identifier label='second'>t</identifier>
+						</xor>
+					</call>
+					
+					<!-- xnor -->
+					<call>
+						<identifier label='value'>header</identifier>
+						<string label='argument'>xnor</string>
+					</call>
+					<call>
+						<identifier label='value'>println</identifier>
+						<xnor label='argument'>
+							<identifier label='first'>t</identifier>
+							<identifier label='second'>f</identifier>
+						</xnor>
+					</call>
+					<call>
+						<identifier label='value'>println</identifier>
+						<xnor label='argument'>
+							<identifier label='first'>t</identifier>
+							<identifier label='second'>t</identifier>
+						</xnor>
+					</call>
+					
+				</block>
+			</function>
+		</declare-first>
 			
 	</inline-plane>
 	

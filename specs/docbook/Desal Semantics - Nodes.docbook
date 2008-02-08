@@ -42,10 +42,6 @@
 				<term>+</term>
 				<listitem>1 or more</listitem>
 			</varlistentry>
-			<varlistentry>
-				<term>2</term>
-				<listitem>2 (used only for the <link linkend="node.enum">enum</link> node)</listitem>
-			</varlistentry>
 		</variablelist>
 		
 		<para>Next comes the name of a node type or "expression". The child node represented by that list item must be of that type. The string "expression" means the node must be executable.</para>
@@ -58,19 +54,6 @@
 		
 		<para>Nodes that cannot be executed. Most server only to group other nodes together.</para>
 		
-		<section xml:id="node.return-info">
-			<title>return-info</title>
-			
-			<simplelist role="layout">
-				<member>boolean return</member>
-				<member>? expression interface</member>
-			</simplelist>
-			
-			<para role="process">If [interface] is present, [return] must be true.</para>
-			
-			<para>[return] tells whether the function returns a value. If [return] and [interface] are absent, the function does not return a value. If [return] is absent and [interface] is present, the function returns a value. If [return] is present, it's value determines whether the function returns a value (true) or doesn't (false).</para>
-		</section>
-		
 		<section xml:id="node.argument">
 			<title>argument</title>
 			
@@ -80,9 +63,9 @@
 			</simplelist>
 			
 			<programlisting>
-func doSomething(Int a = 1, Int b = 2, Int c = 3, Int d) {...}
-doSomething(7, default, default, 8)
-doSomething(7, c = default, 8)
+				func doSomething(Int a = 1, Int b = 2, Int c = 3, Int d) {...}
+				doSomething(7, default, default, 8)
+				doSomething(7, c = default, 8)
 			</programlisting>
 		</section>
 		
@@ -102,13 +85,14 @@ doSomething(7, c = default, 8)
 			<simplelist role="layout">
 				<member>* import</member>
 				<member>* alias</member>
+				<member>* using</member>
 				<member>+ plane</member>
 			</simplelist>
 			
 			<para>The bundle node type is the type of the root node. No node can contain an bundle node. All Desal nodes that are executed in any way must be part of a complete Desal tree, which means having an bundle node as the root node.</para>
 			
 			<para role="xxx">Program arguments are no longer passed to the main function, because developers should have a choice of accessing program arguments in different ways, and some implementations may not have program arguments, or have non-string program arguments, etc. The old way just isn't flexible enough. Implementations should give program arguments through some API instead of passing them to the main function.</para>
-
+			
 			<orderedlist role="exec">
 				<listitem>1. Create the identikeys specified in section XXX to this node's scope.</listitem>
 				<listitem>2. Create any implementation-specific identikeys.</listitem>
@@ -130,29 +114,29 @@ doSomething(7, c = default, 8)
 			<para>A value passed to a function as an "in" parameter will not be mutated by the function. This means if the function uses the value in ways that may mutate the value, the value will be copied. If an action in the function may mutate the value, and the value does not declare a copy converter, an error results.</para>
 			
 			<para>Instances where the value may be mutated include when the interface of the value does not provide opacity information and the function calls a method, or if the interface does provide opacity information but the function calls a mutator method, or if the value is passed to another function as an in-mutable or in-mutable-out parameter.</para>
-				
+			
 			<programlisting>
 func alpha(in Int num) {
-	println num
+println num
 }
 
 func beta(in-mutable Int num) {
-	num += 567
+num += 567
 }
 
 func gamma(out Int num) {
-	//num not currently assigned to anything
-	num = 987
+//num not currently assigned to anything
+num = 987
 }
 
 func delta(in-out Int num) {
-	println num
-	num = 1001
+println num
+num = 1001
 }
 
 func epsilon(in-mutable-out Int num) {
-	num += 55555
-	num = 19591
+num += 55555
+num = 19591
 }
 
 Int num = 123
@@ -162,6 +146,15 @@ gamma(num) //num assigned to different value
 delta(num) //num assigned to different value
 epsilon(num) //value mutated and num assigned to different value
 			</programlisting>
+		</section>
+		
+		<section xml:id="node.generic-parameter">
+			<title>generic-parameter</title>
+			
+			<simplelist role="layout">
+				<member>identifier name</member>
+				<member>? expression default interface</member>
+			</simplelist>
 		</section>
 		
 		<section xml:id="node.identikey-category">
@@ -178,100 +171,39 @@ epsilon(num) //value mutated and num assigned to different value
 			<simplelist role="layout">
 				<member>identikey-category</member>
 				<member>? expression interface</member>
-				<member>? boolean constant</member>
+				<member>boolean nullable</member>
+				<member>boolean constant</member>
 			</simplelist>
-
+			
 			<para role="process">[constant] must not be specified if identikey-category is namespace. [constant] must be false (or not specified) if category is dynamic. The interface must be given if the category is strict. The interface must not be given if the category is namespace, dynamic, or automatic.</para>
-
+			
 			<para>If the category is strict, the active interface of any value bound to the identikey must be that interface. If the category is function, and the interface is given, functions bound to the identikey must specify that interface as the return type.</para>
 			
 			<para>The default value of [constant] is false. If [constant] is true, the identifier thereafter always refers to the same value. The identifier cannot be bound to a different value, or unbound. The active interface also cannot be changed.</para>
 			
 			<programlisting>
-Int a = 3
-func Int a = func()Int { return 3 }
+				Int a = 3
+				func Int a = func()Int { return 3 }
 			</programlisting>
 		</section>
 		
 		<section xml:id="node.import">
 			<title>import</title>
 			
+			<para>Binds a library namespace to a namespace identikey.</para>
+			
 			<simplelist role="layout">
 				<member>string library</member>
-				<member>? identifier library alias</member>
-				<member>* alias-member</member>
+				<member>identifier alias</member>
 			</simplelist>
-			
-			<para>Assigns values from libraries to global identikeys.</para>
-			
+				
 			<programlisting>
 import "XmlLib" as Xml
 /*
 library: "XmlLib"
-library alias: Xml */
-
-from "XmlLib" import XmlDocument as Doc
-/*
-library: "XmlLib"
-library alias: (not given)
-alias-member: XmlDocument, Doc */
-
-from "XmlLib" as Xml import XmlDocument as Doc
-/*
-library: "XmlLib"
-library alias: Xml
-alias-member: XmlDocument, Doc */
-
-from "XmlLib" as Xml import XmlReader, XmlDocument as Doc, XmlElement
-/*
-library: "XmlLib"
-library alias: Xml
-alias-member: XmlReader
-alias-member: XmlDocument, Doc
-alias-member: XmlElement */
-
-from "XmlLib" as Xml import
-	XmlReader,
-	XmlDocument as Doc,
-	XmlElement
-			</programlisting>
-			
-			<section xml:id="node.alias-member">
-				<title>alias-member</title>
-				
-				<simplelist role="layout">
-					<member>identifier target</member>
-					<member>? identifier new name</member>
-				</simplelist>
-			</section>
-		</section>
-		
-		<section xml:id="node.import-all">
-			<title>import-all</title>
-			
-			<simplelist role="layout">
-				<member>string library</member>
-			</simplelist>
-			
-			<para>Imports every identikey in the library.</para>
-			
-			<programlisting>
-import all from "XmlLib"
-//library: "XmlLib"
+alias: Xml */
 			</programlisting>
 		</section>
-		
-		<!-- xxx remove
-		<section xml:id="node.namespace-reference">
-			<title>namespace-reference</title>
-			
-			<simplelist role="layout">
-				<member>+ identifier</member>
-			</simplelist>
-			
-			<para>Used to refer to a namespace that is the child of another namespace.</para>
-		</section>
-		-->
 
 		<section xml:id="node.parameter">
 			<title>parameter</title>
@@ -303,6 +235,28 @@ import all from "XmlLib"
 			<para>This node has scope, but only private identifiers are bound to it. Public and exported identifiers are bound to the scope of the bundle node.</para>
 			
 			<para>Planes aren't expressions because their declare-first nodes might rely on declare-first nodes in other planes, so all the declare-first nodes in a single plane can't just be executed all together.</para>
+		</section>
+
+		<section xml:id="node.return-info">
+			<title>return-info</title>
+			
+			<simplelist role="layout">
+				<member>boolean return</member>
+				<member>? expression interface</member>
+			</simplelist>
+			
+			<para role="process">If [interface] is present, [return] must be true.</para>
+			
+			<para>[return] tells whether the function returns a value. If [return] and [interface] are absent, the function does not return a value. If [return] is absent and [interface] is present, the function returns a value. If [return] is present, it's value determines whether the function returns a value (true) or doesn't (false).</para>
+		</section>
+		
+		<section xml:id="node.type">
+			<title>type</title>
+
+			<simplelist role="layout">
+				<member>? interface</member>
+				<member>boolean nullable</member>
+			</simplelist>
 		</section>
 	</section>
 
@@ -614,6 +568,10 @@ foo = func(Int a)Int { return a * 2 } //error - interface mismatch
 			
 			<para>When a block contains declare-first nodes, the declare-first nodes are executed before the other expressions in the block are executed. The value expressions of declare-first nodes may depend on the values of other declare-first nodes in the same block. For example, two interfaces could reference each other.</para>
 			
+			<para>This node can create identikeys before execution reaches it. For more information, see <link linkend="handling-declare-first">this section</link>.</para>
+			
+			<para role="exec">Produce the value bound to the identikey created by this node.</para>
+			
 			<programlisting>
 decl-first auto Foo = interface {
 	get Bar bar
@@ -625,6 +583,51 @@ decl-first auto Bar = interface {
 
 Foo foo = ...
 foo.bar.foo.bar...
+			</programlisting>
+		</section>
+		
+		<section xml:id="node.alias">
+			<title>alias</title>
+			
+			<para>Creates an identikey that is associated with the same value/namespace as the specified identikey in the specified namespace.</para>
+			
+			<simplelist role="layout">
+				<member>+ identifier target</member>
+				<member>identifier name</member>
+			</simplelist>
+			
+			<programlisting>
+alias Xml.XmlDocument as Doc
+alias Xml.XmlElement as XmlElement
+
+import ".NET: System" as System
+alias System.Collections.Generic as box
+box.IList&lt;Foo> = new box.List&lt;Foo>();
+			</programlisting>
+			
+			<programlisting>
+alias FooBarBaz as FBZ
+alias System.out.print as puts
+puts( (FBZ to String)(Gamma) )
+			</programlisting>
+			
+			<para>Each of the [target] identifiers, except for the last, must refer to a namespace. (The last can also refer to a namespace.)</para>
+		</section>
+		
+		<section xml:id="node.using">
+			<title>using</title>
+			
+			<para>Imports all the child identikeys of the specified namespace into the enclosing scope.</para>
+			
+			<simplelist role="layout">
+				<member>+ identifier</member>
+			</simplelist>
+			
+			<programlisting>
+decl std.Array&lt;Int> numbers
+
+using std
+decl Array&lt;Int> numbers
 			</programlisting>
 		</section>
 		
@@ -695,9 +698,48 @@ $func setupCell(Int searchID) {
 		<title>Sometimes producing expressions</title>
 		
 		<para>Nodes that can be executed, and sometimes produce.</para>
+
+		<section xml:id="node.assign">
+			<title>assign</title>
+			
+			<simplelist role="layout">
+				<member>identifier name</member>
+				<member>expression value</member>
+			</simplelist>
+			
+			<para>Assigns the value to the identikey. If the identikey's type is not function, the identikey will be unbound first if it is already bound to something. The identikey's type must be dynamic, automatic, strict, or function. If the identikey's type is automatic, strict, or function, identifier must be variable.</para>
+		</section>
+		
+		<section xml:id="node.declare-assign">
+			<title>declare-assign</title>
+			
+			<simplelist role="layout">
+				<member>identifier name</member>
+				<member>identikey-type</member>
+				<member>expression value</member>
+			</simplelist>
+			
+			<para role="process">The identikey-category of the identikey-type node must be dynamic, automatic, strict, or function.</para>
+			
+			<para>Creates an identikey in the parent scope with the specified type, then assigns the specified value to it.</para>
+		</section>
+		
+		<section xml:id="node.unassign">
+			<title>unassign</title>
+			
+			<simplelist role="layout">
+				<member>expression</member>
+			</simplelist>
+			
+			<para>Unassigns the values bound to the given reference. If the identikey is a function identikey, all bound functions are unbound.</para>
+			
+			<para role="xxx">Is this needed? Why not just assign null?</para>
+		</section>
 		
 		<section xml:id="node.block">
 			<title>block</title>
+			
+			<para role="xxx">Come up with better name.</para>
 			
 			<simplelist role="layout">
 				<member>* expression</member>
@@ -921,15 +963,16 @@ $observe {
 		<section xml:id="node.curry">
 			<title>curry</title>
 			
+			<para>Provides a built-in means of partial application. (Note that Desal provides no built-in support for the original type of currying, where a multi-argument function is converted into a chain of single-argument functions.)</para>
+			
 			<simplelist role="layout">
 				<member>expression value</member>
 				<member>? identifier method name</member>
 				<member>* argument</member>
+				<member>boolean call</member>
 			</simplelist>
-			
-			<para>Provides the type of currying that is also known as "partial application". Note that Desal provides no built-in means of doing the other kind of currying, where a multi-argument function is converted into a chain of single-argument functions.</para>
 
-			<para role="process">If this node is acting as an expression, and the function receives all it's arguments, which would result in the function being called, and the function doesn't return anything, an error results.</para>
+			<para>If [call] is true, and this node results in the function receiving enough arguments to be called, the function will be called.</para>
 			
 			<programlisting>
 func foo(Int a, Rat b, String c, Bool d) Int {
@@ -951,11 +994,11 @@ print foo3(1)(2.34)("text")(true)
 print foo(1, 2.34, "text", true)
 			</programlisting>
 			
-			<para>If the arguments match only one of the callees/methods of [value], this node evaluates to a value with a function interface as the active interface. If the arguments match more than one of the callees/methods on [value], this node evaluates to a value with an active interface that is produced from adding the function interfaces of the callees/methods together.</para>
+			<para>Assuming the function is not called: If the arguments match only one of the callees/methods of [value], this node produces a value with a function interface as the active interface. If the arguments match more than one of the callees/methods on [value], this node produces a value with an active interface that is made by adding the function interfaces of the callees/methods together.</para>
 			
-			<para>After evaluation, the specified parameters have values, so they do not appear on the resultant function.</para>
+			<para>After execution, the specified parameters have values, so they do not appear on the resultant function.</para>
 			
-			<para>Once the function has all its arguments supplied, it is called. Note that this is different from the <link linkend="node.bind">bind node</link>.</para>
+			<para>Once the function has all its arguments supplied, it is called if [call] is true, and the result of that call is produced.</para>
 			
 			<programlisting>
 func doStuff1(Int a, String b, Bool alpha) {...}
@@ -976,6 +1019,44 @@ doStuff2(123.456)
 		(argument
 			(identifier.name "alpha")
 			(identifier.value "false"))))
+			</programlisting>
+
+			<programlisting>
+interface Alpha
+func bar(Int a, Rat b, String c)
+
+Alpha alpha = AlphaClass()
+
+alpha.bar(0, 0.0, "0")
+
+func()void bar1 = alpha:bar()
+bar(1, 2.3, "4")
+
+func()void bar2 = alpha:bar(c="text")
+bar2(7, 9.8)
+
+func()void bar3 = alpha:bar(-9, 0.001, "stuff")
+bar3()
+			</programlisting>
+			
+			<para>Creates a function that, when passed the type specified by [interface], calls the method named [method name] with the rest of the arguments sent to it. It's purpose is to help with functional programming.</para>
+			
+			<programlisting>
+interface Foo {
+func doStuff(Int, Int) Rat
+}
+
+Foo foo = getFoo()
+func(Foo,Int,Int)Rat doStuffer = Foo::doStuff
+println doStuffer(foo,3,7)
+
+dyn doStuffer2 = dyn::doStuff
+println doStuffer2(foo,3,7)
+
+//all equilavent
+println Foo::doStuff(foo,3,7)
+println dyn::doStuff(foo,3,7)
+println foo.doStuff(3,7)
 			</programlisting>
 		</section>
 		
@@ -1019,64 +1100,144 @@ doStuff2(123.456)
 		</section>
 	</section>
 	
-	<section xml:id="pure-producers">
-		<title>Pure producers</title>
+	<section xml:id="always-producing-expresions">
+		<title>Always producing expressions</title>
 		
-		<para>Nodes that always produce when executed, and are not intended to have side effects. When the output of one of these nodes is not used, a warning should be emitted, because pure producers serve only to produce values. (xxx which warning?) For example, if a block contains an integer node (that is not last), an agent should emit a warning that the integer node has no effect.</para>
+		<para>Expressions that, aside from e.g. exceptions, always produce when executed. These nodes, other than the and, nand, or, and nor nodes, are not intended to have side effects.</para>
 		
-		<section xml:id="node.active-interface">
-			<title>active-interface</title>
+		<section xml:id="boolean-logic">
+			<title>Boolean logic</title>
 			
-			<simplelist role="layout">
-				<member>expression value</member>
-			</simplelist>
+			<section xml:id="node.and">
+				<title>and</title>
+				
+				<para>Evaluates to false if either child expression evaluates to false.</para>
+				
+				<simplelist role="layout">
+					<member>expression first</member>
+					<member>expression second</member>
+				</simplelist>
+				
+				<orderedlist role="exec">
+					<listitem>Evaluate the first [expression] node.</listitem>
+					<listitem>Downcast [1] to Bool.</listitem>
+					<listitem>If [2] is false, evaluate this node to false.</listitem>
+					<listitem>Evaluate the second [expression] node.</listitem>
+					<listitem>Downcast [4] to Bool.</listitem>
+					<listitem>Evaluate this node to [5].</listitem>
+				</orderedlist>
+			</section>
 			
-			<para>Evaluates to the interface that is the active interafce of the specified value.</para>
+			<section xml:id="node.nand">
+				<title>nand</title>
+				
+				<para>Evaluates to true if either child expression evaluates to false.</para>
+				
+				<simplelist role="layout">
+					<member>expression first</member>
+					<member>expression second</member>
+				</simplelist>
+				
+				<orderedlist role="exec">
+					<listitem>Evaluate the first [expression] node.</listitem>
+					<listitem>Downcast [1] to Bool.</listitem>
+					<listitem>If [2] is false, evaluate this node to true.</listitem>
+					<listitem>Evaluate the second [expression] node.</listitem>
+					<listitem>Downcast [4] to Bool.</listitem>
+					<listitem>Evaluate this node to the inverse of [5].</listitem>
+				</orderedlist>
+			</section>
+			
+			<section xml:id="node.or">
+				<title>or</title>
+				
+				<para>Evaluates to true if either child expression evaluates to true.</para>
+				
+				<simplelist role="layout">
+					<member>expression first</member>
+					<member>expression second</member>
+				</simplelist>
+				
+				<orderedlist role="exec">
+					<listitem>Evaluate the first [expression] node.</listitem>
+					<listitem>Downcast [1] to Bool.</listitem>
+					<listitem>If [2] is true, evaluate this node to true.</listitem>
+					<listitem>Evaluate the second [expression] node.</listitem>
+					<listitem>Downcast [4] to Bool.</listitem>
+					<listitem>Evaluate this node to [5].</listitem>
+				</orderedlist>
+			</section>
+			
+			<section xml:id="node.nor">
+				<title>nor</title>
+				
+				<para>Evaluates to false if either child expression evaluates to true.</para>
+				
+				<simplelist role="layout">
+					<member>expression first</member>
+					<member>expression second</member>
+				</simplelist>
+				
+				<orderedlist role="exec">
+					<listitem>Evaluate the first [expression] node.</listitem>
+					<listitem>Downcast [1] to Bool.</listitem>
+					<listitem>If [2] is true, evaluate this node to false.</listitem>
+					<listitem>Evaluate the second [expression] node.</listitem>
+					<listitem>Downcast [4] to Bool.</listitem>
+					<listitem>Evaluate this node to the inverse of [5].</listitem>
+				</orderedlist>
+			</section>
+			
+			<section xml:id="node.xor">
+				<title>xor</title>
+				
+				<para>Evaluates to true if the child expressions evaluate to different values.</para>
+				
+				<simplelist role="layout">
+					<member>expression first</member>
+					<member>expression second</member>
+				</simplelist>
+				
+				<orderedlist role="exec">
+					<listitem>Evaluate the first [expression] node.</listitem>
+					<listitem>Downcast [1] to Bool.</listitem>
+					<listitem>Evaluate the second [expression] node.</listitem>
+					<listitem>Downcast [3] to Bool.</listitem>
+					<listitem>If [2] and [4] are different, evaluate to true. Otherwise, evaluate to false.</listitem>
+				</orderedlist>
+			</section>
+			
+			<section xml:id="node.xnor">
+				<title>xnor</title>
+				
+				<para>Evaluates to true if the child expressions evaluate to the same value.</para>
+				
+				<simplelist role="layout">
+					<member>expression first</member>
+					<member>expression second</member>
+				</simplelist>
+				
+				<orderedlist role="exec">
+					<listitem>Evaluate the first [expression] node.</listitem>
+					<listitem>Downcast [1] to Bool.</listitem>
+					<listitem>Evaluate the second [expression] node.</listitem>
+					<listitem>Downcast [3] to Bool.</listitem>
+					<listitem>If [2] and [4] are the same, evaluate to true. Otherwise, evaluate to false.</listitem>
+				</orderedlist>
+			</section>
 		</section>
 		
 		<section xml:id="node.array">
 			<title>array</title>
 			
 			<simplelist role="layout">
-				<member>expression [interface]</member>
-				<member>* expression [element]</member>
+				<member>type</member>
+				<member>* expression element</member>
 			</simplelist>
 			
 			<para>Evaluates to an object with interface array as the active interface. The object may implement other interfaces if they do not conflict with the array interface.</para>
 			
 			<para>Each [element] is cast to [interface]. If a cast error results, it raises out of the array node, so that the array node doesn't evaluate to anything.</para>
-		</section>
-		
-		<section xml:id="node.bind">
-			<title>bind</title>
-			
-			<simplelist role="layout">
-				<member>expression value</member>
-				<member>? identifier method name</member>
-				<member>* argument</member>
-			</simplelist>
-			
-			<para>Performs partial application. Evaluates to a function.</para>
-			
-			<para>Note that if all arguments are supplied, the function will not be called. Contrast this with the <link linkend="node.curry">curry node</link>.</para>
-			
-			<programlisting>
-interface Alpha
-	func bar(Int a, Rat b, String c)
-
-Alpha alpha = AlphaClass()
-
-alpha.bar(0, 0.0, "0")
-
-func()void bar1 = alpha:bar()
-bar(1, 2.3, "4")
-
-func()void bar2 = alpha:bar(c="text")
-bar2(7, 9.8)
-
-func()void bar3 = alpha:bar(-9, 0.001, "stuff")
-bar3()
-			</programlisting>
 		</section>
 		
 		<section xml:id="node.cast">
@@ -1098,124 +1259,16 @@ print (o as String).length
 		<section xml:id="node.chain">
 			<title>chain</title>
 			
+			<para>Creates a doubly-linked list from the provided elements.</para>
+
 			<simplelist role="layout">
-				<member>boolean namespaced-identikey</member>
-				<member>boolean get-property</member>
-				<member>boolean bind</member>
-				<member>? expression starting value</member>
-				<member>+ identifier</member>
+				<member>type</member>
+				<member>* expression element</member>
 			</simplelist>
 			
-			<para>This node exists for Desal representations that use the same syntax for different associations between identifiers. The associations supported by this node are the same as those of the <link linkend="node.namespaced-identikey">namespaced-identikey</link>, <link linkend="node.get-property">get-property</link>, and <link linkend="node.bind">bind</link> nodes. The optional boolean nodes are all true by default, meaning all associations are supported. If namespaced-identikey is true, the starting value must not be present.</para>
+			<para>Evaluates to a list, as if calling CList&lt; [interface] > ( [element], [element], ... )</para>
 			
-			<para>namespaced-identikey associations can be used to evaluate namespaced identikeys.</para>
-			
-			<screen>
-namespace.identikey
-namespace.namespace.identikey
-			</screen>
-			
-			<para>get-property associations can be used to get properties of values.</para>
-			
-			<screen>
-starting-value.property.property.property
-
-if namespaced-identikey is also true:
-namespace.identikey.property
-			</screen>
-			
-			<para>bind associations can be used to bind a method of a value to a value.</para>
-			
-			<screen>
-alpha.doStuff.apply
-			</screen>
-			
-			<screen>
-Different syntax for namespaced identikeys, getting properties, and method binding.
-
-alpha::beta.gamma=>delta
-
-(bind
-	(get-property
-		(namespaced-identikey
-			(namespace alpha)
-			(identifier beta))
-		(identifier gamma))
-	(identifier delta))
-
-Here, alpha must be a namespace, beta must be an identikey, gamma must be a property, and delta must be a method.
-			</screen>
-			
-			<screen>
-Shared syntax for namespaced identikey references and getting properties, but different syntax for method binding.
-
-alpha.beta.gamma:delta
-
-(bind
-	(chain
-		(bind false)
-		(identifier alpha)
-		(identifier beta)
-		(identifier gamma))
-	(identifier delta))
-
-Here, alpha could be a free identikey or a namespace. If alpha is a namespace, beta could be a namespace. gamma could be an identikey in the alpha.beta namespace, or a property of the value that beta evaluated to. delta must be a method.
-			</screen>
-			
-			<screen>
-Shared syntax for getting properties and method binding, but different syntax for referring to namespaced identikey references.
-
-alpha::beta.gamma.delta
-
-(chain
-	(namespaced-identikey false)
-	(starting-value
-		(namespaced-identikey
-			(namespace alpha)
-			(identifier beta)))
-	(identifier gamma)
-	(identifier delta))
-
-Here, alpha must be a namespace and beta must be an identikey within that namespace. gamma could be a property or method of beta. delta could be a property or method of gamma.
-			</screen>
-			
-			<screen>
-Same syntax for all.
-
-alpha.beta.gamma.delta
-
-(chain
-	(identifier alpha)
-	(identifier beta)
-	(identifier gamma)
-	(identifier delta))
-
-Delta cannot be a namespace.
-			</screen>
-			
-			<screen><![CDATA[
-A representation could provide different syntax for each association, but also provide a way to specify that one of multiple assocations are allowed.
-
-alpha :: beta {. or =>} gamma . delta => epsilon
-
-<bind>
-	<get-property label="value">
-		<chain label="value">
-			<bool label="namespaced-idenkey">false</bool>
-			<namespaced-identikey label="starting-value">
-				<identifer label="namespace">alpha</identifer>
-				<identifer label="member">beta</identifer>
-			</namespaced-identifer>
-			<identifer>gamma</identifer>
-		</chain>
-		<identifer label="property-name">delta</identifer>
-	</get-property>
-	<identifier label="method-name">epsilon</identifer>
-</bind>
-
-Here, alpha must be a namespace, and beta must be an identikey within that namespace. Gamma can be a property or method of beta. delta must be a property of gamma. epsilon must be a method of delta.
-]]>
-			</screen>
+			<para>Each [element] is cast to [interface]. If a cast error results, it raises out of the list node, so that the list node doesn't evaluate to anything.</para>
 		</section>
 		
 		<section xml:id="node.class">
@@ -1449,6 +1502,53 @@ interface of Foo {
 (Foo as Interface) == (Bar + Foo.Bar2) //true
 			</programlisting>
 		</section>
+
+		<section xml:id="node.comprehension">
+			<title>comprehension</title>
+			
+			<para>Used to build collections or generators. A slightly more general form of array/list comprehensions as found in other programming languages. Similar in nature to set-builder notation in mathematics.</para>
+			
+			<simplelist role="layout">
+				<member>comprehension-type</member>
+				<member>? expression destination collection</member>
+				<member>expression source collection</member>
+				<member>identifier element name</member>
+				<member>? expression test</member>
+				<member>? expression output</member>
+			</simplelist>
+			
+			<para role="process">[comprehension-type] must be set to "provided" if [destination-collection] is present.</para>
+			
+			<section xml:id="node.comprehension-type">
+				<title>comprehension-type</title>
+				
+				<para>Specifies one of: array, chain, generator, provided</para>
+			</section>
+
+			<programlisting>
+$decl foo = [2*x for x in L if x^2 > 3]
+container: L
+element name: x
+test: x^2 > 3
+output: 2*x
+
+$decl foo = [x in L if x^2 > 3]
+container: L
+element name: x
+test: x^2 > 3
+output: (implicit: x)
+
+$decl foo = [x in L]
+container: L
+element name: x
+test: (implicit: true)
+output: (implicit: x)
+
+for o in [2*x for x in L if x^2 > 3] {
+	println o
+}
+			</programlisting>
+		</section>
 		
 		<section xml:id="node.copy">
 			<title>copy</title>
@@ -1469,14 +1569,56 @@ interface of Foo {
 			</orderedlist>
 			
 			<programlisting>
-decl Int $num = 3
-
+decl Int $num1 = 987
 decl Int $num2 = copy($num)
-decl Rat $num3 = ($num as Rat)
-
-decl Int $num4 := $num
-decl Rat $num5 := $num
+decl Int $num3 := $num
 			</programlisting>
+		</section>
+		
+		<section xml:id="node.convert">
+			<title>convert</title>
+			
+			<para>Attempts to convert a given value to a different type.</para>
+			
+			<simplelist role="layout">
+				<member>expression value</member>
+				<member>? expression interface</member>
+			</simplelist>
+			
+			<orderedlist role="exec">
+				<listitem>Evaluate the value expression.</listitem>
+				<listitem>Evaluate the interface expression or get the active interface of the value.</listitem>
+				<listitem>Find the converter to the specified interface (XXX how?) using the same method as finding a property or method.</listitem>
+				<listitem>Activate the converter.</listitem>
+				<listitem>Evaluate this node to the returned value.</listitem>
+			</orderedlist>
+			
+			<programlisting>
+decl Int $num1 = 987
+decl Rat $num2 = ($num to Rat)
+decl Rat $num3 := $num
+			</programlisting>
+			
+			<para role="xxx">Should the ":=" operator shown in the examples for copy and convert have an associated node? Something like "assign-copy"/"assign-convert"/"assign-new" would be good.</para>
+		</section>
+		
+		<section xml:id="node.dictionary">
+			<title>dictionary</title>
+			
+			<simplelist role="layout">
+				<member>? type key type</member>
+				<member>? type value type</member>
+				<member>* dictionary-entry</member>
+			</simplelist>
+			
+			<section xml:id="node.dictionary-entry">
+				<title>dictionary-entry</title>
+				
+				<simplelist role="layout">
+					<member>expression key</member>
+					<member>expression value</member>
+				</simplelist>
+			</section>
 		</section>
 		
 		<section xml:id="node.enum">
@@ -1485,14 +1627,14 @@ decl Rat $num5 := $num
 			<para>An enum is similar to an immutable dict.</para>
 			
 			<simplelist role="layout">
-				<member>? expression value interface</member>
+				<member>? type</member>
 				<member>+ enum-entry</member>
 			</simplelist>
 			
-			<para role="process">If [value interface] is not given, no enum entries can have a value. (XXX [value interface] should become some kind of Type value/node which can express that the value can be a dyn) If one or more enum entries have a value, all enum entries must have a value.</para>
+			<para role="process">If [type] is not given, no enum entries can have a value. If [type] is given, all enum entries must have a value. Note that every enum entry has have a unique value. (XXX include restriction in execution instructions)</para>
 			
 			<section xml:id="node.enum-entry">
-				<member>enum-entry</member>
+				<title>enum-entry</title>
 				
 				<simplelist role="layout">
 					<member>identifier name</member>
@@ -1500,94 +1642,70 @@ decl Rat $num5 := $num
 				</simplelist>
 			</section>
 			
-			<para role="xxx">clean up</para>
+			<para>If [type] is given:</para>
+			<orderedlist role="exec">
+				<listitem>Let EntryFace be a new interface that inherits from EnumDictEntry&lt;T> where T is specified by [type].</listitem>
+				<listitem>For every [enum-entry], create a value with EntryFace as the active interface, where the "value" and "name" properties are those specified by the [enum-entry].</listitem>
+				<listitem>Let ListFace be a new interface. For every [enum-entry], add a readonly property to ListFace with the type of EntryFace and a name specified by the [enum-entry].</listitem>
+				<listitem>Let EnumFace be a new interface that inherits from Interface, EnumDict&lt;T, U>, and ListFace, where T is EntryFace and U is specified by [type].</listitem>
+				<listitem>Let EnumInstance be a value with EnumFace as the active interface such that:
+					<simplelist>
+						<member>the value given from getting a property of ListFace is the value created in step 2 that is associated with the same [enum-entry] as the property</member>
+						<member>the Interface implementation is EntryFace, i.e. EnumInstance cast to Interface is EnumFace</member>
+					</simplelist>
+				</listitem>
+				<listitem>Produce EnumInstance.</listitem>
+			</orderedlist>
+			
+			<para>If [type] is not given:</para>
+			<orderedlist role="exec">
+				<listitem>Let EntryFace be a new interface that inherits from EnumEntry.</listitem>
+				<listitem>For every [enum-entry], create a value with EntryFace as the active interface, where the "name" property is that specified by the [enum-entry].</listitem>
+				<listitem>Let ListFace be a new interface. For every [enum-entry], add a readonly property to ListFace with the type of EntryFace and a name specified by the [enum-entry].</listitem>
+				<listitem>Let EnumFace be a new interface that inherits from Interface, Enum&lt;T>, and ListFace, where T is EntryFace.</listitem>
+				<listitem>Let EnumInstance be a value with EnumFace as the active interface such that:
+					<simplelist>
+						<member>the value given from getting a property of ListFace is the value created in step 2 that is associated with the same [enum-entry] as the property</member>
+						<member>the Interface implementation is EntryFace, i.e. EnumInstance cast to Interface is EnumFace</member>
+					</simplelist>
+				</listitem>
+				<listitem>Produce EnumInstance.</listitem>
+			</orderedlist>
+			
+			<para>Note that the sections specifying Enum, EnumDict, EnumEntry, and EnumDictEntry have additional requirements on the behavior of instances of these interfaces.</para>
 			
 			<screen>
 <![CDATA[
-
-//T is the type of an entry in this enum
-//U is the type of a value of an enum entry
-interface<T, U> Enum
-	get Collection<T> entries
-	//or maybe: inherit Collection<T>
-	get Int size
-	func fromName(String str) T
-	func fromValue(U val) T
-
-//U is the type of a value of an enum entry
-interface<U> EnumElement
-	get String name
-	get U value
-
-Enum and EnumElement cannot be implemented manually.
-
-These two interfaces are used in the examples below:
-
-interface {{AnimalInterface}}
-	inherit EnumElement<Int>
-
-interface {{Properties}}
-	inherit Enum< {{AnimalInterface}}, Int >
-	get {{AnimalInterface}} dog
-	get {{AnimalInterface}} cat
-	get {{AnimalInterface}} fish
-	get {{AnimalInterface}} parrot
-	get {{AnimalInterface}} ferret
-	get {{AnimalInterface}} gerbil
-	get {{AnimalInterface}} hamster
-
-When [value-type] is not given:
-	no entries can have values
-	the value property of EnumEntry will return null
-	the fromValue method of Enum will return null
-
-When a [value-type] is given, all entries must have values.
-
-Multiple identifiers can be assigned the same value. In such a case, each identifier will refer to the same object, and the str property of that object will give the first identifier as a string.
-
-layout:
-	identifier [interface]
-	? expression [value-type]
-	boolean [expose]
-	(+ identifier [name]) | (+ enum-entry [element])
-
-enum-entry layout:
-	identifier [name]
-	? expression [value]
-
------ example 1
-
 enum Animal {
 	dog, cat, fish, parrot, ferret, gerbil, hamster
 }
 
+interface EntryFace
+	inherit EnumEntry
+
+interface ListFace
+	get EntryFace dog
+	get EntryFace cat
+	get EntryFace fish
+	get EntryFace parrot
+	get EntryFace ferret
+	get EntryFace gerbil
+	get EntryFace hamster
+
+interface EnumFace
+	inherit Interface
+	inherit Enum<EntryFace>
+	inherit EnumList
+
 Animal a = Animal.dog
-Animal b = Animal["cat"]
-println Animal.size
+Animal b = Animal.fromName("cat")
+println Animal.size //assuming size is specified by Collection<T>
 
 for animal in Animal
-	println animal.str " " animal.value
+	println animal.name
 
------ example 2
-
-enum Animal expose {
-	DOG, CAT, FISH, PARROT, FERRET, GERBIL, HAMSTER
-}
-
-Animal a = Animal.DOG
-Animal b = Animal["CAT"]
-Animal c = FISH
-println Animal.size
-
-for animal in Animal
-	println animal.str " " animal.value
-
------
-
-typeOf(Animal) == Interface + {{Properties}}
-(Animal as Interface) == {{AnimalInterface}}
-typeOf(DOG) == typeOf(Animal.DOG)
-
+activeInterface(Animal) == Interface + Enum<EntryFace> + EnumList
+(Animal as Interface) == EntryFace
 ]]>
 			</screen>
 		</section>
@@ -1598,10 +1716,12 @@ typeOf(DOG) == typeOf(Animal.DOG)
 			<simplelist role="layout">
 				<member>* parameter</member>
 				<member>return-info</member>
-				<member>block</member>
+				<member>expression body</member>
 			</simplelist>
+
+			<para>XXX specify barrier, which is like the kind of barrier that is in class nodes. Compare this kind of barrier to scope barriers -- nodes that "have scope". The [body] node is not executed when this node is executed, but it may be executed after this node has executed.</para>
 			
-			<para>When this node is evaluated, it evaluates to a value with a function interface as the active interface. Only the [parameter] node and [return-info]'s [interface] nodes are evaluated at this time. When the resultant value is called, the [block] node is executed in the scope of this function node.</para>
+			<para>When this node is executed, it produces a value with a function interface as the active interface. Only the [parameter] node and [return-info]'s [interface] nodes are executed at this time. When the resultant value is called, the [body] node is executed in the scope of this function node.</para>
 		</section>
 		
 		<section xml:id="node.function-interface">
@@ -1613,44 +1733,18 @@ typeOf(DOG) == typeOf(Animal.DOG)
 				<member>return-info</member>
 			</simplelist>
 		</section>
-
-		<section xml:id="node.generator-producer">
-			<title>generator-producer</title>
-			
-			<para>When executed, produces a function that returns a value that implements an instantiation of the Generator generic interface.</para>
-			
-			<simplelist role="layout">
-				<member>* parameter</member>
-				<member>? output-info</member>
-				<member>block</member>
-			</simplelist>
-			
-			<programlisting>
-$decl foo = $generator(Int a, Int b) Int {
-	$decl Int i = a
-	$while i &lt; b {
-		$yield i
-		i++
-	}
-}
-
-$for i $in foo(2, 5) {
-	print foo
-	print " "
-}
-
-prints: '2 3 4 '
-
-interface of foo {
-	call() Generator&lt;Int>
-}
-
-foo is a function that returns a Generator&lt;Int>
-			</programlisting>
-		</section>
 		
 		<section xml:id="node.generator">
 			<title>generator</title>
+
+			<para>Produces a value that implements an instantiation of the Generator generic interface.</para>
+			
+			<simplelist role="layout">
+				<member>type</member>
+				<member>expression</member>
+			</simplelist>
+			
+			<para>Has scope.</para>
 			
 			<programlisting>
 $decl foo = $generator {
@@ -1669,8 +1763,10 @@ $for i $in foo {
 prints: '2 3 4 '
 
 interface of foo == Generator&lt;Int>
+			</programlisting>
 
-$decl foo = $func(Int a, Int b) Int {
+			<programlisting>
+$decl foo = $func(Int a, Int b) Generator&lt;Int> {
 	$return $generator {
 		$decl Int i = a
 		$while i &lt; b {
@@ -1679,58 +1775,32 @@ $decl foo = $func(Int a, Int b) Int {
 		}
 	}
 }
-			</programlisting>
-		</section>
-		
-		<section xml:id="node.build-list">
-			<title>build-list</title>
-			
-			<para>Produces an array.</para>
-			
-			<simplelist role="layout">
-				<member>expression container</member>
-				<member>identifier element name</member>
-				<member>? expression test</member>
-				<member>? expression output</member>
-			</simplelist>
-			
-			<programlisting>
-$decl foo = [2*x for x in L if x^2 > 3]
-container: L
-element name: x
-test: x^2 > 3
-output: 2*x
 
-$decl foo = [x in L if x^2 > 3]
-container: L
-element name: x
-test: x^2 > 3
-output: (implicit: x)
-
-$decl foo = [x in L]
-container: L
-element name: x
-test: (implicit: true)
-output: (implicit: x)
-			</programlisting>
-		</section>
-		
-		<section xml:id="node.build-generator">
-			<title>build-generator</title>
-			
-			<para>Produces a generator. (Compare to <link linkend="node.generator-producer">generator-producer</link>, which produces a function.)</para>
-			
-			<simplelist role="layout">
-				<member>expression container</member>
-				<member>identifier element name</member>
-				<member>? expression test</member>
-				<member>expression output</member>
-			</simplelist>
-			
-			<programlisting>
-for o in [2*x for x in L if x^2 > 3] {
-	println o
+$for i $in foo(2, 5) {
+	print foo
+	print " "
 }
+
+prints: '2 3 4 '
+			</programlisting>
+			
+			<programlisting>
+A representation could provide a construct like that in other languages by combining functions and generators.
+
+$decl foo = $generator(Int a, Int b) Int {
+	$decl Int i = a
+	$while i &lt; b {
+		$yield i
+		i++
+	}
+}
+
+$for i $in foo(2, 5) {
+	print foo
+	print " "
+}
+
+prints: '2 3 4 '
 			</programlisting>
 		</section>
 		
@@ -1795,13 +1865,15 @@ println list.removeBack() //prints "3"
 			</programlisting>
 		</section>
 		
-		<section xml:id="node.generic-parameter">
-			<title>generic-parameter</title>
+		<section xml:id="node.get-property">
+			<title>get-property</title>
 			
 			<simplelist role="layout">
-				<member>identifier name</member>
-				<member>? expression default interface</member>
+				<member>expression source</member>
+				<member>identifier property name</member>
 			</simplelist>
+			
+			<para>Retrieves the value of a property. If the active interface of the value does not have a property with the specified name, or the property cannot be retrieved, an error results.</para>
 		</section>
 		
 		<section xml:id="node.identifier">
@@ -1810,17 +1882,6 @@ println list.removeBack() //prints "3"
 			<para>Base node. Identifiers can sometimes evaluate to object references. Object references point to an object and have an active interface. Only properties declared by the active interface can be accessed, even if the object implements other interfaces.</para>
 			
 			<para>When evaluating an identifier to an object: If the identifier is undefined in the current scope, move to the containing scope. If there is no containing scope, throw an UndefinedIdentifier error. Continue moving to outer scopes until the identifier is found or there is no containing scope. If the identifier is bound to an object, the identifier evaluates to that object. If the identifier has been declared that it can be bound to objects, but it is currently not bound to anything, return null. If the identifier is bound to a function, the identifier evaluates to the wrapper for that function, as defined in function-wrapper xxx. If the identifier is bound to a namespace, a NamespaceIdentifier error results.</para>
-		</section>
-
-		<section xml:id="node.instantiate-generic-interface">
-			<title>instantiate-generic-interface</title>
-			
-			<simplelist role="layout">
-				<member>expression generic interface</member>
-				<member>+ argument</member>
-			</simplelist>
-			
-			<para>All the arguments must be interfaces. Pass interfaces in to get a function.</para>
 		</section>
 		
 		<section xml:id="node.instantiate-generic-class">
@@ -1844,25 +1905,16 @@ println list.removeBack() //prints "3"
 			
 			<para>All the arguments must be interfaces. Pass interfaces in to get a function.</para>
 		</section>
-		
-		<section xml:id="node.namespaced-identikey">
-			<title>namespaced-identikey</title>
+
+		<section xml:id="node.instantiate-generic-interface">
+			<title>instantiate-generic-interface</title>
 			
 			<simplelist role="layout">
-				<member>+ identifier namespaces</member>
-				<member>identifier identikey name</member>
+				<member>expression generic interface</member>
+				<member>+ argument</member>
 			</simplelist>
 			
-			<programlisting>
-namespace::namespace::identikey
-
-namespace foo {
-	namespace bar {
-		Int alpha = ...
-	}
-}
-Int alpha = foo::bar::alpha
-			</programlisting>
+			<para>All the arguments must be interfaces. Pass interfaces in to get a function.</para>
 		</section>
 		
 		<section xml:id="node.implements">
@@ -1876,7 +1928,7 @@ Int alpha = foo::bar::alpha
 			<para>Returns a bool object reference to the true or false objects. True if [object] implements [interface], false otherwise.</para>
 			
 			<programlisting>
-if (o imps Foo)
+if (o impls Foo)
 	(o as Foo).propOfFoo()
 			</programlisting>
 		</section>
@@ -1961,45 +2013,24 @@ if (o imps Foo)
 			</section>
 		</section>
 		
-		<section xml:id="node.same-object">
-			<title>same-object</title>
+		<section xml:id="node.namespaced-identikey">
+			<title>namespaced-identikey</title>
 			
 			<simplelist role="layout">
-				<member>expression</member>
-				<member>expression</member>
+				<member>+ identifier namespaces</member>
+				<member>identifier identikey name</member>
 			</simplelist>
-			
-			<para>Tells whether the values are associated with the same object.</para>
 			
 			<programlisting>
-Alpha a = getAlpha()
-Beta b = getBeta()
-if( a === b )
-	print "same objects"
+namespace::namespace::identikey
+
+namespace foo {
+	namespace bar {
+		Int alpha = ...
+	}
+}
+Int alpha = foo::bar::alpha
 			</programlisting>
-		</section>
-		
-		<section xml:id="node.list">
-			<title>list</title>
-			
-			<simplelist role="layout">
-				<member>expression [interface]</member>
-				<member>* expression [element]</member>
-			</simplelist>
-			
-			<para>Evaluates to a list, as if calling CList{ [interface] } ( [element], [element], ... )</para>
-			
-			<para>Each [element] is cast to [interface]. If a cast error results, it raises out of the list node, so that the list node doesn't evaluate to anything.</para>
-		</section>
-		
-		<section xml:id="node.object-number">
-			<title>object-number</title>
-			
-			<simplelist role="layout">
-				<member>Expression value</member>
-			</simplelist>
-			
-			<para>Every object is associated with a constant non-negative integer. No two objects that are still accessible can have the same object number. This node evaluates to a value, with Int as the active interface, that encodes the object number for the object associated with the given value.</para>
 		</section>
 		
 		<section xml:id="node.rational">
@@ -2008,15 +2039,18 @@ if( a === b )
 			<para>Base node. Evaluates to an object with BigRat as the active interface. The object may implement other interfaces if they do not conflict with the BigRat interface. Must not implement the LimRat interface.</para>
 		</section>
 		
-		<section xml:id="node.get-property">
-			<title>get property</title>
+		<section xml:id="node.set-property">
+			<title>set-property</title>
+			
+			<para role="xxx">Shouldn't this be merged with the assign node?</para>
 			
 			<simplelist role="layout">
-				<member>expression value</member>
+				<member>expression source</member>
 				<member>identifier property name</member>
+				<member>expression value</member>
 			</simplelist>
 			
-			<para>Retrieves a property of a value. If the active interface of the value does not have a property with the specified name, an error results.</para>
+			<para>Sets the value of a property. If the active interface of the value does not have a property with the specified name, or the property cannot be set, an error results. Evaluates to the value given by [value].</para>
 		</section>
 
 		<section xml:id="node.string">
@@ -2028,190 +2062,132 @@ if( a === b )
 			
 			<para>Base node. Evaluates to an object with interface string as the active interface. The object may implement other interfaces if they do not conflict with the string interface.</para>
 		</section>
-		
-		<section xml:id="node.xor">
-			<title>xor</title>
-			
-			<para>Evaluates to true if the child expressions evaluate to different values.</para>
-
-			<simplelist role="layout">
-				<member>2 expression</member>
-			</simplelist>
-
-			<orderedlist role="exec">
-				<listitem>Evaluate the first [expression] node.</listitem>
-				<listitem>Downcast [1] to Bool.</listitem>
-				<listitem>Evaluate the second [expression] node.</listitem>
-				<listitem>Downcast [3] to Bool.</listitem>
-				<listitem>If [2] and [4] are different, evaluate to true. Otherwise, evaluate to false.</listitem>
-			</orderedlist>
-		</section>
-		
-		<section xml:id="node.xnor">
-			<title>xnor</title>
-			
-			<para>Evaluates to true if the child expressions evaluate to the same value.</para>
-
-			<simplelist role="layout">
-				<member>2 expression</member>
-			</simplelist>
-
-			<orderedlist role="exec">
-				<listitem>Evaluate the first [expression] node.</listitem>
-				<listitem>Downcast [1] to Bool.</listitem>
-				<listitem>Evaluate the second [expression] node.</listitem>
-				<listitem>Downcast [3] to Bool.</listitem>
-				<listitem>If [2] and [4] are the same, evaluate to true. Otherwise, evaluate to false.</listitem>
-			</orderedlist>
-		</section>
-		
-		<section xml:id="node.create-caller">
-			<title>create-caller</title>
-			<para role="xxx">come up with better name</para>
-			
-			<simplelist role="layout">
-				<member>? expression interface</member>
-				<member>identifier method name</member>
-			</simplelist>
-			
-			<para>Creates a function that, when passed the type specified by [interface], calls the method named [method name] with the rest of the arguments sent to it. It's purpose is to help with functional programming.</para>
-			
-			<programlisting>
-interface Foo {
-	func doStuff(Int, Int) Rat
-}
-
-Foo foo = getFoo()
-func(Foo,Int,Int)Rat doStuffer = Foo::doStuff
-println doStuffer(foo,3,7)
-
-dyn doStuffer2 = dyn::doStuff
-println doStuffer2(foo,3,7)
-
-//all equilavent
-println Foo::doStuff(foo,3,7)
-println dyn::doStuff(foo,3,7)
-println foo.doStuff(3,7)
-			</programlisting>
-		</section>
 	</section>
 	
-	<section xml:id="always-produce">
-		<title>Always produce</title>
-		
-		<para>Nodes that always produce a value when executed, and can have side effects.</para>
-	
-		<section xml:id="node.and">
-			<title>and</title>
-			
-			<para>Evaluates to false if either child expression evaluates to false.</para>
-			
-			<simplelist role="layout">
-				<member>2 expression</member>
-			</simplelist>
-			
-			<orderedlist role="exec">
-				<listitem>Evaluate the first [expression] node.</listitem>
-				<listitem>Downcast [1] to Bool.</listitem>
-				<listitem>If [2] is false, evaluate this node to false.</listitem>
-				<listitem>Evaluate the second [expression] node.</listitem>
-				<listitem>Downcast [4] to Bool.</listitem>
-				<listitem>Evaluate this node to [5].</listitem>
-			</orderedlist>
-		</section>
-		
-		<section xml:id="node.nand">
-			<title>nand</title>
-			
-			<para>Evaluates to true if either child expression evaluates to false.</para>
+	<section xml:id="unsorted-nodes">
+		<title>Unsorted nodes</title>
 
+		<section xml:id="node.identifier-chain">
+			<title>identifier-chain</title>
+			
 			<simplelist role="layout">
-				<member>2 expression</member>
+				<member>boolean namespaced-identikey</member>
+				<member>boolean get-property</member>
+				<member>boolean bind</member>
+				<member>? expression starting value</member>
+				<member>+ identifier</member>
 			</simplelist>
 			
-			<orderedlist role="exec">
-				<listitem>Evaluate the first [expression] node.</listitem>
-				<listitem>Downcast [1] to Bool.</listitem>
-				<listitem>If [2] is false, evaluate this node to true.</listitem>
-				<listitem>Evaluate the second [expression] node.</listitem>
-				<listitem>Downcast [4] to Bool.</listitem>
-				<listitem>Evaluate this node to the inverse of [5].</listitem>
-			</orderedlist>
-		</section>
-		
-		<section xml:id="node.or">
-			<title>or</title>
+			<para>This node exists for Desal representations that use the same syntax for different associations between identifiers. The associations supported by this node are the same as those of the <link linkend="node.namespaced-identikey">namespaced-identikey</link>, <link linkend="node.get-property">get-property</link>, and <link linkend="node.curry">curry</link> nodes. The optional boolean nodes are all true by default, meaning all associations are supported. If namespaced-identikey is true, the starting value must not be present.</para>
 			
-			<para>Evaluates to true if either child expression evaluates to true.</para>
+			<para>namespaced-identikey associations can be used to evaluate namespaced identikeys.</para>
+			
+			<screen>
+namespace.identikey
+namespace.namespace.identikey
+			</screen>
+			
+			<para>get-property associations can be used to get properties of values.</para>
+			
+			<screen>
+starting-value.property.property.property
 
-			<simplelist role="layout">
-				<member>2 expression</member>
-			</simplelist>
+if namespaced-identikey is also true:
+namespace.identikey.property
+			</screen>
+			
+			<para>bind associations can be used to bind a method of a value to a value.</para>
+			
+			<screen>
+alpha.doStuff.apply
+			</screen>
+			
+			<screen>
+Different syntax for namespaced identikeys, getting properties, and method binding.
 
-			<orderedlist role="exec">
-				<listitem>Evaluate the first [expression] node.</listitem>
-				<listitem>Downcast [1] to Bool.</listitem>
-				<listitem>If [2] is true, evaluate this node to true.</listitem>
-				<listitem>Evaluate the second [expression] node.</listitem>
-				<listitem>Downcast [4] to Bool.</listitem>
-				<listitem>Evaluate this node to [5].</listitem>
-			</orderedlist>
-		</section>
-		
-		<section xml:id="node.nor">
-			<title>nor</title>
-			
-			<para>Evaluates to false if either child expression evaluates to true.</para>
+alpha::beta.gamma=>delta
 
-			<simplelist role="layout">
-				<member>2 expression</member>
-			</simplelist>
+(bind
+	(get-property
+		(namespaced-identikey
+			(namespace alpha)
+			(identifier beta))
+		(identifier gamma))
+	(identifier delta))
 
-			<orderedlist role="exec">
-				<listitem>Evaluate the first [expression] node.</listitem>
-				<listitem>Downcast [1] to Bool.</listitem>
-				<listitem>If [2] is true, evaluate this node to false.</listitem>
-				<listitem>Evaluate the second [expression] node.</listitem>
-				<listitem>Downcast [4] to Bool.</listitem>
-				<listitem>Evaluate this node to the inverse of [5].</listitem>
-			</orderedlist>
-		</section>
-		
-		<section xml:id="node.assign">
-			<title>assign</title>
+Here, alpha must be a namespace, beta must be an identikey, gamma must be a property, and delta must be a method.
+			</screen>
 			
-			<simplelist role="layout">
-				<member>identifier name</member>
-				<member>expression value</member>
-			</simplelist>
+			<screen>
+Shared syntax for namespaced identikey references and getting properties, but different syntax for method binding.
+
+alpha.beta.gamma:delta
+
+(bind
+	(chain
+		(bind false)
+		(identifier alpha)
+		(identifier beta)
+		(identifier gamma))
+	(identifier delta))
+
+Here, alpha could be a free identikey or a namespace. If alpha is a namespace, beta could be a namespace. gamma could be an identikey in the alpha.beta namespace, or a property of the value that beta evaluated to. delta must be a method.
+			</screen>
 			
-			<para>Assigns the value to the identikey. If the identikey's type is not function, the identikey will be unbound first if it is already bound to something. The identikey's type must be dynamic, automatic, strict, or function. If the identikey's type is automatic, strict, or function, identifier must be variable.</para>
-		</section>
-		
-		<section xml:id="node.declare-assign">
-			<title>declare-assign</title>
+			<screen>
+Shared syntax for getting properties and method binding, but different syntax for referring to namespaced identikey references.
+
+alpha::beta.gamma.delta
+
+(chain
+	(namespaced-identikey false)
+	(starting-value
+		(namespaced-identikey
+			(namespace alpha)
+			(identifier beta)))
+	(identifier gamma)
+	(identifier delta))
+
+Here, alpha must be a namespace and beta must be an identikey within that namespace. gamma could be a property or method of beta. delta could be a property or method of gamma.
+			</screen>
 			
-			<simplelist role="layout">
-				<member>identifier name</member>
-				<member>identikey-type</member>
-				<member>expression value</member>
-			</simplelist>
+			<screen>
+Same syntax for all.
+
+alpha.beta.gamma.delta
+
+(chain
+	(identifier alpha)
+	(identifier beta)
+	(identifier gamma)
+	(identifier delta))
+
+Delta cannot be a namespace.
+			</screen>
 			
-			<para role="process">The identikey-category of the identikey-type node must be dynamic, automatic, strict, or function.</para>
-			
-			<para>Creates an identikey in the parent scope with the specified type, then assigns the specified value to it.</para>
-		</section>
-		
-		<section xml:id="node.unassign">
-			<title>unassign</title>
-			
-			<simplelist role="layout">
-				<member>expression</member>
-			</simplelist>
-			
-			<para>Unassigns the values bound to the given reference. If the identikey is a function identikey, all bound functions are unbound.</para>
-			
-			<para role="xxx">Is this needed? Why not just assign null?</para>
+			<screen><![CDATA[
+A representation could provide different syntax for each association, but also provide a way to specify that one of multiple assocations are allowed.
+
+alpha :: beta {. or =>} gamma . delta => epsilon
+
+<bind>
+	<get-property label="value">
+		<chain label="value">
+			<bool label="namespaced-idenkey">false</bool>
+			<namespaced-identikey label="starting-value">
+				<identifer label="namespace">alpha</identifer>
+				<identifer label="member">beta</identifer>
+			</namespaced-identifer>
+			<identifer>gamma</identifer>
+		</chain>
+		<identifer label="property-name">delta</identifer>
+	</get-property>
+	<identifier label="method-name">epsilon</identifer>
+</bind>
+
+Here, alpha must be a namespace, and beta must be an identikey within that namespace. Gamma can be a property or method of beta. delta must be a property of gamma. epsilon must be a method of delta.
+]]>
+			</screen>
 		</section>
 		
 		<section xml:id="node.unassign-function">
@@ -2225,40 +2201,8 @@ println foo.doStuff(3,7)
 			<para>Unassigns the function with the specified interface from the given value.</para>
 			
 			<para role="xxx">What to do when such a function isn't bound? throw an error?</para>
-		</section>
-	</section>
-	
-	<section xml:id="unsorted-nodes">
-		<title>Unsorted nodes</title>
-
-		<section xml:id="node.alias">
-			<title>alias</title>
 			
-			<simplelist role="layout">
-				<member>chain target</member>
-				<member>? identifier name</member>
-			</simplelist>
-
-			<para>Note: Due to the whole "everything's an object" business, this node should probably be removed. XXX But what about namespaces?!</para>
-			
-			<programlisting>
-alias FooBarBaz as FBZ
-alias Alpha.Beta.Gamma //the "as Gamma" part is implied
-alias System.out.print as puts
-puts( FBZ.toString(Gamma) )
-			</programlisting>
-			
-			<programlisting>
-auto FBZ = FooBarBaz
-auto Gamma = Alpha.Beta.Gamma
-auto puts = System.out.print
-puts( FBZ.toString(Gamma) )
-			</programlisting>
-			
-			<programlisting>
-//if Gamma is a namespace
-namespace Gamma = Alpha.Beta.Gamma
-			</programlisting>
+			<para>Removed because function identikeys must now always be constant.</para>
 		</section>
 	</section>
 </chapter>

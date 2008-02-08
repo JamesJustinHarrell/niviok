@@ -6,6 +6,5 @@ using System.Collections.Generic;
 interface IFunction {
 	IList<Parameter> parameters { get; }
 	ReferenceType returnType { get; }
-	void executeCall(Arguments arguments);
-	IValue evaluateCall(Arguments arguments);
+	IValue call(Arguments arguments);
 }

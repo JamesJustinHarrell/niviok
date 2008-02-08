@@ -13,6 +13,8 @@ pretend that:
 RuleExpression = Group | Repetition | Terminal ;
 Repetition = Repetition_N | Repetition_OnePlus ;
 
+see the "grammar grammar" file for more information
+
 and we're parsing this:
 Foo = "bar" + ;
 

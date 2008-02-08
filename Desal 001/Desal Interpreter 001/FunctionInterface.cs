@@ -67,4 +67,8 @@ class FunctionInterface : IFunctionInterface {
 	public IList<MethodInfo> methods {
 		get { throw new Error_Unimplemented(); }
 	}
+	
+	public IValue value {
+		get { throw new Error_Unimplemented(); }
+	}
 }

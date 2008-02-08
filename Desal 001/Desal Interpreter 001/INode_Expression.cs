@@ -1,3 +1,3 @@
-interface INode_Expression : INode_Statement {
-	IValue evaluate(Scope scope);
+interface INode_Expression : INode {
+	IValue execute(Scope scope);
 }

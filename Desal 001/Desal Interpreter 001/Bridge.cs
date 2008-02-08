@@ -1,4 +1,5 @@
 /* xxx
+
 Add constructor to StringClass that takes a list of code points.
 This may make converting to builtin strings easier.
 
@@ -13,11 +14,10 @@ foreach( IValue codePointVal in codePointVals ) {
 	codePoints.Add( unwrapInteger(codePointVal) );
 }
 return Bridge.wrapString( stringFromCodePoints(codePoints) );
-*/
 
-/* xxx Should this be merge with Node_Bundle or renamed to Bundle ? */
+xxx Should this be merge with Node_Bundle or renamed to Bundle ?
 
-/* security note:
+security note:
 This class defines static objects that are shared across Bundles.
 Be careful to not let one Bundle affect other Bundles.
 */
@@ -25,175 +25,17 @@ Be careful to not let one Bundle affect other Bundles.
 using System.Xml;
 using System.Collections.Generic;
 
-class Bridge {
+partial class Bridge {
 	static IInterface _boolFace;
 	static IInterface _intFace;
 	static IInterface _ratFace;
 	static IInterface _stringFace;
+	static IInterface _interfaceFace;
 	static IInterfaceImplementation<Client_Boolean> _boolImpl;
 	static IInterfaceImplementation<Client_Integer> _intImpl;
 	static IInterfaceImplementation<Client_Rational> _ratImpl;
 	static IInterfaceImplementation<Client_String> _stringImpl;
-	
-	static Bridge() {
-		XmlDocument doc = new XmlDocument();
-		
-		doc.LoadXml(@"
-			<wrapper xmlns='urn:desible1'>
-				<interface xml:id='bool'>
-				</interface>
-				
-				<interface xml:id='int'>
-				</interface>
-				
-				<interface xml:id='rat'>
-				</interface>
-				
-				<interface/> <!-- xxx -->
-				
-				<interface xml:id='string'>
-					<method>
-						<identifier label='name'>concat!</identifier>
-						<function-interface label='interface'>
-							<parameter>
-								<identifier label='name'>value</identifier>
-								<reference-type label='type'>
-									<reference-category>value</reference-category>
-									<identifier label='interface'>String</identifier>
-								</reference-type>
-							</parameter>
-							<reference-type label='return-type'>
-								<reference-category>value</reference-category>
-								<identifier label='interface'>String</identifier>
-							</reference-type>
-						</function-interface>
-					</method>
-				</interface>
-			</wrapper>
-		");
-	
-		//xxx bridge parameter is null
-		_boolFace = DesibleParser.extractInterface( null,
-			(XmlElement)doc.GetElementsByTagName("interface")[0] );
-		_intFace = DesibleParser.extractInterface( null,
-			(XmlElement)doc.GetElementsByTagName("interface")[1] );
-		_ratFace = DesibleParser.extractInterface( null,
-			(XmlElement)doc.GetElementsByTagName("interface")[2] );
-		_stringFace = DesibleParser.extractInterface( null,
-			(XmlElement)doc.GetElementsByTagName("interface")[3] );
-	
-		InterfaceImplementationBuilder<Client_String> stringBuilder =
-			new InterfaceImplementationBuilder<Client_String>();
-
-		stringBuilder.addPropertyGetter(
-			new Identifier("length"),
-			delegate(Client_String o) { return wrapInteger(o.length); } );
-
-		stringBuilder.addValueMethod(
-			new Identifier("concat"),
-			FunctionInterface.getFuncFace(
-				new Parameter[]{
-					new Parameter( new Identifier("value"), String )
-				},
-				new ReferenceType( ReferenceCategory.VALUE, String ) ),
-			delegate(Client_String o, Scope args) {
-				return wrapCodePoints(
-					o.concat(
-						unwrapCodePoints(
-							args.evaluateIdentifier(
-								new Identifier("value"))) ));
-			});
-		
-		stringBuilder.addVoidMethod(
-			new Identifier("concat!"),
-			FunctionInterface.getFuncFace(
-				new Parameter[]{
-					new Parameter( new Identifier("value"), String )
-				},
-				null),
-			delegate(Client_String o, Scope args) {
-				o.concat(
-					unwrapCodePoints(
-						args.evaluateIdentifier(
-							new Identifier("value"))) );
-			});
-
-		stringBuilder.addValueMethod(
-			new Identifier("substring"),
-			FunctionInterface.getFuncFace(
-				new Parameter[]{
-					new Parameter( new Identifier("start"), Int )
-				},
-				new ReferenceType( ReferenceCategory.VALUE, String ) ),
-			delegate(Client_String o, Scope args) {
-				return wrapCodePoints(
-						o.substring(
-							unwrapInteger(
-								args.evaluateLocalIdentifier(
-									new Identifier("start"))) ));
-			});
-
-		stringBuilder.addValueMethod(
-			new Identifier("substring"),
-			FunctionInterface.getFuncFace(
-				new Parameter[]{
-					new Parameter( new Identifier("start"), Int ),
-					new Parameter( new Identifier("limit"), Int )
-				},
-				new ReferenceType( ReferenceCategory.VALUE, String ) ),
-			delegate(Client_String o, Scope args) {
-				return wrapCodePoints(
-						o.substring(
-							unwrapInteger(
-								args.evaluateLocalIdentifier(
-									new Identifier("start"))),
-							unwrapInteger(
-								args.evaluateLocalIdentifier(
-									new Identifier("limit"))) ));
-			});
-		
-		_stringImpl = stringBuilder.compile(String);
-		
-		InterfaceImplementationBuilder<Client_Integer> intBuilder =
-			new InterfaceImplementationBuilder<Client_Integer>();
-		
-		intBuilder.addValueMethod(
-			new Identifier("add"),
-			FunctionInterface.getFuncFace(
-				new Parameter[]{
-					new Parameter( new Identifier("value"), Int )
-				},
-				new ReferenceType( ReferenceCategory.VALUE, Int ) ),
-			delegate(Client_Integer o, Scope args) {
-				return wrapInteger(
-						o.add(
-							unwrapInteger(
-								args.evaluateLocalIdentifier(
-									new Identifier("value"))) ));
-			} );
-			
-		_intImpl = intBuilder.compile(Int);
-		
-		InterfaceImplementationBuilder<Client_Boolean> boolBuilder =
-			new InterfaceImplementationBuilder<Client_Boolean>();
-		
-		boolBuilder.addValueMethod(
-			new Identifier("equals?"),
-			FunctionInterface.getFuncFace(
-				new Parameter[]{
-					new Parameter( new Identifier("value"), Bool )
-				},
-				new ReferenceType( ReferenceCategory.VALUE, Bool ) ),
-			delegate(Client_Boolean o, Scope args) {
-				return wrapBoolean(
-					o.equals(
-						unwrapBoolean(
-							args.evaluateLocalIdentifier(
-								new Identifier("value"))) ));
-			} );
-		
-		_boolImpl = boolBuilder.compile(Bool);
-	}
+	static IInterfaceImplementation<Client_Interface> _interfaceImpl;
 
 	public static IInterface Bool {
 		get { return _boolFace; }
@@ -209,6 +51,18 @@ class Bridge {
 	
 	public static IInterface String {
 		get { return _stringFace; }
+	}
+	
+	public static IInterface Interface {
+		get { return _interfaceFace; }
+	}
+	
+	public static void checkNull(IList<object> objects) {
+		for( int i = 0; i < objects.Count; i++ ) {
+			if( objects[i] == null )
+				throw new System.ApplicationException(
+					System.String.Format("index {0} is null", i));
+		}
 	}
 
 	public static IValue wrapBoolean(bool val) {
@@ -226,7 +80,7 @@ class Bridge {
 			*/
 			throw new Error_Unimplemented();
 		}
-		return ((Value<Client_Boolean>)val).state.val;
+		return ((Value<Client_Boolean>)val).state.value;
 	}
 	
 	public static bool isBuiltinBoolean(IValue val) {
@@ -241,12 +95,40 @@ class Bridge {
 	
 	public static long unwrapInteger(IValue val) {
 		if( val is Value<Client_Integer> )
-			return ((Value<Client_Integer>)val).state.val;
+			return ((Value<Client_Integer>)val).state.value;
 		throw new Error_Unimplemented("only builtin integers currently supported");
 	}
 	
 	public static bool isBuiltinInteger(IValue val) {
 		return (val is Value<Client_Integer>);
+	}
+
+	public static IValue wrapRational(double val) {
+		return new Value<Client_Rational>(
+			new Object<Client_Rational>( new Client_Rational(val) ),
+			_ratImpl );
+	}
+	
+	public static double unwrapRational(IValue val) {
+		if( val is Value<Client_Rational> )
+			return ((Value<Client_Rational>)val).state.value;
+		throw new Error_Unimplemented("only builtin integers currently supported");
+	}
+	
+	public static bool isBuiltinRational(IValue val) {
+		return (val is Value<Client_Rational>);
+	}
+	
+	public static IValue wrapInterface(IInterface face) {
+		return new Value<Client_Interface>(
+			new Object<Client_Interface>( new Client_Interface(face) ),
+			_interfaceImpl );
+	}
+	
+	public static IInterface unwrapInterface(IValue value) {		
+		if( value is Value<Client_Interface> )
+			return ((Value<Client_Interface>)value).state.value;
+		return InterfaceFromValue.wrap(value);
 	}
 
 	public static IValue wrapCodePoints(IList<uint> codePoints) {

@@ -32,17 +32,7 @@ class Value<T> : IValue {
 		return new Value<T>( _object, _faceimpl.cast(@interface) );
 	}
 	
-	public void executeCall( Arguments arguments ) {
-		try {
-			_faceimpl.executeCall( _object.state, arguments );
-		}
-		catch(ClientException e) {
-			e.pushFunc( "unknown" );
-			throw e;
-		}
-	}
-	
-	public IValue evaluateCall( Arguments arguments ) {
+	public IValue call( Arguments arguments ) {
 		try {
 			return _faceimpl.evaluateCall(_object.state, arguments);
 		}
@@ -60,17 +50,7 @@ class Value<T> : IValue {
 		_faceimpl.setProperty(_object.state, this, propName, value_);
 	}
 	
-	public void executeMethod( Identifier name, Arguments arguments ) {
-		try {
-			_faceimpl.executeMethod(_object.state, name, arguments);
-		}
-		catch(ClientException e) {
-			e.pushFunc( "." + name.str );
-			throw e;
-		}
-	}
-	
-	public IValue evaluateMethod( Identifier name, Arguments arguments ) {
+	public IValue callMethod( Identifier name, Arguments arguments ) {
 		try {
 			return _faceimpl.evaluateMethod(_object.state, name, arguments);
 		}

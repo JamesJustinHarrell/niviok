@@ -1,5 +1,0 @@
-func doStuff
-	print "sup, bitches?"
-
-func main
-	doStuff()

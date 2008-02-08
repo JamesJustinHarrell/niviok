@@ -1,4 +1,4 @@
-class Node_ConditionalBlock : INode_Statement {
+class Node_ConditionalBlock : INode_Expression {
 	INode_Expression _testNode;
 	Node_Block _actionNode;
 
@@ -7,13 +7,13 @@ class Node_ConditionalBlock : INode_Statement {
 		_actionNode = actionNode;
 	}
 	
-	public void execute(Scope scope) {
-		IValue testVal = _testNode.evaluate(scope);
+	public IValue execute(Scope scope) {
+		IValue testVal = _testNode.execute(scope);
 
 		if( testVal.activeInterface == Bridge.Bool ) {
-			bool test = Bridge.unwrapBoolean(testVal);
-			if( test )
-				_actionNode.execute(scope);
+			return ( Bridge.unwrapBoolean(testVal) ?
+				_actionNode.execute(scope) :
+				new NullValue() );
 		}
 		else {
 			throw new ClientException("test must be a boolean");

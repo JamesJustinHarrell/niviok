@@ -1,0 +1,272 @@
+collection loops
+
+
+Loops do something to every element in a collection. They do not produce anything.
+
+
+Lisp does not have such looping constructs. Instead, inline functions are used.
+benefits:
+	more general, thus more powerful
+	can produce
+		examples: map, filter, accumulate
+detriments:
+	more code
+	can't break or continue as easily
+	means of iteration (how to advance to next element) must be repeated for every loop
+	have to come up with names for functions
+
+
+Goal: Come up with something as powerful and general as inline functions and as compact and terse as loops.
+
+
+# 9.4.1.3. for-key
+# 9.4.1.4. for-pair
+# 9.4.1.7. for-value
+
+
+
+
+
+-- for-key
+For each key: Bind key to an identikey. Do a certain action.
+arguments: a dictionary
+outputs: 1
+
+for-key foo in bar {
+	println foo
+}
+
+(define (iter collection)
+	(println (car collection))
+	(iter (cdr collection)))
+(iter collection)
+
+(for-key
+	(lambda (foo) (println foo))
+	collection)
+
+
+-- for-pair
+For each entry: Bind value and key to identikeys. Do a certain action.
+arguments: a dictionary
+outputs: 2
+
+for-pair k v in bar {
+	println "%s = %s" % k % v
+}
+
+(for-pair
+	(lambda (k v)
+		(print k)
+		(print " = ")
+		(print v))
+	collection)
+
+
+
+
+
+-- possibility
+
+loop | foo | keyIter(dict) {
+	println foo
+}
+
+func keyIter<I>( Dictionary<I,dyn> dict ) Generator< struct{I} > {
+	return generator {
+		Iterator<I> iterator = dict.createKeyIterator()
+		while iterator.hasMore? {
+			yield struct { iterator.nextGet() }
+		}
+	}
+}
+
+
+interface<I> KeyIter {
+	func update(out I)
+}
+loop {
+	decl I foo
+	KeyIter<I> iter = keyIter(dict)
+	iteration {
+		pretest: iter.hasMore?
+		iter.update(foo)
+		...
+	}
+}
+
+
+
+interface<I> LoopingConstruct {
+	func setup(I)
+	func preTest(I) Bool
+	func postTest(I) Bool
+	func cleanup()
+}
+LoopingConstruct< struct{ Ref<Int>, Ref<String> } >
+decl foo = dict {
+	123: "text text",
+	672: "notheu",
+	8273: "thoenuht",
+	86: "qwbjk"
+}
+loop | k v | getLoopingConstruct(foo) {
+	println "%s = %s" % k % v
+}	
+
+
+
+loop | k v | pairIter(dict) {
+	println "%s = %s" % k % v
+}
+
+func pairIter<KT,VT>( Dictionary<KT,VT> dict ) Generator< struct{KT, VT} > {
+	return generator {
+		Iterator< struct{KT,VT} > iterator = dict.createPairIterator()
+		while iterator.hasMore? {
+			yield iterator.nextGet()
+		}
+	}
+}
+
+
+
+----- NON-COLLECTION LOOPS
+
+
+# 9.4.1.1. do-while
+# 9.4.1.2. do-times
+# 9.4.1.8. loop
+# 9.4.1.9. while
+
+# 9.4.1.5. for-manual
+# 9.4.1.6. for-range
+
+
+-- do-while
+Do something. If a certain condition is true, do it again.
+
+do while generator.hasMore?
+	println generator.next()
+
+(define (iter)
+	(println generator.next())
+	(if generator.hasMore?
+		(iter)
+		null))
+(iter)
+
+
+-- do-times
+Do something a certain number of times.
+
+do collection.count times {
+	println collection.popFirst()
+}
+
+(define (iter timesLeft)
+	(println collection.popFirst())
+	(if (> timesLeft 0)
+		(iter (- timesLeft 1))
+		null))
+(iter collection.count)
+
+
+-- loop
+Do something untill explicitly told to stop.
+
+loop {
+	println generator.next()
+	if not generator.hasMore? : break
+}
+
+(define (iter)
+	(println generator.next())
+	(if generator.hasMore?
+		(iter)
+		null))
+(iter)
+
+The Lisp equivalent of a loop node is the same as a while or do-while, depending on where the test to break is at.
+
+
+
+-- while
+Do something as long as something is true.
+
+while generator.hasMore? {
+	println generator.next()
+}
+
+(define (iter)
+	(if generator.hasMore?
+		(let ()
+			(println generator.next())
+			(iter))
+		null))
+(iter)
+
+
+
+
+
+
+
+
+
+
+-- possibility
+
+dyn::call func() {
+	if generator.hasMore?
+		println generator.next()
+		thisFunc()
+}
+
+or maybe just
+::call func() {...}
+
+Same as
+dyn::call( func(){...} )
+
+Same as
+( func(){...} ).call()
+
+
+-- possibility
+
+block {
+	if generator.hasMore?
+		println generator.next()
+		start_block_over
+}
+
+
+
+
+
+
+# 9.4.1.1. do-while
+# 9.4.1.2. do-times
+# 9.4.1.3. for-key
+# 9.4.1.4. for-pair
+# 9.4.1.5. for-manual
+# 9.4.1.6. for-range
+# 9.4.1.7. for-value
+# 9.4.1.8. loop
+# 9.4.1.9. while
+
+loop {
+	before looping
+	iteration {
+		pre-test
+		pre-action
+		
+		(action during each iteration)
+		
+		post-action
+		post-test
+	}
+	after looping	
+}
+

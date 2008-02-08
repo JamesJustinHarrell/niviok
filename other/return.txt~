@@ -1,0 +1,5 @@
+The document concerns the return node.
+
+* Determine how the return statement should be specified.
+
+Remember to keep interpreter and compiler in mind.

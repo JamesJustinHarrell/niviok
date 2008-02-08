@@ -11,12 +11,8 @@ class Node_Identifier : INode_Expression {
 		get { return _identifier; }
 	}
 	
-	public IValue evaluate(Scope scope) {
+	public IValue execute(Scope scope) {
 		return scope.evaluateIdentifier(_identifier);
-	}
-	
-	public void execute(Scope scope) {
-		_bridge.warning("executing an identifier node has no effect");
 	}
 	
 	public void getInfo(out string name, out object objs) {

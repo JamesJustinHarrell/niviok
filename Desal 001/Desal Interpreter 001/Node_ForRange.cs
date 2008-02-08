@@ -1,4 +1,4 @@
-class Node_ForRange : INode_Statement {
+class Node_ForRange : INode_Expression {
 	Node_Identifier _ident;
 	INode_Expression _start;
 	INode_Expression _limit;
@@ -14,20 +14,21 @@ class Node_ForRange : INode_Statement {
 		_block = block;
 	}
 	
-	public void execute(Scope scope) {		
-		IValue start = _start.evaluate(scope);
+	public IValue execute(Scope scope) {		
+		IValue start = _start.execute(scope);
 		long current = Bridge.unwrapInteger(start);
-		IValue limit = _limit.evaluate(scope);
+		IValue limit = _limit.execute(scope);
 		while( current < Bridge.unwrapInteger(limit) ) {
 			Scope innerScope = new Scope(scope);
-			innerScope.declareBind(
+			innerScope.declareAssign(
 				_ident.identifier,
-				new ReferenceType( ReferenceCategory.VALUE, null),
-				true,
+				//xxx new ReferenceType( ReferenceCategory.VALUE, null),
+				//xxx true,
 				Bridge.wrapInteger(current) );
 			_block.execute(innerScope);
 			current++;
 		}
+		return new NullValue();
 	}
 	
 	public void getInfo(out string name, out object objs) {

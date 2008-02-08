@@ -22,15 +22,18 @@ class Arguments {
 	}
 	
 	public Scope setup(IList<Parameter> parameters) {
+	/*
 		Scope innerScope = new Scope();
 		//xxxx
-		innerScope.declarePervasive(
-			new Identifier("value"), null, _unlabeled[0] );
+		innerScope.declareFirst(
+			new Identifier("value"), _unlabeled[0] );
 		return innerScope;
+	*/
+		return setup(parameters, null);
 	}
 	
 	public Scope setup(IList<Parameter> parameters, Scope outerScope) {
-		if( _labeled.Count != 0 )
+		if( _labeled != null && _labeled.Count != 0 )
 			throw new Error_Unimplemented();
 		if( _unlabeled.Count != parameters.Count )
 			throw new System.ApplicationException("argument count");
@@ -38,13 +41,14 @@ class Arguments {
 		Scope innerScope = new Scope(outerScope);
 		
 		for( int i = 0; i < parameters.Count; i++ ) {
+		/* xxx
 			if( parameters[i].type.category == ReferenceCategory.VALUE &&
 			parameters[i].type.face != _unlabeled[i].activeInterface )
 				throw new System.ApplicationException("interface mismatch");
-		
-			innerScope.declarePervasive(
+		*/
+			innerScope.declareFirst(
 				parameters[i].name,
-				parameters[i].type,
+				//xxx parameters[i].type,
 				_unlabeled[i] );
 		}
 

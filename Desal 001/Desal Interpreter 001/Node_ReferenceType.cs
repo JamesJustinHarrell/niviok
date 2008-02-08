@@ -29,7 +29,7 @@ class Node_ReferenceType : INode {
 	public ReferenceType evaluateType(Scope scope) {
 		IValue ifaceValue = null;
 		if( _nodeInterface != null )
-			ifaceValue = _nodeInterface.evaluate(scope);
+			ifaceValue = _nodeInterface.execute(scope);
 
 		IInterface iface = null;
 		if( ifaceValue != null )

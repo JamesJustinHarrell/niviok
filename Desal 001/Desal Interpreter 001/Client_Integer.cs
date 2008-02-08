@@ -1,89 +1,89 @@
 class Client_Integer {
 	//xxx replace with BigInt
-	long _val;
+	long _value;
 	
-	public Client_Integer(long val) {
-		_val = val;
+	public Client_Integer(long value) {
+		_value = value;
 	}
 	
-	public long val {
-		get { return _val; }
+	public long value {
+		get { return _value; }
 	}
 	
 	//comparison
-	public bool lessThan(long val) {
-		return _val < val;
+	public bool lessThan(long value) {
+		return _value < value;
 	}
-	public bool lessThanOrEqual(long val) {
-		return _val <= val;
+	public bool lessThanOrEqual(long value) {
+		return _value <= value;
 	}
-	public bool equal(long val) {
-		return _val == val;
+	public bool equal(long value) {
+		return _value == value;
 	}
-	public bool greaterThanOrEqual(long val) {
-		return _val >= val;
+	public bool greaterThanOrEqual(long value) {
+		return _value >= value;
 	}
-	public bool greaterThan(long val) {
-		return _val > val;
+	public bool greaterThan(long value) {
+		return _value > value;
 	}
 	
 	//information
 	public bool positive {
-		get { return _val > 0; }
+		get { return _value > 0; }
 	}
 	public bool negative {
-		get { return _val < 0; }
+		get { return _value < 0; }
 	}
 	
 	//math operations
-	public long add(long val) {
-		return _val + val;
+	public long add(long value) {
+		return _value + value;
 	}
-	public double add(double val) {
-		return _val + val;
+	public double add(double value) {
+		return _value + value;
 	}
-	public long subtract(long val) {
-		return _val - val;
+	public long subtract(long value) {
+		return _value - value;
 	}
-	public double subtract(double val) {
-		return _val - val;
+	public double subtract(double value) {
+		return _value - value;
 	}
-	public long multiply(long val) {
-		return _val * val;
+	public long multiply(long value) {
+		return _value * value;
 	}
-	public double multiply(double val) {
-		return _val * val;
+	public double multiply(double value) {
+		return _value * value;
 	}
-	public double divide(long val) {
-		return _val / val;
+	public double divide(long value) {
+		return _value / value;
 	}
-	public double divide(double val) {
-		return _val / val;
+	public double divide(double value) {
+		return _value / value;
 	}
 	public long absolute {
-		get { return (_val < 0) ? (_val * -1) : _val; }
+		get { return (_value < 0) ? (_value * -1) : _value; }
 	}
 
 	//mutating math operations
-	public void add1(long val) {
-		_val += val;
+	public void add1(long value) {
+		_value += value;
 	}
-	public void subtract1(long val) {
-		_val -= val;
+	public void subtract1(long value) {
+		_value -= value;
 	}
-	public void multiply1(long val) {
-		_val *= val;
+	public void multiply1(long value) {
+		_value *= value;
 	}
-	public void floorDivide1(long val) {
-		_val /= val;
+	public void floorDivide1(long value) {
+		_value /= value;
 	}
 
 	//convert
 	public long toBuiltin() {
-		return _val;
+		return _value;
 	}
 	public string toString() {
-		return _val.ToString();
+		return _value.ToString();
 	}
 	//xxx func toString(IntNotationMethod) String
 }

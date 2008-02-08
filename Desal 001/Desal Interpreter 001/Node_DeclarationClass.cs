@@ -10,7 +10,7 @@ class Node_DeclarationClass : INode_DeclarationAny {
 		get { return _declaration; }
 	}
 	
-	public void execute(Scope scope) {
+	public IValue execute(Scope scope) {
 		throw new Error_Unimplemented();
 	}
 	

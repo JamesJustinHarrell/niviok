@@ -7,12 +7,8 @@ class Node_Integer : INode_Expression {
 		_int = integer;
 	}
 	
-	public IValue evaluate(Scope scope) {
+	public IValue execute(Scope scope) {
 		return Bridge.wrapInteger(_int);
-	}
-	
-	public void execute(Scope scope) {
-		_bridge.warning("executing an integer node has no effect");
 	}
 	
 	public void getInfo(out string name, out object objs) {

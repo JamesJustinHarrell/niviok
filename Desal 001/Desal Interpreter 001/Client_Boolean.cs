@@ -1,15 +1,15 @@
 class Client_Boolean {
-	bool _val;
+	bool _value;
 	
-	public Client_Boolean(bool val) {
-		_val = val;
+	public Client_Boolean(bool value) {
+		_value = value;
 	}
 	
-	public bool val {
-		get { return _val; }
+	public bool value {
+		get { return _value; }
 	}
 	
-	public bool equals(bool val) {
-		return _val == val;
+	public bool equals(bool value) {
+		return _value == value;
 	}
 }

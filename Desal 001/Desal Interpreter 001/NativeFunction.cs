@@ -34,14 +34,13 @@ class NativeFunction : IFunction {
 	public ReferenceType returnType {
 		get { return _returnType; }
 	}
-	
-	public void executeCall(Arguments arguments) {
+
+	public IValue call(Arguments arguments) {
 		Scope innerScope = arguments.setup(_parameters, _scope);		
 		_function(_bridge, innerScope);
-	}
-	
-	public IValue evaluateCall(Arguments arguments) {
-		throw new System.Exception("native functions cannot yet return values");
+		
+		//xxx
+		return new NullValue();
 	
 		/*
 		Scope functionScope = arguments.setup(_scope);

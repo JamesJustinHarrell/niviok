@@ -13,9 +13,9 @@ class Node_FunctionInterface : INode_Expression {
 		_type = type;
 	}
 	
-	public IValue evaluate(Scope scope) {
+	public IValue execute(Scope scope) {
 		_bridge.warning("Node_FunctionInterface.evaluate called; returning null");
-		return new NullValue(null);
+		return new NullValue();
 	}
 	
 	public IFunctionInterface evaluateInterface(Scope scope) {
@@ -26,10 +26,6 @@ class Node_FunctionInterface : INode_Expression {
 		}
 		return FunctionInterface.getFuncFace(
 			parameters,	_type.evaluateType(scope) );
-	}
-	
-	public void execute(Scope scope) {
-		//xxx warning does nothing
 	}
 
 	public void getInfo(out string name, out object objs) {

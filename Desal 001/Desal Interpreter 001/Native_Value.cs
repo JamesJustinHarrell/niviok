@@ -20,10 +20,7 @@ class NativeValue<T> : IValue {
 	public IValue cast(IInterface aInterface) {
 		throw new Error_Unimplemented();
 	}
-	public void executeCall(Arguments arguments) {
-		throw new Error_Unimplemented();
-	}
-	public IValue evaluateCall(Arguments arguments) {
+	public IValue call(Arguments arguments) {
 		throw new Error_Unimplemented();
 	}
 	public IValue getProperty(Identifier name) {
@@ -32,10 +29,7 @@ class NativeValue<T> : IValue {
 	public void setProperty(Identifier propName, IValue aValue) {
 		throw new Error_Unimplemented();
 	}
-	public void executeMethod(Identifier name, Arguments arguments) {
-		_impl.executeMethod(_obj, name, arguments);
-	}
-	public IValue evaluateMethod(Identifier name, Arguments arguments) {
+	public IValue callMethod(Identifier name, Arguments arguments) {
 		return _impl.evaluateMethod(_obj, name, arguments);
 	}
 	

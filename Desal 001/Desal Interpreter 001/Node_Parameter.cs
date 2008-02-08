@@ -16,9 +16,9 @@ class Node_Parameter : INode {
 	public Parameter evaluateParameter(Scope scope) {
 		return new Parameter(
 			_name.identifier,
-			_type.evaluateType(scope),
-			_defaultValue.evaluate(scope),
-			_nullable.val);
+			null, //xxx _type.evaluateType(scope),
+			( _defaultValue == null ? null : _defaultValue.execute(scope) ),
+			_nullable.val );
 	}
 	
 	public void getInfo(out string name, out object objs) {

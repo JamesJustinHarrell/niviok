@@ -44,15 +44,11 @@ class InterfaceFromValue : IInterface {
 	InterfaceFromValue(IValue val) {
 		_value = val;
 	}
-	
-	public IValue unwrap() {
-		return _value;
-	}
-	
+
 	public IList<IInterface> inheritees {
 		get { throw new Error_Unimplemented(); }
 	}
-	
+	/* xxx
 	public IList<Parameter> callee {
 		get { throw new Error_Unimplemented(); }
 	}
@@ -60,12 +56,16 @@ class InterfaceFromValue : IInterface {
 	public IInterface returnType {
 		get { throw new Error_Unimplemented(); }
 	}
-	
+	*/
 	public IList<PropertyInfo> properties {
 		get { throw new Error_Unimplemented(); }
 	}
 	
 	public IList<MethodInfo> methods {
 		get { throw new Error_Unimplemented(); }
+	}
+	
+	public IValue value {
+		get { return _value; }
 	}
 }

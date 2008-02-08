@@ -6,6 +6,7 @@ interface IInterface {
 	IList<IInterface> inheritees { get; }
 	IList<PropertyInfo> properties { get; }	
 	IList<MethodInfo> methods {	get; }
+	IValue value { get; }
 }
 
 

@@ -11,6 +11,7 @@ class Interface : IInterface {
 	IList<IInterface> _inheritees;
 	IList<PropertyInfo> _properties;
 	IList<MethodInfo> _methods;
+	IValue _value;
 	
 	public Interface(IList<PropertyInfo> properties, IList<MethodInfo> methods) {
 		_inheritees = new List<IInterface>();
@@ -35,5 +36,13 @@ class Interface : IInterface {
 	
 	public IList<MethodInfo> methods {
 		get { return _methods; }
+	}
+	
+	public IValue value {
+		get {
+			if( _value == null )
+				_value = Bridge.wrapInterface(this);
+			return _value;
+		}
 	}
 }

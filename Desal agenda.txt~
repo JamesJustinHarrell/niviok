@@ -412,6 +412,265 @@ If "fooo" was not defined, the agent would have reason to refuse to handle the b
 
 Once an agent has begun execution, such reasons are not valid reasons for not continuing execution. Execution must continue normally as described.
 
+Desal spec should define things as if entirely dynamic, but should note that it doesn't have to be treated as dynamic.
+
+
+
+production:
+
+Nodes "produce" a "product" when executed. This may be a value, or it may be null. Null can be thought of as a lack of a value, or as a special value that behaves differently from all other values.
+
+
+block node execution:
+
+Execute each [member] in order.
+Produce the product of the last [member].
+
+
+weave ::=
+	2+ expression
+Executes all child nodes in parallel. Every node other than a weave node is a transaction.
+
+
+write rational for the layout of if-else
+why are these two things different?
+one:
+	if a {...}
+	elif b {...}
+	else c {...}
+two:
+	if a {...}
+	else {
+		if b {...}
+		else c {...}
+	}
+consider: semantics, XML representation, shallow hierarchy, ease of implementation, how easy it is to describe, that there are 2 nodes (possibility, conditional) instead of 1
+
+
+
+Specify the way to determine the type of various things.
+
+Example:
+	decl auto foo = ( if a < b { 123 } )
+
+What is the type of foo? Probably nullable Int.
+
+
+
+
+
+
+consider: Rename "loop" node to something like "infinite-loop" or "unchecked-loop" or "unconditional-loop" or something to make it's behavior more obvious.
+Dextr might change the "loop" keyword to "infloop"
+
+
+
+
+idea: Instead of each node declaring what kind of barriers it has, each "event" should declare what nodes it can or cannot travel through.
+Example: break must be within an iteration node. Between the break and iteration node can be: possibility, if-else, try-catch (and exception-handler), block
+
+
+
+Make all types associated with number literals immutable.
+For opertors like these:
+	*= -= += /= ++ --
+make them like equivalent assignments.
+	e.g. You couldn't do "getInt()++" because that would be like "getInt().increment!()" and no "increment!" method would exists.
+but you could do:
+	number++
+which would be the same as:
+	number = number + 1
+
+Then using LimInt instead of BigInt wouldn't have any performance advantage.
+
+(You'd still want LimInt! and BigInt! for mutable integers.)
+
+
+this format for spec:
+summary
+purpose
+scope
+body
+glossary
+appendices/references
+
+
+specify term for child nodes, of a node instance, that were optional (they're given, but they didn't haven to given)
+use only that term
+examples: present, set, given, provided
+
+
+clarify whether "identikey" only refers to {scope+identifier} which can be bound to values, or whether it also includes namespaces. Is there such a thing as a "namespace identikey"?
+
+
+
+The standard library is already going to have "magic" functionality that can't be implemented by normal Desal code (e.g. value-builder API as alternative to classes) so go ahead and convert nodes, that can be implemented as functions, to functions. Example: the same-object node, the object-id node. Previously, I wanted to use nodes for all functionality that couldn't be implemented by normal code.
+
+
+note that the id() function can't be implemented by just returning the address because the CLI functions for getting an object's address don't guarantee that the object won't be moved
+possible implementation:
+Dict<WeakRef, Int> ids;
+int nextID = 0;
+func id(IValue val) {
+	WeakRef wr = new WeakRef(val);
+	if( ! ids.contains(wr) ) {
+		ids.add(wr, nextID);
+		nextID++;
+	}
+	return ids[wr];
+}
+requirements:
+(new WeakRef(a)).Equals(new WeakRef(a)) must be true
+notes:
+without periodically removing GCed values from the ids collection, the ids collection will grow extremely large.
+As the program runs, nextID will grow larger and larger.
+
+
+come up with a better term for "value"
+because "value" is used way to often to mean other things
+possibilities:
+	view - because it's just one way of looking at a particular object
+		i.e. can see an object as a Square, a Rectangle, a Shape, or an Object
+
+
+
+
+To obtain information from client implementations of native types:
+
+Collections contain a finite number of elements. Collections know how many elements they contain. However, collections are not required to have a value in memory for every element they contain. This means a collection of the numbers from 1 through 1 trillion is possible, even when only a few megabytes are available. Of course, the collection must be capable of yielding every element when iterated over.
+
+Note that although strings inherit Collection<UnicodeCodePoint>, strings do not have to be implemented as a group of UnicodeCodePoint values. They may decide to instead create UnicodeCodePoint values as needed when being iterated over. This means a string could be stored in memory as UTF-8 and merely create UnicodeCodePoint values from the octets when needed.
+
+Question: Should string instead inherit from Collection<Int> even though the range of possible values of the Ints is limited? Perhaps it could inherit from Collection<LimInt>. Int could be any integer, while LimInt is limited to certain values.
+
+interface<T> Collection {
+	func createIterator() Iterator<T>
+	get Bool isEmpty?
+	get Int count
+}
+interface Int/Rat {
+	convert Collection<Bool>
+}
+interface String {
+	inherit Collection<UnicodeCodePoint>
+}
+interface UnicodeCodePoint {
+	get Int value
+}
+
+for Bool bit in (123 to Collection<Bool>)
+	print (bit ? 1 : 0)
+println()
+
+decl String str = "this is some text"
+for UnicodeCodePoint codePoint in str
+	for Bool bit in (codePoint.value to Collection<Bool>)
+		print (bit ? 1 : 0)
+	println()
+
+split iterators into Iterator, ConstIterator, and MutatingIterator
+
+Question: Why do Int and Rat not inherit from Collection, while String does?
+Answer: Integers and rational numbers can be represented as bitstrings, but they are not thought of as always *being* bitstrings. Strings are abstractly thought of as *being* collections of Unicode code points, even if they are not represented internally that way. Numbers are not thought of as collections, while strings are thought of as collections. The inherit/convert distinction is not made due to how the types of represented, but due to how they are thought of. They are not usually thought of in the same way, so they did not do this in the same way.
+
+
+
+
+
+
+As the above shows, generic interfaces/classes need non-interface parameters. This would allow for the creation of something like LimInt<10, 99> (perhaps an integer from 10 to 99).
+
+But then what becomes the difference between e.g. a generic interface and a function that returns an interface? (LimInt<10, 99> versus LimInt(10, 99)) The difference is that the generic interface more explicitly declares that:
+* its purpose is to create interfaces that differ only by the arguments given to it. A function like GetFace(Int n) could just return the nth interface from an ordered collection, and thus the various interfaces could be completely different, while the generic interfaces MyFace<0> and MyFace<1> should have the same number of callees, convertees, methods, and properties, and with the same names.
+* it will return the same interface for every call that has equivalent arguments. (E.g. LimInt<10, 99> will always be the same as LimInt<10, 99>)
+
+Also important for this: Array. For example: decl Int[300] numbers
+However, its still important to be able to do: decl Int[] numbers
+For that, Array might be declared like this:
+generic <Interface ? face, Int ? count> interface Array
+Array.instantiate( String, 500 )
+Array.instantiate( null, 9 )
+Array.instantiate( String, null )
+
+
+
+Clarify that a value cannot gain or lose members. After a value is created, the members it has at that time are the only members it will ever have, and it will always have those members. This is common in static languages like C/++/# and Java, but uncommon in dynamic languages like Python and JavaScript. Desal is like this because although it supports dynamic (duck) typing, it is otherwise mostly a very static language. Also, the interfaces an object implements (and the structure of the interface implementation tree) cannot be changed.
+
+Relatedly, interfaces are also immutable. Eventually, the Interface interface should contain causality information stating such. Perhaps agent authors should be encouraged to call every member of an Interface implementation as soon as it is created, and cache the result for future calls? This would ensure that interfaces don't change, even when implemented by client code.
+
+
+
+figure out if this optimization is possible:
+Instead of Int identikeys being pointers to an object, each identikey holds a copy of the number.
+
+Example:
+	decl Int a = 123
+	decl Int b = a
+	decl Int c = a
+a, b, and c each hold the value "123" instead of pointing to the same object with holds the value.
+
+Problems:
+* The id() function and same-object node or sameObject?() function would show that these identikeys do not point to the same object. This could be fixed by expanding Int identikeys to also store the id along with the value.
+* User implementations of the Int interface. This could be fixed by expanding the Int identikeys to also a pointer to an object, which would by default be null.
+struct IntIdentikey {
+	uint64 id;
+	uint64 value;
+	IntObject * object;
+}
+
+This could be easily compressed to 128 bits:
+struct IntIdentikey {
+	bit storedLocally?;
+	uint63 id;
+	union {
+		uint64 value;
+		IntObject * object;
+	}
+}
+
+Or even to 64 bits:
+struct IntIdentikey {
+	bit storedLocally?;
+	union {
+		struct {
+			uint31 id;
+			uint32 value;
+		}
+		struct {
+			uint63 objectAddress;
+		}
+	}
+}
+
+Both of these types of compression would only work if IntObjects were only allowed to be placed on address that are divisible by two. This would likely be the case anyway, but I'd need to be sure it was actually guaranteed to happen.
+
+
+
+Problem: How to implement the id() function with a moving garbage collector?
+
+
+
+clarify why the term "list" is not used for a node or interface name
+	- ambiguity between:
+		* linked lists
+		* numerically indexed collection, often implemented with arrays
+note that the term "chain" is used by Desal for a linked-list
+
+
+
+
+
+note that Desal does not have an arbitrary split between different types of functions/subroutines, like many languages do
+	methods and delegates in C#
+	methods and blocks in Ruby
+	functions and lambda in Python/Lisp
+
+
+
+at one time, identifiers ending in "!" had special meaning recognized by the language
+this has since been replaced with causality notations
+ensure that all references to this have been removed
+
 
 
 ----- Dextr
@@ -438,7 +697,39 @@ decl ? b = null
 note: for this, you'd have to declare that identifiers can't start with a "?", which would be good anyway for conditional expressions (a ? b : c)
 
 
+specify that
+	decl Foo foo(...)
+is just a shorter way of saying
+	decl Foo foo = Foo(...)
+
+that means that
+	decl Foo ? foo
+is different from
+	decl Foo ? foo()
+as the first one is the same as
+	decl Foo ? foo = null
+while the second one is the same as
+	decl Foo ? foo = Foo()
+
+this produces an error:
+	decl Int number
+because number is not nullable, and this is the same as
+	decl Int number = null
+this is fine:
+	decl Int number()
+assuming the "Int" identikey could be called with zero arguments
+
+
+determining charset in agent:
+* if BOM is present, go along with the BOM
+	note that there is something import with the order, like testing for UTF-32 before testing for UTF-16 or something
+* assume UTF-8
+Dextr isn't just a syntax, it also defines a file format. The character encoding of those files is UTF-8 by default, but can also be UTF-16(LE/BE) or UTF-32(LE/BE) if stated explicitly. UTF-8 can also be stated explicitly.
+
+
 -----
+
+
 
 
 See how ML and Haskell handle returning multiple values.
@@ -821,6 +1112,11 @@ PROBLEM: Dictionaries are used for interface implementations, but multiple metho
 
 
 
+In many compilers, objects that implement interfaces are implemented by expanding the size of the object and storing pointers to functions in this extra space. In Desal, interfaces are so common that this could be very detrimental to performance. For example, every instance of Int will contain a pointer to every method of the Int interface. So instead of storing a pointer to every method, objects should store a single pointer to an array of pointers somewhere. That way, every Int object would just point to this single table, instead of every Int object having a duplicate of this table. This also means that adding methods to an interface would have no effect on performance, just like methods on non-interface classes.
+
+
+
+
 ----- NOTES
 
 tree -
@@ -843,5 +1139,47 @@ lookup modern opcodes (MMX, SSE, etc) and see if any describe actions that can't
 
 define memory representation
 	for machine code implementations to speak to each other
+
+
+
+
+
+
+
+
+
+
+After Dextr and Desal are well implemented:
+* create tutorial showing how to write macros, with a few examples
+* create tutorial showing how to alter the Dextr syntax description and parser to make macros look built-in, like the identifier-chain (formerly "chain"), with a few examples
+This will make Dextr/Desal excellent for people who want to quickly and easily test out a new language construct they've thought up.
+
+Possible idea: Create option for Agent to use custom funsynn syntax description file at runtime. Agent would produce parser, then use it, dynamically at runtime. The agent could then parse and run a bundle normally. This would be easier than producing code from the funsynn and copying it into the Agent code, then recompiling the Agent. This is a really stupid idea because the agent would still have to be recompiled to update the parser.
+
+
+
+
+Horrifying idea:
+Develop an API for modifying funsynn syntax descriptions (or whatever syntax description I use)
+A Dextr bundle could include a script that modifies the Dextr syntax description, and adds hooks to the parser.
+This would allow any Desal bundle to seemlessly integrate new language constructs.
+This would also be absolutely terrible and very very scary.
+
+
+
+
+Standardize the identifiers used in the Desal Agent.
+<modifier><base>
+	ReturnNode
+<base>_<modifier>
+	Node_Return
+When to use which?
+
+
+
+define Desexp (Desal S-Expressions) ?
+
+
+
 
 

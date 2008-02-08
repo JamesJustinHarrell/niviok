@@ -24,7 +24,7 @@ class Node_Bundle : INode {
 		
 		IValue val = _scope.evaluateIdentifier( new Identifier("main") );
 		try {
-			val.executeCall(
+			val.call(
 				new Arguments(
 					new IValue[]{},
 					new Dictionary<Identifier, IValue>() ));

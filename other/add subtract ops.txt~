@@ -1,0 +1,20 @@
+operations for:
+add
+subtract
+concatenate
+join
+split
+insert
+remove
+
+
+We are dealing with:
+	collections
+	elements
+
+With add and subtract, order does not matter. This includes things like integers, interfaces, and sets.
+
+With concatenate and split, order matters. This includes things like strings and chains.
+
+With collections, only the type of elements in the collection can be inserted and removed from the collection. For example, strings cannot be inserted into strings (although strings can be concatenated with strings).
+
