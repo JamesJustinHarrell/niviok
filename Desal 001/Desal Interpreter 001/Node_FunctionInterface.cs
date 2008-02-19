@@ -3,11 +3,11 @@ using System.Collections.Generic;
 class Node_FunctionInterface : INode_Expression {
 	Bridge _bridge;
 	IList<Node_Parameter> _parameters;
-	Node_ReferenceType _type;
+	Node_NullableType _type;
 
 	public Node_FunctionInterface(
 	Bridge bridge,
-	IList<Node_Parameter> parameters, Node_ReferenceType type ) {
+	IList<Node_Parameter> parameters, Node_NullableType type ) {
 		_bridge = bridge;
 		_parameters = parameters;
 		_type = type;
@@ -31,5 +31,9 @@ class Node_FunctionInterface : INode_Expression {
 	public void getInfo(out string name, out object objs) {
 		name = "function-interface";
 		objs = new object[]{ _parameters, _type };
+	}
+
+	public HashSet<Identifier> identikeyDependencies {
+		get { return Help.getIdentRefs( _parameters, _type ); }
 	}
 }

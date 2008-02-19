@@ -1,25 +1,11 @@
-/* xxx
+/*
+A bridge between native code and a Desal bundle node.
 
-Add constructor to StringClass that takes a list of code points.
-This may make converting to builtin strings easier.
-
-interface of StringClass
-	call()
-	call(String)
-	call(List<Int> codePoints)
-
-IList<IValue> codePointVals = ...
-IList<int> codePoints = new List<int>();
-foreach( IValue codePointVal in codePointVals ) {
-	codePoints.Add( unwrapInteger(codePointVal) );
-}
-return Bridge.wrapString( stringFromCodePoints(codePoints) );
-
-xxx Should this be merge with Node_Bundle or renamed to Bundle ?
+xxx Should this merge with Node_Bundle or be renamed to "Bundle"?
 
 security note:
 This class defines static objects that are shared across Bundles.
-Be careful to not let one Bundle affect other Bundles.
+Be careful to not let one Bundle visibly affect the objects that appear to other Bundles.
 */
 
 using System.Xml;

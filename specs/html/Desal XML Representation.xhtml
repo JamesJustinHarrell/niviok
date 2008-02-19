@@ -1,4 +1,19 @@
-<?xml version="1.0" encoding="utf-8"?><html xmlns="http://www.w3.org/1999/xhtml"><head><title>Desal XML Representation</title><link href="styling.css" rel="stylesheet" type="text/css"/></head><body>
+<?xml version="1.0" encoding="utf-8"?><html xmlns="http://www.w3.org/1999/xhtml"><head><title>Desal XML Representation</title><link href="styling.css" rel="stylesheet" type="text/css"/><script>
+		/* hack around Gecko bug */
+		function checkHash() {
+			if( oldHash != document.location.hash ) {
+				oldHash = document.location.hash;
+				causeReflow();
+			}
+		}
+		function causeReflow() {
+			var s = document.documentElement.style;
+			s.position = 'relative';
+			setTimeout( function(){ s.position = ''; }, 10 );
+		}
+		var oldHash = document.location.hash;
+		setInterval( checkHash, 100 );
+	</script></head><body>
 	<h1>Desal XML Representation</h1>
 	
 	<h2>Desible</h2>

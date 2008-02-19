@@ -12,33 +12,54 @@ partial class Bridge {
 				</interface>
 				
 				<interface xml:id='int'>
+					<method>
+						<identifier label='name'>add</identifier>
+						<function-interface label='interface'>
+							<parameter>
+								<identifier label='name'>value</identifier>
+								<nullable-type>
+									<boolean label='nullable'>false</boolean>
+									<identifier label='interface'>Int</identifier>
+								</nullable-type>
+								<boolean label='has-default-value'>false</boolean>
+							</parameter>
+							<nullable-type label='return-type'>
+								<boolean label='nullable'>false</boolean>
+								<identifier label='interface'>Int</identifier>
+							</nullable-type>
+						</function-interface>
+					</method>
 				</interface>
 				
 				<interface xml:id='rat'>
 				</interface>
 				
-				<interface xml:id='string'/>
-				
-				<!--
 				<interface xml:id='string'>
+					<property>
+						<identifier label='name'>length</identifier>
+						<nullable-type>
+							<boolean label='nullable'>false</boolean>
+						</nullable-type>
+						<access>get</access>
+					</property>
 					<method>
-						<identifier label='name'>concat!</identifier>
+						<identifier label='name'>concat</identifier>
 						<function-interface label='interface'>
 							<parameter>
 								<identifier label='name'>value</identifier>
-								<reference-type label='type'>
-									<reference-category>value</reference-category>
+								<nullable-type>
+									<boolean label='nullable'>false</boolean>
 									<identifier label='interface'>String</identifier>
-								</reference-type>
+								</nullable-type>
+								<boolean label='has-default-value'>false</boolean>
 							</parameter>
-							<reference-type label='return-type'>
-								<reference-category>value</reference-category>
+							<nullable-type label='return-type'>
+								<boolean label='nullable'>false</boolean>
 								<identifier label='interface'>String</identifier>
-							</reference-type>
+							</nullable-type>
 						</function-interface>
 					</method>
 				</interface>
-				-->
 				
 				<interface xml:id='interface'/>
 			</wrapper>
@@ -63,13 +84,15 @@ partial class Bridge {
 			new Identifier("length"),
 			delegate(Client_String o) { return wrapInteger(o.length); } );
 
-		stringBuilder.addValueMethod(
+		stringBuilder.addMethod(
 			new Identifier("concat"),
 			FunctionInterface.getFuncFace(
 				new Parameter[]{
-					new Parameter( new Identifier("value"), String )
+					new Parameter(
+						new NullableType(String, false),
+						new Identifier("value") )
 				},
-				new ReferenceType( ReferenceCategory.VALUE, String ) ),
+				new NullableType(String, false) ),
 			delegate(Client_String o, Scope args) {
 				return wrapCodePoints(
 					o.concat(
@@ -82,7 +105,9 @@ partial class Bridge {
 			new Identifier("concat!"),
 			FunctionInterface.getFuncFace(
 				new Parameter[]{
-					new Parameter( new Identifier("value"), String )
+					new Parameter(
+						new NullableType(String, false),
+						new Identifier("value") )
 				},
 				null),
 			delegate(Client_String o, Scope args) {
@@ -92,13 +117,15 @@ partial class Bridge {
 							new Identifier("value"))) );
 			});
 
-		stringBuilder.addValueMethod(
+		stringBuilder.addMethod(
 			new Identifier("substring"),
 			FunctionInterface.getFuncFace(
 				new Parameter[]{
-					new Parameter( new Identifier("start"), Int )
+					new Parameter(
+						new NullableType(Int, false),
+						new Identifier("start") )
 				},
-				new ReferenceType( ReferenceCategory.VALUE, String ) ),
+				new NullableType( String, false ) ),
 			delegate(Client_String o, Scope args) {
 				return wrapCodePoints(
 						o.substring(
@@ -107,14 +134,18 @@ partial class Bridge {
 									new Identifier("start"))) ));
 			});
 
-		stringBuilder.addValueMethod(
+		stringBuilder.addMethod(
 			new Identifier("substring"),
 			FunctionInterface.getFuncFace(
 				new Parameter[]{
-					new Parameter( new Identifier("start"), Int ),
-					new Parameter( new Identifier("limit"), Int )
+					new Parameter(
+						new NullableType(Int, false),
+						new Identifier("start") ),
+					new Parameter(
+						new NullableType(Int, false),
+						new Identifier("limit") )
 				},
-				new ReferenceType( ReferenceCategory.VALUE, String ) ),
+				new NullableType( String, false ) ),
 			delegate(Client_String o, Scope args) {
 				return wrapCodePoints(
 						o.substring(
@@ -131,13 +162,15 @@ partial class Bridge {
 		InterfaceImplementationBuilder<Client_Integer> intBuilder =
 			new InterfaceImplementationBuilder<Client_Integer>();
 		
-		intBuilder.addValueMethod(
+		intBuilder.addMethod(
 			new Identifier("add"),
 			FunctionInterface.getFuncFace(
 				new Parameter[]{
-					new Parameter( new Identifier("value"), Int )
+					new Parameter(
+						new NullableType(Int, false),
+						new Identifier("value") )
 				},
-				new ReferenceType( ReferenceCategory.VALUE, Int ) ),
+				new NullableType( Int, false ) ),
 			delegate(Client_Integer o, Scope args) {
 				return wrapInteger(
 						o.add(
@@ -156,13 +189,15 @@ partial class Bridge {
 		InterfaceImplementationBuilder<Client_Boolean> boolBuilder =
 			new InterfaceImplementationBuilder<Client_Boolean>();
 		
-		boolBuilder.addValueMethod(
+		boolBuilder.addMethod(
 			new Identifier("equals?"),
 			FunctionInterface.getFuncFace(
 				new Parameter[]{
-					new Parameter( new Identifier("value"), Bool )
+					new Parameter(
+						new NullableType(Bool, false),
+						new Identifier("value") )
 				},
-				new ReferenceType( ReferenceCategory.VALUE, Bool ) ),
+				new NullableType( Bool, false ) ),
 			delegate(Client_Boolean o, Scope args) {
 				return wrapBoolean(
 					o.equals(
@@ -177,13 +212,15 @@ partial class Bridge {
 		InterfaceImplementationBuilder<Client_Interface> faceBuilder =
 			new InterfaceImplementationBuilder<Client_Interface>();
 		
-		faceBuilder.addValueMethod(
+		faceBuilder.addMethod(
 			new Identifier("equals?"),
 			FunctionInterface.getFuncFace(
 				new Parameter[]{
-					new Parameter( new Identifier("value"), Interface )
+					new Parameter(
+						new NullableType(Interface, false),
+						new Identifier("value") )
 				},
-				new ReferenceType( ReferenceCategory.VALUE, Interface ) ),
+				new NullableType( Interface, false ) ),
 			delegate(Client_Interface o, Scope args) {
 				return wrapBoolean(
 					o.equals(

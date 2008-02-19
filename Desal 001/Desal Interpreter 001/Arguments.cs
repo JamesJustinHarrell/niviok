@@ -1,13 +1,13 @@
 using System.Collections.Generic;
 
 /*
-rational: IList<IValue> isn't good enough for arguments
-consider this: doStuff(500, "foo", bam=34, smort="blah")
+A collection of arguments being passed during a call.
 
-xxx should this be renamed something like "ArgumentList"?
-type names aren't usually plural
+XXX Note that this class is extremely outdated,
+and can't be updated until arguments have been speced out better.
 
-xxx consider passing arguments in such a way that a class like this isn't needed
+The value receiving these arguments will need access to the arguments
+to determine which callee should be used.
 */
 
 class Arguments {
@@ -15,46 +15,36 @@ class Arguments {
 	IDictionary<Identifier, IValue> _labeled;
 	
 	public Arguments( IList<IValue> unlabeled, IDictionary<Identifier, IValue> labeled ) {
-		if( unlabeled == null || labeled == null )
-			throw new System.Exception("null arguments to Arguments");
+		Bridge.checkNull(new object[]{ unlabeled, labeled });
 		_unlabeled = unlabeled;
 		_labeled = labeled;
 	}
 	
-	public Scope setup(IList<Parameter> parameters) {
-	/*
-		Scope innerScope = new Scope();
-		//xxxx
-		innerScope.declareFirst(
-			new Identifier("value"), _unlabeled[0] );
-		return innerScope;
-	*/
-		return setup(parameters, null);
-	}
-	
+	//create the scope to be used by the function body
+	//assumes the arguments have been matched to an appropriate function
 	public Scope setup(IList<Parameter> parameters, Scope outerScope) {
-		if( _labeled != null && _labeled.Count != 0 )
-			throw new Error_Unimplemented();
-		if( _unlabeled.Count != parameters.Count )
-			throw new System.ApplicationException("argument count");
-
 		Scope innerScope = new Scope(outerScope);
 		
-		for( int i = 0; i < parameters.Count; i++ ) {
 		/* xxx
-			if( parameters[i].type.category == ReferenceCategory.VALUE &&
-			parameters[i].type.face != _unlabeled[i].activeInterface )
-				throw new System.ApplicationException("interface mismatch");
+		Should reserve identikeys with Scope::reserveDeclareFirst()
+		and then assign the arguments with Scope::declareFirst().
+		Then finalize the scope before using.
+		That will ensure no arguments have names not specified by
+		the parameters, and that no parameters go without values.
 		*/
-			innerScope.declareFirst(
-				parameters[i].name,
-				//xxx parameters[i].type,
-				_unlabeled[i] );
-		}
+		
+		//bind unlabled arguments
+		for( int i = 0; i < parameters.Count; i++ )
+			innerScope.declareAssign( parameters[i].name, _unlabeled[i] );
+		
+		//bind labled arguments
+		foreach( Identifier name in _labeled.Keys )
+			innerScope.declareAssign( name, _labeled[name] );
 
 		return innerScope;
 	}
 	
+	//currently all that is used to match up arguments with correct callee
 	public long count {
 		get { return _unlabeled.Count + _labeled.Count; }
 	}

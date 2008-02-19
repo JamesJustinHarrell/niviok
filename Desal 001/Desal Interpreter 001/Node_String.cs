@@ -1,6 +1,8 @@
 //xxx support Unicode, including astral characters
 //xxx make sure no code points are surrogates
 
+using System.Collections.Generic;
+
 class Node_String : INode_Expression {
 	Bridge _bridge;
 	string _str;
@@ -17,5 +19,9 @@ class Node_String : INode_Expression {
 	public void getInfo(out string name, out object objs) {
 		name = "string";
 		objs = _str;
+	}
+	
+	public HashSet<Identifier> identikeyDependencies {
+		get { return new HashSet<Identifier>(); }
 	}
 }

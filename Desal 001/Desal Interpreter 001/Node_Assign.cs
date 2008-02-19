@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 class Node_Assign : INode_Expression {
 	Node_Identifier _name;
 	INode_Expression _value;
@@ -16,5 +18,9 @@ class Node_Assign : INode_Expression {
 	public void getInfo(out string name, out object children) {
 		name = "assign";
 		children = new object[]{ _name, _value };
+	}
+	
+	public HashSet<Identifier> identikeyDependencies {
+		get { return Help.getIdentRefs( _name, _value ); }
 	}
 }

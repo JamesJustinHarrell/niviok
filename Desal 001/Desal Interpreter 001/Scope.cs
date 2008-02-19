@@ -40,6 +40,20 @@ class Scope {
 		_identikeys = new Dictionary<Identifier, Identikey>();
 		_parent = parentScope;
 	}
+	
+	//create copy that only includes identikeys specifiedy by @idents
+	public Scope createClosure(ICollection<Identifier> wantedIdents) {
+		Scope scope = new Scope();
+		Scope currentOld = this;
+		while( currentOld != null ) {
+			foreach( Identifier oldIdent in currentOld._identikeys.Keys ) {
+				if( wantedIdents.Contains(oldIdent) )
+					scope._identikeys.Add( oldIdent, currentOld._identikeys[oldIdent] );
+			}
+			currentOld = currentOld._parent;
+		}
+		return scope;
+	}
 
 	public void assign(Identifier ident, IValue val) {
 		_identikeys[ident].val = val;
@@ -54,9 +68,19 @@ class Scope {
 		_identikeys.Add( ident, new Identikey(val) );
 	}
 	
-	public void declareFirst(
-	Identifier ident, IValue val) {
-		_identikeys.Add( ident, new Identikey(val) );
+	//all declare-first identikeys in a node must be declared
+	public void reserveDeclareFirst(Identifier ident) {
+		_identikeys.Add( ident, new Identikey(null) );
+	}
+	
+	//xxx need to do checking to make sure this is being assigned to a declare-first node
+	//also need to ensure and check lots of other stuff
+	public void declareFirst(Identifier ident, IValue val) {
+		if( ! _identikeys.ContainsKey(ident) )
+			System.Console.WriteLine(
+				"WARNING: scope does not contain declare-first identikey named {0}",
+				ident.str );
+		_identikeys[ident].val = val;
 	}
 
 	public IValue evaluateIdentifier(Identifier ident) {

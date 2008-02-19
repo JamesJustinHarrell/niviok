@@ -3,13 +3,13 @@ using System.Collections.Generic;
 class Node_Interface : INode_Expression {
 	IList<INode_Expression> _inheritees;
 	IList<Node_Callee> _callees;
-	Node_ReferenceType _returnType;
+	Node_NullableType _returnType;
 	IList<Node_Property> _properties;
 	IList<Node_Method> _methods;
 
 	public Node_Interface(
 	IList<INode_Expression> inheritees, IList<Node_Callee> callees,
-	Node_ReferenceType returnType, IList<Node_Property> properties,
+	Node_NullableType returnType, IList<Node_Property> properties,
 	IList<Node_Method> methods )
 	{
 		_inheritees = inheritees;
@@ -37,7 +37,10 @@ class Node_Interface : INode_Expression {
 	}
 	
 	public void getInfo(out string name, out object children) {
-		name = "interface";
-		children = new object[]{ null };
+		throw new Error_Unimplemented();
+	}
+
+	public HashSet<Identifier> identikeyDependencies {
+		get { throw new Error_Unimplemented(); }
 	}
 }

@@ -19,4 +19,8 @@ class Identifier {
 	public override int GetHashCode() {
 		return _str.GetHashCode();
 	}
+	
+	public override string ToString() {
+		return "Identifier(\"" + _str + "\")";
+	}
 };

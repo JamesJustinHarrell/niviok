@@ -15,4 +15,8 @@ class Node_Array : INode_Expression {
 		name = "array";
 		children = _elements;
 	}
+	
+	public HashSet<Identifier> identikeyDependencies {
+		get { return Help.getIdentRefs(_elements); }
+	}
 }

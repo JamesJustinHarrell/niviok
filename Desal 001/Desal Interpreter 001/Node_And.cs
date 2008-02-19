@@ -27,4 +27,8 @@ class Node_And : INode_Expression {
 		name = "and";
 		objs = new object[]{ _first, _second };
 	}
+
+	public HashSet<Identifier> identikeyDependencies {
+		get { return Help.getIdentRefs( _first, _second ); }
+	}
 }

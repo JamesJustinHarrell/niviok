@@ -1,9 +1,11 @@
+using System.Collections.Generic;
+
 class Node_Property : INode {
 	Node_Identifier _name;
-	Node_ReferenceType _type;
+	Node_NullableType _type;
 	Node_Access _access;
 
-	public Node_Property(Node_Identifier name, Node_ReferenceType type, Node_Access access) {
+	public Node_Property(Node_Identifier name, Node_NullableType type, Node_Access access) {
 		_name = name;
 		_type = type;
 		_access = access;
@@ -13,7 +15,7 @@ class Node_Property : INode {
 		get { return _name.identifier; }
 	}
 	
-	public ReferenceType evaluateType(Scope scope) {
+	public NullableType evaluateType(Scope scope) {
 		return _type.evaluateType(scope);
 	}
 	
@@ -31,5 +33,9 @@ class Node_Property : INode {
 	public void getInfo(out string name, out object children) {
 		name = "property";
 		children = new object[]{ _name, _type, _access };
+	}
+
+	public HashSet<Identifier> identikeyDependencies {
+		get { return Help.getIdentRefs( _type, _access ); }
 	}
 }

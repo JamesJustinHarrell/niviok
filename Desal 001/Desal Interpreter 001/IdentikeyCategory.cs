@@ -1,0 +1,3 @@
+enum IdentikeyCategory {
+	NAMESPACE, DYNAMIC, AUTOMATIC, STRICT, FUNCTION
+}

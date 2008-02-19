@@ -11,6 +11,7 @@ class DesalInterpreter001 {
 		args.Add("unhandled-warn-level", "2");
 		args.Add("print-tree", "false");
 		args.Add("run", "true");
+		args.Add("representation", "desible");
 		
 		foreach( string arg in arguments ) {
 			if( arg[0] == '-' ) {
@@ -28,29 +29,35 @@ class DesalInterpreter001 {
 		DesalInterpreter001 program = new DesalInterpreter001();
 		
 		Bridge bridge = new Bridge();
-		DesibleParser parser = new DesibleParser();
-		parser.unhandledWarnLevel = Int32.Parse(args["unhandled-warn-level"]);
 		
-		if( args.ContainsKey("path") ) {
-			Node_Bundle bundleNode = parser.parsePath(bridge, args["path"]);
-			bundleNode.setup( program.createGlobalScope(bridge) );
-			
-			if( Boolean.Parse(args["print-tree"]) ) {
-				program.printTree(bundleNode);
-			}
-			
-			if( Boolean.Parse(args["run"]) ) {
-				try {
-					return bundleNode.run();
-				}
-				catch(ClientException e) {
-					bridge.error(e.clientMessage);
-					//xxx return ERROR_CODE;
-				}
-			}
+		if( args["representation"] == "dextr" ) {
+			DextrParser.parseDocument(args["path"]);
 		}
 		else {
-			bridge.warning("no path set");
+			DesibleParser parser = new DesibleParser();
+			parser.unhandledWarnLevel = Int32.Parse(args["unhandled-warn-level"]);
+			
+			if( args.ContainsKey("path") ) {
+				Node_Bundle bundleNode = parser.parsePath(bridge, args["path"]);
+				bundleNode.setup( program.createGlobalScope(bridge) );
+				
+				if( Boolean.Parse(args["print-tree"]) ) {
+					program.printTree(bundleNode);
+				}
+				
+				if( Boolean.Parse(args["run"]) ) {
+					try {
+						return bundleNode.run();
+					}
+					catch(ClientException e) {
+						bridge.error(e.clientMessage);
+						//xxx return ERROR_CODE;
+					}
+				}
+			}
+			else {
+				bridge.warning("no path set");
+			}
 		}
 		
 		return 0;
@@ -58,32 +65,32 @@ class DesalInterpreter001 {
 	
 	Scope createGlobalScope(Bridge bridge) {
 		Scope scope = new Scope();
-
+		
 		//func println(dyn value)
 		IList<Parameter> printParameters = new Parameter[] {
-			new Parameter( new Identifier("text"), ReferenceCategory.DYN )
+			new Parameter(NullableType.dyn, new Identifier("text"))
 		};
 		//xxx use better binding stuff
 		IFunction printFunction = new NativeFunction(
 			bridge, printFunctionNative, printParameters, null, scope );
 		IValue printFunctor =
 			FunctionWrapper.wrap(printFunction);
-		scope.declareFirst(
+		scope.declareAssign(
 			new Identifier("println"),
 			printFunctor );
-		//xxx new ReferenceType( ReferenceCategory.FUNCTION, null ),
+		//xxx new NullableType( ReferenceCategory.FUNCTION, null ),
 				
 		//true
 		scope.declareAssign(
 			new Identifier("true"),
-			//xxx new ReferenceType( ReferenceCategory.VALUE, Bridge.Bool ),
+			//xxx new NullableType( ReferenceCategory.VALUE, Bridge.Bool ),
 			//xxx true,
 			Bridge.wrapBoolean(true) );
 		
 		//false
 		scope.declareAssign(
 			new Identifier("false"),
-			//xxx new ReferenceType( ReferenceCategory.VALUE, Bridge.Bool ),
+			//xxx new NullableType( ReferenceCategory.VALUE, Bridge.Bool ),
 			//xxx true,
 			Bridge.wrapBoolean(false) );
 		
@@ -127,7 +134,20 @@ class DesalInterpreter001 {
 		object children;	
 		printTabs(level);
 		node.getInfo(out name, out children); //xxx should this use bridge?
-		Console.WriteLine(name);
+		Console.Write(name);
+
+/* */
+		Console.Write(" (");
+		bool first = true;
+		foreach( Identifier ident in node.identikeyDependencies ) {
+			if( first ) first = false;
+			else Console.Write(", ");
+			Console.Write( ident.str );
+		}
+		Console.Write(")");
+/* */
+
+		Console.WriteLine("");
 		printObject(level+1, children);
 	}
 	

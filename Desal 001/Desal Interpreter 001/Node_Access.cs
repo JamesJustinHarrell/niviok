@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 class Node_Access : INode {
 	Access _access;
 
@@ -12,5 +14,9 @@ class Node_Access : INode {
 	public void getInfo(out string name, out object children) {
 		name = "access";
 		children = _access;
+	}
+	
+	public HashSet<Identifier> identikeyDependencies {
+		get { return new HashSet<Identifier>(); }
 	}
 }

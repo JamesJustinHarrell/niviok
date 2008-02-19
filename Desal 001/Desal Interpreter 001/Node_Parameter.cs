@@ -1,28 +1,40 @@
+using System.Collections.Generic;
+
 class Node_Parameter : INode {
+	/* xxx direction */
+	Node_NullableType _nullableType;
 	Node_Identifier _name;
-	Node_ReferenceType _type;
-	INode_Expression _defaultValue;
-	Node_Bool _nullable;
+	Node_Boolean _hasDefaultValue;
+	INode_Expression _defaultValue; //nullable
 
 	public Node_Parameter(
-	Node_Identifier name, Node_ReferenceType type,
-	INode_Expression defaultValue, Node_Bool nullable ) {
+	Node_NullableType nullableType, Node_Identifier name,
+	Node_Boolean hasDefaultValue, INode_Expression defaultValue) {
+		_nullableType = nullableType;
 		_name = name;
-		_type = type;
+		_hasDefaultValue = hasDefaultValue;
 		_defaultValue = defaultValue;
-		_nullable = nullable;
+	}
+	
+	public Identifier name {
+		get { return _name.identifier; }
 	}
 	
 	public Parameter evaluateParameter(Scope scope) {
 		return new Parameter(
+			/* xxx direction */
+			_nullableType.evaluateType(scope),
 			_name.identifier,
-			null, //xxx _type.evaluateType(scope),
-			( _defaultValue == null ? null : _defaultValue.execute(scope) ),
-			_nullable.val );
+			_hasDefaultValue.val,
+			( _defaultValue == null ? null : _defaultValue.execute(scope) ));
 	}
 	
 	public void getInfo(out string name, out object objs) {
 		name = "parameter";
-		objs = new object[]{ _name, _type, _defaultValue, _nullable };
+		objs = new object[]{ _nullableType, _name, _hasDefaultValue, _defaultValue };
+	}
+
+	public HashSet<Identifier> identikeyDependencies {
+		get { return Help.getIdentRefs(_defaultValue); }
 	}
 }

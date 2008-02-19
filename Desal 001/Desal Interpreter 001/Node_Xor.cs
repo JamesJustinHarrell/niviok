@@ -21,4 +21,8 @@ class Node_Xor : INode_Expression {
 		name = "xor";
 		objs = new object[]{ _first, _second };
 	}
+
+	public HashSet<Identifier> identikeyDependencies {
+		get { return Help.getIdentRefs( _first, _second ); }
+	}
 }

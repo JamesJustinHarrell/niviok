@@ -1,9 +1,24 @@
-<?xml version="1.0" encoding="utf-8"?><html xmlns="http://www.w3.org/1999/xhtml"><head><title>Desal Text Representation</title><link href="styling.css" rel="stylesheet" type="text/css"/></head><body>
+<?xml version="1.0" encoding="utf-8"?><html xmlns="http://www.w3.org/1999/xhtml"><head><title>Desal Text Representation</title><link href="styling.css" rel="stylesheet" type="text/css"/><script>
+		/* hack around Gecko bug */
+		function checkHash() {
+			if( oldHash != document.location.hash ) {
+				oldHash = document.location.hash;
+				causeReflow();
+			}
+		}
+		function causeReflow() {
+			var s = document.documentElement.style;
+			s.position = 'relative';
+			setTimeout( function(){ s.position = ''; }, 10 );
+		}
+		var oldHash = document.location.hash;
+		setInterval( checkHash, 100 );
+	</script></head><body>
 
 	<h1>Desal Text Representation</h1>
 	<h2>Dextr</h2>
 	
-	<ol class="toc"><li><a href="#overview">1. Overview</a><ol><li><a href="#introduction">1.1. Introduction</a></li><li><a href="#design-goals">1.2. Design goals</a></li><li><a href="#syntactic-blocks">1.3. Syntactic blocks</a></li></ol></li><li><a href="#tokenization">2. Tokenization</a><ol><li><a href="#token-types">2.1. Token types</a></li><li><a href="#tokenization-modes">2.2. Tokenization modes</a></li></ol></li><li><a href="#unsorted-stuff">3. unsorted stuff</a><ol><li><a href="#get-interface">3.1. get interface</a></li><li><a href="#postfix-operator">3.2. postfix incrementation operator</a></li><li><a href="#casting-sugar">3.3. Dextr casting sugar</a></li></ol></li><li><a href="#not-marked-up">4. not marked-up</a></li></ol><div id="overview">
+	<ol class="toc"><li><a href="#overview">1. Overview</a><ol><li><a href="#introduction">1.1. Introduction</a></li><li><a href="#design-goals">1.2. Design goals</a></li><li><a href="#syntactic-blocks">1.3. Syntactic blocks</a></li></ol></li><li><a href="#tokenization">2. Tokenization</a><ol><li><a href="#token-types">2.1. Token types</a></li><li><a href="#tokenization-modes">2.2. Tokenization modes</a></li></ol></li><li><a href="#unsorted-stuff">3. unsorted stuff</a><ol><li><a href="#get-interface">3.1. get interface</a></li><li><a href="#postfix-operator">3.2. postfix incrementation operator</a></li><li><a href="#function-interface">3.3. function-interface</a></li><li><a href="#cast">3.4. cast</a></li></ol></li><li><a href="#not-marked-up">4. not marked-up</a></li></ol><div id="overview">
 		<h1>Chapter 1. Overview</h1>
 		
 		<div id="introduction">
@@ -124,18 +139,37 @@ int b = a
 ++a</code>
 		</div>
 		
-		<div id="casting-sugar">
-			<h2>3.3. Dextr casting sugar</h2>
+		<div id="function-interface">
+			<h2>3.3. function-interface</h2>
 			
-			<p>Although interface objects do not have call methods, syntactially they appear to, although the syntax is translated into ordinary Desal semantics.</p>
+			<pre>required_s ::= ( &quot; &quot; | comment ) +
+s ::= required_s ?
+required_ls ::= ( required_s | &quot;\n&quot; | &quot;\t&quot; ) +
+ls ::= required_ls ?
+
+function-interface ::=
+	funcfaceshort | funcfacelong
+
+funcfacebase ::=
+	&quot;func&quot; s &quot;(&quot; s funcfaceparameters ? s &quot;)&quot;
+
+funcfaceshort ::=
+	funcfacebase s identifier
+
+funcfacelong ::=
+	funcfacebase s &quot;(&quot; ls expression ls &quot;)&quot;
+
+funcfaceparameters ::= ...</pre>
+		</div>
+		
+		<div id="cast">
+			<h2>3.4. cast</h2>
 			
-			<code xml:space="preserve">(foo bar).fooProp //semantically same as below
-		( cast{foo}(bar) ).fooProp
-		
-		func(obj)foo toFoo1 = foo.call //semantically same as below
-		func(obj)foo toFoo2 = cast{foo}
-		
-		(toFoo1 bar).fooProp</code>
+			<pre>cast ::=
+	expression s &quot;as&quot; s expression
+
+example:
+(foo as Bar)</pre>
 		</div>
 	</div>
 	

@@ -146,20 +146,41 @@ int b = a
 			</programlisting>
 		</section>
 		
-		<section xml:id="casting-sugar">
-			<title>Dextr casting sugar</title>
+		<section xml:id="function-interface">
+			<title>function-interface</title>
 			
-			<para>Although interface objects do not have call methods, syntactially they appear to, although the syntax is translated into ordinary Desal semantics.</para>
+			<screen>
+required_s ::= ( " " | comment ) +
+s ::= required_s ?
+required_ls ::= ( required_s | "\n" | "\t" ) +
+ls ::= required_ls ?
+
+function-interface ::=
+	funcfaceshort | funcfacelong
+
+funcfacebase ::=
+	"func" s "(" s funcfaceparameters ? s ")"
+
+funcfaceshort ::=
+	funcfacebase s identifier
+
+funcfacelong ::=
+	funcfacebase s "(" ls expression ls ")"
+
+funcfaceparameters ::= ...
+			</screen>
+		</section>
+		
+		<section xml:id="cast">
+			<title>cast</title>
 			
-			<programlisting>
-		(foo bar).fooProp //semantically same as below
-		( cast{foo}(bar) ).fooProp
-		
-		func(obj)foo toFoo1 = foo.call //semantically same as below
-		func(obj)foo toFoo2 = cast{foo}
-		
-		(toFoo1 bar).fooProp
-			</programlisting>
+			<screen>
+cast ::=
+	expression s "as" s expression
+
+example:
+(foo as Bar)
+			</screen>
 		</section>
 	</chapter>
 	

@@ -6,12 +6,12 @@ using System.Collections.Generic;
 
 class Client_Function : IFunction {
 	IList<Parameter> _parameters;
-	ReferenceType _returnType;
+	NullableType _returnType;
 	INode_Expression _body;
 	Scope _scope;
 	
 	public Client_Function(
-	IList<Parameter> parameters, ReferenceType returnType,
+	IList<Parameter> parameters, NullableType returnType,
 	INode_Expression body, Scope scope) {
 		_body = body;
 		_parameters = parameters;
@@ -23,7 +23,7 @@ class Client_Function : IFunction {
 	public IList<Parameter> parameters {
 		get { return _parameters; }
 	}
-	public ReferenceType returnType {
+	public NullableType returnType {
 		get { return _returnType; }
 	}
 	

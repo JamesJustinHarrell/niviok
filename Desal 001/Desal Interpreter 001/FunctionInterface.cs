@@ -5,27 +5,27 @@ class FunctionInterface : IFunctionInterface {
 	// params -> { RefType -> FunctionInterface }
 	static IDictionary<
 		IList<Parameter>,
-		IDictionary<ReferenceType, WeakRef> > _funcFaces;
+		IDictionary<NullableType, WeakRef> > _funcFaces;
 	
 	static FunctionInterface() {
 		_funcFaces = new Dictionary<
 			IList<Parameter>,
-			IDictionary<ReferenceType, WeakRef> >();
+			IDictionary<NullableType, WeakRef> >();
 	}
 	
 	public static IFunctionInterface getFuncFace(
-	IList<Parameter> parameters, ReferenceType returnType) {
+	IList<Parameter> parameters, NullableType returnType) {
 		if( returnType == null ) { //xxx void functions
-			returnType = new ReferenceType(ReferenceCategory.DYN, null);
+			returnType = NullableType.dyn;
 		}
 	
-		IDictionary<ReferenceType, WeakRef> dict;
+		IDictionary<NullableType, WeakRef> dict;
 	
 		if( _funcFaces.ContainsKey(parameters) ) {
 			dict = _funcFaces[parameters];
 		}
 		else {
-			dict = new Dictionary<ReferenceType, WeakRef>();
+			dict = new Dictionary<NullableType, WeakRef>();
 			_funcFaces.Add(	parameters, dict );
 		}
 		
@@ -41,9 +41,9 @@ class FunctionInterface : IFunctionInterface {
 	}
 	
 	IList<Parameter> _params;
-	ReferenceType _returnType;
+	NullableType _returnType;
 
-	FunctionInterface(IList<Parameter> parameters, ReferenceType returnType) {
+	FunctionInterface(IList<Parameter> parameters, NullableType returnType) {
 		_params = parameters;
 		_returnType = returnType;
 	}
@@ -52,7 +52,7 @@ class FunctionInterface : IFunctionInterface {
 		get { return _params; }
 	}
 
-	public ReferenceType returnType {
+	public NullableType returnType {
 		get { return _returnType; }
 	}
 	
@@ -60,11 +60,11 @@ class FunctionInterface : IFunctionInterface {
 		get { return null; }
 	}
 
-	public IList<PropertyInfo> properties {
+	public IDictionary<Identifier, PropertyInfo> properties {
 		get { throw new Error_Unimplemented(); }
 	}
 
-	public IList<MethodInfo> methods {
+	public IDictionary<Identifier, IList<MethodInfo>> methods {
 		get { throw new Error_Unimplemented(); }
 	}
 	

@@ -2,7 +2,7 @@
 xmlns:xi="http://www.w3.org/2003/XInclude">
 	
 	<title>Desal Semantics 1.0</title>
-	<subtitle>Edition 1 Draft 2008/02/01</subtitle>
+	<subtitle>Edition 1 Draft 2008-02-13</subtitle>
 	
 	<info>
 		<copyright>
@@ -26,24 +26,38 @@ xmlns:xi="http://www.w3.org/2003/XInclude">
 			<para>Desal contains some dynamic aspects, but in several ways is very static. For example, the tree of scopes ("environments" in some languages) and variables/constants ("identikeys" in Desal) can be entirely known before runtime; identikeys cannot be declared conditionally like in highly dynamic languages such as JavaScript.</para>
 		</section>
 		
-		<section xml:id="specification-version">
+		<section xml:id="version">
 			<title>Version</title>
 			
-			<para>Each version of Desal Semantics has a major version number and a minor version number, both integers incrementing by one. When the major version number is incremented, the minor version number is reset to 0.</para>
+			<para>Each version of Desal Semantics is described by a specification with one or more editions.</para>
 			
-			<para>All versions of Desal Semantics should be backwards compatible with previous versions that have the same major version number. That means the major version number should be changed when changes are made that break backwards compatibility.</para>
+			<section xml:id="desal-version">
+				<title>Desal version</title>
 			
-			<para>Example: Something that is valid Desal Semantics 5.3 will also be valid Desal Semantics 5.4, 5.5, 5.6, etc.</para>
+				<para>Each version of Desal Semantics is identified by a major version number and a minor version number, both integers. Each new version that is backwards compatible with the previous version increments the minor version number by one. Each new version that is not bacwards comptable with the previous version increments the major version number by one and resets the minor version number to 0.</para>
+			</section>
 			
-			<para>Each specification describing a version of Desal Semantics may have multiple editions, each represented by an integer that's incremented by one. The first finalized specification for a version of Desal Semantics is the first edition, or edition one. Creating a new edition is a revision. Revisions should serve to clarify, add guidance, and correct errors in the specification, not to add or remove functionality. Revisions should not attempt to correct errors in Desal Semantics, only errors in describing Desal Semantics. Implementations should target the latest finalized edition of the version they are targeting.</para>
+			<section xml:id="specification-version">
+				<title>Specification version</title>
+				
+				<para>Each edition of a specification describing a particular version of Desal Semantics is identified by an integer. This edition number starts at one and is incremented by one for each additional edition.</para>
+				
+				<para>A document that is intended to become an edition is a draft. A finalized edition is no longer in the draft stage. Each draft is identified by the date on which it was published.</para>
+				
+				<para>Newer editions should serve only to better describe a particular version of Desal Semantics, not to modify that version of Desal Semantics. Newer editions should not attempt to correct errors in Desal Semantics, only errors in describing that version of Desal Semantics.</para>
+			</section>
 			
-			<para>Each edition may have multiple drafts before being finalized. Each draft is represented by a date around the time it was published. Implementations and specifications should not target drafts.</para>
-			
-			<para>A version of Desal Semantics may be represented as "Desal Semantics X.Y" where X is the major version number and Y is the minor version number. A finalized specification for Desal Semantics may be represented as "Desal Semantics X.Y Edition A" where A is the edition number. A draft of a specification may be represented as "Desal Semantics X.Y Edition A Draft B" where B is the date in YYYYMMDD format.</para>
-			
-			<para>This specification describes Desal Semantics 1.0. This specification has never been finalized, so is working towards the first edition. It is still in the draft stages.</para>
-			
-			<para>When this specification is finalized, it will be Edition 1 (instead of Edition 1 Draft YYYYMMDD). If the finalized specification is revised, the next finalized edition will be Edition 2.</para>
+			<section xml:id="version-notation">
+				<title>Version notation</title>
+				
+				<para>A version of Desal Semantics may be represented as "Desal Semantics X.Y" where X is the major version number and Y is the minor version number.</para>
+				
+				<para>A finalized specification for Desal Semantics may be represented as "Desal Semantics X.Y Edition A" where A is the edition number.</para>
+				
+				<para>A draft of an edition may be represented as "Desal Semantics X.Y Edition A Draft YYYY-MM-DD" where YYYY-MM-DD is the date on which the draft was published, represented as specified by ISO 8601.</para>
+				
+				<para>Example: Desal Semantics 2.3 Edition 4 Draft 2008-01-31</para>
+			</section>
 		</section>
 		
 		<section xml:id="specification-scope">
@@ -846,6 +860,16 @@ println( activeInterface(false) == Bool ) //true
 			<para>Returns the interface that is the active interafce of the specified value.</para>
 		</section>
 		
+		<section xml:id="object.String">
+			<title>String</title>
+			
+			<para>Besides downcasting to an Interface, String can also be called to produce a String.</para>
+			
+			<screen>
+func String( Collection&lt;Int> unicodeCodePoints ) String
+			</screen>
+		</section>
+		
 		<section xml:id="object.cast">
 			<title>func{I}(dyn)I cast</title>
 			
@@ -855,6 +879,137 @@ println( activeInterface(false) == Bool ) //true
 if (foo is Bar)
 	cast&lt;Bar>(foo).propOfBar()
 			</programlisting>
+		</section>
+		
+		<section xml:id="object.ceil">
+			<title>ceil</title>
+			
+			<screen>func ceil(Rat) Int</screen>
+			
+			<para>Finds the ceiling of the specified rational number.</para>
+		</section>
+		
+		<section xml:id="object.floor">
+			<title>floor</title>
+			
+			<screen>func floor(Rat) Int</screen>
+		</section>
+		
+		<section xml:id="object.modulo">
+			<title>modulo</title>
+			
+			<para>Finds the remainder of dividing two integers.</para>
+			
+			<screen>
+func modulo( Int dividend, Int divisor, ModuloMethod method = ModuloMethod.divisor ) Int
+
+enum ModuloMethod {
+	dividend,
+	divisor,
+	positive,
+	negative
+}
+			</screen>
+			
+			<para>When one or both of dividend and divisor are negative, there could be two possible remainders, one positive and one negative. In such a case, the ModuloMethod determines which of these to return. When there is only one possible remainder, the ModuloMethod is ignored.</para>
+			
+			<para>The "dividend" option returns the remainder with the same sign as the dividend. The "divisor" option returns the remainder with the same sign as the divisor. The "positive" option returns the positive remainder. The "negative" option returns the negative remainder.</para>
+			
+			<para>This function should throw an error if divisor is 0.</para>
+			
+<!--
+15 mod 4
+15 = 3 * 4 + 3
+r = 3
+
+15 mod -4
+15 = -3 * -4 + 3
+15 = -4 * -4 + -1
+r = 3 or -1
+
+-15 mod 4
+-15 = -3 * 4 + -3
+-15 = -4 * 4 + 1
+r = -3 or 1
+
+-15 mod -4
+-15 = 3 * -4 + -3
+-15 = 4 * -4 + 1
+r = -3 or 1
+-->
+			
+			<screen>
+modulo(15, 4, dividend) -> 3
+modulo(15, 4, divisor) -> 3
+modulo(15, 4, positive) -> 3
+modulo(15, 4, negative) -> 3
+
+modulo(15, -4, dividend) -> 3
+modulo(15, -4, divisor) -> -1
+modulo(15, -4, positive) -> 3
+modulo(15, -4, negative) -> -1
+
+modulo(-15, 4, dividend) -> -3
+modulo(-15, 4, divisor) -> 1
+modulo(-15, 4, positive) -> 1
+modulo(-15, 4, negative) -> -3
+
+modulo(-15, -4, dividend) -> -3
+modulo(-15, -4, divisor) -> -3
+modulo(-15, -4, positive) -> 1
+modulo(-15, -4, negative) -> -3
+			</screen>
+		</section>
+		
+		<section xml:id="object.round">
+			<title>round</title>
+			
+			<screen>
+func round(Rat, RoundMethod = nearest_away) Int
+
+enum RoundMethod {
+	up, //ceiling
+	down, //floor
+	awayFromZero,
+	towardsZero, //truncation
+	nearest_up,
+	nearest_down,
+	nearest_away, //common rounding
+	nearest_towards,
+	nearest_unbiased //unbiased rounding, bankers rounding
+}
+			</screen>
+			
+			<para>Rounds a rational number to an integer using the specified method. The nearest_* method comes in various forms to determine what to do when the rational number is exactly halfway between two integers. For all rational numbers that are not exactly halfway between two rational numbers, the nearest_* methods behave the same. The nearest_unbiased method rounds to the nearest even integer when the number is exactly halfway between two integers. (This is most commonly called bankers rounding.)</para>
+			
+			<screen>
+round(3.1) -> 3
+round(3.1, up) -> 4
+
+round(3.5) -> 4
+round(3.5, nearest_towards) -> 3
+
+round(3.9) -> 4
+round(3.9, nearest_towards) -> 4
+
+round(-3.1) -> -3
+round(-3.1, up) -> -3
+
+round(-3.5) -> -4
+round(-3.5, nearest_towards) -> -3
+
+round(-3.9) -> -4
+round(-3.9, nearest_towards) -> -4
+
+round(3.4, nearest_unbiased) -> 3
+round(3.5, nearest_unbiased) -> 4
+round(3.6, nearest_unbiased) -> 4
+
+round(8.4, nearest_unbiased) -> 8
+round(8.5, nearest_unbiased) -> 8
+round(8.500000001, nearest_unbiased) -> 9
+round(8.6, nearest_unbiased) -> 9
+			</screen>
 		</section>
 		
 		<section xml:id="object.generator">

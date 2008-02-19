@@ -4,5 +4,5 @@ using System.Collections.Generic;
 
 interface IFunctionInterface : IInterface {
 	IList<Parameter> parameters { get; }
-	ReferenceType returnType { get; }
+	NullableType returnType { get; }
 }

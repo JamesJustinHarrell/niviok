@@ -30,7 +30,16 @@ class NativeValue<T> : IValue {
 		throw new Error_Unimplemented();
 	}
 	public IValue callMethod(Identifier name, Arguments arguments) {
-		return _impl.evaluateMethod(_obj, name, arguments);
+		return _impl.callMethod(_obj, name, arguments);
+	}
+	public IValue extractNamedMember(Identifier name) {
+		IInterface face = _impl.@interface;
+		if( face.properties.ContainsKey(name) )
+			return _impl.getProperty(_obj, this, name);
+		if( face.methods.ContainsKey(name) )
+			return new BoundMethod<T>(_obj, _impl, name);
+		throw new ClientException(
+			System.String.Format("no member with name: '{0}'", name.str));
 	}
 	
 	public T obj {

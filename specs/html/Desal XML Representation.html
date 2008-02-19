@@ -3,6 +3,7 @@
     <head>
         <title>Desal XML Representation</title>
         <link href="styling.css" rel="stylesheet" type="text/css" />
+        <script>/* hack around Gecko bug */ function checkHash() { if( oldHash != document.location.hash ) { oldHash = document.location.hash; causeReflow(); } } function causeReflow() { var s = document.documentElement.style; s.position = 'relative'; setTimeout( function(){ s.position = ''; }, 10 ); } var oldHash = document.location.hash; setInterval( checkHash, 100 );</script>
     </head>
     <body>
         <h1>Desal XML Representation</h1>

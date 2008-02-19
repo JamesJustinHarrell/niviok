@@ -1,0 +1,200 @@
+@namespace "urn:desible1";
+
+/* make foreign elements red */
+*|* { background: red; }
+* { background: white; }
+
+*|* {
+	display: block;
+	min-height: 1em;
+	min-width: 1em;
+}
+*|* *|* { margin-left: 3em; }
+
+*|*:not(:root):not(string):not(integer):not(rational):not(identifier):not(boolean) {
+	border: thin solid black;
+	margin-top: 2px;
+	margin-right: 2px;
+	margin-bottom: 2px;
+}
+
+*:hover {
+	background: rgba(50%, 50%, 50%, .5);
+}
+
+
+identifier {
+	color: blue;
+	font-weight: bold;
+}
+
+string::before { content: '"'; }
+string {
+	color: purple;
+	font-weight: bold;
+}
+string::after { content: '"'; }
+
+inline-plane::before { content: "inline-plane "; }
+
+integer, rational {
+	color: orange;
+	font-weight: bold;
+}
+access::before { content: "access "; }
+alias::before { content: "alias "; }
+and::before { content: "and "; }
+argument::before { content: "argument "; }
+array::before { content: "array "; }
+assign::before { content: "assign "; }
+assign-replication::before { content: "assign-replication "; }
+block::before { content: "block "; }
+break::before { content: "break "; }
+bundle::before { content: "bundle "; }
+call::before { content: "call "; }
+callee::before { content: "callee "; }
+case::before { content: "case "; }
+cast::before { content: "cast "; }
+chain::before { content: "chain "; }
+class::before { content: "class "; }
+class-property::before { content: "class-property "; }
+comprehension::before { content: "comprehension "; }
+comprehension-type::before { content: "comprehension-type "; }
+conditional::before { content: "conditional "; }
+continue::before { content: "continue "; }
+convertor::before { content: "convertor "; }
+curry::before { content: "curry "; }
+declaration::before { content: "declaration "; }
+declare-assign::before { content: "declare-assign "; }
+declare-class::before { content: "declare-class "; }
+declare-const-empty::before { content: "declare-const-empty "; }
+declare-empty::before { content: "declare-empty "; }
+declare-first::before { content: "declare-first "; }
+dictionary::before { content: "dictionary "; }
+dictionary-entry::before { content: "dictionary-entry "; }
+direction::before { content: "direction "; }
+do-times::before { content: "do-times "; }
+do-while::before { content: "do-while "; }
+enum::before { content: "enum "; }
+enum-entry::before { content: "enum-entry "; }
+exception-handler::before { content: "exception-handler "; }
+for-key::before { content: "for-key "; }
+for-manual::before { content: "for-manual "; }
+for-pair::before { content: "for-pair "; }
+for-range::before { content: "for-range "; }
+for-value::before { content: "for-value "; }
+function::before { content: "function "; }
+function-interface::before { content: "function-interface "; }
+generator::before { content: "generator "; }
+generic-class::before { content: "generic-class "; }
+generic-function::before { content: "generic-function "; }
+generic-interface::before { content: "generic-interface "; }
+generic-parameter::before { content: "generic-parameter "; }
+get-property::before { content: "get-property "; }
+identifier-chain::before { content: "identifier-chain "; }
+identikey-category::before { content: "identikey-category "; }
+identikey-type::before { content: "identikey-type "; }
+ignore::before { content: "ignore "; }
+ignore-member::before { content: "ignore-member "; }
+implements::before { content: "implements "; }
+import::before { content: "import "; }
+instantiate-generic-class::before { content: "instantiate-generic-class "; }
+instantiate-generic-interface::before { content: "instantiate-generic-interface "; }
+intantiate-generic-function::before { content: "intantiate-generic-function "; }
+interface::before { content: "interface "; }
+interface-implementation::before { content: "interface-implementation "; }
+interface-member::before { content: "interface-member "; }
+labeled::before { content: "labeled "; }
+loop::before { content: "loop "; }
+member-status::before { content: "member-status "; }
+method::before { content: "method "; }
+named-function::before { content: "named-function "; }
+namespaced-identikey::before { content: "namespaced-identikey "; }
+nand::before { content: "nand "; }
+nor::before { content: "nor "; }
+nullable-type::before { content: "type "; }
+or::before { content: "or "; }
+parameter::before { content: "parameter "; }
+plane::before { content: "plane "; }
+possibility::before { content: "possibility "; }
+property::before { content: "property "; }
+replicate::before { content: "replicate "; }
+return::before { content: "return "; }
+select::before { content: "select "; }
+set-property::before { content: "set-property "; }
+statused-member::before { content: "statused-member "; }
+throw::before { content: "throw "; }
+try-catch::before { content: "try-catch "; }
+unassign::before { content: "unassign "; }
+unassign-function::before { content: "unassign-function "; }
+using::before { content: "using "; }
+while::before { content: "while "; }
+xnor::before { content: "xnor "; }
+xor::before { content: "xor "; }
+yield::before { content: "yield "; }
+
+
+
+
+/*
+block,
+conditional-block,
+declaration-pervasive,
+for-range,
+function,
+global
+{
+	display: block;
+}
+
+block > * {
+	margin-left: 1em;
+}
+block::before {
+	content: "{";
+	display: block;
+}
+block::after {
+	content: "}";
+	display: block;
+}
+
+conditional-block::before { content: "if"; }
+
+declaration-pervasive > [label="value"] {
+	margin-left: 2em;
+}
+declaration-pervasive > identifier::before {
+	content: "pervasive ";
+}
+declaration-pervasive > reference-type::after {
+	content: "]] = ";
+}
+
+for-range::before { content: "for" }
+for-range > [label="start"]::before { content: " from "; }
+for-range > [label="limit"]::before { content: " to "; }
+
+function::before { content: "func {"; }
+function > block::before { content: ""; }
+
+function-call > [label="function"]::after {
+	content: "(";
+}
+function-call::after {
+	content: ")";
+}
+
+method-call > [label="method-name"]::before {
+	content: ".";
+}
+method-call > [label="method-name"]::after {
+	content: "(";
+}
+method-call::after {
+	content: ")";
+}
+
+reference-type::before { content: "[["; }
+reference-type::after { content: "]]"; }
+*/

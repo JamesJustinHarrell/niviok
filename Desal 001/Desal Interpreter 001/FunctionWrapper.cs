@@ -22,22 +22,20 @@ class FW_Value : IValue {
 	public IInterface activeInterface {
 		get { throw new Error_Unimplemented(); }
 	}
-	public long objectID {
-		get { throw new Error_Unimplemented(); }
-	}
+
 	public IValue cast(IInterface aInterface) {
 		throw new Error_Unimplemented();
 	}
+	
 	public IValue call(Arguments arguments) {
 		return _interfaceImpl.evaluateCall(arguments);
 	}
-	public IValue getProperty(Identifier name) {
+	
+	public IValue extractNamedMember(Identifier name) {
 		throw new Error_Unimplemented();
 	}
+
 	public void setProperty(Identifier propName, IValue aValue) {
-		throw new Error_Unimplemented();
-	}
-	public IValue callMethod(Identifier name, Arguments arguments) {
 		throw new Error_Unimplemented();
 	}
 }

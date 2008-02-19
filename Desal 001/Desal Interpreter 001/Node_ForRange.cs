@@ -1,14 +1,16 @@
+using System.Collections.Generic;
+
 class Node_ForRange : INode_Expression {
-	Node_Identifier _ident;
+	Node_Identifier _name;
 	INode_Expression _start;
 	INode_Expression _limit;
 	//xxx bool _inclusive;
-	Node_Block _block;
+	Node_Block _block; //xxx rename to body
 
 	public Node_ForRange(
-	Node_Identifier ident, INode_Expression start,
+	Node_Identifier name, INode_Expression start,
 	INode_Expression limit, Node_Block block) {
-		_ident = ident;
+		_name = name;
 		_start = start;
 		_limit = limit;
 		_block = block;
@@ -21,8 +23,8 @@ class Node_ForRange : INode_Expression {
 		while( current < Bridge.unwrapInteger(limit) ) {
 			Scope innerScope = new Scope(scope);
 			innerScope.declareAssign(
-				_ident.identifier,
-				//xxx new ReferenceType( ReferenceCategory.VALUE, null),
+				_name.identifier,
+				//xxx new NullableType( ReferenceCategory.VALUE, null),
 				//xxx true,
 				Bridge.wrapInteger(current) );
 			_block.execute(innerScope);
@@ -33,6 +35,15 @@ class Node_ForRange : INode_Expression {
 	
 	public void getInfo(out string name, out object objs) {
 		name = "for-range";
-		objs = new object[]{ _ident, _start, _limit, /* xxx _inclusive,*/ _block };
+		objs = new object[]{ _name, _start, _limit, /* xxx _inclusive,*/ _block };
+	}
+
+	public HashSet<Identifier> identikeyDependencies {
+		get {
+			HashSet<Identifier> idents =
+				Help.getIdentRefs( _start, _limit, _block );
+			idents.Remove( _name.identifier );
+			return idents;
+		}
 	}
 }

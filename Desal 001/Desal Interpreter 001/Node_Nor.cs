@@ -27,4 +27,8 @@ class Node_Nor : INode_Expression {
 		name = "nor";
 		objs = new object[]{ _first, _second };
 	}
+
+	public HashSet<Identifier> identikeyDependencies {
+		get { return Help.getIdentRefs( _first, _second ); }
+	}
 }

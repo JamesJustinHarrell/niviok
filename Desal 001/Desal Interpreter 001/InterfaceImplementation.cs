@@ -4,23 +4,20 @@ abstract class FaceImplBase<T> {
 	public delegate IValue PropGetter(T o);
 	public delegate void PropSetter(T o, IValue val);
 	public delegate void VoidFunction(T o, Scope args);
-	public delegate IValue ValueFunction(T o, Scope args);
+	public delegate IValue Function(T o, Scope args);
 
-	protected IDictionary<IFunctionInterface, VoidFunction> _voidCallees;
-	protected IDictionary<IFunctionInterface, ValueFunction> _valueCallees;
+	protected IDictionary<IFunctionInterface, Function> _callees;
 	protected IDictionary<Identifier, PropGetter> _propGetters;
 	protected IDictionary<Identifier, PropSetter> _propSetters;
-	protected IDictionary<Identifier, IDictionary<IFunctionInterface, VoidFunction> > _voidMethods;
-	protected IDictionary<Identifier, IDictionary<IFunctionInterface, ValueFunction> > _valueMethods;
+	protected IDictionary<Identifier, IDictionary<IFunctionInterface, Function> > _methods;
 	
 	public FaceImplBase() {}
 	
 	public FaceImplBase(FaceImplBase<T> data) {
-		_voidCallees = data._voidCallees;
-		_valueCallees = data._valueCallees;
+		_callees = data._callees;
 		_propGetters = data._propGetters;
-		_voidMethods = data._voidMethods;
-		_valueMethods = data._valueMethods;
+		_propSetters = data._propSetters;
+		_methods = data._methods;
 	}
 }
 
@@ -32,21 +29,19 @@ class InterfaceImplementation<T> : FaceImplBase<T>, IInterfaceImplementation<T> 
 	{
 		_face = face;
 		
-		//xxx check inheritees
+		/* xxx check members to make sure this is a valid implementation
 		
-		foreach( MethodInfo meth in _face.methods ) {
-			if(
-				(! _voidMethods.ContainsKey(meth.name) ||
-				! _voidMethods[meth.name].ContainsKey(meth.iface) ) &&
-				(! _valueMethods.ContainsKey(meth.name) ||
-				! _valueMethods[meth.name].ContainsKey(meth.iface) )
-			) {
-				throw new System.Exception(
-					"method with name '" + meth.name + "' not implemented");
-			}
-		}
+		//check methods
+		foreach( IList<MethodInfo> methList in _face.methods.Values )
+			foreach( MethodInfo meth in methList )
+				if( ! (
+					_methods.ContainsKey(meth.name) &&
+					_methods[meth.name].ContainsKey(meth.iface) ) )
+				{
+					throw new System.Exception(
+						"method with name '" + meth.name + "' not implemented");
+				}
 		
-		/* xxx enable
 		//ensure FaceImpl doesn't implement anything not defined in Face
 		foreach( Identifier ident in _voidMethods.Keys ) {
 			foreach( IFunctionInterface faceImpl in _voidMethods[ident].Keys ) {
@@ -63,8 +58,6 @@ class InterfaceImplementation<T> : FaceImplBase<T>, IInterfaceImplementation<T> 
 			}
 		}
 		*/
-		
-		//xxx checking
 	}
 
 	//xxx does this belong here?
@@ -104,12 +97,8 @@ class InterfaceImplementation<T> : FaceImplBase<T>, IInterfaceImplementation<T> 
 	public bool sameClass(T state) {
 		throw new Error_Unimplemented();
 	}
-	
-	public void executeCall(T state, Arguments arguments) {
-		throw new Error_Unimplemented();
-	}
-	
-	public IValue evaluateCall(T state, Arguments arguments) {
+
+	public IValue call(T state, Arguments arguments) {
 		throw new Error_Unimplemented();
 	}
 	
@@ -120,19 +109,11 @@ class InterfaceImplementation<T> : FaceImplBase<T>, IInterfaceImplementation<T> 
 	public void setProperty(T state, IValue @this, Identifier name, IValue @value) {
 		throw new Error_Unimplemented();
 	}
-
-	public void executeMethod(T obj, Identifier name, Arguments arguments) {
-		//xxx should alse be able to execute value methods
-		KeyValuePair<IFunctionInterface, VoidFunction> pair =
-			getFunction(_voidMethods[name], arguments);
-		Scope scope = arguments.setup(pair.Key.parameters);
-		pair.Value(obj, scope);
-	}
 	
-	public IValue evaluateMethod(T obj, Identifier name, Arguments arguments) {
-		KeyValuePair<IFunctionInterface, ValueFunction> pair =
-			getFunction(_valueMethods[name], arguments);
-		Scope scope = arguments.setup(pair.Key.parameters);
+	public IValue callMethod(T obj, Identifier name, Arguments arguments) {
+		KeyValuePair<IFunctionInterface, Function> pair =
+			getFunction(_methods[name], arguments);
+		Scope scope = arguments.setup(pair.Key.parameters, null);
 		return pair.Value(obj, scope);
 	}
 }

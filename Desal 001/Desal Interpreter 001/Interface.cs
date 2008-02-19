@@ -9,32 +9,38 @@ using System.Collections.Generic;
 
 class Interface : IInterface {
 	IList<IInterface> _inheritees;
-	IList<PropertyInfo> _properties;
-	IList<MethodInfo> _methods;
+	IDictionary<Identifier, PropertyInfo> _properties;
+	IDictionary<Identifier, IList<MethodInfo> > _methods;
 	IValue _value;
 	
-	public Interface(IList<PropertyInfo> properties, IList<MethodInfo> methods) {
-		_inheritees = new List<IInterface>();
-		_properties = properties;
-		_methods = methods;
-	}
+	public Interface(IList<PropertyInfo> properties, IList<MethodInfo> methods)
+		: this( new List<IInterface>(), properties, methods ) {}
 	
 	public Interface(
 	IList<IInterface> inheritees, IList<PropertyInfo> properties, IList<MethodInfo> methods) {
 		_inheritees = inheritees;
-		_properties = properties;
-		_methods = methods;
+		
+		_properties = new Dictionary<Identifier, PropertyInfo>();
+		foreach( PropertyInfo info in properties )
+			_properties.Add( info.name, info );
+		
+		_methods = new Dictionary<Identifier, IList<MethodInfo>>();
+		foreach( MethodInfo info in methods ) {
+			if( ! _methods.ContainsKey(info.name) )
+				_methods.Add( info.name, new List<MethodInfo>() );
+			_methods[info.name].Add(info);
+		}
 	}
 	
 	public IList<IInterface> inheritees {
 		get { return _inheritees; }
 	}
 	
-	public IList<PropertyInfo> properties {
+	public IDictionary<Identifier, PropertyInfo> properties {
 		get { return _properties; }
 	}
 	
-	public IList<MethodInfo> methods {
+	public IDictionary<Identifier, IList<MethodInfo> > methods {
 		get { return _methods; }
 	}
 	

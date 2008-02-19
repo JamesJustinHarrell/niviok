@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 class Node_ActiveInterface : INode_Expression {
 	INode_Expression _val;
 
@@ -12,5 +14,9 @@ class Node_ActiveInterface : INode_Expression {
 	public void getInfo(out string name, out object children) {
 		name = "active-interface";
 		children = _val;
+	}
+	
+	public HashSet<Identifier> identikeyDependencies {
+		get { return _val.identikeyDependencies; }
 	}
 }

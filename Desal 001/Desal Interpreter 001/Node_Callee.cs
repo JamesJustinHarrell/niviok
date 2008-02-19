@@ -15,4 +15,14 @@ class Node_Callee : INode {
 		name = "callee";
 		children = _parameters;
 	}
+	
+	public HashSet<Identifier> identikeyDependencies {
+		get {
+			HashSet<Identifier> dependencies = new HashSet<Identifier>();
+			foreach( INode node in _parameters ) {
+				dependencies.UnionWith(node.identikeyDependencies);
+			}
+			return dependencies;
+		}
+	}
 }

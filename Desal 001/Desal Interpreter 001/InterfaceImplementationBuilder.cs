@@ -3,12 +3,10 @@ using System.Collections.Generic;
 class InterfaceImplementationBuilder<T> : FaceImplBase<T> {
 
 	public InterfaceImplementationBuilder() {
-		_voidCallees = new Dictionary<IFunctionInterface, VoidFunction>();
-		_valueCallees = new Dictionary<IFunctionInterface, ValueFunction>();
+		_callees = new Dictionary<IFunctionInterface, Function>();
 		_propGetters = new Dictionary<Identifier, PropGetter>();
 		_propSetters = new Dictionary<Identifier, PropSetter>();
-		_voidMethods = new Dictionary<Identifier, IDictionary<IFunctionInterface, VoidFunction> >();
-		_valueMethods = new Dictionary<Identifier, IDictionary<IFunctionInterface, ValueFunction> >();
+		_methods = new Dictionary<Identifier, IDictionary<IFunctionInterface, Function> >();
 	}
 	
 	public void addPropertyGetter(Identifier ident, PropGetter getter) {
@@ -20,15 +18,18 @@ class InterfaceImplementationBuilder<T> : FaceImplBase<T> {
 	}
 	
 	public void addVoidMethod(Identifier ident, IFunctionInterface face, VoidFunction func) {
-		if( ! _voidMethods.ContainsKey(ident) )
-			_voidMethods.Add( ident, new Dictionary<IFunctionInterface, VoidFunction>() );
-		_voidMethods[ident].Add(face, func);
+		addMethod(
+			ident, face,
+			delegate(T state, Scope args) {
+				func(state, args);
+				return new NullValue(null);
+			});
 	}
 	
-	public void addValueMethod(Identifier ident, IFunctionInterface face, ValueFunction func) {
-		if( ! _valueMethods.ContainsKey(ident) )
-			_valueMethods.Add( ident, new Dictionary<IFunctionInterface, ValueFunction>() );
-		_valueMethods[ident].Add(face, func);
+	public void addMethod(Identifier ident, IFunctionInterface face, Function func) {
+		if( ! _methods.ContainsKey(ident) )
+			_methods.Add( ident, new Dictionary<IFunctionInterface, Function>() );
+		_methods[ident].Add(face, func);
 	}
 	
 	public IInterfaceImplementation<T> compile(IInterface face) {

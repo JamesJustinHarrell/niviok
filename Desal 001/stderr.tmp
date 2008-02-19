@@ -1,2 +1,8 @@
 WARNING: unhandled element with tag name 'using' in namespace 'urn:desible1'
+<using label="using" xmlns="urn:desible1"><identifier label="identifier">std</identifier></using>
 WARNING: unhandled element with tag name 'ignored-stuff' in namespace 'http://site.com/stuff'
+<foo:ignored-stuff xmlns:foo="http://site.com/stuff"><candy xmlns="urn:desible1">
+							ABC
+							<apple><cinnamon />
+								DEF
+							</apple></candy></foo:ignored-stuff>

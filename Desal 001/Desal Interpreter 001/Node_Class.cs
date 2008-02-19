@@ -79,6 +79,10 @@ class Node_Class : INode_Expression {
 			_instanceDeclarations,
 			_interfaceImplementations };
 	}
+	
+	public HashSet<Identifier> identikeyDependencies {
+		get { throw new Error_Unimplemented(); }
+	}
 }
 
 

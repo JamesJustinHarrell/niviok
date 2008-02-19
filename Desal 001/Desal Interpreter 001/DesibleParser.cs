@@ -98,13 +98,19 @@ class DesibleParser {
 					typeof(Access), element.InnerText, true ) );
 		});
 				
-		addParser<Node_Bool>("bool", delegate(XmlElement element) {
-			return new Node_Bool(
+		addParser<Node_Boolean>("boolean", delegate(XmlElement element) {
+			return new Node_Boolean(
 				System.Boolean.Parse( element.InnerText ) );
 		});
 		
 		addParser<Node_Identifier>("identifier", delegate(XmlElement element) {
 			return new Node_Identifier(_bridge, element.InnerText);
+		});
+		
+		addParser<Node_IdentikeyCategory>("identikey-category", delegate(XmlElement element) {
+			return new Node_IdentikeyCategory(
+				(IdentikeyCategory)System.Enum.Parse(
+					typeof(IdentikeyCategory), element.InnerText, true ) );
 		});
 		
 		addParser<Node_Integer>("integer", delegate(XmlElement element) {
@@ -120,13 +126,6 @@ class DesibleParser {
 		addParser<Node_String>("string", delegate(XmlElement element) {		
 			return new Node_String(_bridge, element.InnerText);
 		});
-		
-		addParser<Node_ReferenceCategory>("reference-category", delegate(XmlElement element) {
-			return new Node_ReferenceCategory(
-				(ReferenceCategory)System.Enum.Parse(
-					typeof(ReferenceCategory), element.InnerText, true ) );
-		});
-			
 		
 		//----- tree
 		
@@ -171,7 +170,6 @@ class DesibleParser {
 		addParser<Node_Call>("call", delegate(XmlElement element) {
 			return new Node_Call(
 				parseOne<INode_Expression>(element, "value"),
-				parseOpt<Node_Identifier>(element, "method-name"),
 				parseMult<INode_Expression>(element, "argument") );
 		});
 	
@@ -196,22 +194,16 @@ class DesibleParser {
 			throw new Error_Unimplemented();
 		});
 		
-		addParser<Node_ConditionalBlock>("conditional-block", delegate(XmlElement element) {	
-			return new Node_ConditionalBlock(
-				parseOne<INode_Expression>(element, "test"),
-				parseOne<Node_Block>(element, "action") );
-		});
-		
 		addParser<Node_DeclareEmpty>("declare-empty", delegate(XmlElement element) {
 			return new Node_DeclareEmpty(
-				parseOne<Node_Identifier>(element, "name") );
+				parseOne<Node_Identifier>(element, "name"),
+				parseOne<Node_IdentikeyType>(element, "nullable-type"));
 		});
 		
 		addParser<Node_DeclareAssign>("declare-assign", delegate(XmlElement element) {
 			return new Node_DeclareAssign(
 				parseOne<Node_Identifier>(element, "name"),
-				parseOpt<Node_ReferenceType>(element, "type"),
-				parseOpt<Node_Bool>(element, "constant"),
+				parseOne<Node_IdentikeyType>(element, "identikey-type"),
 				parseOne<INode_Expression>(element, "value") );
 		});
 		
@@ -228,9 +220,15 @@ class DesibleParser {
 		addParser<Node_DeclareFirst>("declare-first",
 		delegate(XmlElement element) {
 			return new Node_DeclareFirst(
-				parseOne<Node_Identifier>(element, "identifier"),
-				parseOpt<Node_ReferenceType>(element, "reference-type"),
+				parseOne<Node_Identifier>(element, "name"),
+				parseOne<Node_IdentikeyType>(element, "identikey-type"),
 				parseOne<INode_Expression>(element, "value") );
+		});
+		
+		addParser<Node_ExtractNamedMember>("extract-named-member", delegate(XmlElement element) {
+			return new Node_ExtractNamedMember(
+				parseOne<INode_Expression>(element, "source"),
+				parseOne<Node_Identifier>(element, "member-name") );
 		});
 		
 		addParser<Node_ForRange>("for-range", delegate(XmlElement element) {	
@@ -245,7 +243,7 @@ class DesibleParser {
 			return new Node_Function(
 				_bridge,
 				parseMult<Node_Parameter>(element, "parameter"),
-				parseOpt<Node_ReferenceType>(element, "return-type"),
+				parseOpt<Node_NullableType>(element, "return-type"),
 				parseOne<INode_Expression>(element, "body") );
 		});
 		
@@ -254,14 +252,15 @@ class DesibleParser {
 			return new Node_FunctionInterface(
 				_bridge,
 				parseMult<Node_Parameter>(element, "parameter"),
-				parseOpt<Node_ReferenceType>(element, "return-type"));
+				parseOpt<Node_NullableType>(element, "return-type"));
 		});
 		
-		addParser<Node_GetProperty>("get-property", delegate(XmlElement element) {
-			return new Node_GetProperty(
-				parseOne<INode_Expression>(element, "value"),
-				parseOne<Node_Identifier>(element, "property-name") );
-		});
+		addParser<Node_IdentikeyType>("identikey-type", delegate(XmlElement element) {
+			return new Node_IdentikeyType(
+				parseOne<Node_IdentikeyCategory>(element, "identikey-category"),
+				parseOpt<Node_NullableType>(element, "nullable-type"),
+				parseOpt<Node_Boolean>(element, "constant"));
+		});			
 		
 		//xxx how will this exist along with plane-reference?
 		addParser<Node_Plane>("inline-plane", delegate(XmlElement element) {
@@ -273,7 +272,7 @@ class DesibleParser {
 			return new Node_Interface(
 				parseMult<INode_Expression>(element, "inheritee"),
 				parseMult<Node_Callee>(element, "callee"),
-				parseOpt<Node_ReferenceType>(element, "return-type"),
+				parseOpt<Node_NullableType>(element, "return-type"),
 				parseMult<Node_Property>(element, "property"),
 				parseMult<Node_Method>(element, "method") );
 		});
@@ -289,18 +288,31 @@ class DesibleParser {
 				parseOne<INode_Expression>(element, "interface") );
 		});
 		
+		addParser<Node_NullableType>("nullable-type", delegate(XmlElement element) {
+			return new Node_NullableType(
+				parseOpt<INode_Expression>(element, "interface"),
+				parseOne<Node_Boolean>(element, "nullable"));
+		});
+		
 		addParser<Node_Parameter>("parameter", delegate(XmlElement element) {
 			return new Node_Parameter(
+				/* xxx direction */
+				parseOne<Node_NullableType>(element, "nullable-type"),
 				parseOne<Node_Identifier>(element, "name"),
-				parseOpt<Node_ReferenceType>(element, "type"), //xxx
-				parseOpt<INode_Expression>(element, "default-value"),
-				parseOne<Node_Bool>(element, "nullable") );
+				parseOne<Node_Boolean>(element, "has-default-value"),
+				parseOpt<INode_Expression>(element, "default-value") );
+		});
+		
+		addParser<Node_Possibility>("possibility", delegate(XmlElement element) {	
+			return new Node_Possibility(
+				parseOne<INode_Expression>(element, "test"),
+				parseOne<INode_Expression>(element, "result") );
 		});
 
 		addParser<Node_Property>("property", delegate(XmlElement element) {
 			return new Node_Property(
 				parseOne<Node_Identifier>(element, "name"),
-				parseOne<Node_ReferenceType>(element, "type"),
+				parseOne<Node_NullableType>(element, "nullable-type"),
 				parseOne<Node_Access>(element, "access") );
 		});
 		
@@ -320,12 +332,6 @@ class DesibleParser {
 			return new Node_Or(
 				parseOne<INode_Expression>(element, "first"),
 				parseOne<INode_Expression>(element, "second") );
-		});
-		
-		addParser<Node_ReferenceType>("reference-type", delegate(XmlElement element) {
-			return new Node_ReferenceType(
-				parseOne<Node_ReferenceCategory>(element, "reference-category"),
-				parseOpt<INode_Expression>(element, "interface") );			
 		});
 		
 		addParser<Node_Unassign>("unassign", delegate(XmlElement element) {
@@ -397,8 +403,8 @@ class DesibleParser {
 		else {
 			_bridge.warning(
 				System.String.Format(
-					"unhandled element with tag name '{0}' in namespace '{1}'",
-					element.LocalName, element.NamespaceURI ) );
+					"unhandled element with tag name '{0}' in namespace '{1}'\n{2}",
+					element.LocalName, element.NamespaceURI, element.OuterXml ) );
 		}
 	}
 
@@ -446,7 +452,7 @@ class DesibleParser {
 	
 	//parse first child with label
 	T parseOne<T>( XmlElement element, string label ) {
-		try {
+		try { //try-catch for debugging
 			return (T)getParseFunc<T>()( selectFirst(element, label) );
 		}
 		catch(Exception e) {

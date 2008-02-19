@@ -13,13 +13,13 @@ class NativeFunction : IFunction {
 	Bridge _bridge;
 	FunctionType _function;
 	IList<Parameter> _parameters;
-	ReferenceType _returnType;
+	NullableType _returnType;
 	Scope _scope;
 	
 	public NativeFunction(
 	Bridge bridge,
 	FunctionType function, IList<Parameter> parameters,
-	ReferenceType returnType, Scope scope ) {
+	NullableType returnType, Scope scope ) {
 		_bridge = bridge;
 		_function = function;
 		_parameters = parameters;
@@ -31,7 +31,7 @@ class NativeFunction : IFunction {
 		get { return _parameters; }
 	}
 	
-	public ReferenceType returnType {
+	public NullableType returnType {
 		get { return _returnType; }
 	}
 

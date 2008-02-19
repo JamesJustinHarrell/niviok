@@ -30,7 +30,7 @@ class Node_Bundle : INode {
 					new Dictionary<Identifier, IValue>() ));
 		}
 		catch(ClientException e) {
-			e.pushFunc("main");
+			e.pushFunc("main (in native class Node_Bundle)");
 			throw e;
 		}
 		
@@ -41,5 +41,9 @@ class Node_Bundle : INode {
 	public void getInfo(out string name, out object children) {
 		name = "bundle";
 		children = _planes;
+	}
+
+	public HashSet<Identifier> identikeyDependencies {
+		get { return Help.getIdentRefs(_planes); }
 	}
 }

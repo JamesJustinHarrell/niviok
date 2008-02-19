@@ -1,36 +1,49 @@
 <?xml version="1.0"?>
 <UserCombinePreferences filename="/home/justin/files/Desal/Desal 001/Desal 001.mds">
   <Files>
-    <File filename="Welcome" />
-    <File filename="./Desal Interpreter 001/DesibleParser.cs" />
-    <File filename="./Desal Interpreter 001/Bridge.cs" />
-    <File filename="./Desal Interpreter 001/Node_Interface.cs" />
     <File filename="./Desal Interpreter 001/DesalInterpreter001.cs" />
+    <File filename="./Desal Interpreter 001/Node_DeclareAssign.cs" />
+    <File filename="./Desal Interpreter 001/Node_IdentikeyType.cs" />
+    <File filename="./Desal Interpreter 001/Node_IdentikeyCategory.cs" />
+    <File filename="./Desal Interpreter 001/Node_DeclareFirst.cs" />
+    <File filename="./Desal Interpreter 001/Node_Block.cs" />
+    <File filename="./Desal Interpreter 001/Node_DeclareEmpty.cs" />
+    <File filename="./Desal Interpreter 001/HashSet.cs" />
+    <File filename="./Desal Interpreter 001/Node_ForRange.cs" />
     <File filename="./Desal Interpreter 001/Scope.cs" />
-    <File filename="./Desal Interpreter 001/Node_Integer.cs" />
-    <File filename="./Desal Interpreter 001/Node_Rational.cs" />
-    <File filename="./Desal Interpreter 001/Client_Integer.cs" />
-    <File filename="./Desal Interpreter 001/Client_Rational.cs" />
+    <File filename="./Desal Interpreter 001/Node_Plane.cs" />
+    <File filename="./Desal Interpreter 001/Identifier.cs" />
+    <File filename="./Desal Interpreter 001/Node_Function.cs" />
+    <File filename="./Desal Interpreter 001/Arguments.cs" />
+    <File filename="./Desal Interpreter 001/xxx_Node_Global.cs" />
+    <File filename="./Desal Interpreter 001/Node_Class.cs" />
+    <File filename="./Desal Interpreter 001/Node_Parameter.cs" />
   </Files>
   <Views>
     <ViewMemento Id="MonoDevelop.Ide.Gui.Pads.ProjectPad">
       <TreeView>
         <Node expanded="True">
-          <Node name="Desal Interpreter 001" expanded="True" />
+          <Node name="Desal Interpreter 001" expanded="True">
+            <Node name="Node_Parameter.cs" expanded="False" selected="True" />
+          </Node>
           <Node name="Funsynn 001" expanded="True" />
         </Node>
       </TreeView>
     </ViewMemento>
     <ViewMemento Id="MonoDevelop.Ide.Gui.Pads.ClassPad">
       <TreeView>
-        <Node expanded="True" />
+        <Node expanded="True" selected="True">
+          <Node name="Desal Interpreter 001" expanded="True">
+            <Node name="Bridge" expanded="True" />
+          </Node>
+        </Node>
       </TreeView>
     </ViewMemento>
   </Views>
   <Properties>
     <Properties>
       <Property key="ActiveConfiguration" value="Debug" />
-      <Property key="ActiveWindow" value="/home/justin/files/Desal/Desal 001/Desal Interpreter 001/Client_Rational.cs" />
+      <Property key="ActiveWindow" value="/home/justin/files/Desal/Desal 001/Desal Interpreter 001/Node_Parameter.cs" />
     </Properties>
   </Properties>
 </UserCombinePreferences>

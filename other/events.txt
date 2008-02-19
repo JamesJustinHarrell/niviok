@@ -1,0 +1,39 @@
+--- Events
+Make them as easy as in C# without adding special support for them.
+
+interface<T where T is a function and T.return = void> Event
+	inherit EventPublic<T>
+	func clear()
+	func dispatch( : T.parameters ) //need some way to specify that dispatch() takes the same params as T
+	get Int count
+
+interface<T> EventPublic
+	func insert(T)
+	func remove(T)
+	func tryRemove(T) Bool
+
+class Button
+	Event<func(Button)()> onClick
+
+	constructor()
+		onClick = Event<func(Button)()>
+
+	define interface
+		//Event can be downcast to EventPublic
+		get EventPublic<func(Button)()> onClick <-> inst:onClick
+
+		func click()
+			inst:onClick.dispatch(this)
+
+Button button()
+button.onClick << func(Button button) { println("handler 1 called") }
+button.onClick << func(Button button) { println("handler 2 called") }
+button.click()
+
+
+--- property access
+Change "get", "set", and "get+set" to "in", "out", and "inout"?
+
+interface<T> Event
+	out Int count
+

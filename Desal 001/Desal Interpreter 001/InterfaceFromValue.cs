@@ -57,11 +57,11 @@ class InterfaceFromValue : IInterface {
 		get { throw new Error_Unimplemented(); }
 	}
 	*/
-	public IList<PropertyInfo> properties {
+	public IDictionary<Identifier, PropertyInfo> properties {
 		get { throw new Error_Unimplemented(); }
 	}
 	
-	public IList<MethodInfo> methods {
+	public IDictionary<Identifier, IList<MethodInfo>> methods {
 		get { throw new Error_Unimplemented(); }
 	}
 	

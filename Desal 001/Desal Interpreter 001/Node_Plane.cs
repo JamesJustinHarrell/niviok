@@ -11,13 +11,26 @@ class Node_Plane : INode {
 	
 	//xxx
 	public void xxx_execute(Scope scope) {
-		foreach( Node_DeclareFirst decl in _binds ) {
+		//reserve identikeys, so the closures will include
+		//the identikeys from other declare-first nodes
+		foreach( Node_DeclareFirst decl in _binds )
+			scope.reserveDeclareFirst( decl.name );
+	
+		foreach( Node_DeclareFirst decl in _binds )
 			decl.execute(scope);
-		}
 	}
 	
 	public void getInfo(out string name, out object children) {
 		name = "plane";
 		children = _binds;
+	}
+
+	public HashSet<Identifier> identikeyDependencies {
+		get {
+			HashSet<Identifier> idents = Help.getIdentRefs( _binds );
+			foreach( Node_DeclareFirst decl in _binds )
+				idents.Remove( decl.name ); //xxx only if not function
+			return idents;
+		}
 	}
 }

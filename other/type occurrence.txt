@@ -1,0 +1,66 @@
+
+idea: void is just an absent type node, or a null Type value
+
+--- type node is a child of:
+For when a node needs nullable type information.
+
+required: (for non-voidable types)
+* identikey-type (not present for namespaces but otherwise required)
+* parameter
+* array
+* chain
+* dictionary (key and value)
+* property
+* method
+
+optional: (for voidable types)
+* enum
+* function
+* function-interface
+* generator
+* callee
+
+--- "expression interface" is a child of:
+For when a node needs non-nullable type information.
+
+type
+exception-handler
+interface-implementation
+replicate
+implements
+convertor (optional)
+
+--- Type interface is needed for:
+For when a value needs nullable type information.
+
+interface Type {
+	get Interface ? interface
+	get Bool nullable?
+}
+
+* interfaces and generic interfaces
+	* functions/methods (return type and parameters)
+	* containers (array, chain)
+	* generators
+	* enum
+
+generic <T>
+interface Array {
+	inherit Collection<T>
+	func key(Int) T
+	func key(Int, T) void
+}
+
+Here, T is a Type object. Not just an Interface. That means a node for generic instantiation is more important.
+
+Array.instantiate( Type(Int, false) )
+Array<Int>
+
+Array.instantiate( Type(Int, true) )
+Array<Int ?>
+
+Array.instantiate( Type(null, false) )
+Array<*>
+
+Array.instantiate( Type(null, true) )
+Array<?>

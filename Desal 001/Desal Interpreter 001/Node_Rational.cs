@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 class Node_Rational : INode_Expression {
 	Bridge _bridge;
 	double _rat;
@@ -14,5 +16,9 @@ class Node_Rational : INode_Expression {
 	public void getInfo(out string name, out object objs) {
 		name = "rational";
 		objs = _rat;
+	}
+	
+	public HashSet<Identifier> identikeyDependencies {
+		get { return new HashSet<Identifier>(); }
 	}
 }

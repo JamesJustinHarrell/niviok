@@ -3,6 +3,7 @@
     <head>
         <title>Desal Text Representation</title>
         <link href="styling.css" rel="stylesheet" type="text/css" />
+        <script>/* hack around Gecko bug */ function checkHash() { if( oldHash != document.location.hash ) { oldHash = document.location.hash; causeReflow(); } } function causeReflow() { var s = document.documentElement.style; s.position = 'relative'; setTimeout( function(){ s.position = ''; }, 10 ); } var oldHash = document.location.hash; setInterval( checkHash, 100 );</script>
     </head>
     <body>
         <h1>Desal Text Representation</h1>
@@ -43,7 +44,10 @@
                         <a href="#postfix-operator">3.2. postfix incrementation operator</a>
                     </li>
                     <li>
-                        <a href="#casting-sugar">3.3. Dextr casting sugar</a>
+                        <a href="#function-interface">3.3. function-interface</a>
+                    </li>
+                    <li>
+                        <a href="#cast">3.4. cast</a>
                     </li>
                 </ol>
             </li>
@@ -142,10 +146,38 @@ Another possibility would be to never show the $ after a keyword has been typed,
                 <p>"object++" doesn't create a temporary. The object has its increment method called after the object is accessed. The below two groups of code represent the same semantics.</p>
                 <code xml:space="preserve">int a = 3 int b = a++ int a = 3 int b = a ++a</code>
             </div>
-            <div id="casting-sugar">
-                <h2>3.3. Dextr casting sugar</h2>
-                <p>Although interface objects do not have call methods, syntactially they appear to, although the syntax is translated into ordinary Desal semantics.</p>
-                <code xml:space="preserve">(foo bar).fooProp //semantically same as below ( cast{foo}(bar) ).fooProp func(obj)foo toFoo1 = foo.call //semantically same as below func(obj)foo toFoo2 = cast{foo} (toFoo1 bar).fooProp</code>
+            <div id="function-interface">
+                <h2>3.3. function-interface</h2>
+                <pre>
+required_s ::= ( " " | comment ) +
+s ::= required_s ?
+required_ls ::= ( required_s | "\n" | "\t" ) +
+ls ::= required_ls ?
+
+function-interface ::=
+        funcfaceshort | funcfacelong
+
+funcfacebase ::=
+        "func" s "(" s funcfaceparameters ? s ")"
+
+funcfaceshort ::=
+        funcfacebase s identifier
+
+funcfacelong ::=
+        funcfacebase s "(" ls expression ls ")"
+
+funcfaceparameters ::= ...
+</pre>
+            </div>
+            <div id="cast">
+                <h2>3.4. cast</h2>
+                <pre>
+cast ::=
+        expression s "as" s expression
+
+example:
+(foo as Bar)
+</pre>
             </div>
         </div>
         <div id="not-marked-up">

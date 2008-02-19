@@ -5,6 +5,6 @@ using System.Collections.Generic;
 
 interface IFunction {
 	IList<Parameter> parameters { get; }
-	ReferenceType returnType { get; }
+	NullableType returnType { get; }
 	IValue call(Arguments arguments);
 }

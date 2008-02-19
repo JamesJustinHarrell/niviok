@@ -669,11 +669,170 @@ note that Desal does not have an arbitrary split between different types of func
 
 at one time, identifiers ending in "!" had special meaning recognized by the language
 this has since been replaced with causality notations
-ensure that all references to this have been removed
+ensure that all references to the "!" having meaning have been removed
+
+
+
+Write rational for the more complicated system of parameters/arguments that Desal has. The traditional way of only allowing default values after non-default values leads to arranging parameters based on whether each parameter has a default value. When defaults added/removed, order of parameters changed.
+
+
+
+remove requirement that representations can represent all semantics
+add this requirement to desible
+speak of "directions" of representations
+	concrete representation translated to abstract semantics
+	abstract semantics translated to concrete representation
+	both
+
+
+
+
+reference types: Ref, MaskRef, WeakRef
+---
+interface<T> Ref {
+	get+set T target
+}
+func<T> Ref() Ref<T> {...} //shouldn't exist if T is not nullable
+func<T> Ref(T value) Ref<T> {...}
+
+(Note that T could be nullable, e.g. "Int ?" for "Ref<Int ?>")
+
+Ref<Int> number = new Ref<Int>(555)
+number.target = 123
+println( number.target.lessThan?(987) )
+---
+A MaskRef exposes the interface of the value it refers to. The MaskRef interface exists mainly to avoid having to write e.g. "Int+Ref<Int>" instead of "MaskRef<Int>". The MaskRef function would still be important even if the MaskRef interface wasn't used. (Note that MaskRef could be defined by client code, though it has a dependency on Ref, which couldn't.)
+
+interface<T> MaskRef {
+	inherit T
+	inherit Ref<T>
+}
+func<T> MaskRef() MaskRef<T> {...} //shouldn't exist if T is nullable
+func<T> MaskRef(T value) MaskRef<T> {...}
+
+MaskRef<Int> number = new MaskRef<Int>(555)
+number.target = 123
+println( number.lessThan?(987) )
+---
+interface<T> WeakRef {
+	get Bool alive?
+	get+set T target
+	get EventDispatcher<XXX> onDelete
+	get EventDispatcher<XXX> onSave
+}
+WeakRef<Int> number = new WeakRef<T>(123)
+number.onDelete.addListener( func(XXX) { println("number GCed") } )
+number.onSave.addListener( func(XXX) { println("number safe for now") } )
+---
+What about soft references? (GCed only when need memory.) Should WeakRef be a soft reference?
+
+
+
+interface<T> EventDispatcher {
+	func addListener( func(T)void callback ) void
+	func removeListener( func(T)void callback ) void
+	func containsListener?( func(T)void callback) Bool
+}
+(T is the type of value sent to the callback functions)
+
+
+
+
+When executing a node with scope:
+	* execute the using/expose nodes
+	* reserve the identikeys specified by child declare-first nodes
+	* execute declare-first nodes
+	* execute the normal nodes
+
+
+
+Get something similar to this C# code (but more general) into Desal (or just Dextr):
+List<Person> people = new List<Person> {
+	new Person { FirstName = "Scott", LastName = "Guthrie", Age = 32 },
+	new Person { FirstName = "Bill", LastName = "Gates", Age = 50 },
+	new Person { FirstName = "Susanne", LastName = "Guthrie", Age = 32 }
+};
+
+decl List<Person> people()
+foreach people.insert!
+	with Person() : FirstName = "Scott", LastName = "Guthrie", Age = 32
+	with Person() : FirstName = "Bill", LastName = "Gates", Age = 50
+	with Person() : FirstName = "Susanne", LastName = "Guthrie", Age = 32
+
+foreach (decl List<Person> people()).insert!
+	with Person() : FirstName = "Scott", LastName = "Guthrie", Age = 32
+	with Person() : FirstName = "Bill", LastName = "Gates", Age = 50
+	with Person() : FirstName = "Susanne", LastName = "Guthrie", Age = 32
+
+with decl List<Person> people()
+	<< with outer:Person() : FirstName = "Scott", LastName = "Guthrie", Age = 32
+	<< with outer:Person() : FirstName = "Bill", LastName = "Gates", Age = 50
+	<< with outer:Person() : FirstName = "Susanne", LastName = "Guthrie", Age = 32
+
+decl List<Person> people()
+	Person() : FirstName = "Scott", LastName = "Guthrie", Age = 32
+	Person() : FirstName = "Bill", LastName = "Gates", Age = 50
+	Person() : FirstName = "Susanne", LastName = "Guthrie", Age = 32
+
+decl List<Person> people()
+foreach |x,y,z|{ people.insert! with Person() : FirstName=x,LastName=y,Age=z }
+	"Scott", "Guthrie", 32
+	"Bill", "Gates", 50
+	"Susanne", "Guthrie", 32
+
+
+
+
+See in anything in LINQ (esp in C#) could inspire new ideas for Desal. Most of it is just mangled functional programming.
+Example:
+	people.Where(p => p.FirstName.StartsWith("s"))
+This would be better in the functional style:
+	filter( p => p.FirstName.StartsWith("s"), people )
+Or in Desal:
+	filter( |p| p.FirstName.StartsWith("s"), people )
+	
 
 
 
 ----- Dextr
+
+namespaced-value-identikey
+	identifier:identfier:identifier
+	decl Int a = foo:bar:miz
+
+call
+	expr()
+
+curry
+	expr~()
+
+extract-named-member
+	expr.identifier
+
+
+decl a = ns:ns:val
+a()
+b()()()
+a.foo()
+a.foo()()().bar().alpha()
+decl a = val.foo
+decl b = a.bar.alpha.beta
+decl a = foo.bar
+decl a = foo~(123, "text")
+decl b = foo.bar~(123, "text")
+a = ns:ns:val.prop.prop.meth.foo
+b = a~(123)
+decl foo = a.b.c.d.e
+
+
+
+
+Determine how the [should call] child of the curry node should be expressed in Dextr. Should there be two different operators for curry nodes?
+	a~(123) //don't call
+	a=>(123) //call
+
+
+
 
 assign a copy
 $decl Int a = b //no copy

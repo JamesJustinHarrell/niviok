@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 class Node_Method : INode {
 	Node_Identifier _name;
 	INode_Expression _iface;
@@ -16,5 +18,9 @@ class Node_Method : INode {
 	public void getInfo(out string name, out object children) {
 		name = "method";
 		children = new object[]{ _name, _iface };
+	}
+
+	public HashSet<Identifier> identikeyDependencies {
+		get { return _iface.identikeyDependencies; }
 	}
 }

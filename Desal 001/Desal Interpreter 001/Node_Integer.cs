@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 class Node_Integer : INode_Expression {
 	Bridge _bridge;
 	long _int;
@@ -14,5 +16,9 @@ class Node_Integer : INode_Expression {
 	public void getInfo(out string name, out object objs) {
 		name = "integer";
 		objs = _int;
+	}
+	
+	public HashSet<Identifier> identikeyDependencies {
+		get { return new HashSet<Identifier>(); }
 	}
 }

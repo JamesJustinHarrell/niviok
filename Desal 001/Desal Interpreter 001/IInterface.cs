@@ -4,8 +4,10 @@ using System.Collections.Generic;
 
 interface IInterface {
 	IList<IInterface> inheritees { get; }
-	IList<PropertyInfo> properties { get; }	
-	IList<MethodInfo> methods {	get; }
+	IDictionary<Identifier, PropertyInfo> properties { get; }
+	//xxx IList<PropertyInfo> properties { get; }
+	IDictionary<Identifier, IList<MethodInfo>> methods { get; }
+	//xxx IList<MethodInfo> methods {	get; }
 	IValue value { get; }
 }
 
@@ -18,13 +20,13 @@ enum Access {
 
 class PropertyInfo {
 	public Identifier name;
-	public ReferenceType type;
+	public NullableType type;
 	public Access access; //null if private
 	//xxx default values
 	
 	public PropertyInfo(){}
 	
-	public PropertyInfo(Identifier name, ReferenceType type, Access access) {
+	public PropertyInfo(Identifier name, NullableType type, Access access) {
 		this.name = name;
 		this.type = type;
 		this.access = access;

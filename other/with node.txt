@@ -1,0 +1,144 @@
+Some languages have a "with" block where properties of an object are exposed as free identikeys. These are considered dangerous as it is not possible to tell what is being assigned to.
+
+decl Int[] numbers = getNumbers()
+...
+with( something ) {
+	foo = getFoo()
+	bar = getBar()
+	number = null
+}
+
+Assume the above is correct. What if you accidentially typed "numbers" instead of "number"?
+
+decl Int[] numbers = getNumbers()
+...
+with( something ) {
+	foo = getFoo()
+	bar = getBar()
+	numbers = null
+}
+
+You just set the "numbers" identikey to null, instead of sending null to a property setter of "something". That could lead to a difficult to find bug.
+
+
+Making with safer is easy. Just hide all outer identikeys besides namespaces. Then you can't assign to any besides properties accidentially. You can ever make methods easier to access this way.
+
+with( something ) {
+	callMethod()
+}
+
+You can still access outer identikeys through the "outer" namespace.
+
+with( something ) {
+	foo = outer:getFoo()
+	bar = outer:getBar()
+	outer:println( someProperty )
+}
+
+
+
+//old C#
+Person person = new Person();
+person.FirstName = "Scott";
+person.LastName = "Guthrie";
+person.Age = 32;
+
+//old Desal
+decl Person person()
+person.FirstName = "Scott"
+person.LastName = "Guthrie"
+person.Age = 32
+
+//new C#
+Person person = new Person { FirstName="Scott", LastName="Guthrie", Age=32 };
+
+//new Desal
+with decl Person person()
+	FirstName = "Scott"
+	LastName = "Guthrie"
+	Age = 32
+
+//new Desal
+with decl Person person() : FirstName="Scott", LastName="Guthrie", Age=32
+
+//new Desal, if the above can't be parsed
+with (decl Person person()) : FirstName="Scott", LastName="Guthrie", Age=32
+
+
+
+--- Rationale for having with produce what it was given
+
+//old C#
+Person person = new Person();
+person.FirstName = "Scott";
+person.LastName = "Guthrie";
+person.Age = 32;
+person.Address = new Address();
+person.Address.Street = "One Way";
+person.Address.City = "Bluehole";
+person.Address.State = "WA";
+person.Address.Zip = 98052;
+
+//new C#
+Person person = new Person {
+	FirstName = "Scott",
+	LastName = "Guthrie"
+	Age = 32,
+	Address = new Address {
+		Street = "One Way",
+		City = "Bluehole",
+		State = "WA",
+		Zip = 98052
+	}
+};
+
+//old Desal
+decl Person person()
+person.FirstName = "Scott"
+person.LastName = "Guthrie"
+person.Age = 32
+person.Address = Address()
+person.Address.Street = "One Way"
+person.Address.City = "Bluehole"
+person.Address.State = "WA"
+person.Address.Zip = 98052
+
+//newish Desal
+with decl Person person()
+	FirstName = "Scott"
+	LastName = "Guthrie"
+	Age = 32
+	with decl outer:Address address()
+		Street = "One Way"
+		City = "Bluehole"
+		State = "WA"
+		Zip = 98052
+	Address = address
+
+//newish Desal
+with decl Person person()
+	FirstName = "Scott"
+	LastName = "Guthrie"
+	Age = 32
+	Address = block {
+		with decl outer:Address address()
+			Street = "One Way"
+			City = "Bluehole"
+			State = "WA"
+			Zip = 98052
+		address
+	}
+
+//newer Desal -- but only if with(foo){...} evals to foo
+with decl Person person()
+	FirstName = "Scott"
+	LastName = "Guthrie"
+	Age = 32
+	Address = with outer:Address()
+		Street = "One Way"
+		City = "Bluehole"
+		State = "WA"
+		Zip = 98052
+
+
+

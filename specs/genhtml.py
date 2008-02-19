@@ -24,6 +24,7 @@ tagMap = {
 	'glossentry' : None,
 	'glosslist' : 'dl',
 	'glossterm' : 'dt',
+	'holder' : None,
 	'info' : None,
 	'legalnotice' : 'p',
 	'link' : 'a',
@@ -42,19 +43,21 @@ tagMap = {
 	'titleabbrev' : 'h2',
 	'tr' : 'tr',
 	'varlistentry' : None,
-	'variablelist' : 'dl'
+	'variablelist' : 'dl',
+	'year' : None
 }
 knownRoles = ( 'exec', 'family-members', 'layout', 'process', 'xxx' )
 xhtmlNS = "http://www.w3.org/1999/xhtml"
 domImpl = dom.getDOMImplementation()
-relaxngSchema = libxml2.relaxNGNewParserCtxt("%s/docbook.rng" % docbookDir).relaxNGParse()
+relaxngSchema = libxml2.relaxNGNewParserCtxt(os.path.join(docbookDir,"docbook.rng")).relaxNGParse()
 
 def warn(message) :
 	print "WARNING: %s" % message
 
-#adds a tagName element to parentOutElement and returns the new element
-#if inElement given, its contents copied to that new element
-def transferElement(parentOutElement, tagName, inElement) :
+#adds a @tagName element to @parentOutElement
+#if @inElement given, its contents copied to that new element
+#returns the @tagName element or the most deeply nested element from transfering attributes
+def appendNewElement(parentOutElement, tagName, inElement) :
 	outDocument = parentOutElement.ownerDocument
 	newOutElement = outDocument.createElement(tagName)
 	parentOutElement.appendChild(newOutElement)
@@ -64,7 +67,7 @@ def transferElement(parentOutElement, tagName, inElement) :
 	return newOutElement
 
 #adds an appropriate HTML attribute/element for each docbook attribute
-#returns the lowest element
+#returns the most nested element
 def transferAttributes(source, destination) :
 	rv = destination
 	i = 0
@@ -92,7 +95,7 @@ def transferAttributes(source, destination) :
 		elif name == "xmlns" or name == "version":
 			pass
 		else :
-			warn("unrecognized attribute " + name)
+			warn("unrecognized attribute %s" % name)
 		
 		i += 1
 	return rv
@@ -121,11 +124,21 @@ def setupLayoutMember(member) :
 		member.appendChild(link)
 	member.appendChild( doc.createTextNode(' ' + ' '.join(textAfter)) )
 
+#warns if entire text is indented
+def checkPreText(text) :
+	for line in text.splitlines() :
+		if line != "" and line == line.strip() :
+			return
+	warn("entirely indented text: %s" % text)
+
+#copy information from Docbook document to HTML document
+#translates the information from Docbook to HTML
 def copyElement(docbookElement, htmlElement) :
 	tagName = docbookElement.tagName
 	
 	if 'screen' == tagName or 'programlisting' == tagName :
 		textNode = docbookElement.firstChild
+		checkPreText(textNode.data)
 		textNode.data = textNode.data.strip()
 	elif 'member' == tagName :
 		role = docbookElement.parentNode.getAttribute('role')
@@ -136,43 +149,33 @@ def copyElement(docbookElement, htmlElement) :
 		if tagMap[tagName] == None :
 			copyContent(docbookElement, htmlElement)
 		else :
-			transferElement(htmlElement, tagMap[tagName], docbookElement)
+			appendNewElement(htmlElement, tagMap[tagName], docbookElement)
 	elif tagName == 'listitem' and \
 	'orderedlist' == docbookElement.parentNode.tagName :
-		transferElement(htmlElement, 'li', docbookElement)
+		appendNewElement(htmlElement, 'li', docbookElement)
 	elif tagName == 'listitem' and \
 	'varlistentry' == docbookElement.parentNode.tagName :
-		transferElement(htmlElement, 'dd', docbookElement)
+		appendNewElement(htmlElement, 'dd', docbookElement)
 	elif 'copyright' == tagName :
-		element = transferElement(htmlElement, 'p', None)
-		appendText(u'Copyright © ', element)
-		for node in docbookElement.childNodes :
-			if node.nodeType == node.ELEMENT_NODE :
-				copyContent(node, element)
-			elif node.nodeType == node.TEXT_NODE :
-				copyText(node, element)
-			else :
-				raise Exception('unknown node type')	
+		element = appendNewElement(htmlElement, 'p', None)
+		appendText(element, u'Copyright © ')
+		copyContent(docbookElement, element)
 	elif 'programlisting' == tagName :
-		element = transferElement(htmlElement, 'code', docbookElement)
+		element = appendNewElement(htmlElement, 'code', docbookElement)
 		element.setAttribute('xml:space', 'preserve')
 	elif 'title' == tagName :
 		parentName = docbookElement.parentNode.tagName
 		if ["book", "chapter", "section"].count(parentName) == 0 :
 			raise Exception("Error: %s elements cannot have titles" % parentName)
-		transferElement(htmlElement, "h%d" % docbookElement.nestLevel, docbookElement)
+		appendNewElement(htmlElement, "h%d" % docbookElement.nestLevel, docbookElement)
 	else :
 		warn( "DocBook '%s' element not recognized (child of '%s')" \
 			% ( tagName, docbookElement.parentNode.tagName ) )
 		copyContent(docbookElement, htmlElement)
 
-def appendText(text, htmlElement) :
-	htmlElement.appendChild(
-		htmlElement.ownerDocument.createTextNode(
-			text ))
-
-def copyText(docbookNode, htmlElement) :
-	appendText( docbookNode.data, htmlElement )
+#appends a text node to @element
+def appendText(element, text) :
+	element.appendChild(element.ownerDocument.createTextNode(text))
 
 #copies child nodes of docbook element to html element
 def copyContent(docbookElement, htmlElement) :
@@ -180,15 +183,15 @@ def copyContent(docbookElement, htmlElement) :
 		if docbookNode.nodeType == docbookNode.ELEMENT_NODE :
 			copyElement(docbookNode, htmlElement)
 		elif docbookNode.nodeType == docbookNode.TEXT_NODE :
-			copyText(docbookNode, htmlElement)
+			htmlElement.appendChild(docbookNode.cloneNode(False))
 		elif docbookNode.nodeType == docbookNode.COMMENT_NODE :
 			pass
 		elif docbookNode.nodeType == docbookNode.CDATA_SECTION_NODE :
-			copyText(docbookNode, htmlElement)
+			htmlElement.appendChild(docbookNode.cloneNode(False))
 		else :
 			warn("unknown node type %s" % docbookNode.nodeType)
 
-#tocList is HTML, sectionElement is DocBook
+#@tocList is HTML, @sectionElement is DocBook
 def setupSection(tocList, sectionElement, prefix, index) :
 	def warnOfAbsense() :
 		warn(
@@ -214,7 +217,7 @@ def setupSection(tocList, sectionElement, prefix, index) :
 		sectionID = str(random())
 		sectionElement.setAttribute("xml:id", sectionID)
 	link.setAttribute("href", "#%s" % sectionID)
-	appendText(titleText, link)
+	appendText(link, titleText)
 	listItem.appendChild(link)
 	tocList.appendChild(listItem)
 	numberChain = "%s%s." % (prefix, index)
@@ -249,6 +252,7 @@ def createTocAndSetTitles(docbookRoot, htmlDocument) :
 		index += 1
 	return toc
 
+#try to ensure all links refer to valid anchors
 def checkLinks(htmlDocument) :
 	links = htmlDocument.getElementsByTagName('a')
 	for link in links :
@@ -261,6 +265,7 @@ def checkLinks(htmlDocument) :
 			if element == None :
 				warn("no element with ID '%s'" % ID)
 
+#translate @docbookDocument into an HTML document
 def createHtmlDocument(docbookDocument) :
 	docbookRoot = docbookDocument.documentElement
 	
@@ -270,6 +275,7 @@ def createHtmlDocument(docbookDocument) :
 	htmlHead = htmlDocument.createElement("head")
 	htmlTitle = htmlDocument.createElement("title")
 	htmlStyleLink = htmlDocument.createElement("link")
+	htmlScript = htmlDocument.createElement("script")
 	htmlBody = htmlDocument.createElement("body")
 	
 	#note: python's DOM impl won't output xmlns otherwise
@@ -277,9 +283,26 @@ def createHtmlDocument(docbookDocument) :
 	htmlStyleLink.setAttribute("href", "styling.css")
 	htmlStyleLink.setAttribute("rel", "stylesheet")
 	htmlStyleLink.setAttribute("type", "text/css")
+	htmlScript.appendChild(htmlDocument.createTextNode("""
+		/* hack around Gecko bug */
+		function checkHash() {
+			if( oldHash != document.location.hash ) {
+				oldHash = document.location.hash;
+				causeReflow();
+			}
+		}
+		function causeReflow() {
+			var s = document.documentElement.style;
+			s.position = 'relative';
+			setTimeout( function(){ s.position = ''; }, 10 );
+		}
+		var oldHash = document.location.hash;
+		setInterval( checkHash, 100 );
+	"""));
 	htmlRoot.appendChild(htmlHead)
 	htmlHead.appendChild(htmlTitle)
 	htmlHead.appendChild(htmlStyleLink)
+	htmlHead.appendChild(htmlScript)
 	htmlRoot.appendChild(htmlBody)
 	
 	docbookTitle = docbookRoot.getElementsByTagName("title")[0]
@@ -297,13 +320,15 @@ def createHtmlDocument(docbookDocument) :
 	
 	return htmlDocument
 
+#serializes @xmlDocument and writes to @outputPath
 def writeXmlDocument(xmlDocument, outputPath) :
 	markup = xmlDocument.toxml('utf-8')
 	outFile = open(outputPath, "w")
 	outFile.write(markup)
 	outFile.close()
 
-#document is a libxml2 XML document
+#ensure the Docbook document is valid
+#@document is a libxml2 XML document
 def relaxngValidate(document) :
 	def relaxngOutput(type, message) :
 		print "RelaxNG %s" % type
@@ -323,6 +348,7 @@ def relaxngValidate(document) :
 	if result == -1 : #0 means no problems, 1+ means problem, -1 is internal problem
 		print "internal error while validating document with RelaxNG"
 
+#ensure the Docbook document at @path is valid
 def schematronValidate(path) :
 	subprocess.call([
 		"xsltproc",
@@ -339,28 +365,32 @@ def schematronValidate(path) :
 		"rm",
 		os.path.join(docbookDir, "temp.xsl") ])	
 
+#remove comments and convert CDATA
 def normalize(node) :
 	document = node.ownerDocument
 	parent = node.parentNode
 	type = node.nodeType
 	
-	if node.ELEMENT_NODE == type :
+	if type == node.ELEMENT_NODE :
 		for child in node.childNodes :
 			normalize(child)
 		node.normalize()
-	elif node.TEXT_NODE == type :
+	elif type == node.TEXT_NODE :
 		pass
-	elif node.CDATA_SECTION_NODE == type :
+	elif type == node.CDATA_SECTION_NODE :
 		textNode = document.createTextNode(node.data)
 		parent.insertBefore(textNode, node)
 		parent.removeChild(node)
-	elif node.COMMENT_NODE == type :
+	elif type == node.COMMENT_NODE :
 		parent.removeChild(node)
+	elif type == node.ENTITY_REFERENCE_NODE :
+		raise Exception("unexpected entity reference")
+	elif type == node.ENTITY_NODE :
+		raise Exception("unexpected entity")
 	else :
-		raise Exception("unexpected type: %s" % type)
-		#ENTITY_REFERENCE_NODE = 5
-		#ENTITY_NODE = 6
+		raise Exception("unexpected node type: %s" % type)
 
+#valid Docbook document at @path and generate DOM
 def getDocbookDom(path) :
 	docbookDocument = libxml2.parseFile(path)
 	docbookDocument.xincludeProcess()
@@ -373,6 +403,7 @@ def getDocbookDom(path) :
 		raise Exception("docbook not labeled as version 5.0")
 	return docbookDom
 
+#output an XHTML and HTML document from the specified Docbook document
 def createHtmlFile(fileBase) :
 	inputPath = "%s/docbook/%s.docbook" % (specsDir, fileBase)
 	xhtmlOutputPath = "%s/html/%s.xhtml" % (specsDir, fileBase)

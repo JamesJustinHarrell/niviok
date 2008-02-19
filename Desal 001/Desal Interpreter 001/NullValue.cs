@@ -37,4 +37,8 @@ class NullValue : IValue {
 	public IValue callMethod(Identifier name, Arguments arguments) {
 		throw new ClientException("null");
 	}
+	
+	public IValue extractNamedMember(Identifier name) {
+		throw new ClientException("null");
+	}
 }

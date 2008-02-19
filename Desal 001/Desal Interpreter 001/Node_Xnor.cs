@@ -21,4 +21,8 @@ class Node_Xnor : INode_Expression {
 		name = "xnor";
 		objs = new object[]{ _first, _second };
 	}
+
+	public HashSet<Identifier> identikeyDependencies {
+		get { return Help.getIdentRefs( _first, _second ); }
+	}
 }

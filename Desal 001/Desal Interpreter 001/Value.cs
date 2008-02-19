@@ -24,22 +24,28 @@ class Value<T> : IValue {
 		get { return _faceimpl.@interface; }
 	}
 	
-	public long objectID {
-		get { return _object.ID; }
-	}
-	
 	public IValue cast(IInterface @interface) {
 		return new Value<T>( _object, _faceimpl.cast(@interface) );
 	}
 	
 	public IValue call( Arguments arguments ) {
 		try {
-			return _faceimpl.evaluateCall(_object.state, arguments);
+			return _faceimpl.call(_object.state, arguments);
 		}
 		catch(ClientException e) {
-			e.pushFunc( "unknown" );
+			e.pushFunc( "unknown (in native class Value)" );
 			throw e;
 		}
+	}
+	
+	public IValue extractNamedMember(Identifier name) {
+		IInterface face = _faceimpl.@interface;
+		if( face.properties.ContainsKey(name) )
+			return _faceimpl.getProperty(_object.state, this, name);
+		if( face.methods.ContainsKey(name) )
+			return new BoundMethod<T>(_object.state, _faceimpl, name);
+		throw new ClientException(
+			System.String.Format("no member with name: '{0}'", name.str));
 	}
 	
 	public IValue getProperty(Identifier name) {
@@ -52,10 +58,10 @@ class Value<T> : IValue {
 	
 	public IValue callMethod( Identifier name, Arguments arguments ) {
 		try {
-			return _faceimpl.evaluateMethod(_object.state, name, arguments);
+			return _faceimpl.callMethod(_object.state, name, arguments);
 		}
 		catch(ClientException e) {
-			e.pushFunc( "." + name.str );
+			e.pushFunc( "." + name.str + " (in native class Value)" );
 			throw e;
 		}
 	}

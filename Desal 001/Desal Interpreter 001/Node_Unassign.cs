@@ -1,5 +1,7 @@
 //NOTE: may be removed in favor of just assigning null
 
+using System.Collections.Generic;
+
 class Node_Unassign : INode_Expression {
 	Node_Identifier _name;
 
@@ -16,6 +18,10 @@ class Node_Unassign : INode_Expression {
 	public void getInfo(out string name, out object objs) {
 		name = "unassign";
 		objs = new object[]{ _name };
+	}
+
+	public HashSet<Identifier> identikeyDependencies {
+		get { return _name.identikeyDependencies; }
 	}
 }
 
