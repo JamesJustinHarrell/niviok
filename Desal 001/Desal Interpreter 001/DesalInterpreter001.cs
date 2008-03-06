@@ -2,61 +2,88 @@ using System; //for System.Console
 using System.Collections.Generic;
 
 class DesalInterpreter001 {
+	
+	//entry point
+	//arguments have the form: -key=value
 	static int Main(string[] arguments) {
-		//arguments have the form: -key=value -key=value
+		DesalInterpreter001 program = new DesalInterpreter001();
+		Bridge bridge = new Bridge();	
 		
 		IDictionary<string,string> args =
 			new Dictionary<string,string>();
 		
-		args.Add("unhandled-warn-level", "2");
 		args.Add("print-tree", "false");
 		args.Add("run", "true");
-		args.Add("representation", "desible");
+		args.Add("dextr-parser", "Coco/R");
+		args.Add("desible-warn-unhandled", "true");
+		args.Add("desible-warn-allNS", "true");
 		
 		foreach( string arg in arguments ) {
 			if( arg[0] == '-' ) {
 				string[] parts = arg.Split('=');
-				if( parts.Length != 2 )
-					throw new Exception("bad argument: " + arg);
+				if( parts.Length != 2 ) {
+					bridge.error("bad argument: " + arg);
+					return 1;
+				}
 				string key = parts[0].Substring(1);
 				string val = parts[1];
 				args.Remove(key);
 				args.Add(key, val);
 			}
-			else throw new Exception("bad argument: " + arg);
+			else {
+				bridge.error("bad argument: " + arg);
+				return 1;
+			}
 		}
 		
-		DesalInterpreter001 program = new DesalInterpreter001();
+		if( ! args.ContainsKey("path") ) {
+			bridge.error("No path given. Program terminating.");
+			return 1;
+		}
+		if( ! args.ContainsKey("representation") ) {
+			bridge.error("Representation not specified. Program terminating.");
+			return 1;
+		}
 		
-		Bridge bridge = new Bridge();
+		string path = args["path"];
+		
+		Node_Bundle bundle;
 		
 		if( args["representation"] == "dextr" ) {
-			DextrParser.parseDocument(args["path"]);
+			string parserName = args["dextr-parser"];
+			bundle = Dextr.Parser.parseDocument(
+				bridge, path, parserName);
+			if( parserName == "token-displayer" || parserName == "token-info-displayer" )
+				return 0;
+		}
+		else if( args["representation"] == "desible" ) {
+			bool warnUnhandled = bool.Parse(args["desible-warn-unhandled"]);
+			bool warnAllNS = bool.Parse(args["desible-warn-allNS"]);
+			bundle = DesibleParser.parseDocument(
+				bridge, path, warnUnhandled, warnAllNS);
 		}
 		else {
-			DesibleParser parser = new DesibleParser();
-			parser.unhandledWarnLevel = Int32.Parse(args["unhandled-warn-level"]);
-			
-			if( args.ContainsKey("path") ) {
-				Node_Bundle bundleNode = parser.parsePath(bridge, args["path"]);
-				bundleNode.setup( program.createGlobalScope(bridge) );
-				
-				if( Boolean.Parse(args["print-tree"]) ) {
-					program.printTree(bundleNode);
-				}
-				
-				if( Boolean.Parse(args["run"]) ) {
-					try {
-						return bundleNode.run();
-					}
-					catch(ClientException e) {
-						bridge.error(e.clientMessage);
-						//xxx return ERROR_CODE;
-					}
-				}
+			bridge.error("unknown representation");
+			return 1;
+		}
+		
+		bundle.setup( program.createGlobalScope(bridge) );
+		
+		if( bool.Parse(args["print-tree"]) ) {
+			program.printTree(bundle);
+		}
+		
+		if( bool.Parse(args["run"]) ) {
+			try {
+				return bundle.run();
 			}
-			else {
-				bridge.warning("no path set");
+			catch(ClientException e) {
+				bridge.error("UNCAUGHT EXCEPTION:\n" + e.clientMessage);
+				return 1;
+			}
+			catch(Exception e) {
+				bridge.error("IMPLEMENTATION: " + e.ToString());
+				return 1;
 			}
 		}
 		
@@ -78,20 +105,15 @@ class DesalInterpreter001 {
 		scope.declareAssign(
 			new Identifier("println"),
 			printFunctor );
-		//xxx new NullableType( ReferenceCategory.FUNCTION, null ),
 				
 		//true
 		scope.declareAssign(
 			new Identifier("true"),
-			//xxx new NullableType( ReferenceCategory.VALUE, Bridge.Bool ),
-			//xxx true,
 			Bridge.wrapBoolean(true) );
 		
 		//false
 		scope.declareAssign(
 			new Identifier("false"),
-			//xxx new NullableType( ReferenceCategory.VALUE, Bridge.Bool ),
-			//xxx true,
 			Bridge.wrapBoolean(false) );
 		
 		//Bool
@@ -113,6 +135,7 @@ class DesalInterpreter001 {
 		bridge.output(
 			Bridge.unwrapString(
 				arg.convert(Bridge.String) ))
+		Haven't yet implemented convertors.
 		*/
 		
 		if( arg.activeInterface == Bridge.String )
@@ -136,7 +159,7 @@ class DesalInterpreter001 {
 		node.getInfo(out name, out children); //xxx should this use bridge?
 		Console.Write(name);
 
-/* */
+		//write identikey dependencies
 		Console.Write(" (");
 		bool first = true;
 		foreach( Identifier ident in node.identikeyDependencies ) {
@@ -145,7 +168,6 @@ class DesalInterpreter001 {
 			Console.Write( ident.str );
 		}
 		Console.Write(")");
-/* */
 
 		Console.WriteLine("");
 		printObject(level+1, children);

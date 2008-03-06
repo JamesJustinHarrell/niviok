@@ -66,15 +66,15 @@ partial class Bridge {
 		");
 	
 		//xxx bridge parameter is null
-		_boolFace = DesibleParser.extractInterface( null,
+		_boolFace = DesibleParser.createNativeInterface( null,
 			(XmlElement)doc.GetElementsByTagName("interface")[0] );
-		_intFace = DesibleParser.extractInterface( null,
+		_intFace = DesibleParser.createNativeInterface( null,
 			(XmlElement)doc.GetElementsByTagName("interface")[1] );
-		_ratFace = DesibleParser.extractInterface( null,
+		_ratFace = DesibleParser.createNativeInterface( null,
 			(XmlElement)doc.GetElementsByTagName("interface")[2] );
-		_stringFace = DesibleParser.extractInterface( null,
+		_stringFace = DesibleParser.createNativeInterface( null,
 			(XmlElement)doc.GetElementsByTagName("interface")[3] );
-		_interfaceFace = DesibleParser.extractInterface( null,
+		_interfaceFace = DesibleParser.createNativeInterface( null,
 			(XmlElement)doc.GetElementsByTagName("interface")[4] );
 	
 		InterfaceImplementationBuilder<Client_String> stringBuilder =

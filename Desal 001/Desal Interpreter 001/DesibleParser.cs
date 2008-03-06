@@ -2,10 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Xml;
 
-class DesibleParser {
+//static
+partial class DesibleParser {
 
-	//----- static
-	
 	class UnexpectedElementError : System.ApplicationException {
 		public UnexpectedElementError(string expectedTag, string actualTag)
 		: base( System.String.Format(
@@ -16,66 +15,51 @@ class DesibleParser {
 	delegate INode ParseFunc(XmlElement element);
 	const string desible1NS = "urn:desible1";
 
-	//xxx messy
-	public static IInterface extractInterface(Bridge aBridge, XmlElement element) {
-		DesibleParser parser = new DesibleParser();
-		parser.setupParser(aBridge, element.OwnerDocument);
-		parser.unhandledWarnLevel = 0;
+	public static IInterface createNativeInterface(Bridge bridge, XmlElement element) {
+		DesibleParser parser = new DesibleParser(bridge, element.OwnerDocument);
 		parser.setLabels(element);
 		return parser
 			.parse<Node_Interface>(element)
 			.evaluateInterface(new Scope());
 	}
+
+	public static Node_Bundle parseDocument(
+	Bridge bridge, string path, bool warnUnhandled, bool warnAllNS) {
+		XmlDocument document = new XmlDocument();
+		document.Load(path);
+		return parseDocument(bridge, document, warnUnhandled, warnAllNS);
+	}
 	
-	
-	//----- instance
-	
+	public static Node_Bundle parseDocument(
+	Bridge bridge, XmlDocument document, bool warnUnhandled, bool warnAllNS) {
+		DesibleParser parser = new DesibleParser(bridge, document);
+		//xxx check XML with Relax NG
+		XmlElement root = document.DocumentElement;
+		parser.setLabels(root);
+		Node_Bundle bundle = parser.parse<Node_Bundle>(root);
+		if( warnUnhandled )
+			parser.warnAboutUnhandled(root, warnAllNS);
+		return bundle;
+	}
+}
+
+
+//instance
+partial class DesibleParser {	
+
 	Bridge _bridge; //used for outputing warnings
 	XmlNamespaceManager _nsManager; //maps tag name prefixes to namespace URIs
 	IList<XmlElement> _handledElements;
-	int _unhandledWarnLevel = 2; //2 outputs lots, 0 outputs none
 	IDictionary<string, Type> _tagToType;
 	IDictionary<Type, ParseFunc> _parseFuncs;
 	
-	public int unhandledWarnLevel {
-		get { return _unhandledWarnLevel; }
-		set {
-			//xxx magic numbers
-			if( 0 <= value && value <= 2 )
-				_unhandledWarnLevel = value;
-			else
-				throw new System.Exception("bad value");
-		}
-	}
-	
-	public Node_Bundle parsePath(Bridge aBridge, string path) {
-		XmlDocument doc = new XmlDocument();
-		doc.Load(path);
-		return parseDocument(aBridge, doc);
-	}
-	
-	public Node_Bundle parseMarkup(Bridge aBridge, string markup) {
-		XmlDocument doc = new XmlDocument();
-		doc.LoadXml(markup);
-		return parseDocument(aBridge, doc);
-	}
-
-	public Node_Bundle parseDocument(Bridge aBridge, XmlDocument doc) {
-		setupParser(aBridge, doc);
-		//xxx check XML with Relax NG
-		setLabels(doc.DocumentElement);
-		Node_Bundle bundle = parse<Node_Bundle>(doc.DocumentElement);
-		warnAboutUnhandled(doc.DocumentElement);
-		return bundle;
-	}
-	
-	void setupParser(Bridge aBridge, XmlDocument doc) {
-		_bridge = aBridge;
-		_nsManager = new XmlNamespaceManager(doc.NameTable);
+	public DesibleParser(Bridge bridge, XmlDocument document) {
+		_bridge = bridge;
+		_nsManager = new XmlNamespaceManager(document.NameTable);
 		_nsManager.AddNamespace("desible1", desible1NS);
 		_handledElements = new List<XmlElement>();
 		_tagToType = new Dictionary<string, Type>();
-		_parseFuncs = new Dictionary<Type, ParseFunc>();		
+		_parseFuncs = new Dictionary<Type, ParseFunc>();
 		
 		
 		//----- super/family
@@ -104,7 +88,7 @@ class DesibleParser {
 		});
 		
 		addParser<Node_Identifier>("identifier", delegate(XmlElement element) {
-			return new Node_Identifier(_bridge, element.InnerText);
+			return new Node_Identifier(_bridge, new Identifier(element.InnerText));
 		});
 		
 		addParser<Node_IdentikeyCategory>("identikey-category", delegate(XmlElement element) {
@@ -126,6 +110,7 @@ class DesibleParser {
 		addParser<Node_String>("string", delegate(XmlElement element) {		
 			return new Node_String(_bridge, element.InnerText);
 		});
+		
 		
 		//----- tree
 		
@@ -188,7 +173,6 @@ class DesibleParser {
 				parseMult<INode_DeclarationAny>(element, "instance-declaration"),
 				parseMult<Node_InterfaceImplementation>(element, "interface-implementation") );
 		});
-
 
 		addParser<Node_ClassProperty>("class-property", delegate(XmlElement element) {
 			throw new Error_Unimplemented();
@@ -369,7 +353,9 @@ class DesibleParser {
 				return func(element);
 			}));
 	}
-
+	
+	//instance method because it only works on Desible elements, and
+	//the nsManager is needed to only select Desible elements
 	void setLabels(XmlElement element) {
 		if( ! element.HasAttribute("label") )
 			element.SetAttribute("label", element.LocalName);
@@ -387,18 +373,15 @@ class DesibleParser {
 		_handledElements.Add(element);
 	}
 	
-	void warnAboutUnhandled(XmlElement element) {
+	//if @deep, warn about unhandled descendants of unhandled elements
+	void warnAboutUnhandled(XmlElement element, bool warnAllNS) {
 		if( _handledElements.Contains(element) ) {
-			//warn about unhandled elements in the Desible 1 namespace 
-			if( _unhandledWarnLevel == 1 ) {
-				foreach( XmlElement child in selectChildren(element) )
-					warnAboutUnhandled(child);
-			}
-			//warn about all unhandled elemnets
-			else if( _unhandledWarnLevel == 2 ) {
+			if( warnAllNS )
 				foreach( XmlElement child in element.SelectNodes("*") )
-					warnAboutUnhandled(child);
-			}
+					warnAboutUnhandled(child, warnAllNS);
+			else
+				foreach( XmlElement child in selectChildren(element) )
+					warnAboutUnhandled(child, warnAllNS);
 		}
 		else {
 			_bridge.warning(

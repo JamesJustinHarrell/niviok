@@ -1,0 +1,74 @@
+Inside of a brace-block, how do you know when you encounter a tab-block?
+
+block {
+	for i from 0 to 100
+		println i
+		println " "
+}
+
+What is the above equivalent to?
+
+block {
+	for i from 0 to 100 {
+		println i
+		println " "
+	}
+}
+
+block {
+	for i from 0 to 100 {
+		println i
+	}
+	println " "
+}
+
+
+Solutions:
+* Remove one of the block syntaxes.
+* Use an operator to specify that a tab-block follows. Python uses a colon for this. If this operator is not present, only a single expression would be consumed.
+* Modify one or both of the block syntaxes so they are compatible.
+
+
+Third option:
+
+BraceBlock =
+	"{" [ LineExpression { "," LineExpression } ] "}" .
+
+TabBlock =
+	INDENT_OPEN Expression { NEWLINE Expression } NEWLINE INDENT_CLOSE .
+
+BraceTabBlock =
+	"{" NEWLINE TabBlock "}" .
+
+
+block { a(), b(), c() }
+
+block
+	a()
+	b()
+	c()
+
+block {
+	a()
+	b()
+	c()
+}
+
+
+
+block { with decl foo = func(a){123}() { outer:println( times(2) ) } }
+
+block
+	with decl foo = func(a)
+		123
+	()
+		outer:println( times(2) )
+
+block {
+	with decl foo = func(a) {
+		123
+	} () {
+		outer:println( times(2) )
+	}
+}
+

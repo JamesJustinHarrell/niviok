@@ -1,0 +1,100 @@
+Purpose: Determine a terse and general way of inserting elements into a collection.
+
+Example C# code:
+	List<Person> people = new List<Person> {
+		new Person { FirstName = "Scott", LastName = "Guthrie", Age = 32 },
+		new Person { FirstName = "Bill", LastName = "Gates", Age = 50 },
+		new Person { FirstName = "Susanne", LastName = "Guthrie", Age = 32 }
+	};
+
+Note that the only constructor that Person has is an empty constructor, so properties each have to be assigned individually.
+
+
+--- call-to-interface when declare
+
+In Dextr:
+
+decl Foo foo(...)
+
+gets translated to:
+
+decl Foo foo = Foo(...)
+
+This of course only works when Foo can be called to produce an object of type Foo, such as if Foo was created by a class node.
+
+
+---- with node
+
+with ::= {
+	expression target
+	expression body
+}
+Properties of [target] are the only in-scope identikeys besides "outer" namespace. Produces [target].
+
+
+--- let pseudo node
+
+The "let" pseudo node is just Dextr syntax that gets translated to a block and declaration-assign nodes.
+
+Example:
+	let a = 123, b = a * 2, c = getFoo() {
+		doStuff( a, b, c )
+	}
+	
+	block {
+		decl a = 123
+		decl b = a * 2
+		decl c = getFoo()
+		block {
+			doStuff( a, b, c )
+		}
+	}
+
+
+--- examples
+
+//uses with node
+decl Set<Person> people()
+each( people.insert!, [
+	with Person() : FirstName = "Scott", LastName = "Guthrie", Age = 32,
+	with Person() : FirstName = "Bill", LastName = "Gates", Age = 50,
+	with Person() : FirstName = "Susanne", LastName = "Guthrie", Age = 32 ])
+
+//uses let node
+decl Set<Person> people()
+each( |x,y,z| { people << (let o = Person() : o.FirstName=x, o.LastName=y, o.Age=z, o) }.apply, [
+	[ "Scott", "Guthrie", 32 ],
+	[ "Bill", "Gates", 50 ],
+	[ "Susanne", "Guthrie", 32 ] ])
+
+//uses let node and bind-by-type operator
+decl Set<Person> people()
+|x,y,z| { let o = Person() : o.FirstName=x, o.LastName=y, o.Age=z, o }.apply ->
+map([
+	[ "Scott", "Guthrie", 32 ],
+	[ "Bill", "Gates", 50 ],
+	[ "Susanne", "Guthrie", 32 ]
+]) -> each( people.insert! )
+
+
+--- ideal
+
+If Set has a constructor that took a collection, and Person had a constructor that took the names and age.
+
+decl Set<Person> people( map( Person.apply, [
+	[ "Scott", "Guthrie", 32 ],
+	[ "Bill", "Gates", 50 ],
+	[ "Susanne", "Guthrie", 32 ] ]))
+
+decl Set<Person> people([
+	Person("Scott", "Guthrie", 32),
+	Person("Bill", "Gates", 50),
+	Person("Susanne", "Guthrie", 32) ])
+
+decl Set<Person> people(
+	map( Person.apply, [
+		[ "Scott", "Guthrie", 32 ],
+		[ "Bill", "Gates", 50 ],
+		[ "Susanne", "Guthrie", 32 ]
+	]))
+

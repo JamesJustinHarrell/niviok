@@ -4,9 +4,9 @@ class Node_Identifier : INode_Expression {
 	Bridge _bridge;
 	Identifier _identifier;
 
-	public Node_Identifier(Bridge bridge, string identifier) {
+	public Node_Identifier(Bridge bridge, Identifier identifier) {
 		_bridge = bridge;
-		_identifier = new Identifier(identifier);
+		_identifier = identifier;
 	}
 	
 	public Identifier identifier {

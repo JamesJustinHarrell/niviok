@@ -149,14 +149,41 @@ partial class Bridge {
 		return (val is Value<Client_String>);
 	}
 	
+	public System.IO.TextWriter stdout {
+		get { return System.Console.Out; }
+	}
+	
+	public System.IO.TextWriter stderr {
+		get { return System.Console.Error; }
+	}
+	
+	public System.IO.TextReader stdin {
+		get { return System.Console.In; }
+	}
+	
+	public void println(string text) {
+		stdout.WriteLine(text);
+	}
+	
+	public void println() {
+		println("");
+	}
+	
+	public void print(string text) {
+		stdout.Write(text);
+	}
+	
+	//xxx remove
 	public void output(string message) {
 		System.Console.Out.WriteLine(message);
 	}
 	
+	//xxx rename?
 	public void warning(string message) {
 		System.Console.Error.WriteLine("WARNING: " + message);
 	}
 	
+	//xxx rename?
 	public void error(string message) {
 		System.Console.Error.WriteLine("ERROR: " + message);
 	}

@@ -4,7 +4,7 @@ mono \
 	-path="/media/files/Desal/Desal 001/test.dextr" \
 	-print-tree=true \
 	-representation=dextr \
-	-dextr-parser=token-displayer \
+	-dextr-parser=Coco/R \
 	2> stderr.tmp
 export ExitCode=$?
 echo "----- exit status: "

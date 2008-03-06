@@ -1,59 +1,90 @@
 using System;
 using System.Collections.Generic;
 
-//parses a text file into a Desal bundle node
-class DextrParser {
-	public static Node_Bundle parseDocument(string filePath) {
-		return new DextrParser(System.IO.File.ReadAllText(filePath)).bundle;
-	}
+namespace Dextr {
 
-	IList<Token> tokens;
-	Node_Bundle bundle;
-	
-	DextrParser(string a_content) {
-		tokens = DextrTokenizer.tokenize(a_content);
-		/*
-		INDENT_OPEN, //null
-		INDENT_CLOSE, //null
-		NEWLINE, //null
-		NUMBER, //string
-		STRING, //string
-		WORD, //string
-		OTHER
-		*/
+	class Parser {
+		static Node_Bundle parseWithCocoR(Bridge bridge, IList<Token> tokens) {
+			CocoR.Scanner scanner = new CocoR.Scanner(tokens);
+			CocoR.Parser parser = new CocoR.Parser(scanner);
+			parser.bridge = bridge;
+			parser.shouldParseBundle = true; //xxx take as argument
+			parser.Parse();
+			if( parser.errors.count > 0 )
+				throw new Exception("Dextr code contained errors");
+			return parser.bundle;
+		}
 		
-		foreach( Token token in tokens ) {
-			switch( token.type ) {
-				case TokenType.INDENT_OPEN :
-					Console.Write("INDENT_OPEN");
-					break;
-				case TokenType.INDENT_CLOSE :
-					Console.Write("INDENT_CLOSE");
-					break;
-				case TokenType.NEWLINE :
-					Console.Write('\n');
-					continue; //prevent space from being printed
-				case TokenType.NUMBER :
-					Console.Write(token.value as string);
-					break;
-				case TokenType.STRING :
-					Console.Write("'{0}'", token.value as string);
-					break;
-				case TokenType.WORD :
-					Console.Write(token.value as string);
-					break;
-				case TokenType.OTHER :
-					Console.Write(token.value as string);
-					break;
-				default :
-					Console.Write("UNKNOWN TOKEN TYPE: {0}", token.type.ToString());
-					break;
+		static void displayTokens(Bridge bridge, IList<Token> tokens) {
+			int indentLevel = 0;
+			bool indentedThisLine = false;
+			foreach( Token token in tokens ) {
+				if( token.type == TokenType.INDENT_OPEN ) {
+					indentLevel++;
+					continue;
+				}
+				if( token.type == TokenType.INDENT_CLOSE ) {
+					indentLevel--;
+					continue;
+				}
+				if( token.type == TokenType.NEWLINE ) {
+					bridge.println();
+					indentedThisLine = false;
+					continue;
+				}
+				
+				if( ! indentedThisLine ) {
+					for( int i = 0; i < indentLevel; i++ )
+						bridge.print("\t");
+					indentedThisLine = true;
+				}
+				
+				if( token.type == TokenType.STRING )
+					bridge.print(
+						System.String.Format("\"{0}\"", token.value));
+				else
+					bridge.print(token.value);
+
+				bridge.print(" ");
 			}
-			Console.Write(" ");
+
+			bridge.println();
+		}
+		
+		static void displayTokenInfo(Bridge bridge, IList<Token> tokens) {
+			foreach( Token token in tokens ) {
+				bridge.print(
+					System.String.Format(
+						"{0}({1}) '{2}' on line {3}, col {4}",
+						token.type, (int)token.type, token.value,
+						token.lineNumber, token.startColumn ));
+				if( token.endColumn != token.startColumn )
+					bridge.print(
+						System.String.Format(
+							"-{0}", token.endColumn ));
+				bridge.println();
+			}
 		}
 
-		Console.WriteLine("");
-		
-		//xxx parse tokens into a bundle
+		public static Node_Bundle parseDocument(
+		Bridge bridge, string filePath, string parserName) {
+			string content = System.IO.File.ReadAllText(filePath);
+			IList<Token> tokens = Tokenizer.tokenize(content);
+			if( parserName == "Coco/R" )
+				return parseWithCocoR(bridge, tokens);
+			else if( parserName == "token-displayer" ) {
+				displayTokens(bridge, tokens);
+				return null;
+			}
+			else if( parserName == "token-info-displayer" ) {
+				displayTokenInfo(bridge, tokens);
+				return null;
+			}
+			else
+				throw new System.Exception(
+					System.String.Format("unknown Dextr parser: {0}", parserName));
+		}
 	}
-}
+	
+} //namespace Dextr
+	

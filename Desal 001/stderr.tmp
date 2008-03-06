@@ -1,8 +1,5 @@
-WARNING: unhandled element with tag name 'using' in namespace 'urn:desible1'
-<using label="using" xmlns="urn:desible1"><identifier label="identifier">std</identifier></using>
-WARNING: unhandled element with tag name 'ignored-stuff' in namespace 'http://site.com/stuff'
-<foo:ignored-stuff xmlns:foo="http://site.com/stuff"><candy xmlns="urn:desible1">
-							ABC
-							<apple><cinnamon />
-								DEF
-							</apple></candy></foo:ignored-stuff>
+
+Unhandled Exception: System.Exception: Dextr code contained errors
+  at Dextr.Parser.parseWithCocoR (.Bridge bridge, IList`1 tokens) [0x00000] 
+  at Dextr.Parser.parseDocument (.Bridge bridge, System.String filePath, System.String parserName) [0x00000] 
+  at DesalInterpreter001.Main (System.String[] arguments) [0x00000] 

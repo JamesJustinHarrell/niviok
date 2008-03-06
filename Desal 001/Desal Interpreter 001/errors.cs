@@ -30,11 +30,10 @@ class ClientException : ApplicationException {
 	public string clientMessage {
 		get {
 			string message = "";
-			message += "\nUncaught exception:\n";
 			if( e.activeInterface == Bridge.String ) {
-				message += Bridge.unwrapString(e) + "\n";
+				message += Bridge.unwrapString(e) + "\n\n";
 			}
-			message += "\nStack trace:\n";
+			message += "Stack trace:\n";
 			foreach( string s in stackTrace ) {
 				message += s + "\n";
 			}

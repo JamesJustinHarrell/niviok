@@ -1,241 +1,370 @@
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
-enum TokenType { //comment denotes type of value
-	INDENT_OPEN, //null
-	INDENT_CLOSE, //null
-	LINE_COMMENT, //null - includes /* ... */
-	MULTILINE_COMMENT, //null - /* ... \n ... */
-	NEWLINE, //null
-	NUMBER, //string
-	SPACE, //null
-	STRING, //string
-	WORD, //string
-	OTHER
-}
+namespace Dextr {
 
-class Token {
-	TokenType _type;
-	object _value;
-	
-	public Token( TokenType type, object value ) {
-		_type = type;
-		_value = value;
+	enum TokenType {	
+		//value = null
+		INDENT_OPEN = 1, 
+		INDENT_CLOSE,
+		NEWLINE,
+		
+		//value != null
+		BRACKET_OPEN,
+		BRACKET_CLOSE,
+		NUMBER,
+		STRING,
+		WORD,
+		OTHER, // = 9
+		EOF = 0 //Coco/R reserves 0 for EOF
 	}
-	
-	public TokenType type {
-		get { return _type; }
-	}
-	
-	public object value {
-		get { return _value; }
-	}
-}
 
-//breaks up a string into a series of tokens
-class DextrTokenizer {
-	public static IList<Token> tokenize(string a_content) {
-		return new DextrTokenizer(a_content + "\n\0").tokens;
+	class Token {
+		TokenType _type;
+		string _value;
+		int _lineNumber;
+		int _startColumn;
+		int _endColumn;
+		
+		public Token(
+		TokenType type, string value, int lineNumber,
+		int startColumn, int endColumn ) {
+			_type = type;
+			_value = value;
+			_lineNumber = lineNumber;
+			_startColumn = startColumn;
+			_endColumn = endColumn;
+		}
+		
+		public TokenType type {
+			get { return _type; }
+		}
+		
+		public string value {
+			get { return _value; }
+		}
+		
+		public int lineNumber {
+			get { return _lineNumber; }
+		}
+		
+		public int startColumn {
+			get { return _startColumn; }
+		}
+		
+		public int endColumn {
+			get { return _endColumn; }
+		}
 	}
-	
-	enum Mode {
-		BEGIN_LINE,
-		CONTINUE_LINE,
-		DONE
-	}
-	
-	string content;
-	int index;
-	int indentLevel;
-	Mode mode;
-	IList<Token> tokens;
-	
-	DextrTokenizer(string a_content) {
-		content = a_content;
-		index = 0;
-		indentLevel = 0;
-		mode = Mode.BEGIN_LINE;
-		tokens = new List<Token>();
 
-		while(true) {
+	//breaks up a string into a series of tokens
+	class Tokenizer {	
+		enum Mode {
+			BEGIN_LINE,
+			CONTINUE_NONCODE_LINE,
+			CONTINUE_CODE_LINE,
+			DONE
+		}
+		
+		string content;
+		int index;
+		int indentLevel;
+		int lineNumber;
+		int currentColumn;
+		Mode mode;
+		IList<Token> tokens;
+			
+		bool isWordChar(char c) {
+			return ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z') || c == '?' || c == '!';
+		}
+		
+		bool isOpeningBracket(char c) {
+			return System.Array.IndexOf("({[<".ToCharArray(), c) > -1;
+		}
+		
+		bool isClosingBracket(char c) {
+			return System.Array.IndexOf(")}]>".ToCharArray(), c) > -1;
+		}
+		
+		bool isOperatorChar(char c) {
+			return System.Array.IndexOf(",.=/+-*".ToCharArray(), c) > -1;
+		}
+		
+		bool isNumeral(char c) {
+			return (c == '0' || '1' <= c && c <= '9');
+		}
+		
+		//the current character
+		char current() {
+			return content[index];
+		}
+		
+		//the next character
+		char peek() {
+			return content[index+1];
+		}
+		
+		bool isCurrent(char c) {
+			return current() == c;
+		}
+		
+		void advance() {
+			index++;
+			currentColumn++;
 			if( index >= content.Length )
 				throw new System.Exception("unexpected end of text");
-		
-			if( mode == Mode.BEGIN_LINE )
-				beginLine();
-			else if( mode == Mode.CONTINUE_LINE )
-				continueLine();
-			else if( mode == Mode.DONE )
-				break;
-			else
-				throw new System.Exception("unknown mode");
 		}
-	}
-	
-	void beginLine() {
-		int newIndentLevel = 0;
-		while( isCurrent('\t') ) {
-			newIndentLevel++;
+		
+		void checkedAdvance(char c) {
+			if( current() != c )
+				throw new System.Exception(
+					System.String.Format("current character was not '{0}'", c));
 			advance();
 		}
-		while( newIndentLevel > indentLevel ) {
-			tokens.Add( new Token(TokenType.INDENT_OPEN, null) );
-			indentLevel++;
+
+		void addToken(
+		TokenType type, string value,
+		int startColumn, int endColumn ) {
+			tokens.Add(
+				new Token(
+					type, value, lineNumber,
+					startColumn, endColumn ));
 		}
-		while( newIndentLevel < indentLevel ) {
-			tokens.Add( new Token(TokenType.INDENT_CLOSE, null) );
-			indentLevel--;
+		
+		void beginLine() {
+			//count leading tabs
+			int newIndentLevel = 0;
+			while( isCurrent('\t') ) {
+				newIndentLevel++;
+				advance();
+			}
+			
+			//line contains only 0+ tabs
+			if( isCurrent('\n') ) {
+				consumeNewline();
+			}
+			
+			//line can't have any code on it
+			else if( isCurrent(' ') || isCurrent('#') || isCurrent('/') ) {
+				mode = Mode.CONTINUE_NONCODE_LINE;
+			}
+			
+			//this line begins with code
+			else {
+				//create appropriate INDENT_OPEN tokens
+				while( newIndentLevel > indentLevel ) {
+					addToken(TokenType.INDENT_OPEN, null, 0,0);
+					indentLevel++;
+				}
+				
+				//create appropriate INDENT_CLOSE tokens
+				while( newIndentLevel < indentLevel ) {
+					addToken(TokenType.INDENT_CLOSE, null, 0,0);
+					indentLevel--;
+				}
+				
+				mode = Mode.CONTINUE_CODE_LINE;
+			}
 		}
-		mode = Mode.CONTINUE_LINE;
-	}
-	
-	void continueLine() {
-		char c = current();
-		if( isWordChar(c) ) {
-			consumeWord();
+		
+		void continueNoncodeLine() {
+			if( isCurrent(' ') )
+				consumeSpace();
+			else if( isCurrent('#') )
+				consumePoundComment(); //also consumes newline
+			else if( isCurrent('\n') )
+				consumeNewline();
+			else if( current() == '/' && peek() == '*' )
+				consumeSlashStarComment();
+			else
+				throw new System.Exception(
+					System.String.Format(
+						"unexpected character on noncode line: {0}",
+						current() ) );
 		}
-		else if( c == ' ' ) {
-			consumeSpace();
+		
+		void continueCodeLine() {
+			char c = current();
+			
+			if( c == '\t' )
+				throw new System.Exception("tab found after non-tab character");
+			
+			if( isWordChar(c) )
+				consumeWord();
+			else if( c == ' ' )
+				consumeSpace();
+			else if( c == '\n' )
+				consumeNewline();
+			else if( c == '"' || c == '\'' )
+				consumeString();
+			else if( isNumeral(c) )
+				consumeNumber();
+			else if( c == '#' )
+				consumePoundComment();
+			else if( c == '/' && peek() == '*' )
+				consumeSlashStarComment();
+			else if( isOpeningBracket(c) ) {
+				addToken(
+					TokenType.BRACKET_OPEN, c.ToString(),
+					currentColumn, currentColumn );
+				advance();
+			}
+			else if( isClosingBracket(c) ) {
+				addToken(
+					TokenType.BRACKET_CLOSE, c.ToString(),
+					currentColumn, currentColumn );
+				advance();
+			}
+			else if( isOperatorChar(c) )
+				consumeCharacter();
+			else if( c == '\0' )
+				mode = Mode.DONE;
+			else {
+				System.Console.WriteLine("unknown character: '{0}'", c);
+				index = content.Length;
+				return;
+			}
 		}
-		else if( c == '\n' ) {
+		
+		void consumeCharacter() {
+			addToken(
+				TokenType.OTHER, current().ToString(),
+				currentColumn, currentColumn );
+			advance();
+		}
+		
+		void consumePoundComment() {
+			checkedAdvance('#');
+			while( ! isCurrent('\n') ) {
+				advance();
+			}
 			consumeNewline();
 		}
-		else if( c == '\t' ) {
-			throw new System.Exception("tab found after non-tab characters");
+		
+		void consumeSlashStarComment() {
+			checkedAdvance('/');
+			checkedAdvance('*');
+			
+			bool multiline = false;
+			while( ! (current() == '*' && peek() == '/') ) {
+				if( current() == '\n' ) {
+					multiline = true;
+					lineNumber++;
+					currentColumn = 1; //reset currentColumn
+				}
+				advance();
+			}
+			
+			checkedAdvance('*');
+			checkedAdvance('/');
+			
+			if( multiline ) {
+				consumeNewline();
+			}
 		}
-		else if( c == '"' ) {
-			consumeString();
+		
+		void consumeNewline() {
+			Debug.Assert( isCurrent('\n') );
+		
+			//consume newline and add token if needed
+			Token lastToken = tokens[tokens.Count-1];
+			if( lastToken.type != TokenType.NEWLINE )
+				addToken(TokenType.NEWLINE, null, currentColumn, currentColumn);
+
+			//consume additional newlines without adding tokens
+			do {
+				advance();
+				lineNumber++;
+			}
+			while( isCurrent('\n') );
+			
+			currentColumn = 1;
+			mode = Mode.BEGIN_LINE;
 		}
-		else if( isNumeral(c) ) {
-			consumeNumber();
+		
+		void consumeNumber() {
+			int startColumn = currentColumn;
+			string s = "";
+			while( isNumeral(current()) ) {
+				s += current();
+				advance();
+			}
+			addToken(TokenType.NUMBER, s, startColumn, currentColumn-1);
 		}
-		else if( c == '/' && peek() == '/' ) {
-			consumeSlashSlashComment();
+		
+		void consumeSpace() {
+			while( isCurrent(' ') ) {
+				advance();
+			}
 		}
-		else if( c == '/' && peek() == '*' ) {
-			consumeSlashStarComment();
-		}
-		else if( isOperatorChar(c) ) {
-			consumeCharacter();
-		}
-		else if( c == '\0' ) {
-			mode = Mode.DONE;
-		}
-		else {
-			System.Console.WriteLine("unknown character: '{0}'", c);
-			index = content.Length;
-			return;
-		}
-	}
-	
-	bool isWordChar(char c) {
-		return ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z') || c == '?' || c == '!';
-	}
-	
-	bool isOperatorChar(char c) {
-		char[] operatorCharacters = "(){},.=/".ToCharArray();
-		return System.Array.IndexOf(operatorCharacters, c) > -1;
-	}
-	
-	bool isNumeral(char c) {
-		return (c == '0' || '1' <= c && c <= '9');
-	}
-	
-	//the current character
-	char current() {
-		return content[index];
-	}
-	
-	//the next character
-	char peek() {
-		return content[index+1];
-	}
-	
-	bool isCurrent(char c) {
-		return current() == c;
-	}
-	
-	void advance() {
-		index++;
-		if( index >= content.Length )
-			throw new System.Exception("unexpected end of text");
-	}
-	
-	void checkedAdvance(char c) {
-		if( current() != c )
-			throw new System.Exception(
-				System.String.Format("current character was not '{0}'", c));
-		advance();
-	}
-	
-	void consumeCharacter() {
-		tokens.Add( new Token(TokenType.OTHER, current().ToString()) );
-		advance();
-	}
-	
-	void consumeSlashSlashComment() {
-		checkedAdvance('/');
-		checkedAdvance('/');
-		while( ! isCurrent('\n') ) {
+		
+		//xxx lineNumber will be last line the string is on
+		//would be better to have start and end line numbers, but at least use start instead of end
+		void consumeString() {
+			//xxx restrict opening character, allow multichar openings
+			int startColumn = currentColumn;
+			char opening = current();
 			advance();
+			string s = "";
+			while( ! isCurrent(opening) ) {
+				if( current() == '\n' ) {
+					lineNumber++;
+					currentColumn = 1;
+				}
+				s += current();
+				advance();
+			}
+			advance();
+			addToken(TokenType.STRING, s, startColumn, currentColumn-1);
 		}
-		consumeNewline();
+		
+		void consumeWord() {
+			int startColumn = currentColumn;
+			string word = "";
+			while( isWordChar(current()) ) {
+				word += current();
+				advance();
+			}
+			addToken(TokenType.WORD, word, startColumn, currentColumn-1);
+		}
+
+		Tokenizer(string a_content) {
+			content = a_content + "\n\0";
+			index = 0;
+			indentLevel = 0;
+			lineNumber = 1;
+			currentColumn = 1;
+			mode = Mode.BEGIN_LINE;
+			tokens = new List<Token>();
+
+			try {
+				while(true) {
+					if( index >= content.Length )
+						throw new System.Exception("unexpected end of text");
+				
+					if( mode == Mode.BEGIN_LINE )
+						beginLine();
+					else if( mode == Mode.CONTINUE_NONCODE_LINE )
+						continueNoncodeLine();
+					else if( mode == Mode.CONTINUE_CODE_LINE )
+						continueCodeLine();
+					else if( mode == Mode.DONE )
+						break;
+					else
+						throw new System.Exception("unknown mode");
+				}
+			}
+			catch(System.Exception e) {
+				throw new System.Exception(
+					System.String.Format("Line {0} Column {1}", lineNumber, currentColumn),
+					e);
+			}
+		}
+		
+		public static IList<Token> tokenize(string content) {
+			return new Tokenizer(content).tokens;
+		}
 	}
 	
-	void consumeSlashStarComment() {
-		checkedAdvance('/');
-		checkedAdvance('*');
-		while( ! (current() == '*' && peek() == '/') ) {
-			advance();
-		}
-		checkedAdvance('*');
-		checkedAdvance('/');
-	}
-	
-	void consumeNewline() {
-		if( ! isCurrent('\n') )
-			throw new System.Exception("newline not found");
-		if( tokens[tokens.Count-1].type != TokenType.NEWLINE )
-			tokens.Add( new Token(TokenType.NEWLINE, null) );
-		mode = Mode.BEGIN_LINE;
-		while( isCurrent('\n') ) {
-			advance();
-		}
-	}
-	
-	void consumeNumber() {
-		string s = "";
-		while( isNumeral(current()) ) {
-			s += current();
-			advance();
-		}
-		tokens.Add( new Token(TokenType.NUMBER, s) );
-	}
-	
-	void consumeSpace() {
-		while( isCurrent(' ') ) {
-			advance();
-		}
-	}
-	
-	void consumeString() {
-		//xxx restrict opening character, allow multichar openings
-		char opening = current();
-		advance();
-		string s = "";
-		while( ! isCurrent(opening) ) {
-			s += current();
-			advance();
-		}
-		advance();
-		tokens.Add( new Token(TokenType.STRING, s) );
-	}
-	
-	void consumeWord() {
-		string word = "";
-		while( isWordChar(current()) ) {
-			word += current();
-			advance();
-		}
-		tokens.Add( new Token(TokenType.WORD, word) );
-	}
-}
+} //namespace Dextr

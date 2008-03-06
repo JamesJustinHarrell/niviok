@@ -746,68 +746,35 @@ When executing a node with scope:
 
 
 
-Get something similar to this C# code (but more general) into Desal (or just Dextr):
-List<Person> people = new List<Person> {
-	new Person { FirstName = "Scott", LastName = "Guthrie", Age = 32 },
-	new Person { FirstName = "Bill", LastName = "Gates", Age = 50 },
-	new Person { FirstName = "Susanne", LastName = "Guthrie", Age = 32 }
-};
-
-decl List<Person> people()
-foreach people.insert!
-	with Person() : FirstName = "Scott", LastName = "Guthrie", Age = 32
-	with Person() : FirstName = "Bill", LastName = "Gates", Age = 50
-	with Person() : FirstName = "Susanne", LastName = "Guthrie", Age = 32
-
-foreach (decl List<Person> people()).insert!
-	with Person() : FirstName = "Scott", LastName = "Guthrie", Age = 32
-	with Person() : FirstName = "Bill", LastName = "Gates", Age = 50
-	with Person() : FirstName = "Susanne", LastName = "Guthrie", Age = 32
-
-with decl List<Person> people()
-	<< with outer:Person() : FirstName = "Scott", LastName = "Guthrie", Age = 32
-	<< with outer:Person() : FirstName = "Bill", LastName = "Gates", Age = 50
-	<< with outer:Person() : FirstName = "Susanne", LastName = "Guthrie", Age = 32
-
-decl List<Person> people()
-	Person() : FirstName = "Scott", LastName = "Guthrie", Age = 32
-	Person() : FirstName = "Bill", LastName = "Gates", Age = 50
-	Person() : FirstName = "Susanne", LastName = "Guthrie", Age = 32
-
-decl List<Person> people()
-foreach |x,y,z|{ people.insert! with Person() : FirstName=x,LastName=y,Age=z }
-	"Scott", "Guthrie", 32
-	"Bill", "Gates", 50
-	"Susanne", "Guthrie", 32
 
 
 
 
-See in anything in LINQ (esp in C#) could inspire new ideas for Desal. Most of it is just mangled functional programming.
-Example:
-	people.Where(p => p.FirstName.StartsWith("s"))
-This would be better in the functional style:
-	filter( p => p.FirstName.StartsWith("s"), people )
-Or in Desal:
-	filter( |p| p.FirstName.StartsWith("s"), people )
+
+See in anything in LINQ (esp in C#) could inspire new ideas for Desal. See "higher-order functions.txt" for a bind operator based on type that was inspired by LINQ.
 
 
-result = document.Descendants("person")
-.Where(p => p.Element("firstname").Value.StartsWith("S"))
-.Select( p=>new Person {
-	FirstName = p.Element("firstname").Value,
-	LastName = p.Element("lastname").Value,
-	Age = Convert.ToInt32(p.Attribute("age").Value)
-	});
 
-result = map(
-	|p| with Person() {
-		FirstName = outer:p.Element("firstname").Value,
-		LastName = outer:p.Element("lastname").Value,
-		Age = outer:parseInt(outer:p.Attribute("age").Value) },
-	filter(
-		|p| p.Element("firstname").Value.StartsWith("S"),
-		document.selectAll("person") ) )
+
+
+block {
+	decl foo = 123
+	block {
+		println( foo ) //error - foo declared in this scope, but used before declaration
+		decl foo = 789
+		println( foo ) //okay
+	}
+}
+
+block {
+	decl foo = 123
+	block {
+		println( outer:foo ) //okay
+		decl foo = 789
+		println( foo ) //okay
+	}
+}
+
 
 
 

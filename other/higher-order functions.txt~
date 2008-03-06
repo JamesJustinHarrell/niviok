@@ -1,0 +1,104 @@
+Many higher-order functions take as parameters a collection and a function.
+
+Examples:
+	each/forEach, map, filter, reduce
+
+However, the order of these two parameters differs between languages.
+
+Examples:
+	map( numbers, square )
+	map( square, numbers )
+
+So what order should Desal use? The collection-function form is closer to a top-down flow of information, but requires jumping back up to see which HOF is being used. The function-collection form provides a smoother flow of information, but this flow goes from bottom to top. (Some languages have "vararg" parameters, and thus the function needs to come first, but this doesn't apply to Desal.)
+
+Example:
+	result = map(
+		p => let o = Person() {
+			o.FirstName = p.Element("firstname").Value
+			o.LastName = p.Element("lastname").Value
+			o.Age = parseInt(p.Attribute("age").Value) },
+		filter(
+			p => startsWith(p.Element("firstname").Value, "S"),
+			descendants(document, "person")))
+
+	result = map(
+		filter(
+			descendants(document, "person"),
+			p => startsWith(p.Element("firstname").Value, "S")),
+		p => let o = Person() {
+			o.FirstName = p.Element("firstname").Value
+			o.LastName = p.Element("lastname").Value
+			o.Age = parseInt(p.Attribute("age").Value) })
+
+In the first assignment, the information starts on the bottom line and moves up until being assigned. In the second assignment, the information starts on the third line and moves down, jumping back up to the top two lines to see which HOF is being applied, before jumping back to the top for the assignment.
+
+In OOP-suporting languages, this problem has very frequently lead to the creation of methods which would be better as free functions. Methods are prefered soley because the flow of information is smoother and in a top-down direction.
+
+Example (LINQ in C#):
+	result = document.Descendants("person")
+	.Where(p => p.Element("firstname").Value.StartsWith("S"))
+	.Select( p=>new Person {
+		FirstName = p.Element("firstname").Value,
+		LastName = p.Element("lastname").Value,
+		Age = Convert.ToInt32(p.Attribute("age").Value)
+		});
+
+If Desal could provide an operator to bind a value to a function based on type, it could perhaps solve this problem. Free functions could then allow information to smoothly flow from top to bottom. This could help stop the terrible pratice of loading up interfaces with unnecessary methods which would be better as free functions.
+
+Example:
+	result = descendants(document, "person") ->
+	filter( p => startsWith(p.Element("firstname").Value, "S") ) ->
+	map( p => let o = Person() {
+		o.FirstName = p.Element("firstname").Value
+		o.LastName = p.Element("lastname").Value
+		o.Age = parseInt(p.Attribute("age").Value) })
+
+Here, the information moves smoothly from top to bottom, before jumping back to the top to be assigned.
+
+order of operations:
+	bind
+	call
+	assign
+
+This could perhaps be made more general by providing versions of call and curry/bind that work based on type, and versions that work based on order (the current versions).
+
+A bind-by-type operator could even be thought of as an explicit version of C#'s extension methods.
+
+Example:
+	//C# extension methods
+	people.Where(p => p.FirstName.StartsWith("s"))
+	
+	//function programming
+	filter( p => StartsWith(p.FirstName, "s"), people )
+	
+	//bind-by-type
+	people -> filter( p => StartsWith(p.FirstName, "s") )
+	
+	//more bind-by-type
+	people->filter(p => p.FirstName->StartsWith("s"))
+
+Notice how similar the first and second code lines are. However, because the Desal version is more general, it can do things which C#'s extension methods cannot.
+
+Example:
+	obj->(getSomeFunc(12, "foo", 0, 1))
+
+	decl foo = obj->doSomething
+
+Disadvantages: Additional complexity. Programmers now have to deal with calling/binding based on type and based on order. Desal could perhaps overcome this by using an algorithm where if type information isn't enough, order is used, but this could lead to difficult-to-fix bugs when objects don't downcast as expected and the argument-to-parameter mapping is unexpected.
+
+Example:
+	func doStuff( Int a, Int b, Int c, Rat d ) {...}
+	doStuff( 789.123, 4, 5, 6 )
+	
+	argument to parameter mapping:
+		d = 789.123
+		a = 4
+		b = 5
+		c = 6
+
+This would make it harder for a programmer to determine how arguments are being mapped to parameters. Need to decide whether additional complexity are less clarity is better.
+
+If the bind-by-type operator was widely used, the order of the parameters for HOF isn't as important. If the above method for mapping arguments to parameters was used, it wouldn't matter at all.
+
+Therefore, Desal should just use whatever is more common in languages where HOF are most commonly used, which means function-collection order.
+
