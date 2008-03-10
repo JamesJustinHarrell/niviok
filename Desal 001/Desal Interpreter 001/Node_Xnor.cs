@@ -17,12 +17,15 @@ class Node_Xnor : INode_Expression {
 			Bridge.unwrapBoolean(first) == Bridge.unwrapBoolean(second) );
 	}
 	
-	public void getInfo(out string name, out object objs) {
-		name = "xnor";
-		objs = new object[]{ _first, _second };
+	public string typeName {
+		get { return "xnor"; }
+	}
+	
+	public ICollection<INode> children {
+		get { return new INode[]{ _first, _second }; }
 	}
 
 	public HashSet<Identifier> identikeyDependencies {
-		get { return Help.getIdentRefs( _first, _second ); }
+		get { return G.depends( _first, _second ); }
 	}
 }

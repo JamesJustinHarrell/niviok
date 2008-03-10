@@ -15,12 +15,15 @@ class Node_Assign : INode_Expression {
 		return val;
 	}
 	
-	public void getInfo(out string name, out object children) {
-		name = "assign";
-		children = new object[]{ _name, _value };
+	public string typeName {
+		get { return "assign"; }
+	}
+	
+	public ICollection<INode> children {
+		get { return new INode[]{ _name, _value }; }
 	}
 	
 	public HashSet<Identifier> identikeyDependencies {
-		get { return Help.getIdentRefs( _name, _value ); }
+		get { return G.depends( _name, _value ); }
 	}
 }

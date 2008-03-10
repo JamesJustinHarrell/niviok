@@ -1,0 +1,106 @@
+interface Contract
+	func doStuff1(in Int, in String, inout Stuff)
+	func makePoo(in Rat) Poo
+	rw Color color
+	r String foo
+	w String bar
+
+class CContract
+	Int foo
+	Rat bar
+	String str
+	Color col
+
+	func construct(in Int foo, in Float bar)
+		this.foo = foo
+		this.bar = bar
+		str = "text"
+
+	interface Contract
+		func doStuff1(a, b, c)
+			c = CStuff(a, b)
+		
+		set color
+			if value dne green
+				col = value
+			else throw CError("color is green!")
+		get color = col
+		
+		foo = str
+		
+		get bar: print value
+
+
+NOTICE: No rules should start or end with whitespace!
+
+
+space ::= #xXX
+newline ::= #xXX | (#xXX #xXX) | #xXX
+free ::= ...
+numeral ::= 1-9,0
+whitespace ::= (space | newline | tab)+
+
+Comment ::= LineComment | MultilineComment
+LineComment ::= "//" (free | space | numeral)* newline
+MultilineComment ::= "/*" (free | numeral | whitespace)* "*/"
+
+fill ::= (whitespace | comment)+
+
+linewhitespace ::= (space | tab)+
+LineMultilineComment ::= "/*" (free | numeral | linewhitespace)* "*/"
+linefill ::= (linewhitespace | LineComment | LineMultilineComment)+
+
+#xxx is "_" a free character?
+Identifier ::= ("_" | free)+ ("_" | free | numeral)*
+
+Statement ::= Foo | Bar | Baz
+StatementSeparater ::= ";" | newline
+Statements ::= (Statement linefill? StatementSeparater linefill?)* Statement
+StatementBlock ::= BlockOpener fill? Statements fill? BlockCloser
+
+BlockOpener ::= "{"
+BlockCloser ::= "}"
+
+
+
+InterfaceDefinition ::=
+	"interface" fill Identifier fill?
+	BlockOpener fill?
+	((InterfaceFunction | InterfaceProperty) fill? StatementSeparater fill?)*
+	 (InterfaceFunction | InterfaceProperty)
+	fill? BlockCloser
+
+InterfaceFunction ::=
+	"func" fill Identifier fill?
+	"(" fill? InterfaceFunctionParameters? fill? ")"
+	
+InterfaceFunctionParameters ::=
+	(("in"|"out"|"inout") fill Identifier fill? "," fill?)*
+	 ("in"|"out"|"inout") fill Identifier
+
+InterfaceProperty ::=
+	("r" | "w" | "rw") fill identifier fill identifier
+
+
+
+ClassDefinition ::=
+	"class" fill Identifier fill?
+	BlockOpener fill?
+	ClassInterfaceDefinition+
+	fill? BlockCloser
+
+ClassInterfaceDefinition ::=
+	"interface" fill Identifier fill?
+	BlockOpener fill?
+	ClassFunctionDefinition+
+	fill? BlockCloser
+
+ClassFunctionDefinition ::=
+	"func" fill Identifier fill?
+	"(" fill? ClassFunctionParameters? fill? ")"
+	fill? StatementBlock
+	
+ClassFunctionParameters ::=
+	(identifier fill? ",")*
+	fill? identifier
+

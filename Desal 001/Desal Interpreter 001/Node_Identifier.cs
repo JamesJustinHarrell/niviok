@@ -1,11 +1,9 @@
 using System.Collections.Generic;
 
 class Node_Identifier : INode_Expression {
-	Bridge _bridge;
 	Identifier _identifier;
 
-	public Node_Identifier(Bridge bridge, Identifier identifier) {
-		_bridge = bridge;
+	public Node_Identifier(Identifier identifier) {
 		_identifier = identifier;
 	}
 	
@@ -17,9 +15,12 @@ class Node_Identifier : INode_Expression {
 		return scope.evaluateIdentifier(_identifier);
 	}
 	
-	public void getInfo(out string name, out object objs) {
-		name = "identifier";
-		objs = _identifier.str;
+	public string typeName {
+		get { return "identifier"; }
+	}
+	
+	public ICollection<INode> children {
+		get { return new INode[]{}; }
 	}
 
 	public HashSet<Identifier> identikeyDependencies {
@@ -28,5 +29,9 @@ class Node_Identifier : INode_Expression {
 			idents.Add(_identifier);
 			return idents;
 		}
+	}
+	
+	public override string ToString() {
+		return _identifier.ToString();
 	}
 }

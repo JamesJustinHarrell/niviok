@@ -1,0 +1,257 @@
+using System.Collections.Generic;
+
+COMPILER Dextr
+	public Bridge bridge;
+	public Node_Bundle bundle;
+	public Node_Plane plane;
+	public bool shouldParseBundle;
+
+TOKENS //order needs to match that in Desal Interpreter to get same numbers
+	INDENTOPENt
+	INDENTCLOSEt
+	NEWLINEt
+	BRACKETOPENt
+	BRACKETCLOSEt
+	NUMBERt
+	STRINGt
+	WORDt
+	OTHERt
+
+PRODUCTIONS
+
+	Dextr
+	=
+	IF(shouldParseBundle == true) BundleDocument
+	|
+	PlaneDocument
+	.
+	
+	/* xxx repetition here because: If all declefirst were optional, how would you know whether there was a Plane there or not? */
+	
+	BundleDocument (.
+		Node_DeclareFirst declFirst;
+		IList<Node_DeclareFirst> declFirstList = new List<Node_DeclareFirst>(); .)
+	=
+	[ NEWLINEt ]
+	{ "expose" WORDt NEWLINEt }
+	{
+		DeclareFirst<out declFirst> (. declFirstList.Add(declFirst); .)
+		[ NEWLINEt ]
+	}
+	EOF (.
+		plane = new Node_Plane(declFirstList);
+		bundle = new Node_Bundle(new Node_Plane[]{plane}); .)
+	.
+	
+	PlaneDocument (.
+		Node_DeclareFirst declFirst;
+		IList<Node_DeclareFirst> declFirstList = new List<Node_DeclareFirst>(); .)
+	=
+	{
+		DeclareFirst<out declFirst> (. declFirstList.Add(declFirst); .)
+		|
+		NEWLINEt
+	}
+	EOF (. plane = new Node_Plane(declFirstList); .)
+	.
+	
+	DeclareFirst<out Node_DeclareFirst declFirst>
+		(. declFirst = null; /* In case neither type of declare-first is found */ .)
+	=
+	DeclareFirstNormal<out declFirst>
+	|
+	FunctionDeclaration<out declFirst>
+	.
+	
+	DeclareFirstNormal<out Node_DeclareFirst declFirst>
+		(. Node_Identifier ident; INode_Expression expression; .)
+	=
+	"decl"
+	Identifier<out ident>
+	"="
+	Expression<out expression> (.
+		declFirst = new Node_DeclareFirst(
+		ident,
+		new Node_IdentikeyType(
+			new Node_IdentikeyCategory(IdentikeyCategory.DYNAMIC),
+			new Node_NullableType(
+				null,
+				new Node_Boolean(false)),
+			new Node_Boolean(false)),
+		expression); .)
+	.
+	
+	FunctionDeclaration<out Node_DeclareFirst declFirst>
+		(. Node_Identifier ident; IList<Node_Parameter> prams; Node_Block block; .)
+	=
+	"func"
+	Identifier<out ident>
+	"("
+	ParameterList<out prams>
+	")"
+	Block<out block> (.
+		declFirst = new Node_DeclareFirst(
+			ident,
+			new Node_IdentikeyType(
+				new Node_IdentikeyCategory(IdentikeyCategory.DYNAMIC),
+				new Node_NullableType(
+					null,
+					new Node_Boolean(false)),
+				new Node_Boolean(false)),
+			new Node_Function(
+				bridge,
+				prams,
+				new Node_NullableType(
+					null,
+					new Node_Boolean(false)),
+				block )); .)
+	.
+	
+	ParameterList<. out IList<Node_Parameter> prams .> (.
+		Node_Parameter param;
+		prams = new List<Node_Parameter>(); .)
+	=
+	[
+		Parameter<out param> (. prams.Add(param); .)
+		{
+			","
+			Parameter<out param> (. prams.Add(param); .)
+		}
+	]
+	.
+	
+	Parameter<out Node_Parameter param> (. Node_Identifier ident; .)
+	=
+	Identifier<out ident> (.
+		param = new Node_Parameter(
+			new Node_NullableType(
+				null,
+				new Node_Boolean(false)),
+			ident,
+			new Node_Boolean(false),
+			null ); .)
+	.
+	
+	Block<out Node_Block block> (. block = null; .)
+	=
+	//BraceBlock<out block>
+	//|
+	NEWLINEt TabBlock<out block>
+	|
+	BraceTabBlock<out block>
+	.
+	
+	/*
+	To ensure start and end on same line, just test lineNumber of { and } tokens.
+	BraceBlock
+	=
+	"{"
+	[
+		LineExpression
+		{
+			","
+			LineExpression
+		}
+	]
+	"}"
+	.
+	*/
+	
+	TabBlock<out Node_Block block> (.
+		INode_Expression expr;
+		IList<INode_Expression> exprList = new List<INode_Expression>(); .)
+	=
+	INDENTOPENt
+	[
+		Expression<out expr> (. exprList.Add(expr); .)
+		NEWLINEt
+		{
+			Expression<out expr> (. exprList.Add(expr); .)
+			NEWLINEt
+		}
+	]
+	INDENTCLOSEt (. block = new Node_Block(exprList); .)
+	.
+
+	BraceTabBlock<out Node_Block block> (. block = null; .)
+	=
+	"{"
+	NEWLINEt
+	TabBlock<out block>
+	"}"
+	.
+	
+	Expression<out INode_Expression expression> (.
+		expression = null;
+		Node_Call call;
+		Node_ExtractNamedMember extract; .)
+	=
+	IF (scanner.Peek().val == "(") Call<out call> (. expression = call; .)
+	|
+	IF (scanner.Peek().val == ".") ExtractNamedMember<out extract> (. expression = extract; .)
+	|
+	SimpleExpression<out expression>
+	.
+	
+	SimpleExpression<out INode_Expression expression> (.
+		expression = null;
+		Node_Identifier ident;
+		Node_String str; .)
+	=
+	Identifier<out ident> (. expression = ident; .)
+	|
+	String<out str> (. expression = str; .)
+	.
+	
+	String<out Node_String str>
+	=
+	STRINGt (. str = new Node_String(bridge, t.val); .)
+	.
+	
+	Call<out Node_Call call> (.
+		INode_Expression val;
+		IList<INode_Expression> args; .)
+	=
+	SimpleExpression<out val>
+	"("
+	ArgumentList<out args>
+	")" (. call = new Node_Call(val, args); .)
+	.
+	
+	ArgumentList<. out IList<INode_Expression> args .> (.
+		INode_Expression arg;
+		args = new List<INode_Expression>(); .)
+	=
+	[
+		Expression<out arg> (. args.Add(arg); .)
+		{
+			","
+			Expression<out arg> (. args.Add(arg); .)
+		}
+	]
+	.
+	
+	ExtractNamedMember<out Node_ExtractNamedMember extract> (.
+		INode_Expression expr;
+		Node_Identifier ident; .)
+	=
+	SimpleExpression<out expr>
+	"."
+	Identifier<out ident> (. extract = new Node_ExtractNamedMember(expr, ident); .)
+	.
+	
+/*
+	ParentheticalExpression<out INode_Expression expression>
+	=
+	"("
+	Expression<out expression>
+	")"
+	.
+*/
+
+	Identifier<out Node_Identifier ident>
+	=
+	WORDt (. ident = new Node_Identifier(bridge, new Identifier(t.val)); .)
+	.
+	
+END Dextr .

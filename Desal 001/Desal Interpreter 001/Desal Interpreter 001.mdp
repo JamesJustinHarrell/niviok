@@ -59,7 +59,7 @@
     <File name="./INode_DeclarationAny.cs" subtype="Code" buildaction="Compile" />
     <File name="./xxx_InterfaceImplBuilder.cs" subtype="Code" buildaction="Compile" />
     <File name="./Arguments.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Node_DeclarationClass.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Node_DeclareClass.cs" subtype="Code" buildaction="Compile" />
     <File name="./Node_ClassProperty.cs" subtype="Code" buildaction="Compile" />
     <File name="./Node_InterfaceImplementation.cs" subtype="Code" buildaction="Compile" />
     <File name="./NullValue.cs" subtype="Code" buildaction="Compile" />
@@ -74,7 +74,7 @@
     <File name="./Node_Possibility.cs" subtype="Code" buildaction="Compile" />
     <File name="./Node_DeclareEmpty.cs" subtype="Code" buildaction="Compile" />
     <File name="./Node_DeclareAssign.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Node_DeclarationConstEmpty.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Node_DeclareConstEmpty.cs" subtype="Code" buildaction="Compile" />
     <File name="./IInterfaceImplementation.cs" subtype="Code" buildaction="Compile" />
     <File name="./Parameter.cs" subtype="Code" buildaction="Compile" />
     <File name="./InterfaceImplementationBuilder.cs" subtype="Code" buildaction="Compile" />
@@ -90,7 +90,7 @@
     <File name="./Node_Boolean.cs" subtype="Code" buildaction="Compile" />
     <File name="./Node_Bundle.cs" subtype="Code" buildaction="Compile" />
     <File name="./Node_Plane.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Node_ExtractNamedMember.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Node_ExtractMember.cs" subtype="Code" buildaction="Compile" />
     <File name="./Node_FunctionInterface.cs" subtype="Code" buildaction="Compile" />
     <File name="./Node_Assign.cs" subtype="Code" buildaction="Compile" />
     <File name="./Node_And.cs" subtype="Code" buildaction="Compile" />
@@ -113,7 +113,7 @@
     <File name="./DextrParser.cs" subtype="Code" buildaction="Compile" />
     <File name="./DextrTokenizer.cs" subtype="Code" buildaction="Compile" />
     <File name="./BoundMethod.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Help.cs" subtype="Code" buildaction="Compile" />
+    <File name="./G.cs" subtype="Code" buildaction="Compile" />
     <File name="./HashSet.cs" subtype="Code" buildaction="Compile" />
     <File name="./DextrCocoR.cs" subtype="Code" buildaction="Compile" />
     <File name="./DextrCocoR_automatic.cs" subtype="Code" buildaction="Compile" />

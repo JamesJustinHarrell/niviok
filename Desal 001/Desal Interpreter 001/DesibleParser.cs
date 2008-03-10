@@ -20,7 +20,7 @@ partial class DesibleParser {
 		parser.setLabels(element);
 		return parser
 			.parse<Node_Interface>(element)
-			.evaluateInterface(new Scope());
+			.evaluateInterface(new Scope(bridge));
 	}
 
 	public static Node_Bundle parseDocument(
@@ -69,8 +69,8 @@ partial class DesibleParser {
 			return parseSuper<INode_Expression>(element, "expression");
 		});
 		
-		addParser<INode_DeclarationAny>(delegate(XmlElement element) {
-			return parseSuper<INode_DeclarationAny>(element, "declaration-any");
+		addParser<INode_DeclareAny>(delegate(XmlElement element) {
+			return parseSuper<INode_DeclareAny>(element, "declaration-any");
 		});
 		
 		
@@ -88,7 +88,7 @@ partial class DesibleParser {
 		});
 		
 		addParser<Node_Identifier>("identifier", delegate(XmlElement element) {
-			return new Node_Identifier(_bridge, new Identifier(element.InnerText));
+			return new Node_Identifier( new Identifier(element.InnerText) );
 		});
 		
 		addParser<Node_IdentikeyCategory>("identikey-category", delegate(XmlElement element) {
@@ -99,16 +99,15 @@ partial class DesibleParser {
 		
 		addParser<Node_Integer>("integer", delegate(XmlElement element) {
 			//xxx use bignum
-			return new Node_Integer( _bridge, System.Int64.Parse(element.InnerText) );
+			return new Node_Integer( System.Int64.Parse(element.InnerText) );
 		});
 
 		addParser<Node_Rational>("rational", delegate(XmlElement element) {
-			return new Node_Rational(
-				_bridge, System.Double.Parse(element.InnerText) );
+			return new Node_Rational( System.Double.Parse(element.InnerText) );
 		});
 		
 		addParser<Node_String>("string", delegate(XmlElement element) {		
-			return new Node_String(_bridge, element.InnerText);
+			return new Node_String(element.InnerText);
 		});
 		
 		
@@ -165,12 +164,12 @@ partial class DesibleParser {
 	
 		addParser<Node_Class>("class", delegate(XmlElement element) {
 			return new Node_Class(
-				parseMult<Node_DeclarationClass>(element, "static-declaration"),
+				parseMult<Node_DeclareClass>(element, "static-declaration"),
 				parseOpt<Node_Block>(element, "static-constructor"),
 				parseMult<Node_Function>(element, "static-callee"),
 				parseMult<Node_ClassProperty>(element, "static-property"),
 				parseMult<Node_Function>(element, "instance-constructor"),
-				parseMult<INode_DeclarationAny>(element, "instance-declaration"),
+				parseMult<INode_DeclareAny>(element, "instance-declaration"),
 				parseMult<Node_InterfaceImplementation>(element, "interface-implementation") );
 		});
 
@@ -191,12 +190,12 @@ partial class DesibleParser {
 				parseOne<INode_Expression>(element, "value") );
 		});
 		
-		addParser<Node_DeclarationClass>("declaration-class",
+		addParser<Node_DeclareClass>("declaration-class",
 		delegate(XmlElement element) {
 			throw new Error_Unimplemented();
 		});
 		
-		addParser<Node_DeclarationConstEmpty>("declaration-const-empty",
+		addParser<Node_DeclareConstEmpty>("declaration-const-empty",
 		delegate(XmlElement element) {
 			throw new Error_Unimplemented();
 		});
@@ -209,8 +208,8 @@ partial class DesibleParser {
 				parseOne<INode_Expression>(element, "value") );
 		});
 		
-		addParser<Node_ExtractNamedMember>("extract-named-member", delegate(XmlElement element) {
-			return new Node_ExtractNamedMember(
+		addParser<Node_ExtractMember>("extract-member", delegate(XmlElement element) {
+			return new Node_ExtractMember(
 				parseOne<INode_Expression>(element, "source"),
 				parseOne<Node_Identifier>(element, "member-name") );
 		});
@@ -225,7 +224,6 @@ partial class DesibleParser {
 		
 		addParser<Node_Function>("function", delegate(XmlElement element) {;
 			return new Node_Function(
-				_bridge,
 				parseMult<Node_Parameter>(element, "parameter"),
 				parseOpt<Node_NullableType>(element, "return-type"),
 				parseOne<INode_Expression>(element, "body") );
@@ -234,7 +232,6 @@ partial class DesibleParser {
 		addParser<Node_FunctionInterface>("function-interface",
 		delegate(XmlElement element) {
 			return new Node_FunctionInterface(
-				_bridge,
 				parseMult<Node_Parameter>(element, "parameter"),
 				parseOpt<Node_NullableType>(element, "return-type"));
 		});

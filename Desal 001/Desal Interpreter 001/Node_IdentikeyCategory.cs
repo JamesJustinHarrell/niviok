@@ -11,12 +11,19 @@ class Node_IdentikeyCategory : INode {
 		get { return _category; }
 	}
 	
-	public void getInfo(out string name, out object children) {
-		name = "identikey-category";
-		children = _category;
+	public string typeName {
+		get { return "identikey-category"; }
+	}
+	
+	public ICollection<INode> children {
+		get { return new INode[]{}; }
 	}
 	
 	public HashSet<Identifier> identikeyDependencies {
 		get { return new HashSet<Identifier>(); }
+	}
+	
+	public override string ToString() {
+		return _category.ToString();
 	}
 }

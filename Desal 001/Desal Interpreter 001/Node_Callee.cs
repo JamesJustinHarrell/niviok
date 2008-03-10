@@ -11,9 +11,12 @@ class Node_Callee : INode {
 		get { return _parameters; }
 	}
 	
-	public void getInfo(out string name, out object children) {
-		name = "callee";
-		children = _parameters;
+	public string typeName {
+		get { return "callee"; }
+	}
+	
+	public ICollection<INode> children {
+		get { return G.collect<INode>(_parameters); }
 	}
 	
 	public HashSet<Identifier> identikeyDependencies {

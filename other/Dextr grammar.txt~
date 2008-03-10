@@ -1,0 +1,168 @@
+character types
+	" "
+	"\n"
+	"\t"
+	free
+	illegal
+	numerical
+	reserved
+
+token types
+	DOCUMENT_OPEN
+	DOCUMENT_CLOSE
+	INDENT_OPEN
+	INDENT_CLOSE
+	NEWLINE
+	FREE //may be replaced with IDENTIFIER and many keyword tokens
+	INTEGER
+	RATIONAL
+	RESERVED //may be replaced with many operator tokens
+	STRING
+
+keywords
+	in out inout
+	expose import using as
+	own share
+	do while times for key pair from to in inclusive loop
+	break continue return yield throw
+	decl declfirst auto dyn
+	block
+	if elif else
+	select case
+	try catch observe finally
+	and nand or nor xor xnor
+	lt lte eql gte gt dne
+	array chain generator
+	class
+	comprehension
+	dictionary
+	enum
+	func
+	generic
+	interface
+	impls
+
+operators
+	=
+	+ - * /
+	+= -= *= /=
+	.
+	( ) { } < > [ ]
+
+--- grammar
+syntax:
+	rule
+		Name = ... ;
+	optional (0 or 1)
+		[ ... ]
+	0 or more
+		{ ... }
+	1 or more (not used yet)
+		< ... >
+	alternative syntax for 1 or more (in case I don't like the other)
+		... +
+	grouping
+		( ... )
+	options
+		... | ...
+
+Expression
+	= Simple
+	| Add
+	| BooleanLogic
+	| DeclareFirst
+	| IfElse
+	| Test ;
+
+Identifier
+	= [ "$" ] FREE ;
+
+Primary
+	= Identifier
+	| INTEGER
+	| RATIONAL
+	| STRING
+	| Parenthetical ;
+
+Parenthetical
+	= "(" Expression ")" ;
+
+Simple
+	= Block
+	| Call
+	| ExtractMember
+	| Primary ;
+
+Call
+	= Simple "(" ArgumentList ")" ;
+
+ArgumentList
+	= [ Expression { "," Expression } ] ;
+
+ExtractMember
+	= Simple "." Identifier ;
+
+Mult
+	= Simple { ("*" | "/") Simple } ;
+
+Add
+	= Mult { ("+" | "-") Mult } ;
+
+BooleanLogic
+	= Simple ("and" | "nand" | "or" | "nor" | "xor" | "xnor") Simple ;
+
+DeclareFirst
+	= DeclareFirstNormal
+	| FunctionDeclaration ;
+
+DeclareFirstNormal
+	= "decl" Identifier "=" Expression ;
+
+FunctionDeclaration
+	= "func" Identifier "(" ParameterList ")" Block ;
+
+ParameterList
+	= [ Parameter { "," Parameter } ] ;
+
+Parameter
+	= Identifier ;
+
+Block
+	= BraceBlock
+	| TabBlock
+	| BraceTabBlock ;
+
+//to ensure this starts and ends on the same line,
+//test lineNumber of "{" and "}" tokens
+//this can't be easily stated in BNF
+BraceBlock
+	= "{" [ Expression { "," Expression } ] "}" ;
+
+//the tokenizer ensures a newline comes before every indent open
+//the newline is declared optional to allow, e.g.: NEWLINE TabBlock
+TabBlock
+	= [ NEWLINE ] INDENT_OPEN { Expression NEWLINE } INDENT_CLOSE ;
+
+BraceTabBlock
+	= "{" TabBlock "}" ;
+
+Test
+	= Simple ("lt" | "lte" | "eql" | "gte" | "gt" | "dne") Simple ;
+
+IfElse
+	= "if" (Simple | Test) Block [ { "elif" (Simple | Test) Block } "else" Block ] ;
+
+BundleDocument
+	=
+		DOCUMENT_OPEN
+		{ "expose" Identifier | NEWLINE }
+		{ DeclareFirst | NEWLINE }
+		DOCUMENT_CLOSE
+	;
+
+PlaneDocument
+	=
+		DOCUMENT_OPEN
+		{ DeclareFirst | NEWLINE }
+		DOCUMENT_CLOSE
+	;

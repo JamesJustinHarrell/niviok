@@ -4,16 +4,15 @@ class Node_ForRange : INode_Expression {
 	Node_Identifier _name;
 	INode_Expression _start;
 	INode_Expression _limit;
-	//xxx bool _inclusive;
-	Node_Block _block; //xxx rename to body
+	Node_Block _body;
 
 	public Node_ForRange(
 	Node_Identifier name, INode_Expression start,
-	INode_Expression limit, Node_Block block) {
+	INode_Expression limit, Node_Block body) {
 		_name = name;
 		_start = start;
 		_limit = limit;
-		_block = block;
+		_body = body;
 	}
 	
 	public IValue execute(Scope scope) {		
@@ -27,21 +26,23 @@ class Node_ForRange : INode_Expression {
 				//xxx new NullableType( ReferenceCategory.VALUE, null),
 				//xxx true,
 				Bridge.wrapInteger(current) );
-			_block.execute(innerScope);
+			_body.execute(innerScope);
 			current++;
 		}
 		return new NullValue();
 	}
 	
-	public void getInfo(out string name, out object objs) {
-		name = "for-range";
-		objs = new object[]{ _name, _start, _limit, /* xxx _inclusive,*/ _block };
+	public string typeName {
+		get { return "for-range"; }
+	}
+	
+	public ICollection<INode> children {
+		get { return new INode[]{ _name, _start, _limit, _body }; }
 	}
 
 	public HashSet<Identifier> identikeyDependencies {
 		get {
-			HashSet<Identifier> idents =
-				Help.getIdentRefs( _start, _limit, _block );
+			HashSet<Identifier> idents = G.depends( _start, _limit, _body );
 			idents.Remove( _name.identifier );
 			return idents;
 		}

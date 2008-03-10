@@ -1,0 +1,79 @@
+using System.Collections.Generic;
+
+COMPILER test
+
+	public Bridge bridge;
+	public Node_Bundle bundle;
+
+		INDENT_OPEN = 1, //Coco/R reserves 0 for EOF
+		INDENT_CLOSE,
+		NEWLINE,
+		
+		//value != null
+		BRACKET_OPEN,
+		BRACKET_CLOSE,
+		NUMBER,
+		STRING,
+		WORD,
+		OTHER // = 9
+
+TOKENS
+	INDENTOPENt
+	INDENTCLOSEt
+	NEWLINEt
+	BRACKETOPENt
+	BRACKETCLOSEt
+	NUMBERt
+	STRINGt
+	WORDt
+	OTHERt
+	"decl"
+	"="
+
+PRODUCTIONS
+
+	test (.
+		IList<Node_DeclareFirst> declFirstList = new List<Node_DeclareFirst>();
+		Node_DeclareFirst declFirst; .)
+	=
+	{
+		DeclareFirst<out declFirst> (. declFirstList.Add( declFirst ); .)
+	}
+	EOF (.
+		bundle = new Node_Bundle(
+			new Node_Plane[] { new Node_Plane(declFirstList) } ); .)
+	.
+	
+	DeclareFirst<out Node_DeclareFirst declFirst> (. Node_Identifier ident; INode_Expression expression; .)
+	=
+	"decl"
+	Identifier<out ident>
+	"="
+	Expression<out expression> (.
+		declFirst = new Node_DeclareFirst(
+		ident,
+		new Node_IdentikeyType(
+			new Node_IdentikeyCategory(IdentikeyCategory.DYNAMIC),
+			new Node_NullableType(
+				null,
+				new Node_Boolean(false)),
+			new Node_Boolean(false)),
+		expression); .)
+	.
+	
+	Expression<out INode_Expression expression>
+	=
+	LineExpression<out expression>
+	.
+	
+	LineExpression<out INode_Expression expression> (. Node_Identifier ident; .)
+	=
+	Identifier<out ident> (. expression = ident; .) 
+	.
+
+	Identifier<out Node_Identifier ident>
+	=
+	IDENTIFIERt (. ident = new Node_Identifier(bridge, new Identifier(t.val)); .)
+	.
+	
+END test .

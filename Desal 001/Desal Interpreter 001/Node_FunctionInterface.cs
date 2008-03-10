@@ -1,21 +1,13 @@
 using System.Collections.Generic;
 
 class Node_FunctionInterface : INode_Expression {
-	Bridge _bridge;
 	IList<Node_Parameter> _parameters;
 	Node_NullableType _type;
 
 	public Node_FunctionInterface(
-	Bridge bridge,
 	IList<Node_Parameter> parameters, Node_NullableType type ) {
-		_bridge = bridge;
 		_parameters = parameters;
 		_type = type;
-	}
-	
-	public IValue execute(Scope scope) {
-		_bridge.warning("Node_FunctionInterface.evaluate called; returning null");
-		return new NullValue();
 	}
 	
 	public IFunctionInterface evaluateInterface(Scope scope) {
@@ -27,13 +19,21 @@ class Node_FunctionInterface : INode_Expression {
 		return FunctionInterface.getFuncFace(
 			parameters,	_type.evaluateType(scope) );
 	}
-
-	public void getInfo(out string name, out object objs) {
-		name = "function-interface";
-		objs = new object[]{ _parameters, _type };
+	
+	public IValue execute(Scope scope) {
+		scope.bridge.warning("Node_FunctionInterface.evaluate called; returning null");
+		return new NullValue();
+	}
+	
+	public string typeName {
+		get { return "function-interface"; }
+	}
+	
+	public ICollection<INode> children {
+		get { return G.collect<INode>(_parameters, _type); }
 	}
 
 	public HashSet<Identifier> identikeyDependencies {
-		get { return Help.getIdentRefs( _parameters, _type ); }
+		get { return G.depends( _parameters, _type ); }
 	}
 }

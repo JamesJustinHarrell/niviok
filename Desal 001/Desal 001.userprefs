@@ -6,7 +6,7 @@
       <TreeView>
         <Node expanded="True">
           <Node name="Desal Interpreter 001" expanded="True">
-            <Node name="xxx_Client_Class.cs" expanded="False" selected="True" />
+            <Node name="Node_Xnor.cs" expanded="False" selected="True" />
           </Node>
           <Node name="Funsynn 001" expanded="True" />
         </Node>
@@ -15,9 +15,7 @@
     <ViewMemento Id="MonoDevelop.Ide.Gui.Pads.ClassPad">
       <TreeView>
         <Node expanded="True" selected="True">
-          <Node name="Desal Interpreter 001" expanded="True">
-            <Node name="Bridge" expanded="True" />
-          </Node>
+          <Node name="Desal Interpreter 001" expanded="True" />
         </Node>
       </TreeView>
     </ViewMemento>

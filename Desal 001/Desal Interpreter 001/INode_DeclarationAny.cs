@@ -1,3 +1,3 @@
-//used by Node_DeclarationClass and Node_Class
+//used by Node_DeclareClass and Node_Class
 
-interface INode_DeclarationAny : INode_Expression {}
+interface INode_DeclareAny : INode_Expression {}

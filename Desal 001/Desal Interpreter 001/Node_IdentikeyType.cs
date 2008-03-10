@@ -16,9 +16,12 @@ class Node_IdentikeyType : INode {
 		get { return _category.category; }
 	}
 	
-	public void getInfo(out string name, out object children) {
-		name = "identikey-type";
-		children = new object[]{ _category, _type, _constant };
+	public string typeName {
+		get { return "identikey-type"; }
+	}
+	
+	public ICollection<INode> children {
+		get { return new INode[]{ _category, _type, _constant }; }
 	}
 
 	public HashSet<Identifier> identikeyDependencies {

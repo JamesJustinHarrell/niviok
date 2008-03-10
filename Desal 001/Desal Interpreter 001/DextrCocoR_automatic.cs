@@ -20,7 +20,7 @@ class Parser {
 	const int _STRINGt = 7;
 	const int _WORDt = 8;
 	const int _OTHERt = 9;
-	const int maxT = 18;
+	const int maxT = 20;
 
 	const bool T = true;
 	const bool x = false;
@@ -111,7 +111,7 @@ public Bridge bridge;
 			BundleDocument();
 		} else if (la.kind == 0 || la.kind == 3 || la.val == "decl" || la.val == "func") {
 			PlaneDocument();
-		} else SynErr(19);
+		} else SynErr(21);
 	}
 
 	void BundleDocument() {
@@ -158,7 +158,7 @@ public Bridge bridge;
 			DeclareFirstNormal(out declFirst);
 		} else if (la.val == "func") {
 			FunctionDeclaration(out declFirst);
-		} else SynErr(20);
+		} else SynErr(22);
 	}
 
 	void DeclareFirstNormal(out Node_DeclareFirst declFirst) {
@@ -179,12 +179,12 @@ public Bridge bridge;
 	}
 
 	void FunctionDeclaration(out Node_DeclareFirst declFirst) {
-		Node_Identifier ident; Node_Block block; 
+		Node_Identifier ident; IList<Node_Parameter> prams; Node_Block block; 
 		ExpectLiteral("func", 13);
 		Identifier(out ident);
 		ExpectLiteral("(", 14);
+		ParameterList(out prams);
 		ExpectLiteral(")", 15);
-		Expect(3);
 		Block(out block);
 		declFirst = new Node_DeclareFirst(
 		ident,
@@ -194,16 +194,46 @@ public Bridge bridge;
 				null,
 				new Node_Boolean(false)),
 			new Node_Boolean(false)),
-		block); 
+		new Node_Function(
+			prams,
+			new Node_NullableType(
+				null,
+				new Node_Boolean(false)),
+			block )); 
 	}
 
 	void Identifier(out Node_Identifier ident) {
 		Expect(8);
-		ident = new Node_Identifier(bridge, new Identifier(t.val)); 
+		ident = new Node_Identifier(new Identifier(t.val)); 
 	}
 
 	void Expression(out INode_Expression expression) {
-		LineExpression(out expression);
+		expression = null;
+		Node_Call call;
+		Node_ExtractMember extract; 
+		if (scanner.Peek().val == "(") {
+			Call(out call);
+			expression = call; 
+		} else if (scanner.Peek().val == ".") {
+			ExtractMember(out extract);
+			expression = extract; 
+		} else if (la.kind == 7 || la.kind == 8) {
+			SimpleExpression(out expression);
+		} else SynErr(23);
+	}
+
+	void ParameterList(out IList<Node_Parameter> prams ) {
+		Node_Parameter param;
+		prams = new List<Node_Parameter>(); 
+		if (la.kind == 8) {
+			Parameter(out param);
+			prams.Add(param); 
+			while (la.val == ",") {
+				Get();
+				Parameter(out param);
+				prams.Add(param); 
+			}
+		}
 	}
 
 	void Block(out Node_Block block) {
@@ -213,18 +243,30 @@ public Bridge bridge;
 			TabBlock(out block);
 		} else if (la.val == "{") {
 			BraceTabBlock(out block);
-		} else SynErr(21);
+		} else SynErr(24);
+	}
+
+	void Parameter(out Node_Parameter param) {
+		Node_Identifier ident; 
+		Identifier(out ident);
+		param = new Node_Parameter(
+		new Node_NullableType(
+			null,
+			new Node_Boolean(false)),
+		ident,
+		new Node_Boolean(false),
+		null ); 
 	}
 
 	void TabBlock(out Node_Block block) {
 		INode_Expression expr;
 		IList<INode_Expression> exprList = new List<INode_Expression>(); 
 		Expect(1);
-		if (la.kind == 8) {
+		if (la.kind == 7 || la.kind == 8) {
 			Expression(out expr);
 			exprList.Add(expr); 
 			Expect(3);
-			while (la.kind == 8) {
+			while (la.kind == 7 || la.kind == 8) {
 				Expression(out expr);
 				exprList.Add(expr); 
 				Expect(3);
@@ -236,16 +278,61 @@ public Bridge bridge;
 
 	void BraceTabBlock(out Node_Block block) {
 		block = null; 
-		ExpectLiteral("{", 16);
+		ExpectLiteral("{", 17);
 		Expect(3);
 		TabBlock(out block);
-		ExpectLiteral("}", 17);
+		ExpectLiteral("}", 18);
 	}
 
-	void LineExpression(out INode_Expression expression) {
+	void Call(out Node_Call call) {
+		INode_Expression val;
+		IList<INode_Expression> args; 
+		SimpleExpression(out val);
+		ExpectLiteral("(", 14);
+		ArgumentList(out args);
+		ExpectLiteral(")", 15);
+		call = new Node_Call(val, args); 
+	}
+
+	void ExtractMember(out Node_ExtractMember extract) {
+		INode_Expression expr;
 		Node_Identifier ident; 
+		SimpleExpression(out expr);
+		ExpectLiteral(".", 19);
 		Identifier(out ident);
-		expression = ident; 
+		extract = new Node_ExtractMember(expr, ident); 
+	}
+
+	void SimpleExpression(out INode_Expression expression) {
+		expression = null;
+		Node_Identifier ident;
+		Node_String str; 
+		if (la.kind == 8) {
+			Identifier(out ident);
+			expression = ident; 
+		} else if (la.kind == 7) {
+			String(out str);
+			expression = str; 
+		} else SynErr(25);
+	}
+
+	void String(out Node_String str) {
+		Expect(7);
+		str = new Node_String(t.val); 
+	}
+
+	void ArgumentList(out IList<INode_Expression> args ) {
+		INode_Expression arg;
+		args = new List<INode_Expression>(); 
+		if (la.kind == 7 || la.kind == 8) {
+			Expression(out arg);
+			args.Add(arg); 
+			while (la.val == ",") {
+				Get();
+				Expression(out arg);
+				args.Add(arg); 
+			}
+		}
 	}
 
 
@@ -259,7 +346,7 @@ public Bridge bridge;
 	}
 	
 	bool[,] set = {
-		{T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x}
+		{T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x}
 
 	};
 } // end Parser
@@ -289,12 +376,16 @@ class Errors {
 			case 13: s = "\"func\" expected"; break;
 			case 14: s = "\"(\" expected"; break;
 			case 15: s = "\")\" expected"; break;
-			case 16: s = "\"{\" expected"; break;
-			case 17: s = "\"}\" expected"; break;
-			case 18: s = "??? expected"; break;
-			case 19: s = "invalid Dextr"; break;
-			case 20: s = "invalid DeclareFirst"; break;
-			case 21: s = "invalid Block"; break;
+			case 16: s = "\",\" expected"; break;
+			case 17: s = "\"{\" expected"; break;
+			case 18: s = "\"}\" expected"; break;
+			case 19: s = "\".\" expected"; break;
+			case 20: s = "??? expected"; break;
+			case 21: s = "invalid Dextr"; break;
+			case 22: s = "invalid DeclareFirst"; break;
+			case 23: s = "invalid Expression"; break;
+			case 24: s = "invalid Block"; break;
+			case 25: s = "invalid SimpleExpression"; break;
 
 			default: s = "error " + n; break;
 		}

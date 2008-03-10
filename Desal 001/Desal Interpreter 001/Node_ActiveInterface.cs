@@ -11,11 +11,14 @@ class Node_ActiveInterface : INode_Expression {
 		return _val.execute(scope).activeInterface.value;
 	}
 	
-	public void getInfo(out string name, out object children) {
-		name = "active-interface";
-		children = _val;
+	public string typeName {
+		get { return "active-interface"; }
 	}
 	
+	public ICollection<INode> children {
+		get { return new INode[]{ _val }; }
+	}
+
 	public HashSet<Identifier> identikeyDependencies {
 		get { return _val.identikeyDependencies; }
 	}

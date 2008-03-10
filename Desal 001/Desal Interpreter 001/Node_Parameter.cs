@@ -29,12 +29,16 @@ class Node_Parameter : INode {
 			( _defaultValue == null ? null : _defaultValue.execute(scope) ));
 	}
 	
-	public void getInfo(out string name, out object objs) {
-		name = "parameter";
-		objs = new object[]{ _nullableType, _name, _hasDefaultValue, _defaultValue };
+	public string typeName {
+		get { return "parameter"; }
+	}
+	
+	public ICollection<INode> children {
+		get { return new INode[]{ _nullableType, _name, _hasDefaultValue, _defaultValue }; }
 	}
 
+	//xxx take a closer look at this
 	public HashSet<Identifier> identikeyDependencies {
-		get { return Help.getIdentRefs(_defaultValue); }
+		get { return G.depends( _nullableType, _defaultValue ); }
 	}
 }

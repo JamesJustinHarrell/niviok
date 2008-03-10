@@ -23,12 +23,15 @@ class Node_Or : INode_Expression {
 		return Bridge.wrapBoolean(false);
 	}
 	
-	public void getInfo(out string name, out object objs) {
-		name = "or";
-		objs = new object[]{ _first, _second };
+	public string typeName {
+		get { return "or"; }
+	}
+	
+	public ICollection<INode> children {
+		get { return new INode[]{ _first, _second }; }
 	}
 
 	public HashSet<Identifier> identikeyDependencies {
-		get { return Help.getIdentRefs( _first, _second ); }
+		get { return G.depends( _first, _second ); }
 	}
 }

@@ -1,11 +1,9 @@
 using System.Collections.Generic;
 
 class Node_Integer : INode_Expression {
-	Bridge _bridge;
 	long _int;
 
-	public Node_Integer(Bridge bridge, long integer) {
-		_bridge = bridge;
+	public Node_Integer(long integer) {
 		_int = integer;
 	}
 	
@@ -13,12 +11,19 @@ class Node_Integer : INode_Expression {
 		return Bridge.wrapInteger(_int);
 	}
 	
-	public void getInfo(out string name, out object objs) {
-		name = "integer";
-		objs = _int;
+	public string typeName {
+		get { return "integer"; }
+	}
+	
+	public ICollection<INode> children {
+		get { return new INode[]{}; }
 	}
 	
 	public HashSet<Identifier> identikeyDependencies {
 		get { return new HashSet<Identifier>(); }
+	}
+	
+	public override string ToString() {
+		return _int.ToString();
 	}
 }

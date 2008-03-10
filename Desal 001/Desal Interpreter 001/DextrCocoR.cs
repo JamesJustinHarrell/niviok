@@ -29,11 +29,11 @@ namespace CocoR {
 			}
 			
 			_index = 0;
-			_peekLevel = 0;			
+			ResetPeek();			
 		}
 		
 		public Token Scan() {
-			_peekLevel = 0;
+			ResetPeek();
 			return _tokens[_index++];
 		}
 		
@@ -42,6 +42,9 @@ namespace CocoR {
 		}
 		
 		public void ResetPeek() {
+			/* 0 instead of 1, because
+			it returns the same token as Scan(),
+			just without advancing index */
 			_peekLevel = 0;
 		}
 	}

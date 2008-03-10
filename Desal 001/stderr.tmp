@@ -1,5 +1,0 @@
-
-Unhandled Exception: System.Exception: Dextr code contained errors
-  at Dextr.Parser.parseWithCocoR (.Bridge bridge, IList`1 tokens) [0x00000] 
-  at Dextr.Parser.parseDocument (.Bridge bridge, System.String filePath, System.String parserName) [0x00000] 
-  at DesalInterpreter001.Main (System.String[] arguments) [0x00000] 

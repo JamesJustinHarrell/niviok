@@ -15,13 +15,20 @@ class Node_NullableType : INode {
 			InterfaceFromValue.wrap(_nodeInterface.execute(scope)) );
 		return new NullableType( iface, _nodeNullable.val );
 	}
-
-	public void getInfo(out string name, out object objs) {
-		name = "nullable-type";
-		objs = new object[]{ _nodeInterface, _nodeNullable };
+	
+	public string typeName {
+		get { return "nullable-type"; }
+	}
+	
+	public ICollection<INode> children {
+		get { return new INode[]{ _nodeInterface, _nodeNullable }; }
 	}
 
 	public HashSet<Identifier> identikeyDependencies {
-		get { return Help.getIdentRefs(_nodeInterface); }
+		get {
+			return ( _nodeInterface == null ?
+				new HashSet<Identifier>() :
+				_nodeInterface.identikeyDependencies );
+		}
 	}
 }

@@ -17,12 +17,15 @@ class Node_Xor : INode_Expression {
 			Bridge.unwrapBoolean(first) != Bridge.unwrapBoolean(second) );
 	}
 	
-	public void getInfo(out string name, out object objs) {
-		name = "xor";
-		objs = new object[]{ _first, _second };
+	public string typeName {
+		get { return "xor"; }
+	}
+	
+	public ICollection<INode> children {
+		get { return new INode[]{ _first, _second }; }
 	}
 
 	public HashSet<Identifier> identikeyDependencies {
-		get { return Help.getIdentRefs( _first, _second ); }
+		get { return G.depends( _first, _second ); }
 	}
 }

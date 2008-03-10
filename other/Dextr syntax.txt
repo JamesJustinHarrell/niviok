@@ -101,6 +101,5 @@ ClassFunctionDefinition ::=
 	fill? StatementBlock
 	
 ClassFunctionParameters ::=
-	(identifier fill? ",")*
-	fill? identifier
+	Identifier { "," Identifier } .
 

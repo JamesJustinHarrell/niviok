@@ -45,7 +45,7 @@ class Value<T> : IValue {
 		if( face.methods.ContainsKey(name) )
 			return new BoundMethod<T>(_object.state, _faceimpl, name);
 		throw new ClientException(
-			System.String.Format("no member with name: '{0}'", name.str));
+			System.String.Format("no member with name: '{0}'", name.ToString()));
 	}
 	
 	public IValue getProperty(Identifier name) {
@@ -61,7 +61,7 @@ class Value<T> : IValue {
 			return _faceimpl.callMethod(_object.state, name, arguments);
 		}
 		catch(ClientException e) {
-			e.pushFunc( "." + name.str + " (in native class Value)" );
+			e.pushFunc( "." + name.ToString() + " (in native class Value)" );
 			throw e;
 		}
 	}

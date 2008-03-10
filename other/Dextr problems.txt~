@@ -32,7 +32,7 @@ Solutions:
 Third option:
 
 BraceBlock =
-	"{" [ Expression { "," Expression } ] "}" .
+	"{" [ LineExpression { "," LineExpression } ] "}" .
 
 TabBlock =
 	INDENT_OPEN Expression { NEWLINE Expression } NEWLINE INDENT_CLOSE .
@@ -40,7 +40,13 @@ TabBlock =
 BraceTabBlock =
 	"{" NEWLINE TabBlock "}" .
 
+
 block { a(), b(), c() }
+
+block
+	a()
+	b()
+	c()
 
 block {
 	a()
@@ -48,4 +54,21 @@ block {
 	c()
 }
 
+
+
+block { with decl foo = func(a){123}() { outer:println( times(2) ) } }
+
+block
+	with decl foo = func(a)
+		123
+	()
+		outer:println( times(2) )
+
+block {
+	with decl foo = func(a) {
+		123
+	} () {
+		outer:println( times(2) )
+	}
+}
 

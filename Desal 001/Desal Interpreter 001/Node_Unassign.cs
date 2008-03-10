@@ -15,9 +15,12 @@ class Node_Unassign : INode_Expression {
 		return val;
 	}
 	
-	public void getInfo(out string name, out object objs) {
-		name = "unassign";
-		objs = new object[]{ _name };
+	public string typeName {
+		get { return "unassign"; }
+	}
+	
+	public ICollection<INode> children {
+		get { return new INode[]{ _name }; }
 	}
 
 	public HashSet<Identifier> identikeyDependencies {

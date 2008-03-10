@@ -11,12 +11,19 @@ class Node_Boolean : INode {
 		get { return _val; }
 	}
 	
-	public void getInfo(out string name, out object children) {
-		name = "boolean";
-		children = _val;
+	public string typeName {
+		get { return "boolean"; }
+	}
+	
+	public ICollection<INode> children {
+		get { return new INode[]{}; }
 	}
 	
 	public HashSet<Identifier> identikeyDependencies {
 		get { return new HashSet<Identifier>(); }
+	}
+	
+	public override string ToString() {
+		return (_val ? "true" : "false");
 	}
 }

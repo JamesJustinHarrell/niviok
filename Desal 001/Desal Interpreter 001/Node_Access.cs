@@ -11,12 +11,19 @@ class Node_Access : INode {
 		get { return _access; }
 	}
 	
-	public void getInfo(out string name, out object children) {
-		name = "access";
-		children = _access;
+	public string typeName {
+		get { return "access"; }
 	}
 	
+	public ICollection<INode> children {
+		get { return new INode[]{}; }
+	}
+
 	public HashSet<Identifier> identikeyDependencies {
 		get { return new HashSet<Identifier>(); }
+	}
+	
+	public override string ToString () {
+		return _access.ToString();
 	}
 }

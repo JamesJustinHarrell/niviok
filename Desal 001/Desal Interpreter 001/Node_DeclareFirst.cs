@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-class Node_DeclareFirst : INode_DeclarationAny {
+class Node_DeclareFirst : INode_DeclareAny {
 	Node_Identifier _nameNode;
 	Node_IdentikeyType _typeNode;
 	INode_Expression _valueNode;
@@ -24,15 +24,18 @@ class Node_DeclareFirst : INode_DeclarationAny {
 			val );
 		return val;
 	}
-
-	public void getInfo(out string name, out object objs) {
-		name = "declare-first";
-		objs = new object[]{ _nameNode, _typeNode, _valueNode };
+	
+	public string typeName {
+		get { return "declare-first"; }
+	}
+	
+	public ICollection<INode> children {
+		get { return new INode[]{ _nameNode, _typeNode, _valueNode }; }
 	}
 
 	public HashSet<Identifier> identikeyDependencies {
 		get {
-			HashSet<Identifier> idents = Help.getIdentRefs( _typeNode, _valueNode );
+			HashSet<Identifier> idents = G.depends( _typeNode, _valueNode );
 			if( _typeNode.category != IdentikeyCategory.FUNCTION )
 				idents.Remove( _nameNode.identifier );
 			return idents;

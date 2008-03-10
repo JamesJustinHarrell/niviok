@@ -23,12 +23,15 @@ class Node_And : INode_Expression {
 		return Bridge.wrapBoolean(true);
 	}
 	
-	public void getInfo(out string name, out object objs) {
-		name = "and";
-		objs = new object[]{ _first, _second };
+	public string typeName {
+		get { return "and"; }
+	}
+	
+	public ICollection<INode> children {
+		get { return new INode[]{ _first, _second }; }
 	}
 
 	public HashSet<Identifier> identikeyDependencies {
-		get { return Help.getIdentRefs( _first, _second ); }
+		get { return G.depends( _first, _second ); }
 	}
 }

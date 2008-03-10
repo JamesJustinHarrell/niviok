@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-class Node_DeclareEmpty : INode_DeclarationAny {
+class Node_DeclareEmpty : INode_DeclareAny {
 	Node_Identifier _name;
 	Node_IdentikeyType _type;
 
@@ -18,12 +18,15 @@ class Node_DeclareEmpty : INode_DeclarationAny {
 		return new NullValue();
 	}
 	
-	public void getInfo(out string name, out object children) {
-		name = "declare-empty";
-		children = new object[]{ _name, _type };
+	public string typeName {
+		get { return "declare-empty"; }
+	}
+	
+	public ICollection<INode> children {
+		get { return new INode[]{ _name, _type }; }
 	}
 
 	public HashSet<Identifier> identikeyDependencies {
-		get { return Help.getIdentRefs( _name, _type ); }
+		get { return G.depends( _type ); }
 	}
 }

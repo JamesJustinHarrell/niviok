@@ -4,23 +4,34 @@ using System.Diagnostics;
 
 namespace Dextr {
 
+	/*
+	character types:
+		" "
+		"\n"
+		"\t"
+		free
+		illegal //cannot appear anywhere, even in strings
+		numerical
+		reserved
+	*/
+
 	enum TokenType {	
-		//value = null
-		INDENT_OPEN = 1, 
+		//value == null
+		DOCUMENT_OPEN,
+		DOCUMENT_CLOSE,
+		INDENT_OPEN, 
 		INDENT_CLOSE,
 		NEWLINE,
 		
 		//value != null
-		BRACKET_OPEN,
-		BRACKET_CLOSE,
-		NUMBER,
-		STRING,
-		WORD,
-		OTHER, // = 9
-		EOF = 0 //Coco/R reserves 0 for EOF
+		FREE,
+		INTEGER,
+		RATIONAL,
+		RESERVED,
+		STRING
 	}
-
-	class Token {
+	
+	class Token {	
 		TokenType _type;
 		string _value;
 		int _lineNumber;
@@ -59,13 +70,15 @@ namespace Dextr {
 	}
 
 	//breaks up a string into a series of tokens
-	class Tokenizer {	
+	class Tokenizer {
 		enum Mode {
 			BEGIN_LINE,
 			CONTINUE_NONCODE_LINE,
 			CONTINUE_CODE_LINE,
 			DONE
 		}
+		
+		class EOF : Exception {};
 		
 		string content;
 		int index;
@@ -74,25 +87,30 @@ namespace Dextr {
 		int currentColumn;
 		Mode mode;
 		IList<Token> tokens;
-			
-		bool isWordChar(char c) {
-			return ('a' <= c && c <= 'z') || ('A' <= c && c <= 'Z') || c == '?' || c == '!';
+		
+		bool isFree(char c) {
+			return !(
+				c == ' ' ||
+				c == '\n' ||
+				c == '\t' ||
+				isIllegal(c) ||
+				isNumerical(c) ||
+				isReserved(c) );
+		}
+
+		bool isIllegal(char c) {
+			string chars = "\0";
+			return System.Array.IndexOf(chars.ToCharArray(), c) > -1;
 		}
 		
-		bool isOpeningBracket(char c) {
-			return System.Array.IndexOf("({[<".ToCharArray(), c) > -1;
+		bool isNumerical(char c) {
+			string chars = "0123456789";
+			return System.Array.IndexOf(chars.ToCharArray(), c) > -1;
 		}
-		
-		bool isClosingBracket(char c) {
-			return System.Array.IndexOf(")}]>".ToCharArray(), c) > -1;
-		}
-		
-		bool isOperatorChar(char c) {
-			return System.Array.IndexOf(",.=/+-*".ToCharArray(), c) > -1;
-		}
-		
-		bool isNumeral(char c) {
-			return (c == '0' || '1' <= c && c <= '9');
+
+		bool isReserved(char c) {
+			string chars = ",.=+-*/`~@%^&|\\(){}[]<>";
+			return System.Array.IndexOf(chars.ToCharArray(), c) > -1;
 		}
 		
 		//the current character
@@ -113,7 +131,7 @@ namespace Dextr {
 			index++;
 			currentColumn++;
 			if( index >= content.Length )
-				throw new System.Exception("unexpected end of text");
+				throw new EOF();
 		}
 		
 		void checkedAdvance(char c) {
@@ -167,14 +185,14 @@ namespace Dextr {
 				mode = Mode.CONTINUE_CODE_LINE;
 			}
 		}
-		
+
 		void continueNoncodeLine() {
 			if( isCurrent(' ') )
 				consumeSpace();
-			else if( isCurrent('#') )
-				consumePoundComment(); //also consumes newline
 			else if( isCurrent('\n') )
 				consumeNewline();
+			else if( isCurrent('#') )
+				consumePoundComment(); //also consumes newline
 			else if( current() == '/' && peek() == '*' )
 				consumeSlashStarComment();
 			else
@@ -186,40 +204,25 @@ namespace Dextr {
 		
 		void continueCodeLine() {
 			char c = current();
-			
-			if( c == '\t' )
-				throw new System.Exception("tab found after non-tab character");
-			
-			if( isWordChar(c) )
-				consumeWord();
-			else if( c == ' ' )
+
+			if( c == ' ' )
 				consumeSpace();
 			else if( c == '\n' )
 				consumeNewline();
+			else if( c == '\t' )
+				throw new System.Exception("tab found after non-tab character");
 			else if( c == '"' || c == '\'' )
 				consumeString();
-			else if( isNumeral(c) )
-				consumeNumber();
 			else if( c == '#' )
 				consumePoundComment();
 			else if( c == '/' && peek() == '*' )
 				consumeSlashStarComment();
-			else if( isOpeningBracket(c) ) {
-				addToken(
-					TokenType.BRACKET_OPEN, c.ToString(),
-					currentColumn, currentColumn );
-				advance();
-			}
-			else if( isClosingBracket(c) ) {
-				addToken(
-					TokenType.BRACKET_CLOSE, c.ToString(),
-					currentColumn, currentColumn );
-				advance();
-			}
-			else if( isOperatorChar(c) )
-				consumeCharacter();
-			else if( c == '\0' )
-				mode = Mode.DONE;
+			else if( isFree(c) )
+				consumeFree();
+			else if( isNumerical(c) )
+				consumeNumber();
+			else if( isReserved(c) )
+				consumeReserved();
 			else {
 				System.Console.WriteLine("unknown character: '{0}'", c);
 				index = content.Length;
@@ -227,9 +230,12 @@ namespace Dextr {
 			}
 		}
 		
-		void consumeCharacter() {
+		//xxx need to ensure only consuming values from a list
+		//e.g. +=, but not `~%^$
+		void consumeReserved() {
+			Debug.Assert(isReserved(current()));
 			addToken(
-				TokenType.OTHER, current().ToString(),
+				TokenType.RESERVED, current().ToString(),
 				currentColumn, currentColumn );
 			advance();
 		}
@@ -272,25 +278,34 @@ namespace Dextr {
 			if( lastToken.type != TokenType.NEWLINE )
 				addToken(TokenType.NEWLINE, null, currentColumn, currentColumn);
 
-			//consume additional newlines without adding tokens
-			do {
-				advance();
-				lineNumber++;
+			//the last character will always be a newline, because
+			//a newline character is appended before tokenization
+			try {
+				//consume additional newlines without adding tokens
+				do {
+					advance();
+					lineNumber++;
+				}
+				while( isCurrent('\n') );
+				
+				currentColumn = 1;
+				mode = Mode.BEGIN_LINE;
 			}
-			while( isCurrent('\n') );
-			
-			currentColumn = 1;
-			mode = Mode.BEGIN_LINE;
+			catch( EOF e ) {
+				mode = Mode.DONE;
+			}
 		}
 		
+		//xxx also needs to work for rational numbers
+		//xxx unless it could be handled in the grammar
 		void consumeNumber() {
 			int startColumn = currentColumn;
 			string s = "";
-			while( isNumeral(current()) ) {
+			while( isNumerical(current()) ) {
 				s += current();
 				advance();
 			}
-			addToken(TokenType.NUMBER, s, startColumn, currentColumn-1);
+			addToken(TokenType.INTEGER, s, startColumn, currentColumn-1);
 		}
 		
 		void consumeSpace() {
@@ -319,18 +334,18 @@ namespace Dextr {
 			addToken(TokenType.STRING, s, startColumn, currentColumn-1);
 		}
 		
-		void consumeWord() {
+		void consumeFree() {
 			int startColumn = currentColumn;
 			string word = "";
-			while( isWordChar(current()) ) {
+			while( isFree(current()) ) {
 				word += current();
 				advance();
 			}
-			addToken(TokenType.WORD, word, startColumn, currentColumn-1);
+			addToken(TokenType.FREE, word, startColumn, currentColumn-1);
 		}
 
 		Tokenizer(string a_content) {
-			content = a_content + "\n\0";
+			content = a_content + "\n";
 			index = 0;
 			indentLevel = 0;
 			lineNumber = 1;
@@ -340,8 +355,12 @@ namespace Dextr {
 
 			try {
 				while(true) {
-					if( index >= content.Length )
-						throw new System.Exception("unexpected end of text");
+					if( index >= content.Length ) {
+						if( mode == Mode.DONE )
+							break;
+						else
+							throw new System.Exception("ran past end of text");
+					}
 				
 					if( mode == Mode.BEGIN_LINE )
 						beginLine();
@@ -349,8 +368,6 @@ namespace Dextr {
 						continueNoncodeLine();
 					else if( mode == Mode.CONTINUE_CODE_LINE )
 						continueCodeLine();
-					else if( mode == Mode.DONE )
-						break;
 					else
 						throw new System.Exception("unknown mode");
 				}

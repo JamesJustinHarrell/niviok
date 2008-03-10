@@ -2,13 +2,13 @@
 
 using System.Collections.Generic;
 
-class Node_DeclarationClass : INode_DeclarationAny {
-	INode_DeclarationAny _declaration;
+class Node_DeclareClass : INode_DeclareAny {
+	INode_DeclareAny _declaration;
 
-	public Node_DeclarationClass() {
+	public Node_DeclareClass() {
 	}
 	
-	public INode_DeclarationAny decl {
+	public INode_DeclareAny decl {
 		get { return _declaration; }
 	}
 	
@@ -16,8 +16,12 @@ class Node_DeclarationClass : INode_DeclarationAny {
 		throw new Error_Unimplemented();
 	}
 	
-	public void getInfo(out string name, out object children) {
-		throw new Error_Unimplemented();
+	public string typeName {
+		get { return "declare-class"; }
+	}
+	
+	public ICollection<INode> children {
+		get { return new INode[]{ _declaration }; }
 	}
 	
 	public HashSet<Identifier> identikeyDependencies {

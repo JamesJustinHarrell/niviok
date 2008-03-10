@@ -91,7 +91,7 @@ class DesalInterpreter001 {
 	}
 	
 	Scope createGlobalScope(Bridge bridge) {
-		Scope scope = new Scope();
+		Scope scope = new Scope(bridge);
 		
 		//func println(dyn value)
 		IList<Parameter> printParameters = new Parameter[] {
@@ -153,30 +153,34 @@ class DesalInterpreter001 {
 	}
 	
 	void printNode(int level, INode node) {
-		string name;
-		object children;	
 		printTabs(level);
-		node.getInfo(out name, out children); //xxx should this use bridge?
-		Console.Write(name);
+		Console.Write(node.typeName);
 
 		//write identikey dependencies
-		Console.Write(" (");
-		bool first = true;
-		foreach( Identifier ident in node.identikeyDependencies ) {
-			if( first ) first = false;
-			else Console.Write(", ");
-			Console.Write( ident.str );
+		ICollection<Identifier> depends = node.identikeyDependencies;
+		if( depends.Count > 0 ) {
+			Console.Write(" (");
+			bool first = true;
+			foreach( Identifier ident in depends ) {
+				if( first ) first = false;
+				else Console.Write(", ");
+				Console.Write( ident.ToString() );
+			}
+			Console.Write(")");
 		}
-		Console.Write(")");
 
 		Console.WriteLine("");
-		printObject(level+1, children);
+		
+		//write children or contents
+		ICollection<INode> children = node.children;
+		printObject(
+			level+1,
+			(children.Count > 0 ? (object)children : (object)node.ToString()) );
 	}
 	
 	void printObject(int level, object obj) {
-		if( obj == null)
-			return;
-		if( obj is INode ) {
+		if( obj == null) {}
+		else if( obj is INode ) {
 			printNode( level, (INode)obj );
 		}
 		else if( obj is string ) {

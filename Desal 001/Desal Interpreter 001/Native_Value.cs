@@ -39,7 +39,7 @@ class NativeValue<T> : IValue {
 		if( face.methods.ContainsKey(name) )
 			return new BoundMethod<T>(_obj, _impl, name);
 		throw new ClientException(
-			System.String.Format("no member with name: '{0}'", name.str));
+			System.String.Format("no member with name: '{0}'", name.ToString()));
 	}
 	
 	public T obj {

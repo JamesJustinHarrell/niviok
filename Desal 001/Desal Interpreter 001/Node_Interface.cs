@@ -18,11 +18,6 @@ class Node_Interface : INode_Expression {
 		_properties = properties;
 		_methods = methods;
 	}
-
-	public IValue execute(Scope scope) {
-		throw new Error_Unimplemented();
-		//xxx return InterfaceWrapper.wrap( evaluateInterface(scope) );
-	}
 	
 	public IInterface evaluateInterface(Scope scope) {
 		IList<PropertyInfo> props = new List<PropertyInfo>();
@@ -35,9 +30,18 @@ class Node_Interface : INode_Expression {
 		}
 		return new Interface( props, meths );
 	}
-	
-	public void getInfo(out string name, out object children) {
+
+	public IValue execute(Scope scope) {
 		throw new Error_Unimplemented();
+		//xxx return InterfaceWrapper.wrap( evaluateInterface(scope) );
+	}
+	
+	public string typeName {
+		get { return "interface"; }
+	}
+	
+	public ICollection<INode> children {
+		get { throw new Error_Unimplemented(); }
 	}
 
 	public HashSet<Identifier> identikeyDependencies {

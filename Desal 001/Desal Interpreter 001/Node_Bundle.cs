@@ -38,12 +38,15 @@ class Node_Bundle : INode {
 		return 0;
 	}
 	
-	public void getInfo(out string name, out object children) {
-		name = "bundle";
-		children = _planes;
+	public string typeName {
+		get { return "bundle"; }
+	}
+	
+	public ICollection<INode> children {
+		get { return G.collect<INode>(_planes); }
 	}
 
 	public HashSet<Identifier> identikeyDependencies {
-		get { return Help.getIdentRefs(_planes); }
+		get { return G.depends(_planes); }
 	}
 }

@@ -11,12 +11,15 @@ class Node_Array : INode_Expression {
 		throw new Error_Unimplemented();
 	}
 	
-	public void getInfo(out string name, out object children) {
-		name = "array";
-		children = _elements;
+	public string typeName {
+		get { return "array"; }
+	}
+	
+	public ICollection<INode> children {
+		get { return G.collect<INode>(_elements); }
 	}
 	
 	public HashSet<Identifier> identikeyDependencies {
-		get { return Help.getIdentRefs(_elements); }
+		get { return G.depends(_elements); }
 	}
 }

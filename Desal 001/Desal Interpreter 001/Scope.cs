@@ -30,10 +30,12 @@ class Identikey {
 
 class Scope {
 	IDictionary<Identifier, Identikey> _identikeys;
+	Bridge _bridge;
 	Scope _parent;
 	
-	public Scope() {
+	public Scope(Bridge bridge) {
 		_identikeys = new Dictionary<Identifier, Identikey>();
+		_bridge = bridge;
 	}
 	
 	public Scope(Scope parentScope) {
@@ -43,7 +45,7 @@ class Scope {
 	
 	//create copy that only includes identikeys specifiedy by @idents
 	public Scope createClosure(ICollection<Identifier> wantedIdents) {
-		Scope scope = new Scope();
+		Scope scope = new Scope(_bridge);
 		Scope currentOld = this;
 		while( currentOld != null ) {
 			foreach( Identifier oldIdent in currentOld._identikeys.Keys ) {
@@ -79,7 +81,7 @@ class Scope {
 		if( ! _identikeys.ContainsKey(ident) )
 			System.Console.WriteLine(
 				"WARNING: scope does not contain declare-first identikey named {0}",
-				ident.str );
+				ident.ToString() );
 		_identikeys[ident].val = val;
 	}
 
@@ -88,13 +90,13 @@ class Scope {
 			return _identikeys[ident].val;
 		if( _parent != null )
 			return _parent.evaluateIdentifier(ident);
-		throw new ClientException( "identifier '" + ident.str + "' is undefined" );
+		throw new ClientException( "identifier '" + ident.ToString() + "' is undefined" );
 	}
 	
 	public IValue evaluateLocalIdentifier(Identifier ident) {
 		if( _identikeys.ContainsKey(ident) )
 			return _identikeys[ident].val;
-		throw new ClientException( "identifier '" + ident.str + "' is undefined" );
+		throw new ClientException( "identifier '" + ident.ToString() + "' is undefined" );
 	}
 	
 	/* xxx not used yet
@@ -110,4 +112,8 @@ class Scope {
 		}
 	}
 	*/
+	
+	public Bridge bridge {
+		get { return ( _bridge != null ? _bridge : _parent.bridge ); }
+	}
 }

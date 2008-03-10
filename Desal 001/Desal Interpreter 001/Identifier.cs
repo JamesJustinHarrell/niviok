@@ -5,13 +5,10 @@ class Identifier {
 	public Identifier(string str) {
 		_str = str;
 	}
-	
-	public string str {
-		get { return _str; }
-	}
-	
+
 	public override bool Equals(object o) {
 		return (
+			o != null &&
 			o is Identifier &&
 			((Identifier)o)._str.Equals(_str) );
 	}
@@ -21,6 +18,6 @@ class Identifier {
 	}
 	
 	public override string ToString() {
-		return "Identifier(\"" + _str + "\")";
+		return _str;
 	}
 };

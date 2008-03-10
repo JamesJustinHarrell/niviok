@@ -57,8 +57,10 @@ comment comment */
 	
 	/*
 	For the above, the identented part is parsed as a block node.
-	So we have decl foo = 2 + block{ 3 + 4 + 5 + 6 + 7 }
-	Which is trivially optimizable.
+	So we have:
+		decl foo = 2 + block{ 3 + 4 + 5 + 6 + 7 }
+	Which is trivially optimizable to:
+		decl foo = 2 + 3 + 4 + 5 + 6 + 7
 	*/
 	
 	decl lastInDoStuff
@@ -116,54 +118,3 @@ func testBooleanLogic() {
 	println( t xnor f )
 	println( t xnor t )
 }
-
-
-/*
-
-foo(
-	1, 2, 3,
-	1, 2, 3, function()*{
-		for i in numbers
-			return i
-	}, 7, 8, 9 )
-
-foo(1, 2, 3, 4, 5, 6, 7, 8, 9, function()*{
-	for i in numbers
-		return i
-}, 7, 8, 9 )
-
-
-for i in numbers {
-println i
-			decl j = i * 2
-	println j
-}
-
-for
-i
-in
-numbers
-{
-NEWLINE
-println
-i
-NEWLINE
-INDENT_OPEN
-INDENT_OPEN
-INDENT_OPEN
-decl
-j
-=
-i
-*
-2
-NEWLINE
-INDENT_CLOSE
-INDENT_CLOSE
-println
-j
-NEWLINE
-INDENT_CLOSE
-}
-
-*/

@@ -1,0 +1,126 @@
+using System.Collections.Generic;
+
+COMPILER dextrbundle
+	public Bridge bridge;
+	public Node_Bundle bundle;
+	public Node_Plane plane;
+	public bool shouldParseBundle;
+
+TOKENS //order needs to match that in Desal Interpreter to get same numbers
+	INDENTOPENt
+	INDENTCLOSEt
+	NEWLINEt
+	BRACKETOPENt
+	BRACKETCLOSEt
+	NUMBERt
+	STRINGt
+	WORDt
+	OTHERt
+
+PRODUCTIONS
+
+	dextrbundle
+	=
+	IF(shouldParseBundle == true) Bundle
+	|
+	Plane
+	.
+	
+	Bundle
+	=
+	{ NEWLINEt }
+	[ "expose" WORDt NEWLINEt ]
+	Plane
+	EOF (. bundle = new Node_Bundle(new Node_Plane[]{plane}); .)
+	.
+	
+	Plane (.
+		Node_DeclareFirst declFirst;
+		IList<Node_DeclareFirst> declFirstList = new List<Node_DeclareFirst>(); .)
+	=
+	{ NEWLINEt }
+	{
+		DeclareFirst<out declFirst> (. declFirstList.Add(declFirst); .)
+		{ NEWLINEt }
+	}
+	EOF (. plane = new Node_Plane(declFirstList); .)
+	.
+	
+	DeclareFirst<out Node_DeclareFirst declFirst>
+		(. declFirst = null; /* In case neither type of declare-first is found */ .)
+	=
+	DeclareFirstNormal<out declFirst>
+	|
+	FunctionDeclaration<out declFirst>
+	.
+	
+	DeclareFirstNormal<out Node_DeclareFirst declFirst>
+		(. Node_Identifier ident; INode_Expression expression; .)
+	=
+	"decl"
+	Identifier<out ident>
+	"="
+	Expression<out expression> (.
+		declFirst = new Node_DeclareFirst(
+		ident,
+		new Node_IdentikeyType(
+			new Node_IdentikeyCategory(IdentikeyCategory.DYNAMIC),
+			new Node_NullableType(
+				null,
+				new Node_Boolean(false)),
+			new Node_Boolean(false)),
+		expression); .)
+	.
+	
+	FunctionDeclaration<out Node_DeclareFirst declFirst>
+		(. Node_Identifier ident; Node_Block block; .)
+	=
+	"func"
+	Identifier<out ident>
+	"("
+	")"
+	NEWLINEt
+	Block<out block> (.
+		declFirst = new Node_DeclareFirst(
+		ident,
+		new Node_IdentikeyType(
+			new Node_IdentikeyCategory(IdentikeyCategory.DYNAMIC),
+			new Node_NullableType(
+				null,
+				new Node_Boolean(false)),
+			new Node_Boolean(false)),
+		block); .)
+	.
+	
+	Block<out Node_Block block> (.
+		INode_Expression expr;
+		IList<INode_Expression> exprList = new List<INode_Expression>(); .)
+	=
+	INDENTOPENt
+	[
+		Expression<out expr> (. exprList.Add(expr); .)
+		NEWLINEt
+		{
+			Expression<out expr> (. exprList.Add(expr); .)
+			NEWLINEt
+		}
+	]
+	INDENTCLOSEt (. block = new Node_Block(exprList); .)
+	.
+	
+	Expression<out INode_Expression expression>
+	=
+	LineExpression<out expression>
+	.
+	
+	LineExpression<out INode_Expression expression> (. Node_Identifier ident; .)
+	=
+	Identifier<out ident> (. expression = ident; .) 
+	.
+
+	Identifier<out Node_Identifier ident>
+	=
+	WORDt (. ident = new Node_Identifier(bridge, new Identifier(t.val)); .)
+	.
+	
+END dextrbundle .

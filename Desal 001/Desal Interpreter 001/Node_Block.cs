@@ -2,10 +2,6 @@ using System.Collections.Generic;
 
 class Node_Block : INode_Expression {
 	IList<INode_Expression> _members;
-
-	public Node_Block(IList<INode_Expression> members) {
-		_members = members;
-	}
 	
 	/* xxx Could something refer to an outer identifier before declaring its own?
 	func foo() {
@@ -34,6 +30,10 @@ class Node_Block : INode_Expression {
 			return idents;
 		}
 	}
+
+	public Node_Block(IList<INode_Expression> members) {
+		_members = members;
+	}
 	
 	public IValue execute(Scope scope) {
 		Scope innerScope = new Scope(scope);
@@ -50,17 +50,20 @@ class Node_Block : INode_Expression {
 		}
 		return rv;
 	}
-
-	public void getInfo(out string name, out object objs) {
-		name = "block";
-		objs = _members;
+	
+	public string typeName {
+		get { return "block"; }
+	}
+	
+	public ICollection<INode> children {
+		get { return G.collect<INode>(_members); }
 	}
 	
 	//xxx remove references to identikeys that are defined in this node (besides function identikeys)
-	//xxx also, need to always remove references to identikeys that are global
+	//xxx also, need to always remove references to identikeys that are global (do I?)
 	public HashSet<Identifier> identikeyDependencies {
 		get {
-			HashSet<Identifier> idents = Help.getIdentRefs(_members);
+			HashSet<Identifier> idents = G.depends(_members);
 			idents.ExceptWith(declaredIdentikeys);
 			return idents;
 		}

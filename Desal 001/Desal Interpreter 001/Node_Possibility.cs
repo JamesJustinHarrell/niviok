@@ -27,13 +27,16 @@ class Node_Possibility : INode_Expression {
 	public IValue executeResult(Scope scope) {
 		return _resultNode.execute(scope);
 	}
-
-	public void getInfo(out string name, out object objs) {
-		name = "possibility";
-		objs = new object[]{ _testNode, _resultNode };
+	
+	public string typeName {
+		get { return "possibility"; }
+	}
+	
+	public ICollection<INode> children {
+		get { return new INode[]{ _testNode, _resultNode }; }
 	}
 
 	public HashSet<Identifier> identikeyDependencies {
-		get { return Help.getIdentRefs( _testNode, _resultNode ); }
+		get { return G.depends( _testNode, _resultNode ); }
 	}
 }

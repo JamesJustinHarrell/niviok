@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-class Node_DeclareAssign : INode_DeclarationAny, INode_Expression {
+class Node_DeclareAssign : INode_DeclareAny, INode_Expression {
 	Node_Identifier _name;
 	Node_IdentikeyType _type;
 	INode_Expression _value;
@@ -27,14 +27,17 @@ class Node_DeclareAssign : INode_DeclarationAny, INode_Expression {
 		return val;
 	}
 	
-	public void getInfo(out string name, out object children) {
-		name = "declare-assign";
-		children = new object[]{ _name, _type, _value };
+	public string typeName {
+		get { return "declare-assign"; }
+	}
+	
+	public ICollection<INode> children {
+		get { return new INode[]{ _name, _type, _value }; }
 	}
 
 	public HashSet<Identifier> identikeyDependencies {
 		get {
-			HashSet<Identifier> idents = Help.getIdentRefs( _type, _value );
+			HashSet<Identifier> idents = G.depends( _type, _value );
 			if( _type.category != IdentikeyCategory.FUNCTION )
 				idents.Remove( _name.identifier );
 			return idents;

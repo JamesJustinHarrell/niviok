@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 
-class Node_ExtractNamedMember : INode_Expression {
+class Node_ExtractMember : INode_Expression {
 	INode_Expression _sourceNode;
 	Node_Identifier _memberNameNode;
 
-	public Node_ExtractNamedMember(INode_Expression sourceNode, Node_Identifier memberNameNode) {
+	public Node_ExtractMember(
+	INode_Expression sourceNode, Node_Identifier memberNameNode) {
 		_sourceNode = sourceNode;
 		_memberNameNode = memberNameNode;
 	}
@@ -15,9 +16,12 @@ class Node_ExtractNamedMember : INode_Expression {
 		return source.extractNamedMember(memberName);
 	}
 	
-	public void getInfo(out string name, out object children) {
-		name = "extract-named-member";
-		children = new object[]{ _sourceNode, _memberNameNode };
+	public string typeName {
+		get { return "extract-member"; }
+	}
+	
+	public ICollection<INode> children {
+		get { return new INode[]{ _sourceNode, _memberNameNode }; }
 	}
 	
 	public HashSet<Identifier> identikeyDependencies {

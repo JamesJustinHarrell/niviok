@@ -15,9 +15,12 @@ class Node_Method : INode {
 			null ); //InterfaceFromValue.wrap( _iface.evaluate(scope) ) );
 	}
 	
-	public void getInfo(out string name, out object children) {
-		name = "method";
-		children = new object[]{ _name, _iface };
+	public string typeName {
+		get { return "method"; }
+	}
+	
+	public ICollection<INode> children {
+		get { return new INode[]{ _name, _iface }; }
 	}
 
 	public HashSet<Identifier> identikeyDependencies {

@@ -5,7 +5,8 @@ class Node_Property : INode {
 	Node_NullableType _type;
 	Node_Access _access;
 
-	public Node_Property(Node_Identifier name, Node_NullableType type, Node_Access access) {
+	public Node_Property(
+	Node_Identifier name, Node_NullableType type, Node_Access access) {
 		_name = name;
 		_type = type;
 		_access = access;
@@ -30,12 +31,15 @@ class Node_Property : INode {
 			_access.access );
 	}
 	
-	public void getInfo(out string name, out object children) {
-		name = "property";
-		children = new object[]{ _name, _type, _access };
+	public string typeName {
+		get { return "property"; }
+	}
+	
+	public ICollection<INode> children {
+		get { return new INode[]{ _name, _type, _access }; }
 	}
 
 	public HashSet<Identifier> identikeyDependencies {
-		get { return Help.getIdentRefs( _type, _access ); }
+		get { return G.depends( _type, _access ); }
 	}
 }

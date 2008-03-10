@@ -1,27 +1,27 @@
 using System.Collections.Generic;
 
 class Node_Class : INode_Expression {
-	IList<Node_DeclarationClass> _staticDeclarations;
+	IList<Node_DeclareClass> _staticDeclares;
 	Node_Block _staticConstructor;
 	IList<Node_Function> _staticCallees;
 	IList<Node_ClassProperty> _staticProperties;
 	IList<Node_Function> _instanceConstructors;
-	IList<INode_DeclarationAny> _instanceDeclarations;
+	IList<INode_DeclareAny> _instanceDeclares;
 	IList<Node_InterfaceImplementation> _interfaceImplementations;
 
 	public Node_Class(
-	IList<Node_DeclarationClass> staticDeclarations,
+	IList<Node_DeclareClass> staticDeclares,
 	Node_Block staticConstructor,
 	IList<Node_Function> staticCallees,
 	IList<Node_ClassProperty> staticProperties,
 	IList<Node_Function> instanceConstructors,
-	IList<INode_DeclarationAny> instanceDeclarations,
+	IList<INode_DeclareAny> instanceDeclares,
 	IList<Node_InterfaceImplementation> interfaceImplementations ) {
-		_staticDeclarations = staticDeclarations;
+		_staticDeclares = staticDeclares;
 		_staticConstructor = staticConstructor;
 		_staticProperties = staticProperties;
 		_instanceConstructors = instanceConstructors;
-		_instanceDeclarations = instanceDeclarations;
+		_instanceDeclares = instanceDeclares;
 		_interfaceImplementations = interfaceImplementations;
 	}	
 
@@ -39,20 +39,20 @@ class Node_Class : INode_Expression {
 		*/
 
 		//declaration-pervasive
-		foreach( Node_DeclarationClass declClass in _staticDeclarations ) {
+		foreach( Node_DeclareClass declClass in _staticDeclares ) {
 			if( declClass.decl is Node_DeclareFirst )
 				declClass.execute(staticScope);
 		}
 		
 		//not declaration-const-empty
-		foreach( Node_DeclarationClass declClass in _staticDeclarations ) {
-			if( !(declClass.decl is Node_DeclarationConstEmpty) )
+		foreach( Node_DeclareClass declClass in _staticDeclares ) {
+			if( !(declClass.decl is Node_DeclareConstEmpty) )
 				declClass.execute(staticScope);
 		}
 		
 		//declaration-const-empty
-		foreach( Node_DeclarationClass declClass in _staticDeclarations ) {
-			if( declClass.decl is Node_DeclarationConstEmpty )
+		foreach( Node_DeclareClass declClass in _staticDeclares ) {
+			if( declClass.decl is Node_DeclareConstEmpty )
 				declClass.execute(staticScope);
 		}
 		
@@ -68,16 +68,12 @@ class Node_Class : INode_Expression {
 		throw new Error_Unimplemented();
 	}
 	
-	public void getInfo(out string name, out object objs) {
-		name = "class";
-		objs = new object[] {
-			_staticDeclarations,
-			_staticConstructor,
-			_staticCallees,
-			_staticProperties,
-			_instanceConstructors,
-			_instanceDeclarations,
-			_interfaceImplementations };
+	public string typeName {
+		get { return "class"; }
+	}
+	
+	public ICollection<INode> children {
+		get { throw new Error_Unimplemented(); }
 	}
 	
 	public HashSet<Identifier> identikeyDependencies {
@@ -109,7 +105,7 @@ value producted by evaluating class node
 class ClassState {
 	//xxx public Node_Class classNode;
 	public Scope staticScope;
-	public IList<INode_DeclarationAny> instanceDeclarations;
+	public IList<INode_DeclareAny> instanceDeclares;
 	public ClassInterfaceImplementation defaultInterfaceImplementation;
 }
 
@@ -166,7 +162,7 @@ class ClassInterfaceImplementation {
 	
 	public IValue evaluateCall(ClassState state, Arguments args) {
 		Scope instanceScope = new Scope(state.staticScope);
-		foreach( INode_DeclarationAny decl in state.instanceDeclarations ) {
+		foreach( INode_DeclareAny decl in state.instanceDeclares ) {
 			decl.execute(instanceScope);
 		}
 		_callee.evaluate(instanceScope).executeCall(args);
