@@ -4,23 +4,13 @@ using System.Collections;
 using System.Collections.Generic;
 
 static class Depends {
-	//xxx unused
-	static HashSet<Identifier> collectFromList( ICollection args ) {
-		HashSet<Identifier> idents = new HashSet<Identifier>();
-		foreach( object o in args ) {
-			if( o == null )
-				continue;
-			if( o is INode )
-				idents.UnionWith( (o as INode).identikeyDependencies );
-			else if( o is ICollection )
-				idents.UnionWith( collectFromList(o as ICollection) );
-			else
-				throw new System.Exception("unknown object type: " + o.ToString());
-		}
-		return idents;
+	//unions the dependencies of nodes extracted from params
+	static HashSet<Identifier> collectDepends( params object[] args ) {
+		return unionDepends(G.collect<INode>(args));
 	}
-	
-	static HashSet<Identifier> collectFromNodeList( ICollection<INode> args ) {
+
+	//unions the dependencies of element nodes together
+	static HashSet<Identifier> unionDepends(ICollection<INode> args) {
 		HashSet<Identifier> idents = new HashSet<Identifier>();
 		foreach( INode node in args ) {
 			if( node != null )
@@ -44,7 +34,7 @@ static class Depends {
 
 	//declare-assign
 	public static HashSet<Identifier> depends(Node_DeclareAssign node) {
-		HashSet<Identifier> idents = G.depends( node.identikeyType, node.value );
+		HashSet<Identifier> idents = collectDepends(node.identikeyType, node.value);
 		if( node.identikeyType.identikeyCategory.value != IdentikeyCategory.FUNCTION )
 			idents.Remove( node.name.value );
 		return idents;
@@ -52,7 +42,7 @@ static class Depends {
 	
 	//declare-first
 	public static HashSet<Identifier> depends(Node_DeclareFirst node) {
-		HashSet<Identifier> idents = G.depends( node.identikeyType, node.value );
+		HashSet<Identifier> idents = collectDepends(node.identikeyType, node.value);
 		if( node.identikeyType.identikeyCategory.value != IdentikeyCategory.FUNCTION )
 			idents.Remove( node.name.value );
 		return idents;
@@ -91,16 +81,24 @@ static class Depends {
 	
 	//parameter
 	public static HashSet<Identifier> depends(Node_Parameter node) {
-		return collectFromNodeList(new INode[]{ node.defaultValue, node.nullableType });
+		return collectDepends(node.defaultValue, node.nullableType);
+	}
+	
+	//plane
+	public static HashSet<Identifier> depends(Node_Plane node) {
+		HashSet<Identifier> idents = collectDepends(node.binds);
+		foreach( Node_DeclareFirst decl in node.binds )
+			idents.Remove( decl.name.value ); //xxx only if not function
+		return idents;
 	}
 	
 	//property
 	public static HashSet<Identifier> depends(Node_Property node) {
-		return collectFromNodeList(new INode[]{ node.access, node.nullableType });
+		return collectDepends(node.access, node.nullableType);
 	}
 	
 	//node
 	public static HashSet<Identifier> depends(INode node) {
-		return collectFromNodeList(node.childNodes);
+		return unionDepends(node.childNodes);
 	}
 }

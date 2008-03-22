@@ -32,7 +32,7 @@
     <File name="./xxx_Node_Global.cs" subtype="Code" buildaction="Compile" />
     <File name="./Node_Identifier.cs" subtype="Code" buildaction="Compile" />
     <File name="./INode_Expression.cs" subtype="Code" buildaction="Compile" />
-    <File name="./keep_Node_String.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Node_String.cs" subtype="Code" buildaction="Compile" />
     <File name="./Value.cs" subtype="Code" buildaction="Compile" />
     <File name="./xxx_Objects.cs" subtype="Code" buildaction="Compile" />
     <File name="./PropertyImplementation.cs" subtype="Code" buildaction="Compile" />
@@ -50,7 +50,7 @@
     <File name="./IValue.cs" subtype="Code" buildaction="Compile" />
     <File name="./xxx_Native_Class.cs" subtype="Code" buildaction="Compile" />
     <File name="./xxx_Native_Object.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Native_Value.cs" subtype="Code" buildaction="Compile" />
+    <File name="./NativeValue.cs" subtype="Code" buildaction="Compile" />
     <File name="./IClass.cs" subtype="Code" buildaction="Compile" />
     <File name="./xxx_Node_Class.cs" subtype="Code" buildaction="Compile" />
     <File name="./INode_Declaration.cs" subtype="Code" buildaction="Compile" />
@@ -68,7 +68,7 @@
     <File name="./FunctionInterface.cs" subtype="Code" buildaction="Compile" />
     <File name="./InterfaceImplementation.cs" subtype="Code" buildaction="Compile" />
     <File name="./Object.cs" subtype="Code" buildaction="Compile" />
-    <File name="./keepfornow_Node_Interface.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Node_Interface.cs" subtype="Code" buildaction="Compile" />
     <File name="./Node_Access.cs" subtype="Code" buildaction="Compile" />
     <File name="./Client_Rational.cs" subtype="Code" buildaction="Compile" />
     <File name="./Node_Boolean.cs" subtype="Code" buildaction="Compile" />

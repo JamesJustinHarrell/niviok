@@ -7,7 +7,12 @@ class Node_Plane : INode {
 		_binds = binds;
 	}	
 	
-	//xxx
+	public IList<Node_DeclareFirst> binds {
+		get { return _binds; }
+	}
+	
+	//xxx remove
+	//all decl-first children of all planes must be executed together, not plane by plane
 	public void xxx_execute(Scope scope) {
 		//reserve identikeys, so the closures will include
 		//the identikeys from other declare-first nodes
@@ -27,11 +32,6 @@ class Node_Plane : INode {
 	}
 	
 	public HashSet<Identifier> identikeyDependencies {
-		get {
-			HashSet<Identifier> idents = G.depends( _binds );
-			foreach( Node_DeclareFirst decl in _binds )
-				idents.Remove( decl.name.value ); //xxx only if not function
-			return idents;
-		}
+		get { return Depends.depends(this); }
 	}
 }

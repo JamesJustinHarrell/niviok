@@ -47,6 +47,6 @@ class Node_Bundle : INode {
 	}
 
 	public HashSet<Identifier> identikeyDependencies {
-		get { return G.depends(_planes); }
+		get { return Depends.depends(this); }
 	}
 }
