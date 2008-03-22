@@ -1,0 +1,116 @@
+For types that come in mutable and immutable forms, there needs to be three interfaces:
+	only if mutable
+	only if immutable
+	common to both
+The "mutable" and "immutable" interfaces should inherit from the "both" interface. (The mutable interface should not inherit from the immutable interface, or vice versa.) The immutable form can declare causality information about it's immutability for performance and checking.
+
+
+--- template
+
+interface Foo
+	breed Foo
+	breed MutableFoo
+	breed ImmutableFoo
+	... #members common to mutable and immutable variants
+
+interface MutableFoo
+	inherit Foo
+	... #members that only apply to mutable variants
+
+interface ImmutableFoo
+	inherit Foo
+	... #members that only apply to immutable variants
+
+
+--- template for generics (may vary)
+
+interface Foo<T>
+	inherit Foo #same as inherit Foo<dyn>
+	inherit Foo<Object>
+	breed Foo<T>
+	breed MutableFoo<T>
+	breed ImmutableFoo<T>
+	...
+
+interface MutableFoo<T>
+	inherit Foo<T>
+	#only one of option A or option B should be used
+	#option A
+		inherit MutableFoo
+		inherit MutableFoo<Object>
+
+	#option B
+		convert MutableFoo
+		convert MutableFoo<Object>
+	...
+
+interface ImmutableFoo<T>
+	inherit Foo<T>
+	inherit ImmutableFoo
+	inherit ImmutableFoo<Object>
+	...
+
+
+--- example: Collection
+
+interface Collection<T>
+	inherit Collection
+	inherit Collection<Object>
+	breed Collection<T>
+	breed MutableCollection<T>
+	breed ImmutableCollection<T>
+
+	get Int count
+	get Yielder<T> elements
+
+interface MutableCollection<T>
+	inherit Collection<T>
+	convert MutableCollection
+	convert MutableCollection<Object>
+
+	func insert(T)
+	func remove(T) Bool
+
+interface ImmutableCollection<T>
+	inherit Collection<T>
+	inherit ImmutableCollection
+	inherit ImmutableCollection<Object>
+
+activeInterface(Collection) ==
+activeInterface(MutableCollection) ==
+activeInterface(ImmutableCollection) ==
+Interface + GenericInterface
+
+Note that it would be very bad for MutableCollection<T> to inherit MutableCollection<dyn> or MutableCollection<Object>, because that would allow inserting any object, regardless of type, into a strongly-typed collection (at least according to the interface).
+
+If they were inherited:
+decl MutableCollection<int> numbers = getNumbers()
+(numbers as MutableCollection).insert("not a number 1")
+(numbers as MutableCollection<Object>).insert("not a number 2")
+
+Because they're only convertees:
+decl MutableCollection numbers := getNumbers() //assign copy
+numbers.insert("not a number")
+
+
+
+
+
+
+--- convenience/helper node (or just helper syntax)
+
+threefaces<T> {
+	shared Collection {
+		get Int count
+		get Yielder<T> elements
+	}
+	mutable(convert) MutableCollection {
+		func insert(T)
+		func remove(T) Bool
+	}
+	immutable ImmutableCollection {}
+}
+
+The (convert) option to mutable makes the MutableCollection<T> generic interface declare that it can be converted to MutableCollection<dyn> or MutableCollection<Object>. The (inherit) option would make it inherit them.
+
+

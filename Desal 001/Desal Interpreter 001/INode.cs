@@ -4,6 +4,6 @@ using System.Collections.Generic;
 
 interface INode {
 	string typeName {get;}
-	ICollection<INode> children {get;}
+	ICollection<INode> childNodes {get;}
 	HashSet<Identifier> identikeyDependencies {get;}
 }

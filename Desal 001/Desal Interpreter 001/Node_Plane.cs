@@ -12,7 +12,7 @@ class Node_Plane : INode {
 		//reserve identikeys, so the closures will include
 		//the identikeys from other declare-first nodes
 		foreach( Node_DeclareFirst decl in _binds )
-			scope.reserveDeclareFirst( decl.name );
+			scope.reserveDeclareFirst( decl.name.value );
 	
 		foreach( Node_DeclareFirst decl in _binds )
 			decl.execute(scope);
@@ -22,7 +22,7 @@ class Node_Plane : INode {
 		get { return "plane"; }
 	}
 	
-	public ICollection<INode> children {
+	public ICollection<INode> childNodes {
 		get { return G.collect<INode>(_binds); }
 	}
 	
@@ -30,7 +30,7 @@ class Node_Plane : INode {
 		get {
 			HashSet<Identifier> idents = G.depends( _binds );
 			foreach( Node_DeclareFirst decl in _binds )
-				idents.Remove( decl.name ); //xxx only if not function
+				idents.Remove( decl.name.value ); //xxx only if not function
 			return idents;
 		}
 	}

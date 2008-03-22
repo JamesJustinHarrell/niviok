@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
-<UserCombinePreferences filename="/home/justin/files/Desal/Desal 001/Desal 001.mds">
+<UserCombinePreferences filename="/media/disk/files/Desal/Desal 001/Desal 001.mds">
   <Files />
   <Views>
     <ViewMemento Id="MonoDevelop.Ide.Gui.Pads.ProjectPad">
       <TreeView>
         <Node expanded="True">
           <Node name="Desal Interpreter 001" expanded="True">
-            <Node name="Node_Xnor.cs" expanded="False" selected="True" />
+            <Node name="Interpreter.cs" expanded="False" selected="True" />
           </Node>
           <Node name="Funsynn 001" expanded="True" />
         </Node>

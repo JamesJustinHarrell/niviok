@@ -45,6 +45,7 @@ document.body.appendChild(container);
 				</nullable-type>
 				<boolean label='constant'>true</boolean>
 			</identikey-type>
+			<boolean label='breed'>false</boolean>
 			<function label='value'>
 				<parameter>
 					<nullable-type>
@@ -52,21 +53,28 @@ document.body.appendChild(container);
 					</nullable-type>
 					<identifier label='name'>title</identifier>
 					<boolean label='has-default-value'>false</boolean>
+					<direction>in</direction>
 				</parameter>
 				<block label='body'>
-					<call>
+					<call label='members'>
 						<identifier label='value'>println</identifier>
-						<string label='argument'/>
+						<argument>
+							<string label='value'/>
+						</argument>
 					</call>
-					<call>
+					<call label='members'>
 						<identifier label='value'>println</identifier>
-						<call label='argument'>
-							<extract-member label='value'>
-								<identifier label='source'>title</identifier>
-								<identifier label='member-name'>concat</identifier>
-							</extract-member>
-							<string label='argument'> :</string>
-						</call>
+						<argument>
+							<call label='value'>
+								<extract-member label='value'>
+									<identifier label='source'>title</identifier>
+									<identifier label='member-name'>concat</identifier>
+								</extract-member>
+								<argument>
+									<string label='value'> :</string>
+								</argument>
+							</call>
+						</argument>
 					</call>
 				</block>
 			</function>
@@ -89,6 +97,7 @@ document.body.appendChild(container);
 				</nullable-type>
 				<boolean label='constant'>true</boolean>
 			</identikey-type>
+			<boolean label='breed'>false</boolean>
 			<function label='value'>
 				<parameter>
 					<nullable-type>
@@ -96,6 +105,7 @@ document.body.appendChild(container);
 					</nullable-type>
 					<identifier label='name'>title</identifier>
 					<boolean label='has-default-value'>false</boolean>
+					<direction>in</direction>
 				</parameter>
 				<parameter>
 					<nullable-type>
@@ -103,34 +113,45 @@ document.body.appendChild(container);
 					</nullable-type>
 					<identifier label='name'>function</identifier>
 					<boolean label='has-default-value'>false</boolean>
+					<direction>in</direction>
 				</parameter>
 				<block label='body'>
-					<call>
+					<call label='members'>
 						<identifier label='value'>header</identifier>
-						<call label='argument'>
-							<extract-member label='value'>
-								<string label='source'>calling </string>
-								<identifier label='member-name'>concat</identifier>
-							</extract-member>
-							<identifier label='argument'>title</identifier>
-						</call>
+						<argument>
+							<call label='value'>
+								<extract-member label='value'>
+									<string label='source'>calling </string>
+									<identifier label='member-name'>concat</identifier>
+								</extract-member>
+								<argument>
+									<identifier label='value'>title</identifier>
+								</argument>
+							</call>
+						</argument>
 					</call>
-					<call>
+					<call label='members'>
 						<identifier label='value'>function</identifier>
 					</call>
-					<call>
+					<call label='members'>
 						<identifier label='value'>println</identifier>
-						<string label='argument'/>
+						<argument>
+							<string label='value'/>
+						</argument>
 					</call>
-					<call>
+					<call label='members'>
 						<identifier label='value'>println</identifier>
-						<call label='argument'>
-							<extract-member label='value'>
-								<string label='source'>done with </string>
-								<identifier label='member-name'>concat</identifier>
-							</extract-member>
-							<identifier label='argument'>title</identifier>
-						</call>
+						<argument>
+							<call label='value'>
+								<extract-member label='value'>
+									<string label='source'>done with </string>
+									<identifier label='member-name'>concat</identifier>
+								</extract-member>
+								<argument>
+									<identifier label='value'>title</identifier>
+								</argument>
+							</call>
+						</argument>
 					</call>
 				</block>
 			</function>
@@ -154,41 +175,58 @@ document.body.appendChild(container);
 				</nullable-type>
 				<boolean label='constant'>true</boolean>
 			</identikey-type>
+			<boolean label='breed'>false</boolean>
 			<function label='value'>
 				<!-- the foo:label shouldn't affect anything -->
 				<block foo:label="stuff" label='body'>
 					
 					<!-- doStuff -->
-					<call>
+					<call label='members'>
 						<identifier label='value'>headerize</identifier>
-						<string label='argument'>doStuff</string>
-						<!-- the des:label attribute shouldn't affect anything, since non-namespaced attributes are used -->
-						<identifier label='argument' des:label='foo'>doStuff</identifier>
+						<argument>
+							<string label='value'>doStuff</string>
+						</argument>
+						<argument>
+							<!-- the des:label attribute shouldn't affect anything, since non-namespaced attributes are used -->
+							<identifier label='value' des:label='foo'>doStuff</identifier>
+						</argument>
 					</call>
 					
 					<!-- testNonProducers -->
-					<call>
+					<call label='members'>
 						<identifier label='value'>headerize</identifier>
-						<string label='argument'>testNonProducers</string>
-						<identifier label='argument'>testNonProducers</identifier>
+						<argument>
+							<string label='value'>testNonProducers</string>
+						</argument>
+						<argument>
+							<identifier label='value'>testNonProducers</identifier>
+						</argument>
 					</call>
 					
 					<!-- testSometimesProducers -->
-					<call>
+					<call label='members'>
 						<identifier label='value'>headerize</identifier>
-						<string label='argument'>testSometimesProducers</string>
-						<identifier label='argument'>testSometimesProducers</identifier>
+						<argument>
+							<string label='value'>testSometimesProducers</string>
+						</argument>
+						<argument>
+							<identifier label='value'>testSometimesProducers</identifier>
+						</argument>
 					</call>
 					
 					<!-- testAlwaysProducers -->
-					<call>
+					<call label='members'>
 						<identifier label='value'>headerize</identifier>
-						<string label='argument'>testAlwaysProducers</string>
-						<identifier label='argument'>testAlwaysProducers</identifier>
+						<argument>
+							<string label='value'>testAlwaysProducers</string>
+						</argument>
+						<argument>
+							<identifier label='value'>testAlwaysProducers</identifier>
+						</argument>
 					</call>
 		
 					<!-- this should be ignored since it's in a different namespace -->
-					<foo:ignored-stuff>
+					<foo:ignored-stuff label='members'>
 						<candy>
 							ABC
 							<apple>
@@ -223,18 +261,21 @@ document.body.appendChild(container);
 				</nullable-type>
 				<boolean label='constant'>true</boolean>
 			</identikey-type>
+			<boolean label='breed'>false</boolean>
 			<function label='value'>
 				<block label='body'>
-					<possibility>
+					<possibility label='members'>
 						<identifier label='test'>true</identifier>
 						<block label='result'>
-							<call>
+							<call label='members'>
 								<identifier label='value'>println</identifier>
-								<string label='argument'>this is a test</string>
+								<argument>
+									<string label='value'>this is a test</string>
+								</argument>
 							</call>
 						</block>
 					</possibility>
-					<declare-assign>
+					<declare-assign label='members'>
 						<identifier label='name'>str</identifier>
 						<identikey-type>
 							<identikey-category>strict</identikey-category>
@@ -244,39 +285,51 @@ document.body.appendChild(container);
 							</nullable-type>
 							<boolean label='constant'>true</boolean>
 						</identikey-type>
+						<boolean label='breed'>false</boolean>
 						<call label='value'>
 							<extract-member label='value'>
 								<string label='source'>&#x1FFF0; Hello,</string>
 								<identifier label='member-name'>concat</identifier>
 							</extract-member>
-							<string label='argument'> World &#x1FFF1;</string>
+							<argument>
+								<string label='value'> World &#x1FFF1;</string>
+							</argument>
 						</call>
 					</declare-assign>
-					<call>
+					<call label='members'>
 						<identifier label='value'>println</identifier>
-						<identifier label='argument'>str</identifier>
+						<argument>
+							<identifier label='value'>str</identifier>
+						</argument>
 					</call>
-					<call>
+					<call label='members'>
 						<identifier label='value'>println</identifier>
-						<extract-member label='argument'>
-							<identifier label='source'>str</identifier>
-							<identifier label='member-name'>length</identifier>
-						</extract-member>
+						<argument>
+							<extract-member label='value'>
+								<identifier label='source'>str</identifier>
+								<identifier label='member-name'>length</identifier>
+							</extract-member>
+						</argument>
 					</call>
-					<for-range>
-						<identifier>x</identifier>
+					<for-range label='members'>
+						<identifier label='name'>x</identifier>
 						<integer label='start'>1</integer>
 						<integer label='limit'>20</integer>
-						<block>
-							<call>
+						<boolean label='inclusive'>false</boolean>
+						<block label='action'>
+							<call label='members'>
 								<identifier label='value'>println</identifier>
-								<call label='argument'>
-									<extract-member label='value'>
-										<identifier label='source'>x</identifier>
-										<identifier label='member-name'>add</identifier>
-									</extract-member>
-									<integer label='argument'>10000</integer>
-								</call>
+								<argument>
+									<call label='value'>
+										<extract-member label='value'>
+											<identifier label='source'>x</identifier>
+											<identifier label='member-name'>add</identifier>
+										</extract-member>
+										<argument>
+											<integer label='value'>10000</integer>
+										</argument>
+									</call>
+								</argument>
 							</call>
 						</block>
 					</for-range>
@@ -297,6 +350,7 @@ document.body.appendChild(container);
 				</nullable-type>
 				<boolean label='constant'>true</boolean>
 			</identikey-type>
+			<boolean label='breed'>false</boolean>
 			<function label='value'>
 				<block label='body'>
 				</block>
@@ -316,6 +370,7 @@ document.body.appendChild(container);
 				</nullable-type>
 				<boolean label='constant'>true</boolean>
 			</identikey-type>
+			<boolean label='breed'>false</boolean>
 			<function label='value'>
 				<block label='body'>
 				</block>
@@ -355,24 +410,27 @@ document.body.appendChild(container);
 				</nullable-type>
 				<boolean label='constant'>true</boolean>
 			</identikey-type>
+			<boolean label='breed'>false</boolean>
 			<function label='value'>
 				<block label='body'>
 					
 					<!-- testBooleanLogic() -->
-					<call>
+					<call label='members'>
 						<identifier label='value'>header</identifier>
-						<string label='argument'>testBooleanLogic()</string>
+						<argument>
+							<string label='value'>testBooleanLogic()</string>
+						</argument>
 					</call>
-					<call>
+					<call label='members'>
 						<identifier label='value'>testBooleanLogic</identifier>
 					</call>
 					
 					<!-- array - -> xxx generic interface implementations needed
-					<call>
+					<call label='members'>
 						<identifier label='value'>header</identifier>
 						<string label='argument'>array</string>
 					</call>
-					<call>
+					<call label='members'>
 						<identifier label='value'>println</identifier>
 						<array label='argument'>
 							<integer label='element'>1</integer>
@@ -390,17 +448,21 @@ document.body.appendChild(container);
 					<!-- enum -->
 					
 					<!-- function -->
-					<call>
+					<call label='members'>
 						<identifier label='value'>header</identifier>
-						<string label='argument'>function</string>
+						<argument>
+							<string label='value'>function</string>
+						</argument>
 					</call>
-					<call>
+					<call label='members'>
 						<identifier label='value'>println</identifier>
-						<call label='argument'>
-							<function label='value'>
-								<string label='body'>some stuff</string>
-							</function>
-						</call>
+						<argument>
+							<call label='value'>
+								<function label='value'>
+									<string label='body'>some stuff</string>
+								</function>
+							</call>
+						</argument>
 					</call>
 
 					<!-- function-interface -->
@@ -411,13 +473,17 @@ document.body.appendChild(container);
 					<!-- extract-member -->
 
 					<!-- identifier -->
-					<call>
+					<call label='members'>
 						<identifier label='value'>header</identifier>
-						<string label='argument'>identifier</string>
+						<argument>
+							<string label='value'>identifier</string>
+						</argument>
 					</call>
-					<call>
+					<call label='members'>
 						<identifier label='value'>println</identifier>
-						<identifier label='argument'>true</identifier>
+						<argument>
+							<identifier label='value'>true</identifier>
+						</argument>
 					</call>
 					
 					<!-- instantiate-generic-class -->
@@ -426,38 +492,50 @@ document.body.appendChild(container);
 					<!-- implements -->
 					
 					<!-- integer -->
-					<call>
+					<call label='members'>
 						<identifier label='value'>header</identifier>
-						<string label='argument'>integer</string>
+						<argument>
+							<string label='value'>integer</string>
+						</argument>
 					</call>
-					<call>
+					<call label='members'>
 						<identifier label='value'>println</identifier>
-						<integer label='argument'>9000</integer>
+						<argument>
+							<integer label='value'>9000</integer>
+						</argument>
 					</call>
 					
 					<!-- interface -->
 					<!-- namespaced-identikey -->
 					
 					<!-- rational -->
-					<call>
+					<call label='members'>
 						<identifier label='value'>header</identifier>
-						<string label='argument'>rational</string>
+						<argument>
+							<string label='value'>rational</string>
+						</argument>
 					</call>
-					<call>
+					<call label='members'>
 						<identifier label='value'>println</identifier>
-						<rational label='argument'>123.456</rational>
+						<argument>
+							<rational label='value'>123.456</rational>
+						</argument>
 					</call>
 					
 					<!-- set-property -->
 					
 					<!-- string -->
-					<call>
+					<call label='members'>
 						<identifier label='value'>header</identifier>
-						<string label='argument'>string</string>
+						<argument>
+							<string label='value'>string</string>
+						</argument>
 					</call>
-					<call>
+					<call label='members'>
 						<identifier label='value'>println</identifier>
-						<string label='argument'>This is some text.</string>
+						<argument>
+							<string label='value'>This is some text.</string>
+						</argument>
 					</call>
 				</block>
 			</function>
@@ -504,11 +582,11 @@ document.body.appendChild(container);
 				</nullable-type>
 				<boolean label='constant'>true</boolean>
 			</identikey-type>
+			<boolean label='breed'>false</boolean>
 			<function label='value'>
 				<block label='body'>
-					
 					<!-- decl t = true -->
-					<declare-assign>
+					<declare-assign label='members'>
 						<identikey-type>
 							<identikey-category>automatic</identikey-category>
 							<nullable-type>
@@ -517,11 +595,12 @@ document.body.appendChild(container);
 							<boolean label='constant'>true</boolean>
 						</identikey-type>
 						<identifier label='name'>t</identifier>
+						<boolean label='breed'>false</boolean>
 						<identifier label='value'>true</identifier>
 					</declare-assign>
 					
 					<!-- decl f = false -->
-					<declare-assign>
+					<declare-assign label='members'>
 						<identikey-type>
 							<identikey-category>automatic</identikey-category>
 							<nullable-type>
@@ -530,129 +609,165 @@ document.body.appendChild(container);
 							<boolean label='constant'>true</boolean>
 						</identikey-type>
 						<identifier label='name'>f</identifier>
+						<boolean label='breed'>false</boolean>
 						<identifier label='value'>false</identifier>
 					</declare-assign>
 					
 					<!-- and -->
-					<call>
+					<call label='members'>
 						<identifier label='value'>header</identifier>
-						<string label='argument'>and</string>
+						<argument>
+							<string label='value'>and</string>
+						</argument>
 					</call>
-					<call>
+					<call label='members'>
 						<identifier label='value'>println</identifier>
-						<and label='argument'>
-							<identifier label='first'>f</identifier>
-							<identifier label='second'>t</identifier>
-						</and>
+						<argument>
+							<and label='value'>
+								<identifier label='first'>f</identifier>
+								<identifier label='second'>t</identifier>
+							</and>
+						</argument>
 					</call>
-					<call>
+					<call label='members'>
 						<identifier label='value'>println</identifier>
-						<and label='argument'>
-							<identifier label='first'>t</identifier>
-							<identifier label='second'>t</identifier>
-						</and>
+						<argument>
+							<and label='value'>
+								<identifier label='first'>t</identifier>
+								<identifier label='second'>t</identifier>
+							</and>
+						</argument>
 					</call>
 					
 					<!-- nand -->
-					<call>
+					<call label='members'>
 						<identifier label='value'>header</identifier>
-						<string label='argument'>nand</string>
+						<argument>
+							<string label='value'>nand</string>
+						</argument>
 					</call>
-					<call>
+					<call label='members'>
 						<identifier label='value'>println</identifier>
-						<nand label='argument'>
-							<identifier label='first'>f</identifier>
-							<identifier label='second'>t</identifier>
-						</nand>
+						<argument>
+							<nand label='value'>
+								<identifier label='first'>f</identifier>
+								<identifier label='second'>t</identifier>
+							</nand>
+						</argument>
 					</call>
-					<call>
+					<call label='members'>
 						<identifier label='value'>println</identifier>
-						<nand label='argument'>
-							<identifier label='first'>t</identifier>
-							<identifier label='second'>t</identifier>
-						</nand>
+						<argument>
+							<nand label='value'>
+								<identifier label='first'>t</identifier>
+								<identifier label='second'>t</identifier>
+							</nand>
+						</argument>
 					</call>
 					
 					<!-- or -->
-					<call>
+					<call label='members'>
 						<identifier label='value'>header</identifier>
-						<string label='argument'>or</string>
+						<argument>
+							<string label='value'>or</string>
+						</argument>
 					</call>
-					<call>
+					<call label='members'>
 						<identifier label='value'>println</identifier>
-						<or label='argument'>
-							<identifier label='first'>f</identifier>
-							<identifier label='second'>t</identifier>
-						</or>
+						<argument>
+							<or label='value'>
+								<identifier label='first'>f</identifier>
+								<identifier label='second'>t</identifier>
+							</or>
+						</argument>
 					</call>
-					<call>
+					<call label='members'>
 						<identifier label='value'>println</identifier>
-						<or label='argument'>
-							<identifier label='first'>f</identifier>
-							<identifier label='second'>f</identifier>
-						</or>
+						<argument>
+							<or label='value'>
+								<identifier label='first'>f</identifier>
+								<identifier label='second'>f</identifier>
+							</or>
+						</argument>
 					</call>
 					
 					<!-- nor -->
-					<call>
+					<call label='members'>
 						<identifier label='value'>header</identifier>
-						<string label='argument'>nor</string>
+						<argument>
+							<string label='value'>nor</string>
+						</argument>
 					</call>
-					<call>
+					<call label='members'>
 						<identifier label='value'>println</identifier>
-						<nor label='argument'>
-							<identifier label='first'>f</identifier>
-							<identifier label='second'>t</identifier>
-						</nor>
+						<argument>
+							<nor label='value'>
+								<identifier label='first'>f</identifier>
+								<identifier label='second'>t</identifier>
+							</nor>
+						</argument>
 					</call>
-					<call>
+					<call label='members'>
 						<identifier label='value'>println</identifier>
-						<nor label='argument'>
-							<identifier label='first'>f</identifier>
-							<identifier label='second'>f</identifier>
-						</nor>
+						<argument>
+							<nor label='value'>
+								<identifier label='first'>f</identifier>
+								<identifier label='second'>f</identifier>
+							</nor>
+						</argument>
 					</call>
 					
 					<!-- xor -->
-					<call>
+					<call label='members'>
 						<identifier label='value'>header</identifier>
-						<string label='argument'>xor</string>
+						<argument>
+							<string label='value'>xor</string>
+						</argument>
 					</call>
-					<call>
+					<call label='members'>
 						<identifier label='value'>println</identifier>
-						<xor label='argument'>
-							<identifier label='first'>t</identifier>
-							<identifier label='second'>f</identifier>
-						</xor>
+						<argument>
+							<xor label='value'>
+								<identifier label='first'>t</identifier>
+								<identifier label='second'>f</identifier>
+							</xor>
+						</argument>
 					</call>
-					<call>
+					<call label='members'>
 						<identifier label='value'>println</identifier>
-						<xor label='argument'>
-							<identifier label='first'>t</identifier>
-							<identifier label='second'>t</identifier>
-						</xor>
+						<argument>
+							<xor label='value'>
+								<identifier label='first'>t</identifier>
+								<identifier label='second'>t</identifier>
+							</xor>
+						</argument>
 					</call>
 					
 					<!-- xnor -->
-					<call>
+					<call label='members'>
 						<identifier label='value'>header</identifier>
-						<string label='argument'>xnor</string>
+						<argument>
+							<string label='value'>xnor</string>
+						</argument>
 					</call>
-					<call>
+					<call label='members'>
 						<identifier label='value'>println</identifier>
-						<xnor label='argument'>
-							<identifier label='first'>t</identifier>
-							<identifier label='second'>f</identifier>
-						</xnor>
+						<argument>
+							<xnor label='value'>
+								<identifier label='first'>t</identifier>
+								<identifier label='second'>f</identifier>
+							</xnor>
+						</argument>
 					</call>
-					<call>
+					<call label='members'>
 						<identifier label='value'>println</identifier>
-						<xnor label='argument'>
-							<identifier label='first'>t</identifier>
-							<identifier label='second'>t</identifier>
-						</xnor>
+						<argument>
+							<xnor label='value'>
+								<identifier label='first'>t</identifier>
+								<identifier label='second'>t</identifier>
+							</xnor>
+						</argument>
 					</call>
-					
 				</block>
 			</function>
 		</declare-first>

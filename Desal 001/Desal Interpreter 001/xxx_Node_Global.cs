@@ -1,11 +1,11 @@
 /*
 using System.Collections.Generic;
 
-class Node_Global : INode {
+class old_Node_Global : INode {
 	IList<Node_DeclarationPervasive> _binds;
 	Scope _scope;
 
-	public Node_Global(IList<Node_DeclarationPervasive> binds) {
+	public old_Node_Global(IList<Node_DeclarationPervasive> binds) {
 		_binds = binds;
 	}		
 	

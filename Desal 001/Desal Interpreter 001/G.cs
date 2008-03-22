@@ -17,7 +17,7 @@ static class G {
 				foreach( T t in (o as ICollection) )
 					rv.Add(t);
 			else
-				throw new System.Exception("unknow object type for: " + o.ToString());
+				throw new System.Exception("unknown object type for: " + o.ToString());
 		}
 		return rv;
 	}
@@ -41,6 +41,7 @@ static class G {
 		return idents;
 	}
 	
+	//xxx remove
 	public static HashSet<Identifier> depends( params object[] args ) {
 		return depends__(args);
 	}

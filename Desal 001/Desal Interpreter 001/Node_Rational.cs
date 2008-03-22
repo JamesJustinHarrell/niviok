@@ -1,29 +1,12 @@
-using System.Collections.Generic;
-
-class Node_Rational : INode_Expression {
-	double _rat;
-
-	public Node_Rational(double rat) {
-		_rat = rat;
-	}
+//xxx use BigNum library
+class Node_Rational : TerminalNode<double, Node_Rational>, INode_Expression {
+	public Node_Rational(double value) :base(value) {}
 	
 	public IValue execute(Scope scope) {
-		return Bridge.wrapRational(_rat);
+		return Bridge.wrapRational(this.value);
 	}
 	
 	public string typeName {
 		get { return "rational"; }
-	}
-	
-	public ICollection<INode> children {
-		get { return new INode[]{}; }
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return new HashSet<Identifier>(); }
-	}
-	
-	public override string ToString() {
-		return _rat.ToString();
 	}
 }

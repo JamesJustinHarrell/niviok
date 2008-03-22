@@ -22,11 +22,11 @@ class Node_Interface : INode_Expression {
 	public IInterface evaluateInterface(Scope scope) {
 		IList<PropertyInfo> props = new List<PropertyInfo>();
 		foreach( Node_Property prop in _properties ) {
-			props.Add( prop.evaluatePropertyInfo(scope) );
+			props.Add(Interpreter.evaluate(prop, scope));
 		}
 		IList<MethodInfo> meths = new List<MethodInfo>();
 		foreach( Node_Method meth in _methods ) {
-			meths.Add( meth.evaluateMethodInfo(scope) );
+			meths.Add(Interpreter.evaluate(meth, scope));
 		}
 		return new Interface( props, meths );
 	}
@@ -40,7 +40,7 @@ class Node_Interface : INode_Expression {
 		get { return "interface"; }
 	}
 	
-	public ICollection<INode> children {
+	public ICollection<INode> childNodes {
 		get { throw new Error_Unimplemented(); }
 	}
 

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 
-class Node_Class : INode_Expression {
-	IList<Node_DeclareClass> _staticDeclares;
+class xxx_Node_Class : INode_Expression {
+	IList<Node_StaticMember> _staticDeclares;
 	Node_Block _staticConstructor;
 	IList<Node_Function> _staticCallees;
 	IList<Node_ClassProperty> _staticProperties;
@@ -9,8 +9,8 @@ class Node_Class : INode_Expression {
 	IList<INode_DeclareAny> _instanceDeclares;
 	IList<Node_InterfaceImplementation> _interfaceImplementations;
 
-	public Node_Class(
-	IList<Node_DeclareClass> staticDeclares,
+	public xxx_Node_Class(
+	IList<Node_StaticMember> staticDeclares,
 	Node_Block staticConstructor,
 	IList<Node_Function> staticCallees,
 	IList<Node_ClassProperty> staticProperties,
@@ -37,25 +37,25 @@ class Node_Class : INode_Expression {
 			impl.addCallee(func);
 		}
 		*/
-
+/*
 		//declaration-pervasive
 		foreach( Node_DeclareClass declClass in _staticDeclares ) {
-			if( declClass.decl is Node_DeclareFirst )
+			if( declClass.declaration is Node_DeclareFirst )
 				declClass.execute(staticScope);
 		}
-		
+	
 		//not declaration-const-empty
 		foreach( Node_DeclareClass declClass in _staticDeclares ) {
-			if( !(declClass.decl is Node_DeclareConstEmpty) )
+			if( !(declClass.declaration is Node_DeclareConstEmpty) )
 				declClass.execute(staticScope);
 		}
 		
 		//declaration-const-empty
 		foreach( Node_DeclareClass declClass in _staticDeclares ) {
-			if( declClass.decl is Node_DeclareConstEmpty )
+			if( declClass.declaration is Node_DeclareConstEmpty )
 				declClass.execute(staticScope);
 		}
-		
+*/		
 		//xxx static callees as free functions
 		
 		//xxx add static callees and properties to classInterface
@@ -72,7 +72,7 @@ class Node_Class : INode_Expression {
 		get { return "class"; }
 	}
 	
-	public ICollection<INode> children {
+	public ICollection<INode> childNodes {
 		get { throw new Error_Unimplemented(); }
 	}
 	
@@ -103,7 +103,7 @@ value producted by evaluating class node
 
 //hold state of value produced when evaluating class node
 class ClassState {
-	//xxx public Node_Class classNode;
+	//xxx public old_Node_Class classNode;
 	public Scope staticScope;
 	public IList<INode_DeclareAny> instanceDeclares;
 	public ClassInterfaceImplementation defaultInterfaceImplementation;

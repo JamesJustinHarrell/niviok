@@ -45,7 +45,7 @@ partial class DesibleParser {
 
 
 //instance
-partial class DesibleParser {	
+partial class DesibleParser {
 
 	Bridge _bridge; //used for outputing warnings
 	XmlNamespaceManager _nsManager; //maps tag name prefixes to namespace URIs
@@ -70,31 +70,34 @@ partial class DesibleParser {
 		});
 		
 		addParser<INode_DeclareAny>(delegate(XmlElement element) {
-			return parseSuper<INode_DeclareAny>(element, "declaration-any");
+			return parseSuper<INode_Declaration>(element, "declaration");
+		});
+		
+		addParser<INode_ScopeAlteration>(delegate(XmlElement element) {
+			return parseSuper<INode_ScopeAlteration>(element, "scope-alteration");
 		});
 		
 		
 		//----- base
 		
 		addParser<Node_Access>("access", delegate(XmlElement element) {
-			return new Node_Access(
-				(Access)System.Enum.Parse(
-					typeof(Access), element.InnerText, true ) );
+			return new Node_Access(parseEnum<Access>(element));
 		});
 				
 		addParser<Node_Boolean>("boolean", delegate(XmlElement element) {
-			return new Node_Boolean(
-				System.Boolean.Parse( element.InnerText ) );
+			return new Node_Boolean(System.Boolean.Parse(element.InnerText));
+		});
+		
+		addParser<Node_Direction>("direction", delegate(XmlElement element) {
+			return new Node_Direction(parseEnum<Direction>(element));
 		});
 		
 		addParser<Node_Identifier>("identifier", delegate(XmlElement element) {
-			return new Node_Identifier( new Identifier(element.InnerText) );
+			return new Node_Identifier(new Identifier(element.InnerText));
 		});
 		
 		addParser<Node_IdentikeyCategory>("identikey-category", delegate(XmlElement element) {
-			return new Node_IdentikeyCategory(
-				(IdentikeyCategory)System.Enum.Parse(
-					typeof(IdentikeyCategory), element.InnerText, true ) );
+			return new Node_IdentikeyCategory(parseEnum<IdentikeyCategory>(element));
 		});
 		
 		addParser<Node_Integer>("integer", delegate(XmlElement element) {
@@ -110,35 +113,10 @@ partial class DesibleParser {
 			return new Node_String(element.InnerText);
 		});
 		
-		
+
 		//----- tree
-		
-		addParser<Node_ActiveInterface>("active-interface", delegate(XmlElement element) {
-			return new Node_ActiveInterface(
-				parseOne<INode_Expression>(element, "value"));
-		});
-		
-		addParser<Node_And>("and", delegate(XmlElement element) {
-			return new Node_And(
-				parseOne<INode_Expression>(element, "first"),
-				parseOne<INode_Expression>(element, "second"));
-		});
-		
-		addParser<Node_Array>("array", delegate(XmlElement element) {
-			return new Node_Array(
-				parseMult<INode_Expression>(element, "element"));
-		});
-		
-		addParser<Node_Assign>("assign", delegate(XmlElement element) {
-			return new Node_Assign(
-				parseOne<Node_Identifier>(element, "name"),
-				parseOne<INode_Expression>(element, "value"));
-		});
-		
-		addParser<Node_Block>("block", delegate(XmlElement element) {
-			return new Node_Block(
-				parseChildren<INode_Expression>(element));
-		});
+
+		addTreeParsers();
 	
 		addParser<Node_Bundle>("bundle", delegate(XmlElement element) {
 			IList<Node_Plane> inlinePlanes =
@@ -150,99 +128,7 @@ partial class DesibleParser {
 			*/
 			return new Node_Bundle(inlinePlanes);
 		});
-		
-		addParser<Node_Call>("call", delegate(XmlElement element) {
-			return new Node_Call(
-				parseOne<INode_Expression>(element, "value"),
-				parseMult<INode_Expression>(element, "argument") );
-		});
-	
-		addParser<Node_Callee>("callee", delegate(XmlElement element) {
-			return new Node_Callee(
-				parseMult<Node_Parameter>(element, "parameter") );
-		});
-	
-		addParser<Node_Class>("class", delegate(XmlElement element) {
-			return new Node_Class(
-				parseMult<Node_DeclareClass>(element, "static-declaration"),
-				parseOpt<Node_Block>(element, "static-constructor"),
-				parseMult<Node_Function>(element, "static-callee"),
-				parseMult<Node_ClassProperty>(element, "static-property"),
-				parseMult<Node_Function>(element, "instance-constructor"),
-				parseMult<INode_DeclareAny>(element, "instance-declaration"),
-				parseMult<Node_InterfaceImplementation>(element, "interface-implementation") );
-		});
 
-		addParser<Node_ClassProperty>("class-property", delegate(XmlElement element) {
-			throw new Error_Unimplemented();
-		});
-		
-		addParser<Node_DeclareEmpty>("declare-empty", delegate(XmlElement element) {
-			return new Node_DeclareEmpty(
-				parseOne<Node_Identifier>(element, "name"),
-				parseOne<Node_IdentikeyType>(element, "nullable-type"));
-		});
-		
-		addParser<Node_DeclareAssign>("declare-assign", delegate(XmlElement element) {
-			return new Node_DeclareAssign(
-				parseOne<Node_Identifier>(element, "name"),
-				parseOne<Node_IdentikeyType>(element, "identikey-type"),
-				parseOne<INode_Expression>(element, "value") );
-		});
-		
-		addParser<Node_DeclareClass>("declaration-class",
-		delegate(XmlElement element) {
-			throw new Error_Unimplemented();
-		});
-		
-		addParser<Node_DeclareConstEmpty>("declaration-const-empty",
-		delegate(XmlElement element) {
-			throw new Error_Unimplemented();
-		});
-		
-		addParser<Node_DeclareFirst>("declare-first",
-		delegate(XmlElement element) {
-			return new Node_DeclareFirst(
-				parseOne<Node_Identifier>(element, "name"),
-				parseOne<Node_IdentikeyType>(element, "identikey-type"),
-				parseOne<INode_Expression>(element, "value") );
-		});
-		
-		addParser<Node_ExtractMember>("extract-member", delegate(XmlElement element) {
-			return new Node_ExtractMember(
-				parseOne<INode_Expression>(element, "source"),
-				parseOne<Node_Identifier>(element, "member-name") );
-		});
-		
-		addParser<Node_ForRange>("for-range", delegate(XmlElement element) {	
-			return new Node_ForRange(
-				parseOne<Node_Identifier>(element, "identifier"),
-				parseOne<INode_Expression>(element, "start"),
-				parseOne<INode_Expression>(element, "limit"),
-				parseOne<Node_Block>(element, "block") );
-		});
-		
-		addParser<Node_Function>("function", delegate(XmlElement element) {;
-			return new Node_Function(
-				parseMult<Node_Parameter>(element, "parameter"),
-				parseOpt<Node_NullableType>(element, "return-type"),
-				parseOne<INode_Expression>(element, "body") );
-		});
-		
-		addParser<Node_FunctionInterface>("function-interface",
-		delegate(XmlElement element) {
-			return new Node_FunctionInterface(
-				parseMult<Node_Parameter>(element, "parameter"),
-				parseOpt<Node_NullableType>(element, "return-type"));
-		});
-		
-		addParser<Node_IdentikeyType>("identikey-type", delegate(XmlElement element) {
-			return new Node_IdentikeyType(
-				parseOne<Node_IdentikeyCategory>(element, "identikey-category"),
-				parseOpt<Node_NullableType>(element, "nullable-type"),
-				parseOpt<Node_Boolean>(element, "constant"));
-		});			
-		
 		//xxx how will this exist along with plane-reference?
 		addParser<Node_Plane>("inline-plane", delegate(XmlElement element) {
 			return new Node_Plane(
@@ -251,85 +137,11 @@ partial class DesibleParser {
 		
 		addParser<Node_Interface>("interface", delegate(XmlElement element) {
 			return new Node_Interface(
-				parseMult<INode_Expression>(element, "inheritee"),
-				parseMult<Node_Callee>(element, "callee"),
+				parseMult<INode_Expression>(element, "inheritees"),
+				parseMult<Node_Callee>(element, "callees"),
 				parseOpt<Node_NullableType>(element, "return-type"),
 				parseMult<Node_Property>(element, "property"),
 				parseMult<Node_Method>(element, "method") );
-		});
-		
-		addParser<Node_InterfaceImplementation>("interface-implementation",
-		delegate(XmlElement element) {
-			throw new Error_Unimplemented();
-		});
-		
-		addParser<Node_Method>("method", delegate(XmlElement element) {
-			return new Node_Method(
-				parseOne<Node_Identifier>(element, "name"),
-				parseOne<INode_Expression>(element, "interface") );
-		});
-		
-		addParser<Node_NullableType>("nullable-type", delegate(XmlElement element) {
-			return new Node_NullableType(
-				parseOpt<INode_Expression>(element, "interface"),
-				parseOne<Node_Boolean>(element, "nullable"));
-		});
-		
-		addParser<Node_Parameter>("parameter", delegate(XmlElement element) {
-			return new Node_Parameter(
-				/* xxx direction */
-				parseOne<Node_NullableType>(element, "nullable-type"),
-				parseOne<Node_Identifier>(element, "name"),
-				parseOne<Node_Boolean>(element, "has-default-value"),
-				parseOpt<INode_Expression>(element, "default-value") );
-		});
-		
-		addParser<Node_Possibility>("possibility", delegate(XmlElement element) {	
-			return new Node_Possibility(
-				parseOne<INode_Expression>(element, "test"),
-				parseOne<INode_Expression>(element, "result") );
-		});
-
-		addParser<Node_Property>("property", delegate(XmlElement element) {
-			return new Node_Property(
-				parseOne<Node_Identifier>(element, "name"),
-				parseOne<Node_NullableType>(element, "nullable-type"),
-				parseOne<Node_Access>(element, "access") );
-		});
-		
-		addParser<Node_Nand>("nand", delegate(XmlElement element) {
-			return new Node_Nand(
-				parseOne<INode_Expression>(element, "first"),
-				parseOne<INode_Expression>(element, "second") );
-		});
-		
-		addParser<Node_Nor>("nor", delegate(XmlElement element) {
-			return new Node_Nor(
-				parseOne<INode_Expression>(element, "first"),
-				parseOne<INode_Expression>(element, "second") );
-		});
-		
-		addParser<Node_Or>("or", delegate(XmlElement element) {
-			return new Node_Or(
-				parseOne<INode_Expression>(element, "first"),
-				parseOne<INode_Expression>(element, "second") );
-		});
-		
-		addParser<Node_Unassign>("unassign", delegate(XmlElement element) {
-			return new Node_Unassign(
-				parseOne<Node_Identifier>(element, "name") );
-		});
-		
-		addParser<Node_Xnor>("xnor", delegate(XmlElement element) {
-			return new Node_Xnor(
-				parseOne<INode_Expression>(element, "first"),
-				parseOne<INode_Expression>(element, "second") );
-		});
-		
-		addParser<Node_Xor>("xor", delegate(XmlElement element) {
-			return new Node_Xor(
-				parseOne<INode_Expression>(element, "first"),
-				parseOne<INode_Expression>(element, "second") );
 		});
 	}
 
@@ -456,6 +268,10 @@ partial class DesibleParser {
 			rv.Add( (T)func(child) );
 		}
 		return rv;
+	}
+	
+	T parseEnum<T>(XmlElement element) {
+		return (T)System.Enum.Parse(typeof(T), element.InnerText, true);
 	}
 	
 	//parse all children

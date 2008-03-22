@@ -4,6 +4,7 @@ using System.Collections.Generic;
 namespace Dextr {
 
 	class Parser {
+		/*
 		static Node_Bundle parseWithCocoR(Bridge bridge, IList<Token> tokens) {
 			CocoR.Scanner scanner = new CocoR.Scanner(tokens);
 			CocoR.Parser parser = new CocoR.Parser(scanner);
@@ -14,6 +15,7 @@ namespace Dextr {
 				throw new Exception("Dextr code contained errors");
 			return parser.bundle;
 		}
+		*/
 		
 		static void displayTokens(Bridge bridge, IList<Token> tokens) {
 			int indentLevel = 0;
@@ -70,9 +72,7 @@ namespace Dextr {
 		Bridge bridge, string filePath, string parserName) {
 			string content = System.IO.File.ReadAllText(filePath);
 			IList<Token> tokens = Tokenizer.tokenize(content);
-			if( parserName == "Coco/R" )
-				return parseWithCocoR(bridge, tokens);
-			else if( parserName == "token-displayer" ) {
+			if( parserName == "token-displayer" ) {
 				displayTokens(bridge, tokens);
 				return null;
 			}

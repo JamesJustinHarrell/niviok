@@ -1,25 +1,37 @@
-character types
+<!--
+XML is used to divide this document into sections, to make manipulating it easier, but it is otherwise not formatted as XML.
+-->
+
+<!--
+character types:
+
+	illegal
 	" "
 	"\n"
 	"\t"
-	free
-	illegal
+	reserved (e.g. + - * /) (Also includes characters I don't want used in identifiers, even if they aren't used in any operators. They are still allowed in strings.)
 	numerical
-	reserved
+	free (any character that is not in one of the other categories)
 
-token types
+-->
+
+<grammar>
+
+<token-types>
 	DOCUMENT_OPEN
 	DOCUMENT_CLOSE
 	INDENT_OPEN
 	INDENT_CLOSE
 	NEWLINE
-	FREE //may be replaced with IDENTIFIER and many keyword tokens
+	IDENTIFIER
 	INTEGER
 	RATIONAL
-	RESERVED //may be replaced with many operator tokens
 	STRING
+	KEYWORD_*
+	OPERATOR_*
+</token-types>
 
-keywords
+<keywords>
 	in out inout
 	expose import using as
 	own share
@@ -41,31 +53,54 @@ keywords
 	generic
 	interface
 	impls
+</keywords>
 
-operators
-	=
-	.
-	,
-	+ - * /
-	+= -= *= /=
-	( ) { } < > [ ]
+<operators><![CDATA[
+	= ASSIGN
+	. EXTRACT
+	, COMMA
+	+ ADD
+	- SUBTRACT
+	* MULTIPLY
+	/ DIVIDE
+	+= ADD_ASSIGN
+	-= SUBTRACT_ASSIGN
+	*= MULTIPLY_ASSIGN
+	/= DIVIDE_ASSIGN
+	( OPENING_PARENTHESIS
+	) CLOSING_PARENTHESIS
+	{ OPENING_BRACE
+	} CLOSING_BRACE
+	< OPENING_ANGLE_BRACKET
+	> CLOSING_ANGLE_BRACKET
+	[ OPENING_BOX_BRACKET
+	] CLOSING_BOX_BRACKET
+]]></operators>
 
---- grammar
-syntax:
+<!--
+production syntax:
+
 	rule
 		Name = ... ;
 	optional (0 or 1)
 		[ ... ]
 	0 or more
 		{ ... }
-	1 or more (not used yet)
-		< ... >
-	alternative syntax for 1 or more (in case I don't like the other)
+	1 or more
 		... +
 	grouping
 		( ... )
 	options
 		... | ...
+
+production syntax for SableCC:
+	optional
+		... ?
+	0 or more
+		... *
+-->
+
+<productions>
 
 Expression
 	= Simple
@@ -157,6 +192,7 @@ BundleDocument
 	=
 		DOCUMENT_OPEN
 		{ "expose" Identifier | NEWLINE }
+		{ "plane" STRING | NEWLINE }
 		{ DeclareFirst | NEWLINE }
 		DOCUMENT_CLOSE
 	;
@@ -167,3 +203,7 @@ PlaneDocument
 		{ DeclareFirst | NEWLINE }
 		DOCUMENT_CLOSE
 	;
+
+</productions>
+
+</grammar>

@@ -602,6 +602,7 @@ foo = func(Int a)Int { return a * 2 } //error - interface mismatch
 				<member>identifier name</member>
 				<member>identikey-type</member>
 				<member>expression value</member>
+				<member>boolean breed</member>
 			</simplelist>
 			
 			<para role="process">The identikey-type must be constant, and must have a category of automatic, strict, or function.</para>
@@ -1126,7 +1127,7 @@ $observe {
 			<title>unassign</title>
 			
 			<simplelist role="layout">
-				<member>expression</member>
+				<member>identifier</member>
 			</simplelist>
 			
 			<para>Unassigns the values bound to the given reference. If the identikey is a function identikey, all bound functions are unbound.</para>
@@ -1335,8 +1336,8 @@ println foo.doStuff(3,7)
 			<title>cast</title>
 			
 			<simplelist role="layout">
-				<member>expression [object]</member>
-				<member>expression [interface]</member>
+				<member>expression object</member>
+				<member>expression interface</member>
 			</simplelist>
 			
 			<para>Evaluates to an object reference where the active interface is [interface] and the object is [object]. If [object] does not implement [interface], an error results.</para>
@@ -1373,7 +1374,7 @@ print (o as String).length
 			
 			<simplelist role="layout">
 				<!-- private and possibly public; can't be "call" or "callee" -->
-				<member>* declare-class static declarations</member>
+				<member>* static-member static declarations</member>
 				
 				<!-- private -->
 				<member>? block static constructor</member>
@@ -1466,9 +1467,9 @@ print (o as String).length
 				<listitem>Create an interface, CLASS_INTERFACE.</listitem>
 				<listitem>Add instance constructors as free functions to STATIC_SCOPE.</listitem>
 				<listitem>Add instance constructors as callees to CLASS_INTERFACE.</listitem>
-				<listitem>Evaluate every <link linkend="node.declare-class">declare-class</link> that has a <link linkend="node.declare-first">declare-first</link> in the scope of STATIC_SCOPE. If the identikey-type of the <link linkend="node.declare-first">declare-first</link> is function, and it has access of get, add a method to CLASS_INTERFACE with the same function interface and name. Otherwise, create a property with a getter if declared public.</listitem>
-				<listitem>Evaluate the rest of the declare-class nodes in the scope of STATIC_SCOPE, except for the declare-class nodes with a declare-const-empty. Create properties as appropriate when the access nodes specify to do so.</listitem>
-				<listitem>In the scope of STATIC_SCOPE, evaluate the declare-class nodes that have declare-const-empty nodes. Create properties as appropriate when the access nodes specify to do so.</listitem>
+				<listitem>Evaluate the declaration of every <link linkend="node.static-member">static-member</link> that has a <link linkend="node.declare-first">declare-first</link>, in the scope of STATIC_SCOPE. If the identikey-type of the <link linkend="node.declare-first">declare-first</link> is function, and it has access of get, add a method to CLASS_INTERFACE with the same function interface and name. Otherwise, create a property with a getter if declared public.</listitem>
+				<listitem>Evaluate the declarations of the rest of the static-member nodes in the scope of STATIC_SCOPE, except for the static-member nodes with a declare-const-empty. Create properties as appropriate when the access nodes specify to do so.</listitem>
+				<listitem>In the scope of STATIC_SCOPE, evaluate the static-member nodes that have declare-const-empty nodes. Create properties as appropriate when the access nodes specify to do so.</listitem>
 				<listitem>Add the static callees as free functions in STATIC_SCOPE.</listitem>
 				<listitem>Add the static callees and the static properties to CLASS_INTERFACE.</listitem>
 				<listitem>Execute the static constructor.</listitem>
@@ -1486,8 +1487,8 @@ print (o as String).length
 				<listitem>Note: When the interface implementation is used, the value will pass the object into the interface implementation.</listitem>
 			</orderedlist>
 			
-			<section xml:id="node.declare-class">
-				<title>declare-class</title>
+			<section xml:id="node.static-member">
+				<title>static-member</title>
 				
 				<simplelist role="layout">
 					<member>declaration</member>
@@ -1516,7 +1517,7 @@ print (o as String).length
 				<title>declare-const-empty</title>
 				
 				<simplelist role="layout">
-					<member>identifier</member>
+					<member>identifier name</member>
 					<member>identikey-type</member>
 				</simplelist>
 				
@@ -1747,8 +1748,8 @@ activeInterface(Animal) == Interface + Enum<EntryFace> + EnumList
 			</screen>
 		</section>
 		
-		<section xml:id="node.extract-named-member">
-			<title>extract-named-member</title>
+		<section xml:id="node.extract-member">
+			<title>extract-member</title>
 			
 			<simplelist role="layout">
 				<member>expression source</member>
@@ -2007,7 +2008,7 @@ println list.removeBack() //prints "3"
 				
 				<simplelist role="layout">
 					<member>identifier name</member>
-					<member>nullable-type</member>
+					<member>expression interface</member>
 				</simplelist>
 			</section>
 			

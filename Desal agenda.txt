@@ -778,6 +778,26 @@ block {
 
 
 
+Pragma Namespaces
+In C++, what if multiple standards want to use the same pragma name? This is avoided in Desal by the programmer being able to determine what name is given to each standard.
+
+bundle {
+	pragma_namespace omp = "OpenMP"
+	pragma_namespace html = "http://www.w3.org/1999/xhtml"
+	pragma_namespace foo = "{0454-64113-54-7-984-13213213-3133333}"
+	
+	plane {
+		func main() {
+			pragma omp parallel for
+			for i from 0 to 100
+				println i
+		}
+	}
+}
+
+
+
+
 ----- Dextr
 
 namespaced-value-identikey

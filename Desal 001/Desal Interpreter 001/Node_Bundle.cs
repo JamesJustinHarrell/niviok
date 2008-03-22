@@ -30,7 +30,7 @@ class Node_Bundle : INode {
 					new Dictionary<Identifier, IValue>() ));
 		}
 		catch(ClientException e) {
-			e.pushFunc("main (in native class Node_Bundle)");
+			e.pushFunc("main (in native class old_Node_Bundle)");
 			throw e;
 		}
 		
@@ -42,7 +42,7 @@ class Node_Bundle : INode {
 		get { return "bundle"; }
 	}
 	
-	public ICollection<INode> children {
+	public ICollection<INode> childNodes {
 		get { return G.collect<INode>(_planes); }
 	}
 

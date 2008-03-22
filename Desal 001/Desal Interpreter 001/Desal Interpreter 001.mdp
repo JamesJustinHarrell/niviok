@@ -29,12 +29,10 @@
     <File name="./IObject.cs" subtype="Code" buildaction="Compile" />
     <File name="./NativeFunction.cs" subtype="Code" buildaction="Compile" />
     <File name="./xxx_CString.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Node_Block.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Node_Function.cs" subtype="Code" buildaction="Compile" />
     <File name="./xxx_Node_Global.cs" subtype="Code" buildaction="Compile" />
     <File name="./Node_Identifier.cs" subtype="Code" buildaction="Compile" />
     <File name="./INode_Expression.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Node_String.cs" subtype="Code" buildaction="Compile" />
+    <File name="./keep_Node_String.cs" subtype="Code" buildaction="Compile" />
     <File name="./Value.cs" subtype="Code" buildaction="Compile" />
     <File name="./xxx_Objects.cs" subtype="Code" buildaction="Compile" />
     <File name="./PropertyImplementation.cs" subtype="Code" buildaction="Compile" />
@@ -46,7 +44,6 @@
     <File name="./IFunctionInterface.cs" subtype="Code" buildaction="Compile" />
     <File name="./xxx_FunctionInterfaceWrapper.cs" subtype="Code" buildaction="Compile" />
     <File name="./xxx_FunctionInterfaceFromObjRef.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Node_Parameter.cs" subtype="Code" buildaction="Compile" />
     <File name="./xxx_Native_FunctionInterface.cs" subtype="Code" buildaction="Compile" />
     <File name="./xxx_Client_Object.cs" subtype="Code" buildaction="Compile" />
     <File name="./Bridge.cs" subtype="Code" buildaction="Compile" />
@@ -55,59 +52,32 @@
     <File name="./xxx_Native_Object.cs" subtype="Code" buildaction="Compile" />
     <File name="./Native_Value.cs" subtype="Code" buildaction="Compile" />
     <File name="./IClass.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Node_Class.cs" subtype="Code" buildaction="Compile" />
-    <File name="./INode_DeclarationAny.cs" subtype="Code" buildaction="Compile" />
+    <File name="./xxx_Node_Class.cs" subtype="Code" buildaction="Compile" />
+    <File name="./INode_Declaration.cs" subtype="Code" buildaction="Compile" />
     <File name="./xxx_InterfaceImplBuilder.cs" subtype="Code" buildaction="Compile" />
     <File name="./Arguments.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Node_DeclareClass.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Node_ClassProperty.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Node_InterfaceImplementation.cs" subtype="Code" buildaction="Compile" />
     <File name="./NullValue.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Node_DeclareFirst.cs" subtype="Code" buildaction="Compile" />
     <File name="./Node_Integer.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Node_ForRange.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Node_Call.cs" subtype="Code" buildaction="Compile" />
     <File name="./DesibleParser.cs" subtype="Code" buildaction="Compile" />
     <File name="./Client_Integer.cs" subtype="Code" buildaction="Compile" />
     <File name="./Client_String.cs" subtype="Code" buildaction="Compile" />
     <File name="./Client_Boolean.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Node_Possibility.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Node_DeclareEmpty.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Node_DeclareAssign.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Node_DeclareConstEmpty.cs" subtype="Code" buildaction="Compile" />
     <File name="./IInterfaceImplementation.cs" subtype="Code" buildaction="Compile" />
     <File name="./Parameter.cs" subtype="Code" buildaction="Compile" />
     <File name="./InterfaceImplementationBuilder.cs" subtype="Code" buildaction="Compile" />
     <File name="./FunctionInterface.cs" subtype="Code" buildaction="Compile" />
     <File name="./InterfaceImplementation.cs" subtype="Code" buildaction="Compile" />
     <File name="./Object.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Node_Interface.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Node_Callee.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Node_Property.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Node_Method.cs" subtype="Code" buildaction="Compile" />
+    <File name="./keepfornow_Node_Interface.cs" subtype="Code" buildaction="Compile" />
     <File name="./Node_Access.cs" subtype="Code" buildaction="Compile" />
     <File name="./Client_Rational.cs" subtype="Code" buildaction="Compile" />
     <File name="./Node_Boolean.cs" subtype="Code" buildaction="Compile" />
     <File name="./Node_Bundle.cs" subtype="Code" buildaction="Compile" />
     <File name="./Node_Plane.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Node_ExtractMember.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Node_FunctionInterface.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Node_Assign.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Node_And.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Node_Nand.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Node_Or.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Node_Nor.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Node_Xor.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Node_Xnor.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Node_Unassign.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Node_ActiveInterface.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Node_Array.cs" subtype="Code" buildaction="Compile" />
     <File name="./Client_Interface.cs" subtype="Code" buildaction="Compile" />
     <File name="./Node_Rational.cs" subtype="Code" buildaction="Compile" />
     <File name="./Bridge_static_constructor.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Node_NullabeType.cs" subtype="Code" buildaction="Compile" />
     <File name="./NullableType.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Node_IdentikeyType.cs" subtype="Code" buildaction="Compile" />
     <File name="./IdentikeyCategory.cs" subtype="Code" buildaction="Compile" />
     <File name="./Node_IdentikeyCategory.cs" subtype="Code" buildaction="Compile" />
     <File name="./DextrParser.cs" subtype="Code" buildaction="Compile" />
@@ -116,7 +86,14 @@
     <File name="./G.cs" subtype="Code" buildaction="Compile" />
     <File name="./HashSet.cs" subtype="Code" buildaction="Compile" />
     <File name="./DextrCocoR.cs" subtype="Code" buildaction="Compile" />
-    <File name="./DextrCocoR_automatic.cs" subtype="Code" buildaction="Compile" />
+    <File name="./node classes.cs" subtype="Code" buildaction="Compile" />
+    <File name="./DesibleParser auto.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Node_Direction.cs" subtype="Code" buildaction="Compile" />
+    <File name="./INode_ScopeAlteration.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Interpreter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Depends.cs" subtype="Code" buildaction="Compile" />
+    <File name="./TerminalNode.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Direction.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

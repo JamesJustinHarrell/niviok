@@ -1,37 +1,19 @@
-using System.Collections.Generic;
+class Node_Identifier : TerminalNode<Identifier, Node_Identifier>, INode_Expression {
+	public Node_Identifier(Identifier value) : base(value) {}
 
-class Node_Identifier : INode_Expression {
-	Identifier _identifier;
-
-	public Node_Identifier(Identifier identifier) {
-		_identifier = identifier;
-	}
-	
-	public Identifier identifier {
-		get { return _identifier; }
-	}
-	
 	public IValue execute(Scope scope) {
-		return scope.evaluateIdentifier(_identifier);
+		return scope.evaluateIdentifier(this.value);
 	}
 	
 	public string typeName {
 		get { return "identifier"; }
 	}
-	
-	public ICollection<INode> children {
-		get { return new INode[]{}; }
-	}
 
-	public HashSet<Identifier> identikeyDependencies {
+	public override HashSet<Identifier> identikeyDependencies {
 		get {
 			HashSet<Identifier> idents = new HashSet<Identifier>();
-			idents.Add(_identifier);
+			idents.Add(this.value);
 			return idents;
 		}
-	}
-	
-	public override string ToString() {
-		return _identifier.ToString();
 	}
 }

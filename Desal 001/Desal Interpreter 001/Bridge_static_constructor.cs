@@ -22,6 +22,7 @@ partial class Bridge {
 									<identifier label='interface'>Int</identifier>
 								</nullable-type>
 								<boolean label='has-default-value'>false</boolean>
+								<direction>in</direction>
 							</parameter>
 							<nullable-type label='return-type'>
 								<boolean label='nullable'>false</boolean>
@@ -52,6 +53,7 @@ partial class Bridge {
 									<identifier label='interface'>String</identifier>
 								</nullable-type>
 								<boolean label='has-default-value'>false</boolean>
+								<direction>in</direction>
 							</parameter>
 							<nullable-type label='return-type'>
 								<boolean label='nullable'>false</boolean>

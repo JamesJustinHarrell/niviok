@@ -172,31 +172,17 @@ class DesalInterpreter001 {
 		Console.WriteLine("");
 		
 		//write children or contents
-		ICollection<INode> children = node.children;
-		printObject(
-			level+1,
-			(children.Count > 0 ? (object)children : (object)node.ToString()) );
-	}
-	
-	void printObject(int level, object obj) {
-		if( obj == null) {}
-		else if( obj is INode ) {
-			printNode( level, (INode)obj );
-		}
-		else if( obj is string ) {
-			printTabs(level);
-			Console.WriteLine(
-				'"' +
-				((string)obj).Replace(@"\", @"\\").Replace("\"", "\\\"")
-				+ '"' );
-		}
-		else if( obj is System.Collections.IEnumerable ) {
-			foreach( object o in (System.Collections.IEnumerable)obj )
-				printObject(level, o);
+		ICollection<INode> children = node.childNodes;
+		if( children.Count > 0 ) {
+			foreach( INode child in children )
+				printNode( level+1, child );
 		}
 		else {
-			printTabs(level);
-			Console.WriteLine(obj);
+			printTabs(level + 1);
+			Console.WriteLine(
+				'"' +
+				node.ToString().Replace(@"\", @"\\").Replace("\"", "\\\"")
+				+ '"' );
 		}
 	}
 	

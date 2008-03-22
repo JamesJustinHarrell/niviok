@@ -1,29 +1,12 @@
-using System.Collections.Generic;
-
-class Node_Integer : INode_Expression {
-	long _int;
-
-	public Node_Integer(long integer) {
-		_int = integer;
-	}
+//xxx use BigInt
+class Node_Integer : TerminalNode<long, Node_Integer>, INode_Expression {
+	public Node_Integer(long value) :base(value) {}
 	
 	public IValue execute(Scope scope) {
-		return Bridge.wrapInteger(_int);
+		return Bridge.wrapInteger(this.value);
 	}
 	
 	public string typeName {
 		get { return "integer"; }
-	}
-	
-	public ICollection<INode> children {
-		get { return new INode[]{}; }
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return new HashSet<Identifier>(); }
-	}
-	
-	public override string ToString() {
-		return _int.ToString();
 	}
 }
