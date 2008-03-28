@@ -3,20 +3,7 @@ using System.Collections.Generic;
 
 namespace Dextr {
 
-	class Parser {
-		/*
-		static Node_Bundle parseWithCocoR(Bridge bridge, IList<Token> tokens) {
-			CocoR.Scanner scanner = new CocoR.Scanner(tokens);
-			CocoR.Parser parser = new CocoR.Parser(scanner);
-			parser.bridge = bridge;
-			parser.shouldParseBundle = true; //xxx take as argument
-			parser.Parse();
-			if( parser.errors.count > 0 )
-				throw new Exception("Dextr code contained errors");
-			return parser.bundle;
-		}
-		*/
-		
+	class Parser {		
 		static void displayTokens(Bridge bridge, IList<Token> tokens) {
 			int indentLevel = 0;
 			bool indentedThisLine = false;

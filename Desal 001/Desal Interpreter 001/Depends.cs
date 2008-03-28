@@ -1,28 +1,39 @@
-//determines the identikey dependencies of nodes
+//determines the identikey dependencies of nodes, i.e.
+//the names of identikeys in the outer scope referenced by this node
+//the set returned should never be null (though may be empty set)
 
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using Reflection = System.Reflection;
 
 static class Depends {
-	//unions the dependencies of nodes extracted from params
+	//unions dependencies of nodes extracted from params
 	static HashSet<Identifier> collectDepends( params object[] args ) {
 		return unionDepends(G.collect<INode>(args));
 	}
 
-	//unions the dependencies of element nodes together
+	//unions dependencies of nodes in collection
 	static HashSet<Identifier> unionDepends(ICollection<INode> args) {
 		HashSet<Identifier> idents = new HashSet<Identifier>();
 		foreach( INode node in args ) {
 			if( node != null )
-				idents.UnionWith( node.identikeyDependencies );
+				idents.UnionWith( Depends.depends(node) );
 		}
 		return idents;
+	}
+	
+	//unions dependencies of child nodes
+	static HashSet<Identifier> unionChildDepends(INode node) {
+		return ( node.childNodes == null ?
+		        new HashSet<Identifier>() :
+		        unionDepends(node.childNodes) );
 	}
 	
 	//block
 	//xxx may want to remove references to global identikeys (optimization)
 	public static HashSet<Identifier> depends(Node_Block node) {
-		HashSet<Identifier> idents = depends(node as INode);
+		HashSet<Identifier> idents = unionChildDepends(node);
 		foreach( INode_Expression member in node.members ) {
 			if( member is INode_Declaration ) {
 				//xxx shouldn't remove references to function identikeys
@@ -50,33 +61,40 @@ static class Depends {
 	
 	//extract-member
 	public static HashSet<Identifier> depends(Node_ExtractMember node) {
-		return node.source.identikeyDependencies;
+		return depends(node.source);
 	}
 	
 	//for-range
 	public static HashSet<Identifier> depends(Node_ForRange node) {
-		HashSet<Identifier> idents = node.action.identikeyDependencies;
+		HashSet<Identifier> idents = depends(node.action);
 		idents.Remove(node.name.value);
-		idents.UnionWith(node.start.identikeyDependencies);
-		idents.UnionWith(node.limit.identikeyDependencies);
+		idents.UnionWith(depends(node.start));
+		idents.UnionWith(depends(node.limit));
 		return idents;
 	}
 	
 	//function
 	public static HashSet<Identifier> depends(Node_Function node) {
-		HashSet<Identifier> idents = node.body.identikeyDependencies;
-		foreach( Node_Parameter param in node.parameter )
+		HashSet<Identifier> idents = depends(node.body);
+		foreach( Node_Parameter param in node.parameters )
 			idents.Remove( param.name.value );
-		foreach( Node_Parameter param in node.parameter )
-			idents.UnionWith( param.identikeyDependencies );
+		foreach( Node_Parameter param in node.parameters )
+			idents.UnionWith( depends(param) );
 		if( node.returnInfo != null )
-			idents.UnionWith( node.returnInfo.identikeyDependencies );
+			idents.UnionWith( depends(node.returnInfo) );
+		return idents;
+	}
+	
+	//identifier
+	public static HashSet<Identifier> depends(Node_Identifier node) {
+		HashSet<Identifier> idents = new HashSet<Identifier>();
+		idents.Add(node.value);
 		return idents;
 	}
 	
 	//method
 	public static HashSet<Identifier> depends(Node_Method node) {
-		return node.@interface.identikeyDependencies;
+		return depends(node.@interface);
 	}
 	
 	//parameter
@@ -86,19 +104,37 @@ static class Depends {
 	
 	//plane
 	public static HashSet<Identifier> depends(Node_Plane node) {
-		HashSet<Identifier> idents = collectDepends(node.binds);
-		foreach( Node_DeclareFirst decl in node.binds )
+		HashSet<Identifier> idents = collectDepends(node.declareFirsts);
+		foreach( Node_DeclareFirst decl in node.declareFirsts )
 			idents.Remove( decl.name.value ); //xxx only if not function
 		return idents;
 	}
 	
 	//property
 	public static HashSet<Identifier> depends(Node_Property node) {
-		return collectDepends(node.access, node.nullableType);
+		return depends(node.nullableType);
 	}
 	
-	//node
+	//any node
 	public static HashSet<Identifier> depends(INode node) {
-		return unionDepends(node.childNodes);
+		//xxx System.Console.WriteLine("in depends(INode)");
+		Type classType = typeof(Depends);
+		Type nodeType = ((Object)node).GetType();
+		Reflection.MethodInfo meth = classType.GetMethod(
+			"depends", new Type[]{nodeType});
+
+		//xxx System.Console.WriteLine(meth.GetParameters()[0].ParameterType);
+		//System.Console.WriteLine(typeof(INode));
+		if( meth.GetParameters()[0].ParameterType == typeof(INode) )
+			return unionChildDepends(node);
+		
+		try {
+			return (HashSet<Identifier>)meth.Invoke(null, new object[]{node});
+		}
+		catch(Reflection.TargetInvocationException e) {
+			if( e.InnerException is ClientException )
+				throw e.InnerException;
+			throw e;
+		}
 	}
 }

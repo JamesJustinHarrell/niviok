@@ -4,8 +4,4 @@ class Node_Boolean : TerminalNode<bool, Node_Boolean>, INode {
 	public string typeName {
 		get { return "boolean"; }
 	}
-
-	public override string ToString() {
-		return base.ToString().ToLower();
-	}
 }

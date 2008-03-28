@@ -1,4 +1,4 @@
-/*
+/* * /
 static class InterfaceWrapper {
 	public static IValue wrap(IInterface aInterface) {
 		//interface implementation info

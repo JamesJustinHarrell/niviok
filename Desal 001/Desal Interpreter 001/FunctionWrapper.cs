@@ -31,7 +31,7 @@ class FW_Value : IValue {
 		return _interfaceImpl.evaluateCall(arguments);
 	}
 	
-	public IValue extractNamedMember(Identifier name) {
+	public IValue extractMember(Identifier name) {
 		throw new Error_Unimplemented();
 	}
 

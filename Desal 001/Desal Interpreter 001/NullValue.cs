@@ -38,7 +38,7 @@ class NullValue : IValue {
 		throw new ClientException("null");
 	}
 	
-	public IValue extractNamedMember(Identifier name) {
+	public IValue extractMember(Identifier name) {
 		throw new ClientException("null");
 	}
 }

@@ -56,13 +56,13 @@ document.body.appendChild(container);
 					<direction>in</direction>
 				</parameter>
 				<block label='body'>
-					<call label='members'>
+					<call label='member'>
 						<identifier label='value'>println</identifier>
 						<argument>
 							<string label='value'/>
 						</argument>
 					</call>
-					<call label='members'>
+					<call label='member'>
 						<identifier label='value'>println</identifier>
 						<argument>
 							<call label='value'>
@@ -116,7 +116,7 @@ document.body.appendChild(container);
 					<direction>in</direction>
 				</parameter>
 				<block label='body'>
-					<call label='members'>
+					<call label='member'>
 						<identifier label='value'>header</identifier>
 						<argument>
 							<call label='value'>
@@ -130,16 +130,16 @@ document.body.appendChild(container);
 							</call>
 						</argument>
 					</call>
-					<call label='members'>
+					<call label='member'>
 						<identifier label='value'>function</identifier>
 					</call>
-					<call label='members'>
+					<call label='member'>
 						<identifier label='value'>println</identifier>
 						<argument>
 							<string label='value'/>
 						</argument>
 					</call>
-					<call label='members'>
+					<call label='member'>
 						<identifier label='value'>println</identifier>
 						<argument>
 							<call label='value'>
@@ -181,7 +181,7 @@ document.body.appendChild(container);
 				<block foo:label="stuff" label='body'>
 					
 					<!-- doStuff -->
-					<call label='members'>
+					<call label='member'>
 						<identifier label='value'>headerize</identifier>
 						<argument>
 							<string label='value'>doStuff</string>
@@ -193,7 +193,7 @@ document.body.appendChild(container);
 					</call>
 					
 					<!-- testNonProducers -->
-					<call label='members'>
+					<call label='member'>
 						<identifier label='value'>headerize</identifier>
 						<argument>
 							<string label='value'>testNonProducers</string>
@@ -204,7 +204,7 @@ document.body.appendChild(container);
 					</call>
 					
 					<!-- testSometimesProducers -->
-					<call label='members'>
+					<call label='member'>
 						<identifier label='value'>headerize</identifier>
 						<argument>
 							<string label='value'>testSometimesProducers</string>
@@ -215,7 +215,7 @@ document.body.appendChild(container);
 					</call>
 					
 					<!-- testAlwaysProducers -->
-					<call label='members'>
+					<call label='member'>
 						<identifier label='value'>headerize</identifier>
 						<argument>
 							<string label='value'>testAlwaysProducers</string>
@@ -226,7 +226,7 @@ document.body.appendChild(container);
 					</call>
 		
 					<!-- this should be ignored since it's in a different namespace -->
-					<foo:ignored-stuff label='members'>
+					<foo:ignored-stuff label='member'>
 						<candy>
 							ABC
 							<apple>
@@ -264,10 +264,10 @@ document.body.appendChild(container);
 			<boolean label='breed'>false</boolean>
 			<function label='value'>
 				<block label='body'>
-					<possibility label='members'>
+					<possibility label='member'>
 						<identifier label='test'>true</identifier>
 						<block label='result'>
-							<call label='members'>
+							<call label='member'>
 								<identifier label='value'>println</identifier>
 								<argument>
 									<string label='value'>this is a test</string>
@@ -275,7 +275,7 @@ document.body.appendChild(container);
 							</call>
 						</block>
 					</possibility>
-					<declare-assign label='members'>
+					<declare-assign label='member'>
 						<identifier label='name'>str</identifier>
 						<identikey-type>
 							<identikey-category>strict</identikey-category>
@@ -296,13 +296,13 @@ document.body.appendChild(container);
 							</argument>
 						</call>
 					</declare-assign>
-					<call label='members'>
+					<call label='member'>
 						<identifier label='value'>println</identifier>
 						<argument>
 							<identifier label='value'>str</identifier>
 						</argument>
 					</call>
-					<call label='members'>
+					<call label='member'>
 						<identifier label='value'>println</identifier>
 						<argument>
 							<extract-member label='value'>
@@ -311,13 +311,13 @@ document.body.appendChild(container);
 							</extract-member>
 						</argument>
 					</call>
-					<for-range label='members'>
+					<for-range label='member'>
 						<identifier label='name'>x</identifier>
 						<integer label='start'>1</integer>
 						<integer label='limit'>20</integer>
 						<boolean label='inclusive'>false</boolean>
 						<block label='action'>
-							<call label='members'>
+							<call label='member'>
 								<identifier label='value'>println</identifier>
 								<argument>
 									<call label='value'>
@@ -415,22 +415,22 @@ document.body.appendChild(container);
 				<block label='body'>
 					
 					<!-- testBooleanLogic() -->
-					<call label='members'>
+					<call label='member'>
 						<identifier label='value'>header</identifier>
 						<argument>
 							<string label='value'>testBooleanLogic()</string>
 						</argument>
 					</call>
-					<call label='members'>
+					<call label='member'>
 						<identifier label='value'>testBooleanLogic</identifier>
 					</call>
 					
 					<!-- array - -> xxx generic interface implementations needed
-					<call label='members'>
+					<call label='member'>
 						<identifier label='value'>header</identifier>
 						<string label='argument'>array</string>
 					</call>
-					<call label='members'>
+					<call label='member'>
 						<identifier label='value'>println</identifier>
 						<array label='argument'>
 							<integer label='element'>1</integer>
@@ -448,13 +448,13 @@ document.body.appendChild(container);
 					<!-- enum -->
 					
 					<!-- function -->
-					<call label='members'>
+					<call label='member'>
 						<identifier label='value'>header</identifier>
 						<argument>
 							<string label='value'>function</string>
 						</argument>
 					</call>
-					<call label='members'>
+					<call label='member'>
 						<identifier label='value'>println</identifier>
 						<argument>
 							<call label='value'>
@@ -473,13 +473,13 @@ document.body.appendChild(container);
 					<!-- extract-member -->
 
 					<!-- identifier -->
-					<call label='members'>
+					<call label='member'>
 						<identifier label='value'>header</identifier>
 						<argument>
 							<string label='value'>identifier</string>
 						</argument>
 					</call>
-					<call label='members'>
+					<call label='member'>
 						<identifier label='value'>println</identifier>
 						<argument>
 							<identifier label='value'>true</identifier>
@@ -492,13 +492,13 @@ document.body.appendChild(container);
 					<!-- implements -->
 					
 					<!-- integer -->
-					<call label='members'>
+					<call label='member'>
 						<identifier label='value'>header</identifier>
 						<argument>
 							<string label='value'>integer</string>
 						</argument>
 					</call>
-					<call label='members'>
+					<call label='member'>
 						<identifier label='value'>println</identifier>
 						<argument>
 							<integer label='value'>9000</integer>
@@ -509,13 +509,13 @@ document.body.appendChild(container);
 					<!-- namespaced-identikey -->
 					
 					<!-- rational -->
-					<call label='members'>
+					<call label='member'>
 						<identifier label='value'>header</identifier>
 						<argument>
 							<string label='value'>rational</string>
 						</argument>
 					</call>
-					<call label='members'>
+					<call label='member'>
 						<identifier label='value'>println</identifier>
 						<argument>
 							<rational label='value'>123.456</rational>
@@ -525,13 +525,13 @@ document.body.appendChild(container);
 					<!-- set-property -->
 					
 					<!-- string -->
-					<call label='members'>
+					<call label='member'>
 						<identifier label='value'>header</identifier>
 						<argument>
 							<string label='value'>string</string>
 						</argument>
 					</call>
-					<call label='members'>
+					<call label='member'>
 						<identifier label='value'>println</identifier>
 						<argument>
 							<string label='value'>This is some text.</string>
@@ -586,7 +586,7 @@ document.body.appendChild(container);
 			<function label='value'>
 				<block label='body'>
 					<!-- decl t = true -->
-					<declare-assign label='members'>
+					<declare-assign label='member'>
 						<identikey-type>
 							<identikey-category>automatic</identikey-category>
 							<nullable-type>
@@ -600,7 +600,7 @@ document.body.appendChild(container);
 					</declare-assign>
 					
 					<!-- decl f = false -->
-					<declare-assign label='members'>
+					<declare-assign label='member'>
 						<identikey-type>
 							<identikey-category>automatic</identikey-category>
 							<nullable-type>
@@ -614,13 +614,13 @@ document.body.appendChild(container);
 					</declare-assign>
 					
 					<!-- and -->
-					<call label='members'>
+					<call label='member'>
 						<identifier label='value'>header</identifier>
 						<argument>
 							<string label='value'>and</string>
 						</argument>
 					</call>
-					<call label='members'>
+					<call label='member'>
 						<identifier label='value'>println</identifier>
 						<argument>
 							<and label='value'>
@@ -629,7 +629,7 @@ document.body.appendChild(container);
 							</and>
 						</argument>
 					</call>
-					<call label='members'>
+					<call label='member'>
 						<identifier label='value'>println</identifier>
 						<argument>
 							<and label='value'>
@@ -640,13 +640,13 @@ document.body.appendChild(container);
 					</call>
 					
 					<!-- nand -->
-					<call label='members'>
+					<call label='member'>
 						<identifier label='value'>header</identifier>
 						<argument>
 							<string label='value'>nand</string>
 						</argument>
 					</call>
-					<call label='members'>
+					<call label='member'>
 						<identifier label='value'>println</identifier>
 						<argument>
 							<nand label='value'>
@@ -655,7 +655,7 @@ document.body.appendChild(container);
 							</nand>
 						</argument>
 					</call>
-					<call label='members'>
+					<call label='member'>
 						<identifier label='value'>println</identifier>
 						<argument>
 							<nand label='value'>
@@ -666,13 +666,13 @@ document.body.appendChild(container);
 					</call>
 					
 					<!-- or -->
-					<call label='members'>
+					<call label='member'>
 						<identifier label='value'>header</identifier>
 						<argument>
 							<string label='value'>or</string>
 						</argument>
 					</call>
-					<call label='members'>
+					<call label='member'>
 						<identifier label='value'>println</identifier>
 						<argument>
 							<or label='value'>
@@ -681,7 +681,7 @@ document.body.appendChild(container);
 							</or>
 						</argument>
 					</call>
-					<call label='members'>
+					<call label='member'>
 						<identifier label='value'>println</identifier>
 						<argument>
 							<or label='value'>
@@ -692,13 +692,13 @@ document.body.appendChild(container);
 					</call>
 					
 					<!-- nor -->
-					<call label='members'>
+					<call label='member'>
 						<identifier label='value'>header</identifier>
 						<argument>
 							<string label='value'>nor</string>
 						</argument>
 					</call>
-					<call label='members'>
+					<call label='member'>
 						<identifier label='value'>println</identifier>
 						<argument>
 							<nor label='value'>
@@ -707,7 +707,7 @@ document.body.appendChild(container);
 							</nor>
 						</argument>
 					</call>
-					<call label='members'>
+					<call label='member'>
 						<identifier label='value'>println</identifier>
 						<argument>
 							<nor label='value'>
@@ -718,13 +718,13 @@ document.body.appendChild(container);
 					</call>
 					
 					<!-- xor -->
-					<call label='members'>
+					<call label='member'>
 						<identifier label='value'>header</identifier>
 						<argument>
 							<string label='value'>xor</string>
 						</argument>
 					</call>
-					<call label='members'>
+					<call label='member'>
 						<identifier label='value'>println</identifier>
 						<argument>
 							<xor label='value'>
@@ -733,7 +733,7 @@ document.body.appendChild(container);
 							</xor>
 						</argument>
 					</call>
-					<call label='members'>
+					<call label='member'>
 						<identifier label='value'>println</identifier>
 						<argument>
 							<xor label='value'>
@@ -744,13 +744,13 @@ document.body.appendChild(container);
 					</call>
 					
 					<!-- xnor -->
-					<call label='members'>
+					<call label='member'>
 						<identifier label='value'>header</identifier>
 						<argument>
 							<string label='value'>xnor</string>
 						</argument>
 					</call>
-					<call label='members'>
+					<call label='member'>
 						<identifier label='value'>println</identifier>
 						<argument>
 							<xnor label='value'>
@@ -759,7 +759,7 @@ document.body.appendChild(container);
 							</xnor>
 						</argument>
 					</call>
-					<call label='members'>
+					<call label='member'>
 						<identifier label='value'>println</identifier>
 						<argument>
 							<xnor label='value'>

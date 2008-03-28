@@ -37,7 +37,7 @@ class BoundMethod<T> : IValue {
 		return _faceimpl.callMethod(_state, _name, arguments);
 	}
 		
-	public IValue extractNamedMember(Identifier name) {
+	public IValue extractMember(Identifier name) {
 		throw new Error_Unimplemented();
 	}
 	

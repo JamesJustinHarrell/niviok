@@ -32,7 +32,7 @@ class NativeValue<T> : IValue {
 	public IValue callMethod(Identifier name, Arguments arguments) {
 		return _impl.callMethod(_obj, name, arguments);
 	}
-	public IValue extractNamedMember(Identifier name) {
+	public IValue extractMember(Identifier name) {
 		IInterface face = _impl.@interface;
 		if( face.properties.ContainsKey(name) )
 			return _impl.getProperty(_obj, this, name);

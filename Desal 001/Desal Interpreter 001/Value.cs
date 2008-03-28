@@ -38,7 +38,7 @@ class Value<T> : IValue {
 		}
 	}
 	
-	public IValue extractNamedMember(Identifier name) {
+	public IValue extractMember(Identifier name) {
 		IInterface face = _faceimpl.@interface;
 		if( face.properties.ContainsKey(name) )
 			return _faceimpl.getProperty(_object.state, this, name);

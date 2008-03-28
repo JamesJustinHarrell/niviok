@@ -7,7 +7,7 @@
     </head>
     <body>
         <h1>Desal Semantics 1.0</h1>
-        <h2>Edition 1 Draft 2008-02-13</h2>
+        <h2>Edition 1 Draft 2008-03-26</h2>
         <p>Copyright © 2008 James Justin Harrell</p>
         <p>Permission is granted to use, copy, display, modify, sell, and distribute this document. This document is provided "as is" without warrany of any kind. In no event shall anyone be liable for any damages or other liability arising from use of this document.</p>
         <ol class="toc">
@@ -38,7 +38,7 @@
                         <a href="#compliance">1.4. Compliance</a>
                     </li>
                     <li>
-                        <a href="#executing-bundle">1.5. Executing a bundle</a>
+                        <a href="#executing-nodes">1.5. Executing nodes</a>
                     </li>
                     <li>
                         <a href="#definitions">1.6. Definitions</a>
@@ -137,40 +137,37 @@
                                 <a href="#node.boolean">10.3.2. boolean</a>
                             </li>
                             <li>
-                                <a href="#node.bundle">10.3.3. bundle</a>
+                                <a href="#node.direction">10.3.3. direction</a>
                             </li>
                             <li>
-                                <a href="#node.direction">10.3.4. direction</a>
+                                <a href="#node.expose">10.3.4. expose</a>
                             </li>
                             <li>
-                                <a href="#node.expose">10.3.5. expose</a>
+                                <a href="#node.generic-parameter">10.3.5. generic-parameter</a>
                             </li>
                             <li>
-                                <a href="#node.generic-parameter">10.3.6. generic-parameter</a>
+                                <a href="#node.identikey-category">10.3.6. identikey-category</a>
                             </li>
                             <li>
-                                <a href="#node.identikey-category">10.3.7. identikey-category</a>
+                                <a href="#node.identikey-type">10.3.7. identikey-type</a>
                             </li>
                             <li>
-                                <a href="#node.identikey-type">10.3.8. identikey-type</a>
+                                <a href="#node.import">10.3.8. import</a>
                             </li>
                             <li>
-                                <a href="#node.import">10.3.9. import</a>
+                                <a href="#node.nullable-type">10.3.9. nullable-type</a>
                             </li>
                             <li>
-                                <a href="#node.nullable-type">10.3.10. nullable-type</a>
+                                <a href="#node.parameter">10.3.10. parameter</a>
                             </li>
                             <li>
-                                <a href="#node.parameter">10.3.11. parameter</a>
+                                <a href="#node.plane">10.3.11. plane</a>
                             </li>
                             <li>
-                                <a href="#node.plane">10.3.12. plane</a>
+                                <a href="#node.scope-alteration">10.3.12. scope-alteration</a>
                             </li>
                             <li>
-                                <a href="#node.scope-alteration">10.3.13. scope-alteration</a>
-                            </li>
-                            <li>
-                                <a href="#node.using">10.3.14. using</a>
+                                <a href="#node.using">10.3.13. using</a>
                             </li>
                         </ol>
                     </li>
@@ -225,13 +222,16 @@
                                 <a href="#node.labeled">10.4.6. labeled</a>
                             </li>
                             <li>
-                                <a href="#node.return">10.4.7. return</a>
+                                <a href="#node.null">10.4.7. null</a>
                             </li>
                             <li>
-                                <a href="#node.throw">10.4.8. throw</a>
+                                <a href="#node.return">10.4.8. return</a>
                             </li>
                             <li>
-                                <a href="#node.yield">10.4.9. yield</a>
+                                <a href="#node.throw">10.4.9. throw</a>
+                            </li>
+                            <li>
+                                <a href="#node.yield">10.4.10. yield</a>
                             </li>
                         </ol>
                     </li>
@@ -248,46 +248,46 @@
                                 <a href="#node.call">10.5.3. call</a>
                             </li>
                             <li>
-                                <a href="#node.conditional">10.5.4. conditional</a>
+                                <a href="#node.cast">10.5.4. cast</a>
                             </li>
                             <li>
-                                <a href="#node.curry">10.5.5. curry</a>
+                                <a href="#node.conditional">10.5.5. conditional</a>
                             </li>
                             <li>
-                                <a href="#node.declare-assign">10.5.6. declare-assign</a>
+                                <a href="#node.curry">10.5.6. curry</a>
                             </li>
                             <li>
-                                <a href="#node.ignore">10.5.7. ignore</a>
+                                <a href="#node.declare-assign">10.5.7. declare-assign</a>
+                            </li>
+                            <li>
+                                <a href="#node.ignore">10.5.8. ignore</a>
                                 <ol>
                                     <li>
-                                        <a href="#node.ignore-member">10.5.7.1. ignore-member</a>
+                                        <a href="#node.ignore-member">10.5.8.1. ignore-member</a>
                                     </li>
                                 </ol>
                             </li>
                             <li>
-                                <a href="#node.namespaced-value-identikey">10.5.8. namespaced-value-identikey</a>
+                                <a href="#node.namespaced-value-identikey">10.5.9. namespaced-value-identikey</a>
                             </li>
                             <li>
-                                <a href="#node.possibility">10.5.9. possibility</a>
+                                <a href="#node.possibility">10.5.10. possibility</a>
                             </li>
                             <li>
-                                <a href="#node.select">10.5.10. select</a>
+                                <a href="#node.select">10.5.11. select</a>
                                 <ol>
                                     <li>
-                                        <a href="#node.case">10.5.10.1. case</a>
+                                        <a href="#node.case">10.5.11.1. case</a>
                                     </li>
                                 </ol>
                             </li>
                             <li>
-                                <a href="#node.try-catch">10.5.11. try-catch</a>
+                                <a href="#node.try-catch">10.5.12. try-catch</a>
                                 <ol>
                                     <li>
-                                        <a href="#node.exception-handler">10.5.11.1. exception-handler</a>
+                                        <a href="#node.exception-handler">10.5.12.1. exception-handler</a>
                                     </li>
                                 </ol>
-                            </li>
-                            <li>
-                                <a href="#node.unassign">10.5.12. unassign</a>
                             </li>
                         </ol>
                     </li>
@@ -324,10 +324,10 @@
                                 <a href="#node.breed">10.6.3. breed</a>
                             </li>
                             <li>
-                                <a href="#node.caller">10.6.4. caller</a>
+                                <a href="#node.bundle">10.6.4. bundle</a>
                             </li>
                             <li>
-                                <a href="#node.cast">10.6.5. cast</a>
+                                <a href="#node.caller">10.6.5. caller</a>
                             </li>
                             <li>
                                 <a href="#node.chain">10.6.6. chain</a>
@@ -336,7 +336,7 @@
                                 <a href="#node.class">10.6.7. class</a>
                                 <ol>
                                     <li>
-                                        <a href="#node.declare-class">10.6.7.1. declare-class</a>
+                                        <a href="#node.static-member">10.6.7.1. static-member</a>
                                     </li>
                                     <li>
                                         <a href="#node.declaration">10.6.7.2. declaration</a>
@@ -380,7 +380,7 @@
                                 </ol>
                             </li>
                             <li>
-                                <a href="#node.extract-named-member">10.6.11. extract-named-member</a>
+                                <a href="#node.extract-member">10.6.11. extract-member</a>
                             </li>
                             <li>
                                 <a href="#node.function">10.6.12. function</a>
@@ -455,7 +455,7 @@
                 </ol>
             </li>
             <li>
-                <a href="#special-identikeys">11. Special identikeys</a>
+                <a href="#reserved-identikey-names">11. Reserved identikey names</a>
             </li>
             <li>
                 <a href="#standard-library">12. Standard library</a>
@@ -511,117 +511,112 @@
                     <li>
                         <a href="#interface.rat">12.17. interface rat</a>
                     </li>
+                    <li>
+                        <a href="#Generator">12.18. Generator</a>
+                    </li>
+                    <li>
+                        <a href="#InterfaceBuilder">12.19. InterfaceBuilder</a>
+                    </li>
+                    <li>
+                        <a href="#Iterator">12.20. Iterator</a>
+                    </li>
+                    <li>
+                        <a href="#CInterfaceBuilder">12.21. CInterfaceBuilder</a>
+                    </li>
+                    <li>
+                        <a href="#getFuncInterface">12.22. getFuncInterface</a>
+                    </li>
                 </ol>
             </li>
             <li>
                 <a href="#warnings-list">13. Warnings</a>
             </li>
             <li>
-                <a href="#preexisting-global-identikeys">14. Other preexisting global identikeys</a>
+                <a href="#error-handling-processing">14. Error handling during processing</a>
+            </li>
+            <li>
+                <a href="#warnings">15. warnings</a>
+            </li>
+            <li>
+                <a href="#rationales">16. Rationales</a>
                 <ol>
                     <li>
-                        <a href="#Generator">14.1. Generator</a>
+                        <a href="#rationale.dynamic-static-typing">16.1. Dynamic static typing</a>
                     </li>
                     <li>
-                        <a href="#InterfaceBuilder">14.2. InterfaceBuilder</a>
-                    </li>
-                    <li>
-                        <a href="#Iterator">14.3. Iterator</a>
-                    </li>
-                    <li>
-                        <a href="#CInterfaceBuilder">14.4. CInterfaceBuilder</a>
-                    </li>
-                    <li>
-                        <a href="#getFuncInterface">14.5. getFuncInterface</a>
-                    </li>
-                </ol>
-            </li>
-            <li>
-                <a href="#error-handling-processing">15. Error handling during processing</a>
-            </li>
-            <li>
-                <a href="#warnings">16. warnings</a>
-            </li>
-            <li>
-                <a href="#rationales">17. Rationales</a>
-                <ol>
-                    <li>
-                        <a href="#rationale.dynamic-static-typing">17.1. Dynamic static typing</a>
-                    </li>
-                    <li>
-                        <a href="#rationale.terms">17.2. Terms</a>
+                        <a href="#rationale.terms">16.2. Terms</a>
                         <ol>
                             <li>
-                                <a href="#rationale.get-set">17.2.1. get/set</a>
+                                <a href="#rationale.get-set">16.2.1. get/set</a>
                             </li>
                         </ol>
                     </li>
                     <li>
-                        <a href="#rationale.executing-boolean-logic">17.3. Executing boolean logic nodes</a>
+                        <a href="#rationale.executing-boolean-logic">16.3. Executing boolean logic nodes</a>
                     </li>
                     <li>
-                        <a href="#executing-declaration-first">17.4. Disallowing executing declaration-first</a>
+                        <a href="#executing-declaration-first">16.4. Disallowing executing declaration-first</a>
                     </li>
                 </ol>
             </li>
             <li>
-                <a href="#unsorted-stuff">18. unsorted stuff</a>
+                <a href="#unsorted-stuff">17. unsorted stuff</a>
                 <ol>
                     <li>
-                        <a href="#closures">18.1. Closures</a>
+                        <a href="#closures">17.1. Closures</a>
                     </li>
                     <li>
-                        <a href="#tree-examples">18.2. Tree examples</a>
+                        <a href="#tree-examples">17.2. Tree examples</a>
                         <ol>
                             <li>
-                                <a href="#tree-example-1">18.2.1. Example 1</a>
+                                <a href="#tree-example-1">17.2.1. Example 1</a>
                             </li>
                             <li>
-                                <a href="#tree-example-2">18.2.2. Example 2</a>
+                                <a href="#tree-example-2">17.2.2. Example 2</a>
                             </li>
                             <li>
-                                <a href="#tree-example-3">18.2.3. Example 3</a>
+                                <a href="#tree-example-3">17.2.3. Example 3</a>
                             </li>
                         </ol>
                     </li>
                     <li>
-                        <a href="#get-interface">18.3. get interface</a>
+                        <a href="#get-interface">17.3. get interface</a>
                     </li>
                     <li>
-                        <a href="#obj-interface">18.4. obj interface</a>
+                        <a href="#obj-interface">17.4. obj interface</a>
                     </li>
                     <li>
-                        <a href="#identifier-binding">18.5. Binding to identifiers</a>
+                        <a href="#identifier-binding">17.5. Binding to identifiers</a>
                     </li>
                     <li>
-                        <a href="#print-println-return-interfaces">18.6. Return interfaces of print and println</a>
+                        <a href="#print-println-return-interfaces">17.6. Return interfaces of print and println</a>
                     </li>
                     <li>
-                        <a href="#adjuncts">18.7. Adjuncts</a>
+                        <a href="#adjuncts">17.7. Adjuncts</a>
                     </li>
                     <li>
-                        <a href="#runtime-inteface">18.8. runtime interface implementation</a>
+                        <a href="#runtime-inteface">17.8. runtime interface implementation</a>
                     </li>
                     <li>
-                        <a href="#runtime-interface-creation">18.9. Runtime interface creation</a>
+                        <a href="#runtime-interface-creation">17.9. Runtime interface creation</a>
                     </li>
                     <li>
-                        <a href="#self-return-type">18.10. "self" return type</a>
+                        <a href="#self-return-type">17.10. "self" return type</a>
                     </li>
                     <li>
-                        <a href="#bind">18.11. Bind</a>
+                        <a href="#bind">17.11. Bind</a>
                     </li>
                     <li>
-                        <a href="#classes">18.12. Classes</a>
+                        <a href="#classes">17.12. Classes</a>
                     </li>
                     <li>
-                        <a href="#noninstantiated-interface-templates">18.13. Noninstantiated interface templates</a>
+                        <a href="#noninstantiated-interface-templates">17.13. Noninstantiated interface templates</a>
                     </li>
                     <li>
-                        <a href="#dynamic-library-loading">18.14. Dynamic library loading</a>
+                        <a href="#dynamic-library-loading">17.14. Dynamic library loading</a>
                     </li>
                     <li>
-                        <a href="#static-typing">18.15. Static typing</a>
+                        <a href="#static-typing">17.15. Static typing</a>
                     </li>
                 </ol>
             </li>
@@ -667,8 +662,9 @@
                 <p>For example, consider an implementation Alpha that meets all the "must" requirements and three of the the "should" requirements, and an implementation Beta that meets all the "must" requirements and five of the "should" requirements. If Beta does not meet the three "should" requirements that Alpha meets, Aplha is not a subset of Beta, so it cannot be said that Beta is more compliant than Alpha. But if Beta meets the same three "should" requirements as Alpha (in addition to the other two), then Alpha is a subset of Beta, so it can be said that Beta is more compliant than Alpha.</p>
                 <p>This specification also has "encourgements". These encouragements are considered good ideas by the specficiation author(s), but may not always be appropriate or may not be necessary for interoperability. Complying with these encouragements does not increase an implementation's compliance.</p>
             </div>
-            <div id="executing-bundle">
-                <h2>1.5. Executing a bundle</h2>
+            <div id="executing-nodes">
+                <h2>1.5. Executing nodes</h2>
+                <p>No node besides the bundle node can be executed directly. All other nodes must only be executed when required by the execution instructions of another node, or as required to call a callee/method (such as when calling a value created by a function node). ((XXX clarify execution through calling)) Because values can only be created, directly or indirectly, by executing the bundle node, and because all node execution instructions only every instruct to execute child nodes, all node execution occurs as a result of executing the root bundle node. All Desal nodes that are executed in any way must be part of a complete Desal tree, which means having an bundle node as the root node.</p>
                 <p>Note: A bundle might not have a main function. It might just expose its members, such as for scripting or a library.</p>
                 <p>interpreted:</p>
                 <ol>
@@ -728,8 +724,6 @@
                     <dd>the interface implementation a value is directly associated with</dd>
                     <dt>active interface</dt>
                     <dd>the interface that the active interface implementation is associated with</dd>
-                    <dt>prevalent</dt>
-                    <dd>values bound to the global scope that exist before source begins execution. No other objects may be bound to the same identifiers, even in inner scopes.</dd>
                     <dt>global scope</dt>
                     <dd>the scope of the bundle node. a bundle node has one and only one scope each time the bundle is executed</dd>
                     <dt>element</dt>
@@ -856,6 +850,7 @@ interface (func(Int a, Rat b, String c) Bool)
         <div id="interfaces">
             <h1>Chapter 5. Interfaces</h1>
             <p>Interfaces define a means of interacting with an object's state. Interfaces declare that implementations will be able to provide object references with specified interfaces when asked for the object reference bound to identifiers specified by the interface and/or that implementations will be able to bind object references with specified interfaces to specified identifiers. Methods are a type of property. Methods are callable and cannot be assigned, only retrieved.</p>
+            <p>Interfaces cannot inherit in a circle. (E.g., interface A cannot inherit interface B if interface B inherits interface A.) Interfaces cannot inherit from themselves. (However, interfaces created by instantiating values created from generic-interface nodes should not throw errors if the interface tries to inherit itself. Instead, the error should be silently ignored. This is to allow generic interfaces to inherit other forms of themselves.) Interfaces that do not explicitly inherit any interfaces, should implicitly inherit Object. Therefore, all interfaces inherit from Object, either directly or indirectly.</p>
             <p>Interfaces can declare that properties are "get only", "set only", or "get and set".</p>
             <p>Interface member functions can have default values. This differs from a class with abstract members because interfaces cannot have any private members, so these default functions can not store or extract state in the object. These functions are only intended to call other member functions or throw errors.</p>
             <p>There are two kinds of interfaces: object interfaces (Interface) and function interfaces (FuncInterface). Object interfaces define properties and methods. Function interfaces define parameters and a return type. An interface cannot be a function interface and an object interface, though an object interface can have call methods that allow implementations to be used like functions. A function interface can be wrapped to an object interface with a single call method.</p>
@@ -1130,8 +1125,8 @@ declfirst func bar = func() {
             <div id="tree-node-layout-key">
                 <h2>10.2. Tree node layout key</h2>
                 <p>This section describes how the layout of a node type is represented in this specification.</p>
-                <p>The layout for a node type is represented in this specification as a list of items. Each item represents a child node or multiple child nodes with the same meaning. Nodes represented by different items are considered to have different meaning.</p>
-                <p>Each item in these lists first specifies how many child nodes with that meaning may appear, or it says nothing about the number, which means there must be one (and only one). The ways of representing these amounts is described below.</p>
+                <p>The layout for a node type is represented in this specification as a list of items. Each item represents a child node, or multiple child nodes with the same meaning.</p>
+                <p>Each item in these lists first specifies how many child nodes with that meaning may appear, or it says nothing about the number, which means there must be one (and no more). The ways of representing these amounts is described below.</p>
                 <dl>
                     <dt>?</dt>
                     <dd>0 or 1</dd>
@@ -1140,8 +1135,17 @@ declfirst func bar = func() {
                     <dt>+</dt>
                     <dd>1 or more</dd>
                 </dl>
-                <p>Next comes the name of a node type or "expression". The child node represented by that list item must be of that type. The string "expression" means the node must be executable.</p>
-                <p>Lastly comes a label for referring to the child nodes with that meaning. These labels carry no semantic information, and are only a means used to refer to specific nodes. The meaning of child nodes can certainly be represented by other means. However, people creating representations for Desal trees are encouraged to at least consider using these same labels when it makes sense to do so.</p>
+                <p>Next comes the name of a node type, or "expression". The child node represented by that list item must be of that type. The string "expression" means the node must be an expression.</p>
+                <p>Lastly comes a optional label for refering to the child nodes represented by that item, when the type alone isn't enough to disambiguate which item is being referred to. These labels carry no semantic information, and are merely used by this specification to refer to specific child nodes. (Note this label is always singular, even for collections.)</p>
+                <p>Example layout:</p>
+                <pre>
+alpha
+? beta gamma
+? beta delta
+* epsilon
++ expression zeta
+</pre>
+                <p>The first item represents a single required child node of type "alpha". The second item represents an optional child node of type "beta", which can be referred to using the label "gamma". The third item represents an optional child node of type "beta", which can be referred to using the label "delta". The fourth item refers to a collection of child nodes of type "epsilon"; the collection can be empty. The fifth item refers to a collection of expression child nodes; the collection must contain at least one node; nodes in this collection can be refered to using the label "zeta".</p>
             </div>
             <div id="non-executable">
                 <h2>10.3. Non-executable</h2>
@@ -1158,39 +1162,17 @@ declfirst func bar = func() {
                 <div id="node.boolean">
                     <h3>10.3.2. boolean</h3>
                     <p>Base node. Must specify either true or false.</p>
-                    <p>Cannot be evaluated because that would conflict with the prevalent "true" and "false" identifiers. Use "true" and "false" identifiers for expressions instead.</p>
-                </div>
-                <div id="node.bundle">
-                    <h3>10.3.3. bundle</h3>
-                    <p>A grouping of library references (import) and groups of declarations (plane).</p>
-                    <ul class="layout">
-                        <li>* 
-                        <a href="#node.import">import</a></li>
-                        <li>* 
-                        <a href="#node.scope-alteration">scope-alteration</a></li>
-                        <li>+ 
-                        <a href="#node.plane">plane</a></li>
-                    </ul>
-                    <p>The bundle node type is the type of the root node. No node can contain an bundle node. All Desal nodes that are executed in any way must be part of a complete Desal tree, which means having an bundle node as the root node.</p>
-                    <p class="xxx">Program arguments are no longer passed to the main function, because developers should have a choice of accessing program arguments in different ways, and some implementations may not have program arguments, or have non-string program arguments, etc. The old way just isn't flexible enough. Implementations should give program arguments through some API instead of passing them to the main function.</p>
-                    <ol class="exec">
-                        <li>1. Create the identikeys specified in section XXX to this node's scope.</li>
-                        <li>2. Create any implementation-specific identikeys.</li>
-                        <li>3. Execute each child identifier-const node in order.</li>
-                    </ol>
-                    <p>When the complete Desal tree is treated as a standalone program, section xxx applies. Otherwise, besides layout and setup, the abilities and behavior of the bundle node is implementation-specific, and execution or evaluation of Desal nodes may occur directly, without going through the bundle node.</p>
-                    <p>The section XXX mentioned above should specify a value bound to "main" with a callee that takes no arguments and either returns nothing or returns an Int.</p>
-                    <p class="xxx">Need a means of hiding/showing certain child namespaces of the global namespace. For example, a bundle acting as a library may have declarations in the global namespace and in a "private" namespace. The bundle should expose the declarations in the global namespace but hide the declarations in the private namespace.</p>
+                    <p>Cannot be evaluated because that would conflict with the "true" and "false" members of the Bool enum. Boolean values in the node tree use a boolean node, and boolean values in code use the "true" and "false" identikeys.</p>
                 </div>
                 <div id="node.direction">
-                    <h3>10.3.4. direction</h3>
+                    <h3>10.3.3. direction</h3>
                     <p>Specifies the direction of a function parameter, one of: in, in-mutable, out, in-out, in-mutable-out</p>
                     <p>A value passed to a function as an "in" parameter will not be mutated by the function. This means if the function uses the value in ways that may mutate the value, the value will be copied. If an action in the function may mutate the value, and the value does not declare a copy converter, an error results.</p>
                     <p>Instances where the value may be mutated include when the interface of the value does not provide opacity information and the function calls a method, or if the interface does provide opacity information but the function calls a mutator method, or if the value is passed to another function as an in-mutable or in-mutable-out parameter.</p>
                     <code xml:space="preserve">func alpha(in Int num) { println num } func beta(in-mutable Int num) { num += 567 } func gamma(out Int num) { //num not currently assigned to anything num = 987 } func delta(in-out Int num) { println num num = 1001 } func epsilon(in-mutable-out Int num) { num += 55555 num = 19591 } Int num = 123 alpha(num) beta(num) //value mutated gamma(num) //num assigned to different value delta(num) //num assigned to different value epsilon(num) //value mutated and num assigned to different value</code>
                 </div>
                 <div id="node.expose">
-                    <h3>10.3.5. expose</h3>
+                    <h3>10.3.4. expose</h3>
                     <p>Imports all the child identikeys of the specified namespace into the enclosing scope.</p>
                     <ul class="layout">
                         <li>+ 
@@ -1199,7 +1181,7 @@ declfirst func bar = func() {
                     <code xml:space="preserve">decl std::Array&lt;std::Int&gt; numbers = generateNumbers() expose std decl Array&lt;Int&gt; numbers = generateNumbers()</code>
                 </div>
                 <div id="node.generic-parameter">
-                    <h3>10.3.6. generic-parameter</h3>
+                    <h3>10.3.5. generic-parameter</h3>
                     <ul class="layout">
                         <li>
                         <a href="#node.identifier">identifier</a>name</li>
@@ -1207,13 +1189,13 @@ declfirst func bar = func() {
                     </ul>
                 </div>
                 <div id="node.identikey-category">
-                    <h3>10.3.7. identikey-category</h3>
+                    <h3>10.3.6. identikey-category</h3>
                     <p>specifies one of: namespace, dynamic, automatic, strict, function</p>
                     <p>See the 
                     <a href="#identikeys">section on identikeys</a>.</p>
                 </div>
                 <div id="node.identikey-type">
-                    <h3>10.3.8. identikey-type</h3>
+                    <h3>10.3.7. identikey-type</h3>
                     <ul class="layout">
                         <li>
                             <a href="#node.identikey-category">identikey-category</a>
@@ -1229,7 +1211,7 @@ declfirst func bar = func() {
                     <code xml:space="preserve">Int a = 3 func Int a = func()Int { return 3 }</code>
                 </div>
                 <div id="node.import">
-                    <h3>10.3.9. import</h3>
+                    <h3>10.3.8. import</h3>
                     <p>Binds a library namespace to a namespace identikey.</p>
                     <ul class="layout">
                         <li>
@@ -1240,7 +1222,7 @@ declfirst func bar = func() {
                     <code xml:space="preserve">import "XmlLib" as Xml library: "XmlLib" alias: Xml</code>
                 </div>
                 <div id="node.nullable-type">
-                    <h3>10.3.10. nullable-type</h3>
+                    <h3>10.3.9. nullable-type</h3>
                     <p>Specifies a value type, including whether the absence of a value is allowed.</p>
                     <ul class="layout">
                         <li>? expression interface</li>
@@ -1249,7 +1231,7 @@ declfirst func bar = func() {
                     </ul>
                 </div>
                 <div id="node.parameter">
-                    <h3>10.3.11. parameter</h3>
+                    <h3>10.3.10. parameter</h3>
                     <p>A function parameter.</p>
                     <ul class="layout">
                         <li>
@@ -1268,13 +1250,11 @@ declfirst func bar = func() {
                     <p>When this node is a child of a function-interface or callee node, [default value] must not be present. (Meaning it can only be present when the child of a function node.) When a [default value] is given because the node is a child of a function node, [default value] is executed for every call to the function. It is not executed when the function node is executed.</p>
                 </div>
                 <div id="node.plane">
-                    <h3>10.3.12. plane</h3>
+                    <h3>10.3.11. plane</h3>
                     <p>A group of declarations within a bundle.</p>
                     <ul class="layout">
                         <li>* 
                         <a href="#node.scope-alteration">scope-alteration</a></li>
-                        <li>* 
-                        <a href="#node.identifier">identifier</a>namespace</li>
                         <li>+ 
                         <a href="#node.declare-first">declare-first</a></li>
                     </ul>
@@ -1282,13 +1262,13 @@ declfirst func bar = func() {
                     <p>Planes aren't expressions because their declare-first nodes might rely on declare-first nodes in other planes, so all the declare-first nodes in a single plane can't just be executed all together.</p>
                 </div>
                 <div id="node.scope-alteration">
-                    <h3>10.3.13. scope-alteration</h3>
+                    <h3>10.3.12. scope-alteration</h3>
                     <p>This is a supertype, like expression. This type includes 
                     <a href="#node.using">using</a>and 
                     <a href="#node.expose">expose</a>.</p>
                 </div>
                 <div id="node.using">
-                    <h3>10.3.14. using</h3>
+                    <h3>10.3.13. using</h3>
                     <p>Creates an identikey that is associated with the same value/namespace as the specified identikey in the specified namespace.</p>
                     <ul class="layout">
                         <li>+ 
@@ -1315,7 +1295,7 @@ declfirst func bar = func() {
                             <li>expression test</li>
                         </ul>
                         <p>Has scope.</p>
-                        <code xml:space="preserve">do { something() } while test()</code>
+                        <code xml:space="preserve">do while test() something() do something() while test()</code>
                     </div>
                     <div id="node.do-times">
                         <h4>10.4.1.2. do-times</h4>
@@ -1326,7 +1306,7 @@ declfirst func bar = func() {
                             <li>? expression test</li>
                         </ul>
                         <p>Has scope.</p>
-                        <code xml:space="preserve">do 8 times { something() } do 8 times { something() } while test()</code>
+                        <code xml:space="preserve">do 8 times something() do 8 times while test() something() do 8 times something() while test()</code>
                     </div>
                     <div id="node.for-key">
                         <h4>10.4.1.3. for-key</h4>
@@ -1363,15 +1343,15 @@ declfirst func bar = func() {
                             <a href="#node.block">block</a>action</li>
                         </ul>
                         <p>Has scope.</p>
-                        <code xml:space="preserve">for pair x y in coords drawPoint(x, y) for pair Int x, Int y in coords drawPoint(x, y)</code>
+                        <code xml:space="preserve">for pair x, y in coords drawPoint(x, y) for pair Int x, Int y in coords drawPoint(x, y)</code>
                     </div>
                     <div id="node.for-manual">
                         <h4>10.4.1.5. for-manual</h4>
                         <p>Used for manual iteration, as opposed to letting the Desal implementation deal with iteration, like with a for-value node.</p>
                         <ul class="layout">
-                            <li>* expression initializers</li>
+                            <li>* expression initializer</li>
                             <li>? expression test</li>
-                            <li>* expression post actions</li>
+                            <li>* expression post action</li>
                             <li>? 
                             <a href="#node.block">block</a>action</li>
                         </ul>
@@ -1398,7 +1378,7 @@ test
 
 (end of loop)
 </pre>
-                        <code xml:space="preserve">for( Int i = 0 ; i &lt; container.length ; i++ ) { println container[i] } for( Iterator&lt;Int&gt; iterator = container.getIterator() ; iterator.hasMore? ; iterator.moveNext() ) { println iterator.current }</code>
+                        <code xml:space="preserve">for manual( decl Int i = 0; i lt container.length; i++ ) println container[i] for manual( Iterator&lt;Int&gt; iterator = container.getIterator() ; iterator.hasMore? ; iterator.moveNext() ) println iterator.current</code>
                     </div>
                     <div id="node.for-range">
                         <h4>10.4.1.6. for-range</h4>
@@ -1438,17 +1418,18 @@ test
                             </li>
                         </ul>
                         <p>Executes block continuously. Can only be exited by expressions in the block such as break and return.</p>
-                        <code xml:space="preserve">loop { Event event = getNextEvent() switch( event ) { case Events.QUIT : break } }</code>
+                        <code xml:space="preserve">loop Event event = getNextEvent() select event.type case Event.QUIT break else defaultHandler(event)</code>
                     </div>
                     <div id="node.while">
                         <h4>10.4.1.9. while</h4>
                         <ul class="layout">
                             <li>expression test</li>
-                            <li>? 
-                            <a href="#node.block">block</a></li>
+                            <li>
+                                <a href="#node.block">block</a>
+                            </li>
                         </ul>
                         <p>Has scope.</p>
-                        <code xml:space="preserve">while printNext() while container.hasMore? print container.next</code>
+                        <code xml:space="preserve">while printNext() {} while container.hasMore? print container.next</code>
                     </div>
                 </div>
                 <div id="node.break">
@@ -1496,7 +1477,7 @@ test
                     <p>This node can create identikeys before execution reaches it. For more information, see 
                     <a href="#handling-declare-first">this section</a>.</p>
                     <p class="exec">Produce the value bound to the identikey created by this node.</p>
-                    <code xml:space="preserve">decl-first auto Foo = interface { get Bar bar } decl-first auto Bar = interface { get Foo foo } Foo foo = ... foo.bar.foo.bar...</code>
+                    <code xml:space="preserve">declfirst auto Foo = interface { get Bar bar } declfirst auto Bar = interface { get Foo foo } Foo foo = ... foo.bar.foo.bar...</code>
                 </div>
                 <div id="node.labeled">
                     <h3>10.4.6. labeled</h3>
@@ -1506,24 +1487,31 @@ test
                         <li>expression child</li>
                     </ul>
                     <p class="process">The [child] node must be an iteration node, a block node, a possibility node, a conditional node, or a select node. (XXX update and explain requirements instead of just listing nodes that meet requirements)</p>
-                    <code xml:space="preserve">$func setupCell(Int searchID) { $decl Cell wantedCell outer: $for row $in table { $for cell $in row { $if cell.ID == searchID { wantedCell = cell $break outer } } } $if wantedCell != null { doSomething(wantedCell) } }</code>
+                    <code xml:space="preserve">func setupCell(Int searchID) { decl Cell wantedCell outer: for row in table { for cell in row if cell.ID eql searchID wantedCell = cell break outer } if wantedCell != null doSomething(wantedCell) }</code>
+                </div>
+                <div id="node.null">
+                    <h3>10.4.7. null</h3>
+                    <p>Produces an untyped null.</p>
+                    <p>(XXX move) An untyped null can be cast to any interface, implicitly or explicitly, to form a typed null. A typed null can be downcast.</p>
+                    <code xml:space="preserve">decl Int ? foo = 123 foo = null //untyped null implicitly cast to an Int null foo //evaluates to an Int null decl String ? bar = (foo as void)</code>
+                    <p class="xxx">Why not just have a global reserved identikey named "null" of type void? It would always evaluate to an untyped null.</p>
                 </div>
                 <div id="node.return">
-                    <h3>10.4.7. return</h3>
+                    <h3>10.4.8. return</h3>
                     <ul class="layout">
                         <li>? expression</li>
                     </ul>
                     <p>Function call ends and evaluates to expression.</p>
                 </div>
                 <div id="node.throw">
-                    <h3>10.4.8. throw</h3>
+                    <h3>10.4.9. throw</h3>
                     <ul class="layout">
                         <li>expression</li>
                     </ul>
                     <p>If the expression isn't an Exception, wrap it with NonExceptionThrownError.</p>
                 </div>
                 <div id="node.yield">
-                    <h3>10.4.9. yield</h3>
+                    <h3>10.4.10. yield</h3>
                     <p>Within a generator, specifies the next value for the generator to yield.</p>
                     <ul class="layout">
                         <li>expression</li>
@@ -1569,14 +1557,14 @@ test
                     <ul class="layout">
                         <li>* 
                         <a href="#node.scope-alteration">scope-alteration</a></li>
-                        <li>* expression</li>
+                        <li>* expression member</li>
                     </ul>
                     <p>Has scope.</p>
                     <ol class="exec">
                         <li>Execute each expression in order. Produce the result of the last expression. (Produce nothing if the block contained no expressions or the last expression didn't produce.)</li>
                     </ol>
                     <p>Note: This node type is different from the Dextr concept of blocks. To differentiate between the two, nodes of this type can be called "block nodes", and the syntactic construct of Dextr can be called "Dextr blocks" or "syntactic blocks".</p>
-                    <code xml:space="preserve">block { using System::Console using System::Collections as Boxes export Boxes::Generic Boxes::List numbers = List&lt;MyFace&gt;() Console.WriteLine(numbers.Count.ToString()) }</code>
+                    <code xml:space="preserve">block { using System:Console using System:Collections as Boxes export Boxes:Generic Boxes:List numbers = List&lt;MyFace&gt;() Console.WriteLine(numbers.Count.ToString()) }</code>
                 </div>
                 <div id="node.call">
                     <h3>10.5.3. call</h3>
@@ -1593,18 +1581,43 @@ test
                         <li>Produce the returned value.</li>
                     </ol>
                 </div>
+                <div id="node.cast">
+                    <h3>10.5.4. cast</h3>
+                    <ul class="layout">
+                        <li>expression source</li>
+                        <li>? 
+                        <a href="#node.nullable-type">nullable-type</a></li>
+                    </ul>
+                    <p class="process">If [nullable-type] is given, it must declare an interface.</p>
+                    <ol class="exec">
+                        <li>Execute [source] and let source be the result.</li>
+                        <li>If [nullable-type] is not given: 
+                        <ol>
+                            <li>If source is not null, throw an error, because a non-null value cannot be cast to void.</li>
+                            <li>Otherwise, produce an untype null.</li>
+                        </ol></li>
+                        <li>If [nullable] of [nullable-type] is true, and source is null, throw an error, because a null cannot be cast to a non-null type.</li>
+                        <li>Execute the [interface] of [nullable-type] and let face be the result.</li>
+                        <li>If source is non-null, cast it to face and return the result. If it cannot be cast to face, throw an error.</li>
+                        <li>If source is a typed null, and the associated interface does not inherit from face, throw an error.</li>
+                        <li>Produce a typed null with face as the associated face.</li>
+                    </ol>
+                    <p>If [source] is not null, evaluates to a value, with an active interface specified by nullable-type, that is associated with the same object as [source]. Can also be used to cast null to typed or untyped null.</p>
+                    <code xml:space="preserve">//value 123 as Int 123 as Int ? 123 as void //error //typed null (null as Int ?) as Int //error (null as Int ?) as Int ? (null as Int ?) as void //untyped null null as Int //error null as Int ? null as void Int o = getIntAndString() print (o as String).length decl Int ? a = (null as Int) decl String ? b = ((a as null) as String) decl Int ? a = null decl String ? b = a as null</code>
+                    <p>(XXX label or move) Rationale for casting to null: A generic type may want to cast an object to a parameter type, and the parameter type may be null. XXX But does that mean nullable-type must be replaced with a NullableType interface?</p>
+                </div>
                 <div id="node.conditional">
-                    <h3>10.5.4. conditional</h3>
+                    <h3>10.5.5. conditional</h3>
                     <ul class="layout">
                         <li>+ 
                         <a href="#node.possibility">possibility</a></li>
                         <li>? expression else</li>
                     </ul>
                     <p class="exec">Execute the [test] of the first [possibilty]. Downcast the resultant value to a Bool. If it is true, execute the [result] of that [possibilty] and produce the result. Otherwise, move on to the next node. If no [test] produces true, and [else] is given, execute [else] and produce its result.</p>
-                    <code xml:space="preserve">$decl Int a = (x ? 0 : 1) $if foo == 1 doStuff1() $elif foo == 2 doStuff2() $else doDefault() $decl bar = (foo == 1) ? getOne() : (foo == 2) ? getTwo() : getDefault() $decl bar = $if foo == 1 : $eval getOne() $elif foo == 2 : $eval getTwo() $else : $eval getDefault()</code>
+                    <code xml:space="preserve">decl Int a = (x ? 0 : 1) if foo == 1 doStuff1() elif foo == 2 doStuff2() else doDefault() decl bar = (foo == 1) ? getOne() : (foo == 2) ? getTwo() : getDefault() decl bar = if foo == 1 : getOne() elif foo == 2 : getTwo() else : getDefault()</code>
                 </div>
                 <div id="node.curry">
-                    <h3>10.5.5. curry</h3>
+                    <h3>10.5.6. curry</h3>
                     <p>Provides a built-in means of partial application. (Note that Desal provides no built-in support for the original type of currying, where a multi-argument function is converted into a chain of single-argument functions.)</p>
                     <ul class="layout">
                         <li>expression function</li>
@@ -1624,7 +1637,7 @@ test
                     <code xml:space="preserve">interface Alpha func bar(Int a, Rat b, String c) Alpha alpha = AlphaClass() alpha.bar(0, 0.0, "0") func()void bar1 = alpha.bar~() bar(1, 2.3, "4") func()void bar2 = alpha.bar~(c="text") bar2(7, 9.8) func()void bar3 = alpha.bar~(-9, 0.001, "stuff") bar3()</code>
                 </div>
                 <div id="node.declare-assign">
-                    <h3>10.5.6. declare-assign</h3>
+                    <h3>10.5.7. declare-assign</h3>
                     <ul class="layout">
                         <li>
                         <a href="#node.identifier">identifier</a>name</li>
@@ -1639,7 +1652,7 @@ test
                     <p>Creates an identikey in the parent scope with the specified type, then assigns the specified value to it.</p>
                 </div>
                 <div id="node.ignore">
-                    <h3>10.5.7. ignore</h3>
+                    <h3>10.5.8. ignore</h3>
                     <p>Instructs an agent to not output certain warnings.</p>
                     <ul class="layout">
                         <li>expression content</li>
@@ -1647,7 +1660,7 @@ test
                         <a href="#node.ignore-member">ignore-member</a></li>
                     </ul>
                     <div id="node.ignore-member">
-                        <h4>10.5.7.1. ignore-member</h4>
+                        <h4>10.5.8.1. ignore-member</h4>
                         <ul class="layout">
                             <li>
                             <a href="#node.string">string</a>name</li>
@@ -1662,17 +1675,17 @@ test
                     </div>
                 </div>
                 <div id="node.namespaced-value-identikey">
-                    <h3>10.5.8. namespaced-value-identikey</h3>
+                    <h3>10.5.9. namespaced-value-identikey</h3>
                     <ul class="layout">
                         <li>+ 
-                        <a href="#node.identifier">identifier</a>namespaces</li>
+                        <a href="#node.identifier">identifier</a>namespace</li>
                         <li>
                         <a href="#node.identifier">identifier</a>identikey name</li>
                     </ul>
                     <code xml:space="preserve">namespace foo { namespace bar { decl Int alpha = 123 } } decl Int alpha = foo:bar:alpha println( alpha ) //123</code>
                 </div>
                 <div id="node.possibility">
-                    <h3>10.5.9. possibility</h3>
+                    <h3>10.5.10. possibility</h3>
                     <ul class="layout">
                         <li>expression test</li>
                         <li>expression result</li>
@@ -1688,7 +1701,7 @@ test
                     <code xml:space="preserve">if not foo.isSetup? { foo.setup() }</code>
                 </div>
                 <div id="node.select">
-                    <h3>10.5.10. select</h3>
+                    <h3>10.5.11. select</h3>
                     <ul class="layout">
                         <li>expression value</li>
                         <li>* 
@@ -1697,16 +1710,16 @@ test
                     </ul>
                     <p class="exec">Execute [value]. Execute each [values] child of each [case] and compare them to the [value] value (with the .equals? method of the [value] value) until finding a match. Then, execute the [result] of that case and produce the result. If no match is found, and [else] is given, execute [else] and produce its result.</p>
                     <div id="node.case">
-                        <h4>10.5.10.1. case</h4>
+                        <h4>10.5.11.1. case</h4>
                         <ul class="layout">
-                            <li>+ expression values</li>
+                            <li>+ expression value</li>
                             <li>expression result</li>
                         </ul>
                     </div>
-                    <code xml:space="preserve">$select event.type $case Events.QUIT { $return } $case Events.FOO, Events.BAR, Events.MAZ { //no action } $else { $throw ErrorClass("unknown event type") } $select foo $case 1 doStuff1() $case 2 doStuff2() $else doDefault() $decl bar = $select foo $case 1 : $eval getOne() $case 2 : $eval getTwo() $else $eval getDefault()</code>
+                    <code xml:space="preserve">select event.type case Events.QUIT { return } case Events.FOO, Events.BAR, Events.MAZ { //no action } else { throw ErrorClass("unknown event type") } select foo case 1 doStuff1() case 2 doStuff2() else doDefault() decl bar = select foo case 1 : getOne() case 2 : getTwo() else getDefault()</code>
                 </div>
                 <div id="node.try-catch">
-                    <h3>10.5.11. try-catch</h3>
+                    <h3>10.5.12. try-catch</h3>
                     <ul class="layout">
                         <li>expression try</li>
                         <li>* 
@@ -1717,7 +1730,7 @@ test
                     <p class="xxx">The term "else" is not descriptive enough in this situation. Possible replacements: "onsuccess", "then"</p>
                     <p class="process">Must contain more than just [try].</p>
                     <div id="node.exception-handler">
-                        <h4>10.5.11.1. exception-handler</h4>
+                        <h4>10.5.12.1. exception-handler</h4>
                         <ul class="layout">
                             <li>
                             <a href="#node.boolean">boolean</a>catch</li>
@@ -1727,15 +1740,7 @@ test
                             <li>expression result</li>
                         </ul>
                     </div>
-                    <code xml:space="preserve">$try { $decl foo = getSomething() } $observe( OutOfMemoryError ) { println "I'm not catching that!" //exception is noticed by this try-catch node, but not caught //the exception continues to rise out } $catch( NullError ) { println "null error" } $catch( FooError e ) { println "FooError: $(e.message)" } $catch( Error ) { println "unknown error" } $catch( Exception ) { println "unknown exception" } $observe { println "how execution reach here? am not good with computer" } $else { println "no errors!" doSomeStuff() //don't catch errors from this in this node } $finally { cleanup(foo) } $decl Status stat = $try { doSomething() Statuses.SUCCESS } $catch( NotSoBadError ) { Statuses.ERROR } $observe { println "something bad when trying to doSomething()" }</code>
-                </div>
-                <div id="node.unassign">
-                    <h3>10.5.12. unassign</h3>
-                    <ul class="layout">
-                        <li>expression</li>
-                    </ul>
-                    <p>Unassigns the values bound to the given reference. If the identikey is a function identikey, all bound functions are unbound.</p>
-                    <p class="xxx">Is this needed? Why not just assign null?</p>
+                    <code xml:space="preserve">try decl foo = getSomething() observe( OutOfMemoryError ) println "I'm not catching that!" //exception is noticed by this try-catch node, but not caught //the exception continues to rise out catch( NullError ) println "null error" catch( FooError e ) println "FooError: (e.message)" catch( Error ) println "unknown error" catch( Exception ) println "unknown exception" observe println "how execution reach here? am not good with computer" else println "no errors!" doSomeStuff() //don't catch errors from this in this node finally cleanup(foo) decl Status stat = try doSomething() Statuses.SUCCESS catch( NotSoBadError ) { Statuses.ERROR observe println "something horrible not caught when trying to doSomething()"</code>
                 </div>
             </div>
             <div id="always-producing-expresions">
@@ -1866,8 +1871,56 @@ test
                     </ol>
                     <code xml:space="preserve">decl Int num1 = 987 decl Int num2 = copy(num) decl Rat num3 = (num to Rat)</code>
                 </div>
+                <div id="node.bundle">
+                    <h3>10.6.4. bundle</h3>
+                    <p>A grouping of library references (import) and groups of declarations (plane).</p>
+                    <ul class="layout">
+                        <li>* 
+                        <a href="#node.import">import</a></li>
+                        <li>* 
+                        <a href="#node.scope-alteration">scope-alteration</a></li>
+                        <li>+ 
+                        <a href="#node.plane">plane</a></li>
+                    </ul>
+                    <p>The bundle node type is the type of the root node. No node can contain a bundle node. All Desal nodes that are executed in any way must be part of a complete Desal tree, which means having a bundle node as the root node.</p>
+                    <p>Implementations must not pass any arguments to the main function when executing a bundle as a standalone executable. Implementations should instead provide program arguments through a library which can be imported with the import node. Note that the program arguments are not required by this specification to be a sequence of strings.</p>
+                    <p>The result produced by executing a bundle node as a standalone executable may be converted as necesary to suit the containing environment. How this conversion is performed depends on the containing environment and the Desal implementation, and is not covered by this specification.</p>
+                    <p>When treating a bundle as a standalone executable:</p>
+                    <ol class="exec">
+                        <li>Let globalScope be a new scope.</li>
+                        <li>Create the identikeys required by 
+                        <a href="#reserved-identikey-names">Reserved identikey names</a>.</li>
+                        <li>For each 
+                        <a href="#node.import">import</a>, 
+                        <a href="#node.using">using</a>, and 
+                        <a href="#node.expose">expose</a>child node, add the identikeys to globalScope specified by that node.</li>
+                        <li>Execute all declaration-first children of each plane together as required by 
+                        <a href="#handling-declare-first">Handling declare-first nodes</a>.</li>
+                        <li>Let mainKey be the identikey in globalScope that is associated with identifier "main". If such an identikey does not exist, throw an error.</li>
+                        <li>Let mainVal be the result of evaluating mainKey. If mainVal is null, throw an error.</li>
+                        <li>Call mainVal with no arguments and let rv be the result. If mainVal is not callable, throw an error. If mainVal does not have a callee that takes no arguments, throw an error.</li>
+                        <li>If rv is null, produce a value, with Int as the active interface, that encodes the number zero. Else if rv has an active interface that inherits from Int, downcast rv to Int and produce the result. Else if rv, with it's current active interface, can breed an Int, have rv breed an Int, and produce the result. Else throw an error.</li>
+                    </ol>
+                    <p>When treating a bundle as a library:</p>
+                    <ol class="exec">
+                        <li>Let globalScope be a new scope.</li>
+                        <li>Create the identikeys required by 
+                        <a href="#reserved-identikey-names">Reserved identikey names</a>.</li>
+                        <li>For each 
+                        <a href="#node.import">import</a>, 
+                        <a href="#node.using">using</a>, and 
+                        <a href="#node.expose">expose</a>child node, add the identikeys to globalScope specified by that node.</li>
+                        <li>Execute all declaration-first children of each plane together as required by 
+                        <a href="#handling-declare-first">Handling declare-first nodes</a>.</li>
+                        <li>Expose globalScope, in an immutable form, to the containing environment. How this is done depends on the containing enviornment and the Desal implementation, and is not covered by this specification.</li>
+                    </ol>
+                    <p class="xxx">When acting as a standalone executable, need to specify what happens to exceptions that bubble all the way up to the bundle node. They are caught, an error message is output, and the bundle node returns some value, like 1. The bundle may expose to the containing environment additional information, depending on the enclosing environment and Desal implementation.</p>
+                    <p class="xxx">When acting as a standalone executable, what kind of errors should bundle by throwing? This is a problem that applies to many other nodes as well.</p>
+                    <p class="xxx">For when acting as a library, need a means of hiding/showing certain child namespaces/identikeys of the global namespace. For example, a bundle may have declarations in the global namespace and in a "private" namespace. The bundle should expose the declarations in the global namespace but hide the declarations in the private namespace. There has also been consideration of an "export" attribute/node that would expose specified identikeys, and all other identikeys would not be exposed.</p>
+                    <p class="xxx">The identikeys added to globalScope by import, using, and expose nodes should not be exposed to the containing environment when the bundle is acting as a library.</p>
+                </div>
                 <div id="node.caller">
-                    <h3>10.6.4. caller</h3>
+                    <h3>10.6.5. caller</h3>
                     <ul class="layout">
                         <li>? expression interface</li>
                         <li>
@@ -1875,15 +1928,6 @@ test
                     </ul>
                     <p>Creates a function that, when passed the type specified by [interface], calls the method named [method name] on the first argument with the rest of the arguments sent to it. It's purpose is to help with functional programming.</p>
                     <code xml:space="preserve">interface Foo { func doStuff(Int, Int) Rat } Foo foo = getFoo() func(Foo,Int,Int)Rat doStuffer = Foo::doStuff println doStuffer(foo,3,7) dyn doStuffer2 = dyn::doStuff println doStuffer2(foo,3,7) //below all equilavent: println Foo::doStuff(foo,3,7) println dyn::doStuff(foo,3,7) println foo.doStuff(3,7)</code>
-                </div>
-                <div id="node.cast">
-                    <h3>10.6.5. cast</h3>
-                    <ul class="layout">
-                        <li>expression [object]</li>
-                        <li>expression [interface]</li>
-                    </ul>
-                    <p>Evaluates to an object reference where the active interface is [interface] and the object is [object]. If [object] does not implement [interface], an error results.</p>
-                    <code xml:space="preserve">Int o = getIntAndString() print (o as String).length</code>
                 </div>
                 <div id="node.chain">
                     <h3>10.6.6. chain</h3>
@@ -1904,17 +1948,17 @@ test
                     <p class="xxx">XML comments with important information</p>
                     <ul class="layout">
                         <li>* 
-                        <a href="#node.declare-class">declare-class</a>static declarations</li>
+                        <a href="#node.static-member">static-member</a>static declaration</li>
                         <li>? 
                         <a href="#node.block">block</a>static constructor</li>
                         <li>* 
-                        <a href="#node.function">function</a>static callees</li>
+                        <a href="#node.function">function</a>static callee</li>
                         <li>* 
-                        <a href="#node.class-property">class-property</a>static properties</li>
+                        <a href="#node.class-property">class-property</a>static property</li>
                         <li>* 
-                        <a href="#node.function">function</a>instance constructors</li>
+                        <a href="#node.function">function</a>instance constructor</li>
                         <li>* 
-                        <a href="#node.declaration">declaration</a>instance declarations</li>
+                        <a href="#node.declaration">declaration</a>instance declaration</li>
                         <li>* 
                         <a href="#node.interface-implementation">interface-implementation</a></li>
                     </ul>
@@ -1977,12 +2021,12 @@ test
                         <li>Create an interface, CLASS_INTERFACE.</li>
                         <li>Add instance constructors as free functions to STATIC_SCOPE.</li>
                         <li>Add instance constructors as callees to CLASS_INTERFACE.</li>
-                        <li>Evaluate every 
-                        <a href="#node.declare-class">declare-class</a>that has a 
-                        <a href="#node.declare-first">declare-first</a>in the scope of STATIC_SCOPE. If the identikey-type of the 
+                        <li>Evaluate the declaration of every 
+                        <a href="#node.static-member">static-member</a>that has a 
+                        <a href="#node.declare-first">declare-first</a>, in the scope of STATIC_SCOPE. If the identikey-type of the 
                         <a href="#node.declare-first">declare-first</a>is function, and it has access of get, add a method to CLASS_INTERFACE with the same function interface and name. Otherwise, create a property with a getter if declared public.</li>
-                        <li>Evaluate the rest of the declare-class nodes in the scope of STATIC_SCOPE, except for the declare-class nodes with a declare-const-empty. Create properties as appropriate when the access nodes specify to do so.</li>
-                        <li>In the scope of STATIC_SCOPE, evaluate the declare-class nodes that have declare-const-empty nodes. Create properties as appropriate when the access nodes specify to do so.</li>
+                        <li>Evaluate the declarations of the rest of the static-member nodes in the scope of STATIC_SCOPE, except for the static-member nodes with a declare-const-empty. Create properties as appropriate when the access nodes specify to do so.</li>
+                        <li>In the scope of STATIC_SCOPE, evaluate the static-member nodes that have declare-const-empty nodes. Create properties as appropriate when the access nodes specify to do so.</li>
                         <li>Add the static callees as free functions in STATIC_SCOPE.</li>
                         <li>Add the static callees and the static properties to CLASS_INTERFACE.</li>
                         <li>Execute the static constructor.</li>
@@ -1998,8 +2042,8 @@ test
                         <li>Evaluate the function-call that lead to this constructor being evaluated to a value with INSTANCE_SCOPE as the object and the default interface implementation of the class as the active interface implementation.</li>
                         <li>Note: When the interface implementation is used, the value will pass the object into the interface implementation.</li>
                     </ol>
-                    <div id="node.declare-class">
-                        <h4>10.6.7.1. declare-class</h4>
+                    <div id="node.static-member">
+                        <h4>10.6.7.1. static-member</h4>
                         <ul class="layout">
                             <li>
                                 <a href="#node.declaration">declaration</a>
@@ -2032,8 +2076,7 @@ test
                         <h4>10.6.7.3. declare-const-empty</h4>
                         <ul class="layout">
                             <li>
-                                <a href="#node.identifier">identifier</a>
-                            </li>
+                            <a href="#node.identifier">identifier</a>name</li>
                             <li>
                                 <a href="#node.identikey-type">identikey-type</a>
                             </li>
@@ -2044,7 +2087,7 @@ test
                         <h4>10.6.7.4. interface-implementation</h4>
                         <ul class="layout">
                             <li>* 
-                            <a href="#node.interface-implementation">interface-implementation</a>children</li>
+                            <a href="#node.interface-implementation">interface-implementation</a>child implemenatation</li>
                             <li>expression interface</li>
                             <li>* 
                             <a href="#node.function">function</a>callee</li>
@@ -2105,7 +2148,7 @@ test
                         <h4>10.6.8.1. comprehension-type</h4>
                         <p>Specifies one of: array, chain, generator, provided</p>
                     </div>
-                    <code xml:space="preserve">$decl foo = [2*x for x in L if x^2 &gt; 3] container: L element name: x test: x^2 &gt; 3 output: 2*x $decl foo = [x in L if x^2 &gt; 3] container: L element name: x test: x^2 &gt; 3 output: (implicit: x) $decl foo = [x in L] container: L element name: x test: (implicit: true) output: (implicit: x) for o in [2*x for x in L if x^2 &gt; 3] { println o }</code>
+                    <code xml:space="preserve">decl foo = [2*x for x in L if x^2 &gt; 3] container: L element name: x test: x^2 &gt; 3 output: 2*x decl foo = [x in L if x^2 &gt; 3] container: L element name: x test: x^2 &gt; 3 output: (implicit: x) decl foo = [x in L] container: L element name: x test: (implicit: true) output: (implicit: x) for o in [2*x for x in L if x^2 &gt; 3] { println o }</code>
                 </div>
                 <div id="node.dictionary">
                     <h3>10.6.9. dictionary</h3>
@@ -2203,8 +2246,8 @@ activeInterface(Animal) == Interface + Enum&lt;EntryFace&gt; + EnumList
 (Animal as Interface) == EntryFace
 </pre>
                 </div>
-                <div id="node.extract-named-member">
-                    <h3>10.6.11. extract-named-member</h3>
+                <div id="node.extract-member">
+                    <h3>10.6.11. extract-member</h3>
                     <ul class="layout">
                         <li>expression source</li>
                         <li>
@@ -2245,15 +2288,15 @@ activeInterface(Animal) == Interface + Enum&lt;EntryFace&gt; + EnumList
                     </ul>
                     <p>Has scope.</p>
                     <p>If [type] is not given, the generator does not produce. (The generator could still be useful for producing side effects.)</p>
-                    <code xml:space="preserve">$decl foo = $generator { $decl Int i = 2 $while i &lt; 5 { $yield i i++ } } $for i $in foo { print foo print " " } prints: '2 3 4 ' interface of foo == Generator&lt;Int&gt;</code>
-                    <code xml:space="preserve">$decl foo = $func(Int a, Int b) Generator&lt;Int&gt; { $return $generator { $decl Int i = a $while i &lt; b { $yield i i++ } } } $for i $in foo(2, 5) { print foo print " " } prints: '2 3 4 '</code>
-                    <code xml:space="preserve">A representation could provide a construct like that in other languages by combining functions and generators. $decl foo = $generator(Int a, Int b) Int { $decl Int i = a $while i &lt; b { $yield i i++ } } $for i $in foo(2, 5) { print foo print " " } prints: '2 3 4 '</code>
+                    <code xml:space="preserve">decl foo = generator { decl Int i = 2 while i lt 5 { yield i i++ } } for i in foo { print foo print " " } prints: '2 3 4 ' interface of foo == Generator&lt;Int&gt;</code>
+                    <code xml:space="preserve">decl foo = func(Int a, Int b) Generator&lt;Int&gt; { return generator { decl Int i = a while i &lt; b { yield i i++ } } } for i in foo(2, 5) { print foo print " " } prints: '2 3 4 '</code>
+                    <code xml:space="preserve">A representation could provide a construct like that in other languages by combining functions and generators. decl foo = generator(Int a, Int b) Int { decl Int i = a while i &lt; b { yield i i++ } } for i in foo(2, 5) { print foo print " " } prints: '2 3 4 '</code>
                 </div>
                 <div id="node.generic-class">
                     <h3>10.6.15. generic-class</h3>
                     <ul class="layout">
                         <li>+ 
-                        <a href="#node.generic-parameter">generic-parameter</a>parameters</li>
+                        <a href="#node.generic-parameter">generic-parameter</a>parameter</li>
                         <li>
                             <a href="#node.class">class</a>
                         </li>
@@ -2264,7 +2307,7 @@ activeInterface(Animal) == Interface + Enum&lt;EntryFace&gt; + EnumList
                     <h3>10.6.16. generic-function</h3>
                     <ul class="layout">
                         <li>+ 
-                        <a href="#node.generic-parameter">generic-parameter</a>parameters</li>
+                        <a href="#node.generic-parameter">generic-parameter</a>parameter</li>
                         <li>
                             <a href="#node.function">function</a>
                         </li>
@@ -2276,7 +2319,7 @@ activeInterface(Animal) == Interface + Enum&lt;EntryFace&gt; + EnumList
                     <h3>10.6.17. generic-interface</h3>
                     <ul class="layout">
                         <li>+ 
-                        <a href="#node.generic-parameter">generic-parameter</a>parameters</li>
+                        <a href="#node.generic-parameter">generic-parameter</a>parameter</li>
                         <li>
                             <a href="#node.interface">interface</a>
                         </li>
@@ -2286,8 +2329,15 @@ activeInterface(Animal) == Interface + Enum&lt;EntryFace&gt; + EnumList
                 </div>
                 <div id="node.identifier">
                     <h3>10.6.18. identifier</h3>
-                    <p>Base node. Identifiers can sometimes evaluate to object references. Object references point to an object and have an active interface. Only properties declared by the active interface can be accessed, even if the object implements other interfaces.</p>
-                    <p>When evaluating an identifier to an object: If the identifier is undefined in the current scope, move to the containing scope. If there is no containing scope, throw an UndefinedIdentifier error. Continue moving to outer scopes until the identifier is found or there is no containing scope. If the identifier is bound to an object, the identifier evaluates to that object. If the identifier has been declared that it can be bound to objects, but it is currently not bound to anything, return null. If the identifier is bound to a function, the identifier evaluates to the wrapper for that function, as defined in function-wrapper xxx. If the identifier is bound to a namespace, a NamespaceIdentifier error results.</p>
+                    <p>Base/terminal node.</p>
+                    <ol class="exec">
+                        <li>Let ident be the identifier specified by this node.</li>
+                        <li>Let scope be the current scope.</li>
+                        <li>If scope has an identikey that is associated with ident, let scope be the parent scope of scope. If scope has no parent scope, throw an error. Continue moving through parent scopes until an identikey associated with ident is found. Let key be this identikey.</li>
+                        <li>If key is a function identikey, find parent function identikeys with that name, but with different types, and merge all the functions together. (XXX elaborate)</li>
+                        <li>If key is bound to a value, produce the value that key is bound to. If key has been declared that it can be bound to values, but it is currently not bound to anything, return null.</li>
+                        <li>If key is bound to a namespace, throw an error.</li>
+                    </ol>
                 </div>
                 <div id="node.instantiate-generic">
                     <h3>10.6.19. instantiate-generic</h3>
@@ -2305,7 +2355,7 @@ activeInterface(Animal) == Interface + Enum&lt;EntryFace&gt; + EnumList
                 <div id="node.interface">
                     <h3>10.6.21. interface</h3>
                     <ul class="layout">
-                        <li>* expression inheritees</li>
+                        <li>* expression inheritee</li>
                         <li>* 
                         <a href="#node.statused-member">statused-member</a></li>
                     </ul>
@@ -2362,9 +2412,7 @@ activeInterface(Animal) == Interface + Enum&lt;EntryFace&gt; + EnumList
                         <ul class="layout">
                             <li>
                             <a href="#node.identifier">identifier</a>name</li>
-                            <li>
-                                <a href="#node.nullable-type">nullable-type</a>
-                            </li>
+                            <li>expression interface</li>
                         </ul>
                     </div>
                     <div id="node.access">
@@ -2403,13 +2451,16 @@ activeInterface(Animal) == Interface + Enum&lt;EntryFace&gt; + EnumList
                 </div>
             </div>
         </div>
-        <div id="special-identikeys">
-            <h1>Chapter 11. Special identikeys</h1>
-            <p>No user-defined identikeys can use these identifiers.</p>
+        <div id="reserved-identikey-names">
+            <h1>Chapter 11. Reserved identikey names</h1>
+            <p>No user-defined identikeys can be associated with these identifiers.</p>
             <ul>
-                <li>global - namespace identikey that refers to the outermost scope.</li>
-                <li>outer - namespace identikey that refers to the outer scope. Exists in all scopes/namespaces that have an outer scope. global::outer is invalid, but outer::outer may be valid.</li>
-                <li>std - namespace for the standard library</li>
+                <li>global - Namespace identikey that refers to the scope associated with the bundle node. Defined in the global scope.</li>
+                <li>std - Namespace identikey for the standard library. Defined in the global scope.</li>
+                <li>true - Constant strict identikey bound to the Bool enum true member. Defined in the global scope.</li>
+                <li>false - Constant strict identikey bound to the Bool enum false member. Defined in the global scope.</li>
+                <li>outer - Namespace identikey that refers to the outer scope. Defined in all scopes except the global scope. Note that outer::outer may be valid, depending on which scope it appers in.</li>
+                <li>inst - Namespace identikey that exposes private fields of objects created by the class node. Defined in child scopes of class nodes.</li>
             </ul>
         </div>
         <div id="standard-library">
@@ -2731,34 +2782,7 @@ println( id(foo) == id(bar) )
                 </ul>
                 <p>toInt will throw if the represented value is not already an integer. round should not throw. round! modifies the represented value.</p>
             </div>
-        </div>
-        <div id="warnings-list">
-            <h1>Chapter 13. Warnings</h1>
-            <p>This is a list of warnings predefined by this specification. Agents should create other warnings whenever needed.</p>
-            <table>
-                <tbody>
-                    <tr>
-                        <th>name</th>
-                        <th>meaning</th>
-                    </tr>
-                    <tr>
-                        <td>always null</td>
-                        <td>A node that will never produce a value when executed is being used as if it will sometimes produce a value. This warning is produced by the node that attempts to make use of the output, such as an assignment node, and not the node that doesn't produce.</td>
-                    </tr>
-                    <tr>
-                        <td>unknown warning</td>
-                        <td>A warning name in an ignore node is not recognized.</td>
-                    </tr>
-                    <tr>
-                        <td>no effect</td>
-                        <td>The output of a node that does not have side effects is not being used. For example, if a block contains an integer node (that is not last), the integer node has no effect.</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-        <div id="preexisting-global-identikeys">
-            <h1>Chapter 14. Other preexisting global identikeys</h1>
-            <p>Constant identikeys in the global scope that exist before source begins execution. The values these identikeys are bound to are immutable. Unlike prevalent identifers, these identifers follow normal scoping rules. They can always be refered to trough the prevalent global namespace identifier.</p>
+            <p>Constant identikeys in the std namespace. The values these identikeys are bound to are immutable.</p>
             <ul>
                 <li>interface InterfaceBuilder</li>
                 <li>func()InterfaceBuilder CInterfaceBuilder</li>
@@ -2771,11 +2795,11 @@ println( id(foo) == id(bar) )
                 <li>func{I}(I)SelfGen println</li>
             </ul>
             <div id="Generator">
-                <h2>14.1. Generator</h2>
+                <h2>12.18. Generator</h2>
                 <code xml:space="preserve">generic&lt;T&gt; interface Generator { func yield() T //throws a GeneratorExhausted exception (which inherits from SpecialCase) when all values have been yielded }</code>
             </div>
             <div id="InterfaceBuilder">
-                <h2>14.2. InterfaceBuilder</h2>
+                <h2>12.19. InterfaceBuilder</h2>
                 <ul>
                     <li>map{string, interface} properties</li>
                     <li>bool alwaysImmutable?</li>
@@ -2784,7 +2808,7 @@ println( id(foo) == id(bar) )
                 <p>interface interface is always immutable, so InterfaceBuilder exists to allow creating interface objects procedurally.</p>
             </div>
             <div id="Iterator">
-                <h2>14.3. Iterator</h2>
+                <h2>12.20. Iterator</h2>
                 <pre>
 interface{I} Iterator
         //values may change
@@ -2834,11 +2858,11 @@ interface{I} Iterator
                 <code xml:space="preserve">Container{int} numbers; Iterator iter = numbers.iterate(); int num = iter.value while( iter.valid? ) int num = iter.value iter.moveForward()</code>
             </div>
             <div id="CInterfaceBuilder">
-                <h2>14.4. CInterfaceBuilder</h2>
+                <h2>12.21. CInterfaceBuilder</h2>
                 <p>CInterfaceBuilder, when called, returns an object that can be used to procedurally and/or dynamically create interface objects.</p>
             </div>
             <div id="getFuncInterface">
-                <h2>14.5. getFuncInterface</h2>
+                <h2>12.22. getFuncInterface</h2>
                 <pre>
 func getFuncInterface (
         int templateParamCount,
@@ -2849,13 +2873,37 @@ func getFuncInterface (
                 <p>Returns an interface specifying a call method with the specified number of template parameters, the specified parameters, and the specified return interface. If returnInterface is null, the interface specifies a void call method. Every time it is called with the same arguments, it must return the same object.</p>
             </div>
         </div>
+        <div id="warnings-list">
+            <h1>Chapter 13. Warnings</h1>
+            <p>This is a list of warnings predefined by this specification. Agents should create other warnings whenever needed.</p>
+            <table>
+                <tbody>
+                    <tr>
+                        <th>name</th>
+                        <th>meaning</th>
+                    </tr>
+                    <tr>
+                        <td>always null</td>
+                        <td>A node that will never produce a value when executed is being used as if it will sometimes produce a value. This warning is produced by the node that attempts to make use of the output, such as an assignment node, and not the node that doesn't produce.</td>
+                    </tr>
+                    <tr>
+                        <td>unknown warning</td>
+                        <td>A warning name in an ignore node is not recognized.</td>
+                    </tr>
+                    <tr>
+                        <td>no effect</td>
+                        <td>The output of a node that does not have side effects is not being used. For example, if a block contains an integer node (that is not last), the integer node has no effect.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
         <div id="error-handling-processing">
-            <h1>Chapter 15. Error handling during processing</h1>
+            <h1>Chapter 14. Error handling during processing</h1>
             <p>If an error is found during processing, and none of the already generated nodes have been executed, all generated nodes in the entire Desal tree must not be used for purposes beyond explaining the source of errors. Construction of the Desal node tree may continue after errors are found. The main() function must not be called, and the members should not be exposed as a library.</p>
             <p>If errors occur while generating the Desal node tree, and execution has already begun, a warning should immediately be emitted describing the error. How this warning is emitted is undefined. Generation of the Desal node tree may continue. When execution reaches the damaged section of the tree, an error should be thrown describing the error. If execution never reaches the damaged section of the tree, the error should have no effect.</p>
         </div>
         <div id="warnings">
-            <h1>Chapter 16. warnings</h1>
+            <h1>Chapter 15. warnings</h1>
             <table>
                 <tbody>
                     <tr>
@@ -2875,10 +2923,10 @@ func getFuncInterface (
             </table>
         </div>
         <div id="rationales">
-            <h1>Chapter 17. Rationales</h1>
+            <h1>Chapter 16. Rationales</h1>
             <p>This chapter explains the decisions behind various choices made for Desal.</p>
             <div id="rationale.dynamic-static-typing">
-                <h2>17.1. Dynamic static typing</h2>
+                <h2>16.1. Dynamic static typing</h2>
                 <p>Dynamic static typing refers to explicitly using and enforcing type information that isn't available until runtime. The type information isn't known until runtime, but after it's known, it's enforced and can't be changed.</p>
                 <p>An example of this is loading an interface from a library and then using obtaining values with that interface through the library. The loaded interface can be used as the type for function parameters, free identifiers, etc. So although the interface wasn't known until runtime, one the information was known, it was enforced, and the values of that interface are only accessed by ensuring they are of that interface.</p>
                 <p>Dynamic static typing can do nothing beforehand to ensure property/method access is correct, but it can ensure that various values are of the same type. For example, consider the case where an interface is loaded from a library and bound to an identifer. Then a free identifier is declared to be of that type, and a function is declared to accept a value of that type. An implementation will known that the free identifer and the function's parameter are of the same type, so the value bound to the free identifier can safely be passed to the function. This safety could not be ensured with fully dynamic typing.</p>
@@ -2887,9 +2935,9 @@ func getFuncInterface (
                 <p>Arguments against: Interfaces should almost always be known beforehand. Dynamic static typing may be very rarely used, and could encourage bad programming.</p>
             </div>
             <div id="rationale.terms">
-                <h2>17.2. Terms</h2>
+                <h2>16.2. Terms</h2>
                 <div id="rationale.get-set">
-                    <h3>17.2.1. get/set</h3>
+                    <h3>16.2.1. get/set</h3>
                     <table>
                         <tbody>
                             <tr>
@@ -2937,53 +2985,53 @@ func getFuncInterface (
                 </div>
             </div>
             <div id="rationale.executing-boolean-logic">
-                <h2>17.3. Executing boolean logic nodes</h2>
+                <h2>16.3. Executing boolean logic nodes</h2>
                 <p>In other languages, functions/methods that return boolean values are often chained together with short-circuiting boolean logic nodes. XOR and XNOR nodes cannot short-circuit, and thus this does not apply to them.</p>
                 <code xml:space="preserve">list.empty? $or list.clear() //similar to: $if $not list.empty? : list.clear() list.empty? $and list = getValues() //similar to: $if list.empty? : list = getValues()</code>
             </div>
             <div id="executing-declaration-first">
-                <h2>17.4. Disallowing executing declaration-first</h2>
+                <h2>16.4. Disallowing executing declaration-first</h2>
                 <p>Children of declaration-first nodes are executed when the scope is first created, which may involve executing an identifier associated with a variable identikey. When execution reaches a declaration-first node, the identifiers used to create the initial value assigned to the identikey may be assigned to different values. Thus, executing a declaration-first node could produce unexpected results.</p>
                 <code xml:space="preserve">$decl Int alpha = 12345 $block { alpha = 9000 println ( $decl-first Int beta = alpha ) //prints "12345" }</code>
                 <p>In the above example, alpha is executed and assigned to beta when the scope for the block node is created. Then, 9000 is assigned to alpha. Then, the declaration-first node is executed, producing the value assigned to beta, which is 12345. A programmer may have expected beta to be bound to the current value of alpha, which is 9000.</p>
             </div>
         </div>
         <div id="unsorted-stuff">
-            <h1>Chapter 18. unsorted stuff</h1>
+            <h1>Chapter 17. unsorted stuff</h1>
             <div id="closures">
-                <h2>18.1. Closures</h2>
+                <h2>17.1. Closures</h2>
                 <p>Functions and classes (amoung others) have references to their containing scope. Identifier references in these scopes can be accessed and modified by the functions/classes.</p>
                 <p>Copy closures create copies of specific values when a function node is executed. Modifying this copy does not modify the captured scope.</p>
                 <code xml:space="preserve">//regular closures func makePrinters(Int max) func()void[] { func()void[] printers = new func()void[] Int i = 1 while i &lt;= max { printers &lt;&lt; func()void { print i + ' ' } i++ } return printers } //array of functions that have no parameters and return nothing func()void[] printers = makePrinters(10) for printer in printers { printer() } //output 10 10 10 10 10 10 10 10 10 10 Each of the anonymous functions held a reference to the same scope where i was defined. Because i held 10 when the functions were called, each output 10.</code>
                 <code xml:space="preserve">//copy closures func makePrinters(Int max) func()void[] { func()void[] printers = new func()void[] Int i = 1 while i &lt;= max { printers &lt;&lt; func()void { copyclosure i print i + ' ' } i++ } return printers } //array of functions that have no parameters and return nothing func()void[] printers = makePrinters(10) for printer in printers { printer() } //output 1 2 3 4 5 6 7 8 9 10 Each of the anynonymous functions held a copy of the value of i at the time the function was created.</code>
             </div>
             <div id="tree-examples">
-                <h2>18.2. Tree examples</h2>
+                <h2>17.2. Tree examples</h2>
                 <div id="tree-example-1">
-                    <h3>18.2.1. Example 1</h3>
+                    <h3>17.2.1. Example 1</h3>
                     <code xml:space="preserve">global declare-const identifier "main" expression [value] (function-definition) function-parameter identifier "args" expression [interface] (interface-template-instantiation) expression [interface-template] (identifier) "array" expression [template-argument] (identifier) "string" expression [return-interface] (identifier) "int" expression (return) expression (integer) 0 func main(string[] args) int return 0</code>
                 </div>
                 <div id="tree-example-2">
-                    <h3>18.2.2. Example 2</h3>
+                    <h3>17.2.2. Example 2</h3>
                     <code xml:space="preserve">global (global) declaration (declaration &gt; function-declaration) name (string) "main" return (expression &gt; object-reference) name (string) "int" item (item &gt; return) value (expression &gt; integer) 0 func main() int return 0 &lt;global type="global"&gt; &lt;declaration type="function-declaration"&gt; &lt;name type="string"&gt;main&lt;/name&gt; &lt;return type="object-reference"&gt; &lt;name type="string"&gt;int&lt;/name&gt; &lt;/return&gt; &lt;item type="return"&gt; &lt;value type="integer"&gt;0&lt;/value&gt; &lt;/item&gt; &lt;/declaration&gt; &lt;/global&gt;</code>
                 </div>
                 <div id="tree-example-3">
-                    <h3>18.2.3. Example 3</h3>
+                    <h3>17.2.3. Example 3</h3>
                     <code xml:space="preserve">global (global) name-bind (name-bind) identifier (identifier) "main" expression (function-definition) parameter (parameter) interface (interface &gt; function-call) function (function &gt; identifier) "array" argument (expression &gt; identifier) "string" identifier (identifier) "args" return-interface (interface &gt; identifier) "int" expression (expression &gt; return) expression (expression &gt; literal-integer) 0 func main(string[] args) int return 0 &lt;global type="global"&gt; &lt;name-bind type="name-bind"&gt; &lt;identifier type="identifier"&gt;main&lt;/identifier&gt; &lt;expression type="function-definition"&gt; &lt;parameter-list type="parameter-list"&gt; &lt;parameter type="parameter"&gt; &lt;identifier type="identifier"&gt;args&lt;/identifier&gt; &lt;expression type="function-call"&gt; &lt;identifier type="identifier"&gt;array&lt;/identifier&gt; &lt;argument-list type="argument-list"&gt; &lt;identifier type="identifier"&gt;string&lt;/identifier&gt; &lt;/argument-list&gt; &lt;/expression&gt; &lt;/parameter&gt; &lt;/parameter-list&gt; &lt;return-interface type="identifier"&gt;int&lt;/return-interface&gt; &lt;expression-list type="expression-list"&gt; &lt;expression type="return"&gt; &lt;expression type="literal-integer"&gt;0&lt;/expression&gt; &lt;/expression&gt; &lt;/expression-list&gt; &lt;/function&gt; &lt;/name-bind&gt; &lt;/global&gt;</code>
                 </div>
             </div>
             <div id="get-interface">
-                <h2>18.3. get interface</h2>
+                <h2>17.3. get interface</h2>
                 <p>It's always possible to bind the interface of an object to an identifier.</p>
                 <code xml:space="preserve">func getInterface{I}(I o) { return I; } dynref o = getMysteryObj() interface i = getInterface(o) i o2 = o</code>
             </div>
             <div id="obj-interface">
-                <h2>18.4. obj interface</h2>
+                <h2>17.4. obj interface</h2>
                 <p>All objects automatically implement the "obj" interface.</p>
                 <code xml:space="preserve">obj foo = getAnObject() (myinterface foo) .doStuff 3</code>
             </div>
             <div id="identifier-binding">
-                <h2>18.5. Binding to identifiers</h2>
+                <h2>17.5. Binding to identifiers</h2>
                 <code xml:space="preserve">int alpha</code>
                 <p>Declares that "alpha" can refer to objects that implement the "int" interface. alpha currently doesn't refer to anything; i.e. it refers to null.</p>
                 <code xml:space="preserve">alpha = 3</code>
@@ -2994,7 +3042,7 @@ func getFuncInterface (
                 <code xml:space="preserve">obj o = getObj() int a = o rat b = o</code>
             </div>
             <div id="print-println-return-interfaces">
-                <h2>18.6. Return interfaces of print and println</h2>
+                <h2>17.6. Return interfaces of print and println</h2>
                 <p>Below, [unbound] means the interface is not bound to an identifier. However, these interfaces can be bound to identifiers and used like any user-created interface, and they have no special properties.</p>
                 <ul>
                     <li>func{I}(I)[unbound] print</li>
@@ -3013,11 +3061,11 @@ println 1 2 3 "a" "b" "c" 4.5 6.7 8.9
 </pre>
             </div>
             <div id="adjuncts">
-                <h2>18.7. Adjuncts</h2>
+                <h2>17.7. Adjuncts</h2>
                 <code xml:space="preserve">interface IMyInterface public func doStuffA() public func doStuffB() class MyClass :implements(IMyInterface) ... func IMyInterface.doAB() this.doStuffA() this.doStuffB() func testThing(ref IMyInterface arg) arg.doAB() MyClass inst testThing(inst)</code>
             </div>
             <div id="runtime-inteface">
-                <h2>18.8. runtime interface implementation</h2>
+                <h2>17.8. runtime interface implementation</h2>
                 <p>With Desal, you should be able to write a function that takes an interface (foo) and returns a function that takes an object of that interface (foo) and returns an object that implements that same interface (foo), but with an implementation that writes to a log anytime a method is called.</p>
                 <pre>
 log l = Log()
@@ -3043,7 +3091,7 @@ wrap(foo)(...) takes a foo and returns a foo
 </pre>
             </div>
             <div id="runtime-interface-creation">
-                <h2>18.9. Runtime interface creation</h2>
+                <h2>17.9. Runtime interface creation</h2>
                 <pre>
 func createInterface( map{string,dyn} methods ) interface
         interface rv = newInterface()
@@ -3087,7 +3135,7 @@ obj.gamma( createWidget1(), Widget4Factory.makeOne() )
 </pre>
             </div>
             <div id="self-return-type">
-                <h2>18.10. "self" return type</h2>
+                <h2>17.10. "self" return type</h2>
                 <pre>
 func(int,float)self
 
@@ -3103,7 +3151,7 @@ example 1 2 3 4 5 6 7 8 9 0 //calls the example function 10 times
 </pre>
             </div>
             <div id="bind">
-                <h2>18.11. Bind</h2>
+                <h2>17.11. Bind</h2>
                 <pre>
 interface foo
         ...
@@ -3121,11 +3169,11 @@ funcy(3)
                 <p>The "=&gt;" operator binds the obj to the first argument of the function. It executes to a function. Semantically this creates a function-definition with a closure of the obj and func.</p>
             </div>
             <div id="classes">
-                <h2>18.12. Classes</h2>
+                <h2>17.12. Classes</h2>
                 <p>Classes produce functors that, when called, create objects. If a class implements more than 1 interface, it can declare which of the implemented interfaces is the active interface of the returned object by marking an interface as default. If no interface is marked, the active interface is obj.</p>
             </div>
             <div id="noninstantiated-interface-templates">
-                <h2>18.13. Noninstantiated interface templates</h2>
+                <h2>17.13. Noninstantiated interface templates</h2>
                 <pre>
 interface list{I}
         readonly int count
@@ -3160,7 +3208,7 @@ someList.pushFront(5) //error
                 <p>someList may refer to any kind of list, such as list{foo}, list{bar}, etc, so only methods that have the same paramater and return interfaces for all list{}s can be called.</p>
             </div>
             <div id="dynamic-library-loading">
-                <h2>18.14. Dynamic library loading</h2>
+                <h2>17.14. Dynamic library loading</h2>
                 <p>The selectLibrary function enables gaining references to objects without knowing the nodes that created the objects.</p>
                 <pre>
 interface Library
@@ -3198,7 +3246,7 @@ XmlElement element = XmlRead.read("foo.xml").documentElement
 </pre>
             </div>
             <div id="static-typing">
-                <h2>18.15. Static typing</h2>
+                <h2>17.15. Static typing</h2>
                 <p>XXX spec out static typing and demand that implementations check all typing as much as possible before running anything. Note the section on dynamic static typing.</p>
             </div>
         </div>

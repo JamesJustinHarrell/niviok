@@ -1,0 +1,25 @@
+--- 1
+
+decl Int number = 3
+if number == 3
+	throw Error("blah")
+
+If an agent can determine that the test of a conditional node (XXX and some others, like the test of iteration nodes) will always be true, the agent should emit a warning.
+
+This is different from warning about unreachable code, because that would only warn if a test was always true in an if-else, not just a conditional node.
+
+
+--- 2
+
+func doSomething(Int num) {
+	if num == 3
+		throw Error("blah")
+}
+
+doSomething(3)
+
+If an agent can determine that:
+	* a specific function will sometimes throw an error, but not always
+	* a specific call to that function will result in an exception being thrown
+The agent should emit a warning that the call will result in an exception being thrown.
+

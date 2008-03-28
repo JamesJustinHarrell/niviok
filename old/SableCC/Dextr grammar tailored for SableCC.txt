@@ -1,0 +1,241 @@
+<!--
+XML is used to divide this document into sections, to make manipulating it easier, but it is otherwise not formatted as XML.
+
+This grammar is currently tailored pretty strongly for SableCC.
+-->
+
+<grammar>
+
+<!--
+character types:
+
+	illegal
+		not allowed anywhere, even in strings or comments
+		
+	reserved
+		e.g. + - * / space \n \t
+		not allowed in identifiers, but allowed in strings and comments
+		
+	numerical
+		e.g. 0 1 2 3 4 5 6 7 8 9
+		
+	free
+		any character that is not in one of the other categories
+
+-->
+
+<character-types><![CDATA[
+	illegal = [0..8] ;
+	reserved = [[[[[[[[[[[[[[[[[[[
+		0x9 + //tab
+		0xA ]+ //linefeed
+		0x20 ]+ //space
+		'+' ]+
+		'-' ]+
+		'*' ]+
+		'/' ]+
+		'.' ]+
+		',' ]+
+		'=' ]+
+		'"' ]+
+		''' ]+
+		'(' ]+
+		')' ]+
+		'{' ]+
+		'}' ]+
+		'<' ]+
+		'>' ]+
+		'[' ]+
+		']' ] ;
+	numerical = [0 + [1..9]] ;
+	free = [[[[0..0x10FFFF] - illegal] - reserved] - numerical] ;
+]]></character-types>
+
+<regular-tokens>
+	document_open = 'BSDO' ;
+	document_close = 'BSDC' ;
+	indent_open = 'BSIO' ;
+	indent_close = 'BSIC' ;
+	newline = '\n' ;
+	identifier = free (free | numerical)* ;
+	integer = numerical+ ;
+	rational = numerical+ '.' numerical+ ;
+	string = '"' [[free + reserved] - '"']* '"' ;
+</regular-tokens>
+
+<!--
+production syntax:
+
+	rule
+		Name = ... ;
+	optional (0 or 1)
+		[ ... ]
+	0 or more
+		{ ... }
+	1 or more
+		... +
+	grouping
+		( ... )
+	options
+		... | ...
+
+production syntax for SableCC:
+	optional
+		... ?
+	0 or more
+		... *
+-->
+
+<productions>
+Expression
+	= Simple
+	| Add
+	| BooleanLogic
+	| DeclareFirst
+	| IfElse
+	| Test ;
+
+Primary
+	= Identifier
+	| INTEGER
+	| RATIONAL
+	| STRING
+	| Parenthetical ;
+
+Parenthetical
+	= "(" Expression ")" ;
+
+Simple
+	= Block
+	| Call
+	| ExtractMember
+	| Primary ;
+
+Call
+	= Simple "(" ")"
+	| Simple "(" ArgumentList ")" ;
+
+ArgumentList
+	= Expression
+	| ArgumentList "," Expression ;
+
+ExtractMember
+	= Simple "." Identifier ;
+
+Mult
+	= Simple
+	| Simple "*" Simple
+	| Simple "/" Simple ;
+
+Add
+	= Mult
+	| Mult "+" Mult
+	| Mult "-" Mult ;
+
+BooleanLogic
+	= Simple BooleanFunction Simple ;
+BooleanFunction
+	= "and"
+	| "nand"
+	| "or"
+	| "nor"
+	| "xor"
+	| "xnor" ;
+
+DeclareFirst
+	= DeclareFirstNormal
+	| FunctionDeclaration ;
+
+DeclareFirstNormal
+	= "decl" Identifier "=" Expression ;
+
+FunctionDeclaration
+	= "func" Identifier "(" ")" Block
+	| "func" Identifier "(" ParameterList ")" Block ;
+
+ParameterList
+	= Parameter
+	| ParameterList "," Parameter ;
+
+Parameter
+	= Identifier ;
+
+Block
+	= BraceBlock
+	| TabBlock
+	| BraceTabBlock ;
+
+//to ensure this starts and ends on the same line,
+//test lineNumber of "{" and "}" tokens
+//this can't be easily stated in BNF
+BraceBlock
+	= "{" "}"
+	| "{" BraceBlockInside "}" ;
+BraceBlockInside
+	= Expression
+	| BraceBlockInside "," Expression ;
+
+//the tokenizer ensures a newline comes before every indent open
+//the newline is declared optional to allow, e.g.: NEWLINE TabBlock
+TabBlock
+	= INDENT_OPEN INDENT_CLOSE
+	| INDENT_OPEN TabBlockInside INDENT_CLOSE
+	| NEWLINE TabBlock ;
+TabBlockInside
+	= Expression NEWLINE
+	| TabBlockInside Expression NEWLINE ;
+
+BraceTabBlock
+	= "{" TabBlock "}" ;
+
+Test
+	= Simple ComparisonFunction Simple ;
+ComparisonFunction
+	= "lt"
+	| "lte"
+	| "eql"
+	| "gte"
+	| "gt"
+	| "dne" ;
+
+IfElse
+	= If Elif? Else? ;
+IfExpr
+	= Simple
+	| Test ;
+If
+	= "if" IfExpr Block ;
+Elif
+	= "elif" IfExpr Block
+	| Elif "elif" IfExpr Block ;
+Else
+	= "else" Block ;
+
+DeclareFirstList
+	= DeclareFirst
+	| DeclareFirstList NEWLINE DeclareFirst ;
+
+BundleDocument
+	=
+		DOCUMENT_OPEN
+		NEWLINE?
+		Expose*
+		PlaneReference*
+		DeclareFirstList?
+		DOCUMENT_CLOSE
+	;
+Expose
+	= "expose" Identifier NEWLINE ;
+PlaneReference
+	= "plane" STRING NEWLINE ;
+
+PlaneDocument
+	=
+		DOCUMENT_OPEN
+		NEWLINE?
+		DeclareFirstList?
+		DOCUMENT_CLOSE
+	;
+</productions>
+
+</grammar>

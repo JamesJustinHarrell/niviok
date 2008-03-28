@@ -1,0 +1,31 @@
+tokens
+	KEYWORD_IF
+	KEYWORD_ELSE
+	KEYWORD_TRY
+	KEYWORD_CATCH
+	...
+
+Keyword
+	= KEYWORD_IF
+	| KEYWORD_ELSE
+	| KEYWORD_TRY
+	| KEYWORD_CATCH .
+
+Identifier
+	= IDENTIFIER
+	| KEYWORD .
+
+
+
+
+Keyword<out string str>
+	= KEYWORD_IF (. str = t.val; .)
+	| KEYWORD_ELSE (. str = t.val; .)
+	| KEYWORD_TRY (. str = t.val; .)
+	| KEYWORD_CATCH (. str = t.val; .)
+	.
+
+Identifier<out Node_Identifier ident> (. string str; .)
+	= IDENTIFIER (. ident = new Node_Identifier(t.val); .)
+	| Keyword<out str> (. ident = new Node_Identfier(str); .)
+	.

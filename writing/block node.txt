@@ -1,0 +1,47 @@
+There's a Desal node that I'm trying to find a good name for.
+
+This node is an expression that contains other expressions. When the outer expression is evaluated, the inner expressions are evaluated in order. The outer expression evaluates to the value returned by the last inner expression. This node has scope (in Lisp, "environment"), meaning that identikeys (variables) declared inside the node are not visible outside the node.
+
+Some C-style languages have the comma operator. JavaScript example:
+
+var a = (
+	1,
+	alert(2),
+	window.foo = "bar",
+	"text".toUpperCase() );
+alert(window.foo); //"bar"
+alert(a); //"TEXT"
+
+Lisp has the let procedure, which can be used in the same way:
+
+(display
+	(let ()
+		(display "foo")
+		(display "bar")
+		(newline)
+		(list 1 2 3)))
+
+I think you could also do something like this:
+
+(display
+	(car (reverse (list
+		(display "foo")
+		(display "bar")
+		(newline)
+		(list 1 2 3)))))
+
+Desal currently has a node called "block", from the days when it did not produce a value during evaluation and thus was like compound statements, a.k.a. "blocks", in C++.
+
+{
+	int a;
+	getSomething(&a);
+	cout << a;
+}
+cout << a; //error - "a" is not defined
+
+
+rational for not using:
+comma operator - commas are syntactic; name should reflect semantics instead of syntax
+combinat* statement - not a statement
+let - has scope; can contain declarations; does not have ability to declare identikeys (directly) like let does
+

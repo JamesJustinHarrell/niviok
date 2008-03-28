@@ -1,0 +1,68 @@
+--- domains ---
+
+python.org
+perl.org
+ecmascript.org
+smalltalk.org
+lua.org
+
+schemers.org
+
+php.net
+java.com
+cplusplus.com
+
+ruby-lang.org
+
+boo.codehaus.org
+groovy.codehaus.org
+
+digitalmars.com/d/
+eiffel.com (company)
+
+
+--- names ---
+
+Lua (foreign word for moon)
+Boo (exclamation)
+Perl, Ruby (jewels)
+Python (monty python, animal)
+Eiffel (building)
+Java (food)
+ECMAScript, JavaScript (descriptive)
+PHP, C, C++, C#, D (letters)
+
+
+4 chars is too short (perl, ruby, java)
+10 chars is too long (ecmascript)
+
+1 syllable is too short (boo, perl)
+3 syllables is too long (c++, ecmascript, php)
+
+double characters suck (smaLLtalk, grOOvy, eiFFel)
+
+requirements:
+	6-8 characters
+	2 syllables
+	no repeated characters
+
+possibilities: (number in parens is Google hits)
+
+Kunflai (0)
+Estaroba (1)
+Menalga (4)
+Niviok (5)
+Bontro (2K)
+Tranko (15K)
+Eskucha (15K)
+Chaleta (31K)
+Kubiki (44K)
+Treste (58K)
+Desal (151K)
+Cometi (186K)
+Estahora (189)
+Megusta (308K)
+Onima (1,240K)
+Mechanika (5,560M)
+Veste (11,100K)
+

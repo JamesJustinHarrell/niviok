@@ -32,7 +32,7 @@ class Client_Function : IFunction {
 		Scope functionScope = arguments.setup( _parameters, _scope );
 		
 		//xxx try {
-			return _body.execute(functionScope);
+			return Executor.execute(_body, functionScope);
 		/* xxx
 		}
 		catch(ReturnStatement statement) {

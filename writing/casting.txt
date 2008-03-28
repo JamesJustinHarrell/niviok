@@ -1,0 +1,35 @@
+func rootCast( Object o ) dyn
+
+The interfaces implemented by an object form a tree, with a root interface that inherits all other interfaces. This function casts an object to that root interface. Reflection uses a similar technique. This can be used to call a function based on a derived type when given a base type.
+
+func doStuff( Element ) {...}
+func doStuff( Text ) {...}
+func doStuff( Document ) {...}
+func doStuff( Node node ) {
+	if rootCast(node) == Node
+		throw Error()
+	doStuff( rootCast(node) )
+}
+
+This would be similar to:
+
+class Foo {
+	func doStuff( Element ) {...}
+	func doStuff( Text ) {...}
+	func doStuff( Document ) {...}
+	func doStuff( Node node ) {
+		Method meth = typeof(Foo).GetMethod("doStuff", new Type[]{ typeof(node) });
+		if meth == null
+			throw Error()
+		meth.Invoke(new Object[]{ node })
+	}
+}
+
+
+Other similar methods may be useful:
+
+func rootFace(Object o) Interface //get the root interface of the object
+func castUp(dyn) dyn //move up one level in the interface tree
+func castDown<T>(dyn) T //only cast if current type inherits or is T
+func cast<T>(Object o) T //like the cast node
+

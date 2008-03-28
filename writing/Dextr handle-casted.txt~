@@ -1,0 +1,39 @@
+common code pattern:
+
+	decl Node node = getNode()
+	
+	if( node impls Element )
+		println( "<" + (o as Element).tagName + "/>" )
+	elif( o impls Text )
+		handleText( (o as Text).textValue )
+	else
+		throw Error("unknown type")
+
+Some languages handle this use case with Algebraic Data Types, ADT. But this is closed, and requires declaring a new types. Desal instead just provides a simplified syntax:
+
+	selectface node
+	case Element
+		println( "<" + node.tagName + "/>" )
+	case Text
+		handleText( node.textValue )
+	else
+		throw Error("unknown type")
+
+This node may be described as:
+
+	select-interface ::=
+		expression value
+		* case-interface
+		? expression else
+	
+	case-interface ::=
+		+ expression interface
+		expression result
+
+If Desal were to gain Algebraic Data Types, this node could possibly be expaned to work well with them. (Need to see what kind of features ADT languages have.)
+
+Possible text:
+	Execution:
+	If [value] is an ADT, and an [else] wasn't given, and none of the case-interface nodes could handle the [value], throw an error.
+	
+	When the [value] of a [select-interface] node is an instance of an ADT, implementations should try to ensure that all possible types are handled by the [select-interface] node. If not all types are handled, a warning should be emitted.

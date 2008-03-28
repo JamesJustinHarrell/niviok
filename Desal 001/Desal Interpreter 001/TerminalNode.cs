@@ -17,15 +17,12 @@ abstract class TerminalNode<T, U> where U : class, INode {
 		get { return _value; }
 	}
 	
+	//note: this should be null for types that can never have child nodes
 	public ICollection<INode> childNodes {
-		get { return new INode[]{}; }
+		get { return null; }
 	}
-	
-	public virtual HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this as U); }
-	}
-	
-	public override string ToString () {
+
+	public override string ToString() {
 		return _value.ToString();
 	}
 }

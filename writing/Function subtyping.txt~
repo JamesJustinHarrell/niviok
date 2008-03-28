@@ -1,0 +1,26 @@
+All functions should be castable to some common interface so that they can be called without knowing their root type. However, if this base type has a callee, it will be inherited by all the derived types, making none of the callees anywhere statically typesafe.
+
+example:
+decl foo = func() {}
+decl Function foo2 = (foo as Function)
+foo2( 123, "tnoheuth", Xml:Document(), MyClass(555) )
+
+Because the Function interface has a callee with dyn params, any function can be called with any number of arugments, and you won't know there's an error until an exception is thrown.
+
+XXX When would you need to call a function without knowing its type? What's the rationale? Give an example.
+
+Possible solution: Create an optional attribute for methods and callees that prevents that member from being merged with members of deriving interfaces.
+
+interface Function {
+	nomerge call( dyn[] params )dyn
+}
+
+interface func()void : Function {
+	call()void
+}
+
+interface f1 = Function
+itnerface f2 = func()void
+f2.callees.contains( func(dyn[])dyn ) //false
+f2.inheritee.callees.contains( func(dyn[])dyn ) //true
+f2.callees.contains( func(dyn[])dyn ) //true

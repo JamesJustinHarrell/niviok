@@ -18,9 +18,9 @@ partial class DesibleParser {
 	public static IInterface createNativeInterface(Bridge bridge, XmlElement element) {
 		DesibleParser parser = new DesibleParser(bridge, element.OwnerDocument);
 		parser.setLabels(element);
-		return parser
-			.parse<Node_Interface>(element)
-			.evaluateInterface(new Scope(bridge));
+		return Evaluator.evaluate(
+			parser.parse<Node_Interface>(element),
+			new Scope(bridge) );
 	}
 
 	public static Node_Bundle parseDocument(
@@ -69,7 +69,7 @@ partial class DesibleParser {
 			return parseSuper<INode_Expression>(element, "expression");
 		});
 		
-		addParser<INode_DeclareAny>(delegate(XmlElement element) {
+		addParser<INode_Declaration>(delegate(XmlElement element) {
 			return parseSuper<INode_Declaration>(element, "declaration");
 		});
 		
@@ -119,30 +119,28 @@ partial class DesibleParser {
 		addTreeParsers();
 	
 		addParser<Node_Bundle>("bundle", delegate(XmlElement element) {
-			IList<Node_Plane> inlinePlanes =
-				parseMult<Node_Plane>(element, "inline-plane");
-			/* xxx
-			IList<Node_Plane> otherPlanes =
-				parseMult<Node_Plane>(element, "plane-reference", parsePlaneReference);
-			IList<Node_Plane> allPlanes = inlinePlanes.Concat(otherPlanes);
-			*/
-			return new Node_Bundle(inlinePlanes);
+			IList<Node_Plane> planes = parseMult<Node_Plane>(element, "inline-plane");
+			foreach( Node_Plane plane in parseMult<Node_Plane>(element, "plane-reference") )
+				planes.Add(plane);
+			return new Node_Bundle(
+				parseMult<Node_Import>(element, "import"),
+				parseMult<INode_ScopeAlteration>(element, "scope-alteration"),
+				planes );
 		});
 
-		//xxx how will this exist along with plane-reference?
-		addParser<Node_Plane>("inline-plane", delegate(XmlElement element) {
-			return new Node_Plane(
-				parseChildren<Node_DeclareFirst>(element));
+		addParser<Node_Plane>(delegate(XmlElement element) {
+			if( element.LocalName == "inline-plane" ) {
+				_handledElements.Add(element);
+				return new Node_Plane(
+					parseMult<INode_ScopeAlteration>(element, "scope-alteration"),
+					parseMult<Node_DeclareFirst>(element, "declare-first"));
+			}
+			else {
+				throw new System.Exception();
+			}
 		});
-		
-		addParser<Node_Interface>("interface", delegate(XmlElement element) {
-			return new Node_Interface(
-				parseMult<INode_Expression>(element, "inheritees"),
-				parseMult<Node_Callee>(element, "callees"),
-				parseOpt<Node_NullableType>(element, "return-type"),
-				parseMult<Node_Property>(element, "property"),
-				parseMult<Node_Method>(element, "method") );
-		});
+		_tagToType.Add("inline-plane", typeof(Node_Plane));
+		_tagToType.Add("plane-reference", typeof(Node_Plane));
 	}
 
 	void addParser<T>(ParseFunc func) {
@@ -155,9 +153,6 @@ partial class DesibleParser {
 		_parseFuncs.Add(
 			type,
 			new ParseFunc(delegate(XmlElement element) {
-				/* xxx
-				System.Console.WriteLine("parsing element with tag name " + element.LocalName);
-				System.Console.Out.Flush(); */
 				checkElement(element, tagName);
 				return func(element);
 			}));
@@ -272,16 +267,6 @@ partial class DesibleParser {
 	
 	T parseEnum<T>(XmlElement element) {
 		return (T)System.Enum.Parse(typeof(T), element.InnerText, true);
-	}
-	
-	//parse all children
-	IList<T> parseChildren<T>( XmlElement element ) {
-		ParseFunc parser = _parseFuncs[typeof(T)];	
-		IList<T> rv = new List<T>();		
-		foreach( XmlElement child in selectChildren(element) ) {
-			rv.Add( (T)parser(child) );
-		}
-		return rv;
 	}
 
 	//parse element as a super type

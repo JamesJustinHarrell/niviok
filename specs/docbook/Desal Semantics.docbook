@@ -2,7 +2,7 @@
 xmlns:xi="http://www.w3.org/2003/XInclude">
 	
 	<title>Desal Semantics 1.0</title>
-	<subtitle>Edition 1 Draft 2008-02-13</subtitle>
+	<subtitle>Edition 1 Draft 2008-03-26</subtitle>
 	
 	<info>
 		<copyright>
@@ -80,8 +80,10 @@ xmlns:xi="http://www.w3.org/2003/XInclude">
 			<para>This specification also has "encourgements". These encouragements are considered good ideas by the specficiation author(s), but may not always be appropriate or may not be necessary for interoperability. Complying with these encouragements does not increase an implementation's compliance.</para>
 		</section>
 		
-		<section xml:id="executing-bundle">
-			<title>Executing a bundle</title>
+		<section xml:id="executing-nodes">
+			<title>Executing nodes</title>
+			
+			<para>No node besides the bundle node can be executed directly. All other nodes must only be executed when required by the execution instructions of another node, or as required to call a callee/method (such as when calling a value created by a function node). ((XXX clarify execution through calling)) Because values can only be created, directly or indirectly, by executing the bundle node, and because all node execution instructions only every instruct to execute child nodes, all node execution occurs as a result of executing the root bundle node.  All Desal nodes that are executed in any way must be part of a complete Desal tree, which means having an bundle node as the root node.</para>
 			
 			<para>Note: A bundle might not have a main function. It might just expose its members, such as for scripting or a library.</para>
 			
@@ -168,11 +170,6 @@ xmlns:xi="http://www.w3.org/2003/XInclude">
 				<glossentry>
 					<glossterm>active interface</glossterm>
 					<glossdef>the interface that the active interface implementation is associated with</glossdef>
-				</glossentry>
-				
-				<glossentry>
-					<glossterm>prevalent</glossterm>
-					<glossdef>values bound to the global scope that exist before source begins execution. No other objects may be bound to the same identifiers, even in inner scopes.</glossdef>
 				</glossentry>
 				
 				<glossentry>
@@ -401,6 +398,8 @@ interface (func(Int a, Rat b, String c) Bool)
 		<title>Interfaces</title>
 		
 		<para>Interfaces define a means of interacting with an object's state. Interfaces declare that implementations will be able to provide object references with specified interfaces when asked for the object reference bound to identifiers specified by the interface and/or that implementations will be able to bind object references with specified interfaces to specified identifiers. Methods are a type of property. Methods are callable and cannot be assigned, only retrieved.</para>
+		
+		<para>Interfaces cannot inherit in a circle. (E.g., interface A cannot inherit interface B if interface B inherits interface A.) Interfaces cannot inherit from themselves. (However, interfaces created by instantiating values created from generic-interface nodes should not throw errors if the interface tries to inherit itself. Instead, the error should be silently ignored. This is to allow generic interfaces to inherit other forms of themselves.) Interfaces that do not explicitly inherit any interfaces, should implicitly inherit Object. Therefore, all interfaces inherit from Object, either directly or indirectly.</para>
 		
 		<para>Interfaces can declare that properties are "get only", "set only", or "get and set".</para>
 		
@@ -740,15 +739,18 @@ declfirst func bar = func() {
 	
 	<xi:include href="Desal%20Semantics%20-%20Nodes.docbook"/>
 	
-	<chapter xml:id="special-identikeys">
-		<title>Special identikeys</title>
+	<chapter xml:id="reserved-identikey-names">
+		<title>Reserved identikey names</title>
 
-		<para>No user-defined identikeys can use these identifiers.</para>
+		<para>No user-defined identikeys can be associated with these identifiers.</para>
 
 		<simplelist>
-			<member>global - namespace identikey that refers to the outermost scope.</member>
-			<member>outer - namespace identikey that refers to the outer scope. Exists in all scopes/namespaces that have an outer scope. global::outer is invalid, but outer::outer may be valid.</member>
-			<member>std - namespace for the standard library</member>
+			<member>global - Namespace identikey that refers to the scope associated with the bundle node. Defined in the global scope.</member>
+			<member>std - Namespace identikey for the standard library. Defined in the global scope.</member>
+			<member>true - Constant strict identikey bound to the Bool enum true member. Defined in the global scope.</member>
+			<member>false - Constant strict identikey bound to the Bool enum false member. Defined in the global scope.</member>
+			<member>outer - Namespace identikey that refers to the outer scope. Defined in all scopes except the global scope. Note that outer::outer may be valid, depending on which scope it appers in.</member>
+			<member>inst - Namespace identikey that exposes private fields of objects created by the class node. Defined in child scopes of class nodes.</member>
 		</simplelist>
 	</chapter>
 
@@ -1183,39 +1185,9 @@ if implements(foo, Bar)
 			
 			<para>toInt will throw if the represented value is not already an integer. round should not throw. round! modifies the represented value.</para>
 		</section>
-	</chapter>
-	
-	<chapter xml:id="warnings-list">
-		<title>Warnings</title>
 		
-		<para>This is a list of warnings predefined by this specification. Agents should create other warnings whenever needed.</para>
-		
-		<table>
-			<tbody>
-				<tr>
-					<th>name</th>
-					<th>meaning</th>
-				</tr>
-				<tr>
-					<td>always null</td>
-					<td>A node that will never produce a value when executed is being used as if it will sometimes produce a value. This warning is produced by the node that attempts to make use of the output, such as an assignment node, and not the node that doesn't produce.</td>
-				</tr>
-				<tr>
-					<td>unknown warning</td>
-					<td>A warning name in an ignore node is not recognized.</td>
-				</tr>
-				<tr>
-					<td>no effect</td>
-					<td>The output of a node that does not have side effects is not being used. For example, if a block contains an integer node (that is not last), the integer node has no effect.</td>
-				</tr>
-			</tbody>
-		</table>
-	</chapter>
-	
-	<chapter xml:id="preexisting-global-identikeys">
-		<title>Other preexisting global identikeys</title>
-		
-		<para>Constant identikeys in the global scope that exist before source begins execution. The values these identikeys are bound to are immutable. Unlike prevalent identifers, these identifers follow normal scoping rules. They can always be refered to trough the prevalent global namespace identifier.</para>
+
+		<para>Constant identikeys in the std namespace. The values these identikeys are bound to are immutable.</para>
 		
 		<simplelist>
 			<member>interface InterfaceBuilder</member>
@@ -1347,6 +1319,33 @@ func getFuncInterface (
 		</section>
 	</chapter>
 	
+	<chapter xml:id="warnings-list">
+		<title>Warnings</title>
+		
+		<para>This is a list of warnings predefined by this specification. Agents should create other warnings whenever needed.</para>
+		
+		<table>
+			<tbody>
+				<tr>
+					<th>name</th>
+					<th>meaning</th>
+				</tr>
+				<tr>
+					<td>always null</td>
+					<td>A node that will never produce a value when executed is being used as if it will sometimes produce a value. This warning is produced by the node that attempts to make use of the output, such as an assignment node, and not the node that doesn't produce.</td>
+				</tr>
+				<tr>
+					<td>unknown warning</td>
+					<td>A warning name in an ignore node is not recognized.</td>
+				</tr>
+				<tr>
+					<td>no effect</td>
+					<td>The output of a node that does not have side effects is not being used. For example, if a block contains an integer node (that is not last), the integer node has no effect.</td>
+				</tr>
+			</tbody>
+		</table>
+	</chapter>
+
 	<chapter xml:id="error-handling-processing">
 		<title>Error handling during processing</title>
 		

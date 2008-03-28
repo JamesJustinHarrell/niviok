@@ -1,4 +1,4 @@
-<Project name="Desal Interpreter 001" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
+<Project name="Desal Agent 001" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
       <Output directory="./bin/Debug" assembly="Desal Interpreter 001" />
@@ -16,14 +16,14 @@
   <Contents>
     <File name="./AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
     <File name="./xxx_Client_Class.cs" subtype="Code" buildaction="Compile" />
-    <File name="./DesalInterpreter001.cs" subtype="Code" buildaction="Compile" />
+    <File name="./DesalAgent001.cs" subtype="Code" buildaction="Compile" />
     <File name="./xxx_Dextr.cs" subtype="Code" buildaction="Compile" />
     <File name="./errors.cs" subtype="Code" buildaction="Compile" />
     <File name="./Client_Function.cs" subtype="Code" buildaction="Compile" />
     <File name="./FunctionWrapper.cs" subtype="Code" buildaction="Compile" />
     <File name="./Identifier.cs" subtype="Code" buildaction="Compile" />
     <File name="./IFunction.cs" subtype="Code" buildaction="Compile" />
-    <File name="./INode.cs" subtype="Code" buildaction="Compile" />
+    <File name="./node interfaces.cs" subtype="Code" buildaction="Compile" />
     <File name="./Interface.cs" subtype="Code" buildaction="Compile" />
     <File name="./xxx_InterfaceImplementation.cs" subtype="Code" buildaction="Compile" />
     <File name="./IObject.cs" subtype="Code" buildaction="Compile" />
@@ -31,7 +31,6 @@
     <File name="./xxx_CString.cs" subtype="Code" buildaction="Compile" />
     <File name="./xxx_Node_Global.cs" subtype="Code" buildaction="Compile" />
     <File name="./Node_Identifier.cs" subtype="Code" buildaction="Compile" />
-    <File name="./INode_Expression.cs" subtype="Code" buildaction="Compile" />
     <File name="./Node_String.cs" subtype="Code" buildaction="Compile" />
     <File name="./Value.cs" subtype="Code" buildaction="Compile" />
     <File name="./xxx_Objects.cs" subtype="Code" buildaction="Compile" />
@@ -53,7 +52,6 @@
     <File name="./NativeValue.cs" subtype="Code" buildaction="Compile" />
     <File name="./IClass.cs" subtype="Code" buildaction="Compile" />
     <File name="./xxx_Node_Class.cs" subtype="Code" buildaction="Compile" />
-    <File name="./INode_Declaration.cs" subtype="Code" buildaction="Compile" />
     <File name="./xxx_InterfaceImplBuilder.cs" subtype="Code" buildaction="Compile" />
     <File name="./Arguments.cs" subtype="Code" buildaction="Compile" />
     <File name="./NullValue.cs" subtype="Code" buildaction="Compile" />
@@ -68,12 +66,9 @@
     <File name="./FunctionInterface.cs" subtype="Code" buildaction="Compile" />
     <File name="./InterfaceImplementation.cs" subtype="Code" buildaction="Compile" />
     <File name="./Object.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Node_Interface.cs" subtype="Code" buildaction="Compile" />
     <File name="./Node_Access.cs" subtype="Code" buildaction="Compile" />
     <File name="./Client_Rational.cs" subtype="Code" buildaction="Compile" />
     <File name="./Node_Boolean.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Node_Bundle.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Node_Plane.cs" subtype="Code" buildaction="Compile" />
     <File name="./Client_Interface.cs" subtype="Code" buildaction="Compile" />
     <File name="./Node_Rational.cs" subtype="Code" buildaction="Compile" />
     <File name="./Bridge_static_constructor.cs" subtype="Code" buildaction="Compile" />
@@ -85,15 +80,16 @@
     <File name="./BoundMethod.cs" subtype="Code" buildaction="Compile" />
     <File name="./G.cs" subtype="Code" buildaction="Compile" />
     <File name="./HashSet.cs" subtype="Code" buildaction="Compile" />
-    <File name="./DextrCocoR.cs" subtype="Code" buildaction="Compile" />
     <File name="./node classes.cs" subtype="Code" buildaction="Compile" />
     <File name="./DesibleParser auto.cs" subtype="Code" buildaction="Compile" />
     <File name="./Node_Direction.cs" subtype="Code" buildaction="Compile" />
-    <File name="./INode_ScopeAlteration.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Interpreter.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Executor.cs" subtype="Code" buildaction="Compile" />
     <File name="./Depends.cs" subtype="Code" buildaction="Compile" />
     <File name="./TerminalNode.cs" subtype="Code" buildaction="Compile" />
     <File name="./Direction.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Evaluator.cs" subtype="Code" buildaction="Compile" />
+    <File name="./DesibleSerializer.cs" subtype="Code" buildaction="Compile" />
+    <File name="./DesibleSerializer auto.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

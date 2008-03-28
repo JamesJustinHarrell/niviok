@@ -1,0 +1,55 @@
+from: http://zestyping.livejournal.com/233348.html
+
+The jist of this blog post was: "Here is a feature that behaves unexpectedly and inconsistently."
+
+
+> Thats great, now find me a real world example where PHP's type handling could cause unavoidable problems.
+i.e. You can always avoid this feature.
+implied: If you can avoid a poor feature, the feature is not detrimental to the language.
+
+It is not obvious that this feature should be avoided, and it complicates the langauge. The prescence of bad features is detrimental to a programming language.
+
+
+> So if you compare a boolean value with an integer or compare an uninitialized value to anything, you might run in to trouble? Thats a real shock...
+i.e. Nonsensical code leads to problems.
+implied: The interpreter should not try to help the programmer when the programmer is doing something nonsensical.
+
+The interpreter should try to help the programmer even when the programmer does something nonsensical. It could throw an exception, emit a warning, or just behave consistently. Nonsensical input is no excuse for nonsensical output.
+
+
+> Seriously. Learn the language, and stop being an idiot. All of this is documented, and is a result of type coercion. The solution? Don't write stupid code.
+i.e. Programmers should have no expectations as to how a feature will behave. Programmers should avoid bad features.
+implied: It is the fault of the programmer for producing nonsensical code.
+
+Programmer expectations can not be avoided. Thefore, programming languages should try to behave as expected. Interpreters should try to help even when forced to deal with nonsensical code.
+
+
+> Just because you're not able to cope with the fact that comparing boolean, non-existant, and integer values is NEVER going to give you meaningful data, doesnt mean PHP is a bad language. You're a total fucking idiot, dont bother coding in anything again, you're clearly too braindead to do it.
+i.e. Programmers should not expect features to behave consistently. Disliking the presence of bad features is a sign of low intelligence.
+
+Programmers will expect features to behave consistently, so they should. Disliking bad features, instead of merely accepting them and working around them, is a sign of higher expectations. The desire for improvement is a beneficial quality.
+
+
+> You're doing a greater-than/less-than comparison with one Boolean operand, so the other operands are coerced to Boolean first.
+implied: It is clear that both operands are being converted into booleans. Knowing that, this behavior makes sense.
+
+It is not clear that both operands are being converted into booleans. Without knowing that, this behavior appears inconsistent and nonsensical.
+
+
+> This is for who understands php...
+i.e. PHP should only be used by programmers that already know PHP.
+
+
+> it tries to "translate" the INTEGER numbers to BOOLEAN values for this comparison
+
+That is not obvious.
+
+
+
+
+lessons:
+Poor features are detrimental to the language, even if the features can be avoided. The agent (interpreter/comiler) should try to help out the programmer as much as possible, even when the programming is trying to do something nonsensical. Programmers will expect features to behave in certain ways; try to behave as expected. Try to make all behavior very obvious; don't hide too much behavior from the programmer.
+
+possible lesson:
+type coercion, like other powerful features, can be dangerous
+

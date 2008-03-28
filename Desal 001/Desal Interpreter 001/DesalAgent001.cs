@@ -1,12 +1,12 @@
 using System; //for System.Console
 using System.Collections.Generic;
 
-class DesalInterpreter001 {
+class DesalAgent001 {
 	
 	//entry point
 	//arguments have the form: -key=value
 	static int Main(string[] arguments) {
-		DesalInterpreter001 program = new DesalInterpreter001();
+		DesalAgent001 program = new DesalAgent001();
 		Bridge bridge = new Bridge();	
 		
 		IDictionary<string,string> args =
@@ -56,18 +56,23 @@ class DesalInterpreter001 {
 			if( parserName == "token-displayer" || parserName == "token-info-displayer" )
 				return 0;
 		}
-		else if( args["representation"] == "desible" ) {
+		else if( args["representation"] == "desible" ) {		
 			bool warnUnhandled = bool.Parse(args["desible-warn-unhandled"]);
 			bool warnAllNS = bool.Parse(args["desible-warn-allNS"]);
 			bundle = DesibleParser.parseDocument(
 				bridge, path, warnUnhandled, warnAllNS);
+			
+			//xxxv serialize bundle and then reparse
+			bundle = DesibleParser.parseDocument(
+				bridge,
+				DesibleSerializer.serializeToDocument(bundle),
+				warnUnhandled,
+				warnAllNS );
 		}
 		else {
 			bridge.error("unknown representation");
 			return 1;
 		}
-		
-		bundle.setup( program.createGlobalScope(bridge) );
 		
 		if( bool.Parse(args["print-tree"]) ) {
 			program.printTree(bundle);
@@ -75,7 +80,10 @@ class DesalInterpreter001 {
 		
 		if( bool.Parse(args["run"]) ) {
 			try {
-				return bundle.run();
+				return (int)Bridge.unwrapInteger(
+					Executor.execute(
+						bundle,
+						program.createGlobalScope(bridge)));
 			}
 			catch(ClientException e) {
 				bridge.error("UNCAUGHT EXCEPTION:\n" + e.clientMessage);
@@ -157,7 +165,7 @@ class DesalInterpreter001 {
 		Console.Write(node.typeName);
 
 		//write identikey dependencies
-		ICollection<Identifier> depends = node.identikeyDependencies;
+		ICollection<Identifier> depends = Depends.depends(node);
 		if( depends.Count > 0 ) {
 			Console.Write(" (");
 			bool first = true;
@@ -173,16 +181,16 @@ class DesalInterpreter001 {
 		
 		//write children or contents
 		ICollection<INode> children = node.childNodes;
-		if( children.Count > 0 ) {
-			foreach( INode child in children )
-				printNode( level+1, child );
-		}
-		else {
+		if( children == null ) {
 			printTabs(level + 1);
 			Console.WriteLine(
 				'"' +
 				node.ToString().Replace(@"\", @"\\").Replace("\"", "\\\"")
 				+ '"' );
+		}
+		else {
+			foreach( INode child in children )
+				printNode( level+1, child );
 		}
 	}
 	

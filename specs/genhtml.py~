@@ -294,10 +294,10 @@ def createHtmlDocument(docbookDocument) :
 		function causeReflow() {
 			var s = document.documentElement.style;
 			s.position = 'relative';
-			setTimeout( function(){ s.position = ''; }, 100 );
+			setTimeout( function(){ s.position = ''; }, 10 );
 		}
 		var oldHash = document.location.hash;
-		setInterval( checkHash, 500 );
+		setInterval( checkHash, 100 );
 	"""));
 	htmlRoot.appendChild(htmlHead)
 	htmlHead.appendChild(htmlTitle)
@@ -390,6 +390,10 @@ def normalize(node) :
 	else :
 		raise Exception("unexpected node type: %s" % type)
 
+#converts @@foo to <link linkend="node.foo">foo</link>
+def setupMarkup(markup) :
+	return re.sub(r"@@([a-z\-])", r'<link linkend="node.\1">\1</link>', markup)
+
 #valid Docbook document at @path and generate DOM
 def getDocbookDom(path) :
 	docbookDocument = libxml2.parseFile(path)
@@ -397,7 +401,7 @@ def getDocbookDom(path) :
 	relaxngValidate(docbookDocument)
 	schematronValidate(path)
 	
-	docbookDom = dom.parseString(docbookDocument.serialize())
+	docbookDom = dom.parseString(setupMarkup(docbookDocument.serialize()))
 	normalize(docbookDom.documentElement)
 	if docbookDom.documentElement.getAttribute("version") != "5.0" :
 		raise Exception("docbook not labeled as version 5.0")

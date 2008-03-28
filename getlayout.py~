@@ -4,18 +4,21 @@ import sys
 import string
 import xml.dom.minidom as DOM
 
-inputPath = "specs/docbook/Desal Semantics - nodes.docbook"
+inputPath = "specs/docbook/Desal Semantics - Nodes.docbook"
 nodeClassesOutputPath = "Desal 001/Desal Interpreter 001/node classes.cs"
 desibleParserOutputPath = "Desal 001/Desal Interpreter 001/DesibleParser auto.cs"
+desibleSerializerOutputPath = "Desal 001/Desal Interpreter 001/DesibleSerializer auto.cs"
 
 #xxx need better way to store this information
 #specType -> string (e.g. identifier -> INode_Expression)
 superTypes = {}
 
-classFileTemplate = """
+autoWarning = """
 //This file was generated programmatically, so
 //don't edit this file directly.
+"""
 
+classFileTemplate = autoWarning + """
 using System.Collections.Generic;
 
 %s
@@ -32,7 +35,7 @@ class %(csType)s : %(superType)s {
 	}
 	
 	%(getters)s
-	%(executeMeth)s
+
 	public string typeName {
 		get { return "%(specType)s"; }
 	}
@@ -43,19 +46,8 @@ class %(csType)s : %(superType)s {
 				%(fieldList)s );
 		}
 	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		//xxx temporary
-		get { return Depends.depends(this); }
-	}
 }
 """.strip()
-
-executeMethCode = """
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
-	}
-"""
 
 getterTemplate = """
 	public %(csType)s @%(csName)s {
@@ -63,10 +55,7 @@ getterTemplate = """
 	}
 """.strip()
 
-parserFileTemplate = """
-//This file was generated programmatically, so
-//don't edit this file directly.
-
+parserFileTemplate = autoWarning + """
 using System.Collections.Generic;
 using System.Xml;
 
@@ -85,6 +74,25 @@ parserTemplate = """
 		});
 """.strip()
 
+serializerFileTemplate = autoWarning + """
+using System.Collections.Generic;
+using System.Xml;
+
+partial class DesibleSerializer {
+	%s
+}
+"""
+
+serializerTemplate = """
+	XmlElement serialize(%(csType)s node) {
+		XmlElement elem = _doc.CreateElement(node.typeName);
+		%(children)s
+		return elem;
+	}
+""".strip()
+
+serializeAppendTemplate = \
+"append<%(csType)s>(elem, node.@%(csName)s, %(label)s);"
 
 #layout: specType-> children[]
 #child: { "count", "specType", "specName" }
@@ -201,9 +209,6 @@ def createNodeClasses(layouts, csTypes) :
 		children = layouts[specType]
 	
 		superType = superTypes[specType]
-		executeMeth = ""
-		if superType in ["INode_Expression", "INode_Declaration"] :
-			executeMeth = executeMethCode
 	
 		return classTemplate % {
 			"csType" : csTypes[specType],
@@ -212,7 +217,6 @@ def createNodeClasses(layouts, csTypes) :
 			"parameters" : ",\n\t".join(map(createParameter, children)),
 			"assignments" : "\n\t\t".join(map(createAssignment, children)),
 			"getters" : "\n\n\t".join(map(createGetter, children)),
-			"executeMeth" : executeMeth,
 			"specType" : specType,
 			"fieldList" : ",\n\t\t\t\t".join(map(getPrivateName, children))
 		}
@@ -246,23 +250,46 @@ def createDesibleParserMethods(layouts, csTypes) :
 			"childNodes" : ",\n\t\t\t\t".join(map(createCall, children))
 		}
 	
-	layouts = layouts.copy()
-	
 	out = file(desibleParserOutputPath, "w")
 	out.write(parserFileTemplate % "\n\n\t\t".join(map(createMethod, layouts)))
 	out.close()
 
+def createDesibleSerializerMethods(layouts, csTypes) :
+	def createMethod(specType) :
+		def createCall(child) :
+			label = child["specName"].replace(" ", "-")
+			if label == child["csType"] :
+				label == "null"
+			else :
+				label = '"%s"' % label
+			return serializeAppendTemplate % {
+				"csType" : csTypes[child["specType"]],
+				"csName" : child["csName"],
+				"label" : label
+			}
+		
+		csType = csTypes[specType]
+		children = "\n\t\t".join(map(createCall, layouts[specType]))
+		
+		return serializerTemplate % {
+			"csType" : csType,
+			"children" : children
+		}
+
+	out = file(desibleSerializerOutputPath, "w")
+	out.write(serializerFileTemplate % "\n\n\t".join(map(createMethod, layouts)))
+	out.close()
+
 layouts = extractLayouts(inputPath)
 
-#xxx remove types that I don't want to deal with yet
-del layouts["interface"]
-del layouts["class"]
-del layouts["generic-interface"]
-del layouts["generic-class"]
-del layouts["statused-member"]
-del layouts["comprehension"]
-del layouts["bundle"]
-del layouts["plane"]
+#xxx remove types or children of types that I don't want to deal with yet
+for specType in ["interface", "class", "generic-interface", "generic-class", "statused-member", "comprehension"] :
+	layouts[specType] = []
+layouts["interface"] = [
+	{ "count" : "*", "specType" : "property", "specName" : "property" },
+	{ "count" : "*", "specType" : "method", "specName" : "method" }
+]
+#del layouts["bundle"]
 
 #map specType to csType e.g. foo-bar-baz to Node_FooBarBaz
 csTypes = { #xxx temporary -- terminal nodes and family nodes -- need way to automate this
@@ -289,11 +316,17 @@ for specType in layouts :
 	for child in layouts[specType] :
 		child["csName"] = lowerCamelCase(child["specName"])
 		csType = csTypes[child["specType"]]
-		if child["count"] == "1" or child["count"] == "?" :
+		if child["count"] in ["1", "?"] :
 			child["csType"] = csType
 		else :
+			child["csName"] += "s"
 			child["csType"] = "IList<%s>" % csType
 
 createNodeClasses(layouts, csTypes)
-createDesibleParserMethods(layouts, csTypes)
 
+#handle parsing and serializing these nodes manually
+del layouts["bundle"]
+del layouts["plane"]
+
+createDesibleParserMethods(layouts, csTypes)
+createDesibleSerializerMethods(layouts, csTypes)

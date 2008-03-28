@@ -6,7 +6,7 @@ class xxx_Node_Class : INode_Expression {
 	IList<Node_Function> _staticCallees;
 	IList<Node_ClassProperty> _staticProperties;
 	IList<Node_Function> _instanceConstructors;
-	IList<INode_DeclareAny> _instanceDeclares;
+	IList<INode_Declaration> _instanceDeclares;
 	IList<Node_InterfaceImplementation> _interfaceImplementations;
 
 	public xxx_Node_Class(
@@ -15,7 +15,7 @@ class xxx_Node_Class : INode_Expression {
 	IList<Node_Function> staticCallees,
 	IList<Node_ClassProperty> staticProperties,
 	IList<Node_Function> instanceConstructors,
-	IList<INode_DeclareAny> instanceDeclares,
+	IList<INode_Declaration> instanceDeclares,
 	IList<Node_InterfaceImplementation> interfaceImplementations ) {
 		_staticDeclares = staticDeclares;
 		_staticConstructor = staticConstructor;
@@ -61,7 +61,7 @@ class xxx_Node_Class : INode_Expression {
 		//xxx add static callees and properties to classInterface
 		
 		if( _staticConstructor != null )
-			_staticConstructor.execute(staticScope);
+			Executor.execute(_staticConstructor, staticScope);
 		
 		//xxx staticScope.seal();
 	
@@ -105,7 +105,7 @@ value producted by evaluating class node
 class ClassState {
 	//xxx public old_Node_Class classNode;
 	public Scope staticScope;
-	public IList<INode_DeclareAny> instanceDeclares;
+	public IList<INode_Declaration> instanceDeclares;
 	public ClassInterfaceImplementation defaultInterfaceImplementation;
 }
 
@@ -162,7 +162,7 @@ class ClassInterfaceImplementation {
 	
 	public IValue evaluateCall(ClassState state, Arguments args) {
 		Scope instanceScope = new Scope(state.staticScope);
-		foreach( INode_DeclareAny decl in state.instanceDeclares ) {
+		foreach( INode_Declaration decl in state.instanceDeclares ) {
 			decl.execute(instanceScope);
 		}
 		_callee.evaluate(instanceScope).executeCall(args);

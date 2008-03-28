@@ -25,9 +25,9 @@
 		
 		<para>This section describes how the layout of a node type is represented in this specification.</para>
 		
-		<para>The layout for a node type is represented in this specification as a list of items. Each item represents a child node or multiple child nodes with the same meaning. Nodes represented by different items are considered to have different meaning.</para>
+		<para>The layout for a node type is represented in this specification as a list of items. Each item represents a child node, or multiple child nodes with the same meaning.</para>
 		
-		<para>Each item in these lists first specifies how many child nodes with that meaning may appear, or it says nothing about the number, which means there must be one (and only one). The ways of representing these amounts is described below.</para>
+		<para>Each item in these lists first specifies how many child nodes with that meaning may appear, or it says nothing about the number, which means there must be one (and no more). The ways of representing these amounts is described below.</para>
 		
 		<variablelist>
 			<varlistentry>
@@ -44,9 +44,21 @@
 			</varlistentry>
 		</variablelist>
 		
-		<para>Next comes the name of a node type or "expression". The child node represented by that list item must be of that type. The string "expression" means the node must be executable.</para>
+		<para>Next comes the name of a node type, or "expression". The child node represented by that list item must be of that type. The string "expression" means the node must be an expression.</para>
 		
-		<para>Lastly comes a label for referring to the child nodes with that meaning. These labels carry no semantic information, and are only a means used to refer to specific nodes. The meaning of child nodes can certainly be represented by other means. However, people creating representations for Desal trees are encouraged to at least consider using these same labels when it makes sense to do so.</para>
+		<para>Lastly comes a optional label for refering to the child nodes represented by that item, when the type alone isn't enough to disambiguate which item is being referred to. These labels carry no semantic information, and are merely used by this specification to refer to specific child nodes. (Note this label is always singular, even for collections.)</para>
+		
+		<para>Example layout:</para>
+		
+		<screen>
+alpha
+? beta gamma
+? beta delta
+* epsilon
++ expression zeta
+		</screen>
+		
+		<para>The first item represents a single required child node of type "alpha". The second item represents an optional child node of type "beta", which can be referred to using the label "gamma". The third item represents an optional child node of type "beta", which can be referred to using the label "delta". The fourth item refers to a collection of child nodes of type "epsilon"; the collection can be empty. The fifth item refers to a collection of expression child nodes; the collection must contain at least one node; nodes in this collection can be refered to using the label "zeta".</para>
 	</section>
 	
 	<section xml:id="non-executable">
@@ -74,35 +86,7 @@ doSomething(7, c = default, 8)
 			
 			<para>Base node. Must specify either true or false.</para>
 			
-			<para>Cannot be evaluated because that would conflict with the prevalent "true" and "false" identifiers. Use "true" and "false" identifiers for expressions instead.</para>
-		</section>
-		
-		<section xml:id="node.bundle">
-			<title>bundle</title>
-			
-			<para>A grouping of library references (import) and groups of declarations (plane).</para>
-			
-			<simplelist role="layout">
-				<member>* import</member>
-				<member>* scope-alteration</member>
-				<member>+ plane</member>
-			</simplelist>
-			
-			<para>The bundle node type is the type of the root node. No node can contain an bundle node. All Desal nodes that are executed in any way must be part of a complete Desal tree, which means having an bundle node as the root node.</para>
-			
-			<para role="xxx">Program arguments are no longer passed to the main function, because developers should have a choice of accessing program arguments in different ways, and some implementations may not have program arguments, or have non-string program arguments, etc. The old way just isn't flexible enough. Implementations should give program arguments through some API instead of passing them to the main function.</para>
-			
-			<orderedlist role="exec">
-				<listitem>1. Create the identikeys specified in section XXX to this node's scope.</listitem>
-				<listitem>2. Create any implementation-specific identikeys.</listitem>
-				<listitem>3. Execute each child identifier-const node in order.</listitem>
-			</orderedlist>
-			
-			<para>When the complete Desal tree is treated as a standalone program, section xxx applies. Otherwise, besides layout and setup, the abilities and behavior of the bundle node is implementation-specific, and execution or evaluation of Desal nodes may occur directly, without going through the bundle node.</para>
-			
-			<para>The section XXX mentioned above should specify a value bound to "main" with a callee that takes no arguments and either returns nothing or returns an Int.</para>
-			
-			<para role="xxx">Need a means of hiding/showing certain child namespaces of the global namespace. For example, a bundle acting as a library may have declarations in the global namespace and in a "private" namespace. The bundle should expose the declarations in the global namespace but hide the declarations in the private namespace.</para>
+			<para>Cannot be evaluated because that would conflict with the "true" and "false" members of the Bool enum. Boolean values in the node tree use a boolean node, and boolean values in code use the "true" and "false" identikeys.</para>
 		</section>
 		
 		<section xml:id="node.direction">
@@ -256,7 +240,6 @@ alias: Xml
 			
 			<simplelist role="layout">
 				<member>* scope-alteration</member>
-				<member>* identifier namespace</member>
 				<member>+ declare-first</member>
 			</simplelist>
 			
@@ -321,9 +304,12 @@ puts( (FBZ to String)(Gamma) )
 				<para>Has scope.</para>
 				
 				<programlisting>
-do {
+do while test()
 	something()
-} while test()
+
+do
+	something()
+while test()
 				</programlisting>
 			</section>
 			
@@ -339,13 +325,15 @@ do {
 				<para>Has scope.</para>
 				
 				<programlisting>
-do 8 times {
+do 8 times
 	something()
-}
-
-do 8 times {
+	
+do 8 times while test()
 	something()
-} while test()
+	
+do 8 times
+	something()
+while test()
 				</programlisting>
 			</section>
 			
@@ -394,7 +382,7 @@ for key Int x in foo
 				<para>Has scope.</para>
 				
 				<programlisting>
-for pair x y in coords
+for pair x, y in coords
 	drawPoint(x, y)
 
 for pair Int x, Int y in coords
@@ -408,9 +396,9 @@ for pair Int x, Int y in coords
 				<para>Used for manual iteration, as opposed to letting the Desal implementation deal with iteration, like with a for-value node.</para>
 				
 				<simplelist role="layout">
-					<member>* expression initializers</member>
+					<member>* expression initializer</member>
 					<member>? expression test</member>
-					<member>* expression post actions</member>
+					<member>* expression post action</member>
 					<member>? block action</member>
 				</simplelist>
 				
@@ -441,14 +429,12 @@ test
 				</screen>
 				
 				<programlisting>
-for( Int i = 0 ; i &lt; container.length ; i++ ) {
+for manual( decl Int i = 0; i lt container.length; i++ )
 	println container[i]
-}
 
-for( Iterator&lt;Int> iterator = container.getIterator() ;
-iterator.hasMore? ; iterator.moveNext() ) {
+for manual( Iterator&lt;Int> iterator = container.getIterator() ;
+iterator.hasMore? ; iterator.moveNext() )
 	println iterator.current
-}
 				</programlisting>
 			</section>
 			
@@ -517,13 +503,13 @@ for String name in names
 				<para>Executes block continuously. Can only be exited by expressions in the block such as break and return.</para>
 			
 				<programlisting>
-loop {
+loop
 	Event event = getNextEvent()
-	switch( event ) {
-		case Events.QUIT :
-			break
-	}
-}
+	select event.type
+	case Event.QUIT
+		break
+	else
+		defaultHandler(event)
 				</programlisting>
 			</section>
 			
@@ -532,13 +518,13 @@ loop {
 				
 				<simplelist role="layout">
 					<member>expression test</member>
-					<member>? block</member>
+					<member>block</member>
 				</simplelist>
 				
 				<para>Has scope.</para>
 				
 				<programlisting>
-while printNext()
+while printNext() {}
 
 while container.hasMore?
 	print container.next
@@ -616,11 +602,11 @@ foo = func(Int a)Int { return a * 2 } //error - interface mismatch
 			<para role="exec">Produce the value bound to the identikey created by this node.</para>
 			
 			<programlisting>
-decl-first auto Foo = interface {
+declfirst auto Foo = interface {
 	get Bar bar
 }
 
-decl-first auto Bar = interface {
+declfirst auto Bar = interface {
 	get Foo foo
 }
 
@@ -640,23 +626,38 @@ foo.bar.foo.bar...
 			<para role="process">The [child] node must be an iteration node, a block node, a possibility node, a conditional node, or a select node. (XXX update and explain requirements instead of just listing nodes that meet requirements)</para>
 			
 			<programlisting>
-$func setupCell(Int searchID) {
-	$decl Cell wantedCell
+func setupCell(Int searchID) {
+	decl Cell wantedCell
 	
-	outer: $for row $in table {
-		$for cell $in row {
-			$if cell.ID == searchID {
+	outer: for row in table {
+		for cell in row
+			if cell.ID eql searchID
 				wantedCell = cell
-				$break outer
-			}
-		}
+				break outer
 	}
 	
-	$if wantedCell != null {
+	if wantedCell != null
 		doSomething(wantedCell)
-	}
 }
 			</programlisting>
+		</section>
+		
+		<section xml:id="node.null">
+			<title>null</title>
+			
+			<para>Produces an untyped null.</para>
+			
+			<para>(XXX move) An untyped null can be cast to any interface, implicitly or explicitly, to form a typed null. A typed null can be downcast.</para>
+			
+			<programlisting>
+decl Int ? foo = 123
+foo = null //untyped null implicitly cast to an Int null
+foo //evaluates to an Int null
+
+decl String ? bar = (foo as void)
+			</programlisting>
+			
+			<para role="xxx">Why not just have a global reserved identikey named "null" of type void? It would always evaluate to an untyped null.</para>
 		</section>
 		
 		<section xml:id="node.return">
@@ -756,7 +757,7 @@ println( person1.name ) //Michael
 			
 			<simplelist role="layout">
 				<member>* scope-alteration</member>
-				<member>* expression members</member>
+				<member>* expression member</member>
 			</simplelist>
 			
 			<para>Has scope.</para>
@@ -769,10 +770,10 @@ println( person1.name ) //Michael
 			
 			<programlisting>
 block {
-	using System::Console
-	using System::Collections as Boxes
-	export Boxes::Generic
-	Boxes::List numbers = List&lt;MyFace>()
+	using System:Console
+	using System:Collections as Boxes
+	export Boxes:Generic
+	Boxes:List numbers = List&lt;MyFace>()
 	Console.WriteLine(numbers.Count.ToString())
 }
 			</programlisting>
@@ -794,6 +795,62 @@ block {
 				<listitem>Produce the returned value.</listitem>
 			</orderedlist>
 		</section>
+		
+		<section xml:id="node.cast">
+			<title>cast</title>
+			
+			<simplelist role="layout">
+				<member>expression source</member>
+				<member>? nullable-type</member>
+			</simplelist>
+			
+			<para role="process">If [nullable-type] is given, it must declare an interface.</para>
+			
+			<orderedlist role="exec">
+				<listitem>Execute [source] and let source be the result.</listitem>
+				<listitem>If [nullable-type] is not given:
+					<orderedlist>
+						<listitem>If source is not null, throw an error, because a non-null value cannot be cast to void.</listitem>
+						<listitem>Otherwise, produce an untype null.</listitem>
+					</orderedlist>
+				</listitem>
+				<listitem>If [nullable] of [nullable-type] is true, and source is null, throw an error, because a null cannot be cast to a non-null type.</listitem>
+				<listitem>Execute the [interface] of [nullable-type] and let face be the result.</listitem>
+				<listitem>If source is non-null, cast it to face and return the result. If it cannot be cast to face, throw an error.</listitem>
+				<listitem>If source is a typed null, and the associated interface does not inherit from face, throw an error.</listitem>
+				<listitem>Produce a typed null with face as the associated face.</listitem>
+			</orderedlist>
+			
+			<para>If [source] is not null, evaluates to a value, with an active interface specified by nullable-type, that is associated with the same object as [source]. Can also be used to cast null to typed or untyped null.</para>
+			
+			<programlisting>
+//value
+123 as Int
+123 as Int ?
+123 as void //error
+
+//typed null
+(null as Int ?) as Int //error
+(null as Int ?) as Int ?
+(null as Int ?) as void
+
+//untyped null
+null as Int //error
+null as Int ?
+null as void
+
+Int o = getIntAndString()
+print (o as String).length
+
+decl Int ? a = (null as Int)
+decl String ? b = ((a as null) as String)
+
+decl Int ? a = null
+decl String ? b = a as null
+			</programlisting>
+			
+			<para>(XXX label or move) Rationale for casting to null: A generic type may want to cast an object to a parameter type, and the parameter type may be null. XXX But does that mean nullable-type must be replaced with a NullableType interface?</para> 
+		</section>
 			
 		<section xml:id="node.conditional">
 			<title>conditional</title>
@@ -806,24 +863,24 @@ block {
 			<para role="exec">Execute the [test] of the first [possibilty]. Downcast the resultant value to a Bool. If it is true, execute the [result] of that [possibilty] and produce the result. Otherwise, move on to the next node. If no [test] produces true, and [else] is given, execute [else] and produce its result.</para>
 			
 			<programlisting>
-$decl Int a = (x ? 0 : 1)
+decl Int a = (x ? 0 : 1)
 
-$if foo == 1
+if foo == 1
 	doStuff1()
-$elif foo == 2
+elif foo == 2
 	doStuff2()
-$else
+else
 	doDefault()
 
-$decl bar =
+decl bar =
 	(foo == 1) ? getOne() :
 	(foo == 2) ? getTwo() :
 	getDefault()
 
-$decl bar =
-	$if foo == 1 : $eval getOne()
-	$elif foo == 2 : $eval getTwo()
-	$else : $eval getDefault()
+decl bar =
+	if foo == 1 : getOne()
+	elif foo == 2 : getTwo()
+	else : getDefault()
 			</programlisting>
 		</section>
 		
@@ -964,7 +1021,7 @@ bar3()
 			<title>namespaced-value-identikey</title>
 			
 			<simplelist role="layout">
-				<member>+ identifier namespaces</member>
+				<member>+ identifier namespace</member>
 				<member>identifier identikey name</member>
 			</simplelist>
 			
@@ -1020,35 +1077,35 @@ if not foo.isSetup? {
 				<title>case</title>
 				
 				<simplelist role="layout">
-					<member>+ expression values</member>
+					<member>+ expression value</member>
 					<member>expression result</member>
 				</simplelist>
 			</section>
 			
 			<programlisting>
-$select event.type
-$case Events.QUIT {
-	$return
+select event.type
+case Events.QUIT {
+	return
 }
-$case Events.FOO, Events.BAR, Events.MAZ {
+case Events.FOO, Events.BAR, Events.MAZ {
 	//no action
 }
-$else {
-	$throw ErrorClass("unknown event type")
+else {
+	throw ErrorClass("unknown event type")
 }
 
-$select foo
-$case 1
+select foo
+case 1
 	doStuff1()
-$case 2
+case 2
 	doStuff2()
-$else
+else
 	doDefault()
 
-$decl bar = $select foo
-	$case 1 : $eval getOne()
-	$case 2 : $eval getTwo()
-	$else $eval getDefault()
+decl bar = select foo
+	case 1 : getOne()
+	case 2 : getTwo()
+	else getDefault()
 			</programlisting>
 		</section>
 		
@@ -1078,61 +1135,37 @@ $decl bar = $select foo
 			</section>
 			
 			<programlisting>
-$try {
-	$decl foo = getSomething()
-}
-$observe( OutOfMemoryError ) {
+try
+	decl foo = getSomething()
+observe( OutOfMemoryError )
 	println "I'm not catching that!"
 	//exception is noticed by this try-catch node, but not caught
 	//the exception continues to rise out
-}
-$catch( NullError ) {
+catch( NullError )
 	println "null error"
-}
-$catch( FooError e ) {
-	println "FooError: $(e.message)"
-}
-$catch( Error ) {
+catch( FooError e )
+	println "FooError: (e.message)"
+catch( Error )
 	println "unknown error"
-}
-$catch( Exception ) {
+catch( Exception )
 	println "unknown exception"
-}
-$observe {
+observe
 	println "how execution reach here? am not good with computer"
-}
-$else {
+else
 	println "no errors!"
 	doSomeStuff() //don't catch errors from this in this node
-}
-$finally {
+finally
 	cleanup(foo)
-}
 
-$decl Status stat =
-$try {
+decl Status stat =
+try
 	doSomething()
 	Statuses.SUCCESS
-}
-$catch( NotSoBadError ) {
+catch( NotSoBadError ) {
 	Statuses.ERROR
-}
-$observe {
-	println "something bad when trying to doSomething()"
-}
+observe
+	println "something horrible not caught when trying to doSomething()"
 			</programlisting>
-		</section>
-		
-		<section xml:id="node.unassign">
-			<title>unassign</title>
-			
-			<simplelist role="layout">
-				<member>identifier</member>
-			</simplelist>
-			
-			<para>Unassigns the values bound to the given reference. If the identikey is a function identikey, all bound functions are unbound.</para>
-			
-			<para role="xxx">Is this needed? Why not just assign null?</para>
 		</section>
 	</section>
 	
@@ -1303,6 +1336,55 @@ decl Rat num3 = (num to Rat)
 			</programlisting>
 		</section>
 		
+		<section xml:id="node.bundle">
+			<title>bundle</title>
+			
+			<para>A grouping of library references (import) and groups of declarations (plane).</para>
+			
+			<simplelist role="layout">
+				<member>* import</member>
+				<member>* scope-alteration</member>
+				<member>+ plane</member>
+			</simplelist>
+			
+			<para>The bundle node type is the type of the root node. No node can contain a bundle node. All Desal nodes that are executed in any way must be part of a complete Desal tree, which means having a bundle node as the root node.</para>
+			
+			<para>Implementations must not pass any arguments to the main function when executing a bundle as a standalone executable. Implementations should instead provide program arguments through a library which can be imported with the import node. Note that the program arguments are not required by this specification to be a sequence of strings.</para>
+			
+			<para>The result produced by executing a bundle node as a standalone executable may be converted as necesary to suit the containing environment. How this conversion is performed depends on the containing environment and the Desal implementation, and is not covered by this specification.</para>
+			
+			<para>When treating a bundle as a standalone executable:</para>
+			
+			<orderedlist role="exec">
+				<listitem>Let globalScope be a new scope.</listitem>
+				<listitem>Create the identikeys required by <link linkend="reserved-identikey-names">Reserved identikey names</link>.</listitem>
+				<listitem>For each @@import, @@using, and @@expose child node, add the identikeys to globalScope specified by that node.</listitem>
+				<listitem>Execute all declaration-first children of each plane together as required by <link linkend="handling-declare-first">Handling declare-first nodes</link>.</listitem>
+				<listitem>Let mainKey be the identikey in globalScope that is associated with identifier "main". If such an identikey does not exist, throw an error.</listitem>
+				<listitem>Let mainVal be the result of evaluating mainKey. If mainVal is null, throw an error.</listitem>
+				<listitem>Call mainVal with no arguments and let rv be the result. If mainVal is not callable, throw an error. If mainVal does not have a callee that takes no arguments, throw an error.</listitem>
+				<listitem>If rv is null, produce a value, with Int as the active interface, that encodes the number zero. Else if rv has an active interface that inherits from Int, downcast rv to Int and produce the result. Else if rv, with it's current active interface, can breed an Int, have rv breed an Int, and produce the result. Else throw an error.</listitem>
+			</orderedlist>
+			
+			<para>When treating a bundle as a library:</para>
+			
+			<orderedlist role="exec">
+				<listitem>Let globalScope be a new scope.</listitem>
+				<listitem>Create the identikeys required by <link linkend="reserved-identikey-names">Reserved identikey names</link>.</listitem>
+				<listitem>For each @@import, @@using, and @@expose child node, add the identikeys to globalScope specified by that node.</listitem>
+				<listitem>Execute all declaration-first children of each plane together as required by <link linkend="handling-declare-first">Handling declare-first nodes</link>.</listitem>
+				<listitem>Expose globalScope, in an immutable form, to the containing environment. How this is done depends on the containing enviornment and the Desal implementation, and is not covered by this specification.</listitem>
+			</orderedlist>
+			
+			<para role="xxx">When acting as a standalone executable, need to specify what happens to exceptions that bubble all the way up to the bundle node. They are caught, an error message is output, and the bundle node returns some value, like 1. The bundle may expose to the containing environment additional information, depending on the enclosing environment and Desal implementation.</para>
+			
+			<para role="xxx">When acting as a standalone executable, what kind of errors should bundle by throwing? This is a problem that applies to many other nodes as well.</para>
+			
+			<para role="xxx">For when acting as a library, need a means of hiding/showing certain child namespaces/identikeys of the global namespace. For example, a bundle may have declarations in the global namespace and in a "private" namespace. The bundle should expose the declarations in the global namespace but hide the declarations in the private namespace. There has also been consideration of an "export" attribute/node that would expose specified identikeys, and all other identikeys would not be exposed.</para>
+			
+			<para role="xxx">The identikeys added to globalScope by import, using, and expose nodes should not be exposed to the containing environment when the bundle is acting as a library.</para>
+		</section>
+		
 		<section xml:id="node.caller">
 			<title>caller</title>
 			
@@ -1332,22 +1414,6 @@ println foo.doStuff(3,7)
 			</programlisting>
 		</section>
 		
-		<section xml:id="node.cast">
-			<title>cast</title>
-			
-			<simplelist role="layout">
-				<member>expression object</member>
-				<member>expression interface</member>
-			</simplelist>
-			
-			<para>Evaluates to an object reference where the active interface is [interface] and the object is [object]. If [object] does not implement [interface], an error results.</para>
-			
-			<programlisting>
-Int o = getIntAndString()
-print (o as String).length
-			</programlisting>
-		</section>
-		
 		<section xml:id="node.chain">
 			<title>chain</title>
 			
@@ -1374,22 +1440,22 @@ print (o as String).length
 			
 			<simplelist role="layout">
 				<!-- private and possibly public; can't be "call" or "callee" -->
-				<member>* static-member static declarations</member>
+				<member>* static-member static declaration</member>
 				
 				<!-- private -->
 				<member>? block static constructor</member>
 				
 				<!-- public -->
-				<member>* function static callees</member>
+				<member>* function static callee</member>
 				
 				<!-- public -->
-				<member>* class-property static properties</member>
+				<member>* class-property static property</member>
 				
 				<!-- private and public -->
-				<member>* function instance constructors</member>
+				<member>* function instance constructor</member>
 				
 				<!-- private -->
-				<member>* declaration instance declarations</member>
+				<member>* declaration instance declaration</member>
 				
 				<!-- private and public -->
 				<member>* interface-implementation</member>
@@ -1528,7 +1594,7 @@ print (o as String).length
 				<title>interface-implementation</title>
 				
 				<simplelist role="layout">
-					<member>* interface-implementation children</member>
+					<member>* interface-implementation child implemenatation</member>
 					<member>expression interface</member>
 					<member>* function callee</member>
 					<member>* named-function getter</member>
@@ -1616,19 +1682,19 @@ interface of Foo {
 			</section>
 
 			<programlisting>
-$decl foo = [2*x for x in L if x^2 > 3]
+decl foo = [2*x for x in L if x^2 > 3]
 container: L
 element name: x
 test: x^2 > 3
 output: 2*x
 
-$decl foo = [x in L if x^2 > 3]
+decl foo = [x in L if x^2 > 3]
 container: L
 element name: x
 test: x^2 > 3
 output: (implicit: x)
 
-$decl foo = [x in L]
+decl foo = [x in L]
 container: L
 element name: x
 test: (implicit: true)
@@ -1800,15 +1866,15 @@ activeInterface(Animal) == Interface + Enum<EntryFace> + EnumList
 			<para>If [type] is not given, the generator does not produce. (The generator could still be useful for producing side effects.)</para>
 			
 			<programlisting>
-$decl foo = $generator {
-	$decl Int i = 2
-	$while i &lt; 5 {
-		$yield i
+decl foo = generator {
+	decl Int i = 2
+	while i lt 5 {
+		yield i
 		i++
 	}
 }
 
-$for i $in foo {
+for i in foo {
 	print foo
 	print " "
 }
@@ -1819,17 +1885,17 @@ interface of foo == Generator&lt;Int>
 			</programlisting>
 
 			<programlisting>
-$decl foo = $func(Int a, Int b) Generator&lt;Int> {
-	$return $generator {
-		$decl Int i = a
-		$while i &lt; b {
-			$yield i
+decl foo = func(Int a, Int b) Generator&lt;Int> {
+	return generator {
+		decl Int i = a
+		while i &lt; b {
+			yield i
 			i++
 		}
 	}
 }
 
-$for i $in foo(2, 5) {
+for i in foo(2, 5) {
 	print foo
 	print " "
 }
@@ -1840,15 +1906,15 @@ prints: '2 3 4 '
 			<programlisting>
 A representation could provide a construct like that in other languages by combining functions and generators.
 
-$decl foo = $generator(Int a, Int b) Int {
-	$decl Int i = a
-	$while i &lt; b {
-		$yield i
+decl foo = generator(Int a, Int b) Int {
+	decl Int i = a
+	while i &lt; b {
+		yield i
 		i++
 	}
 }
 
-$for i $in foo(2, 5) {
+for i in foo(2, 5) {
 	print foo
 	print " "
 }
@@ -1861,7 +1927,7 @@ prints: '2 3 4 '
 			<title>generic-class</title>
 			
 			<simplelist role="layout">
-				<member>+ generic-parameter parameters</member>
+				<member>+ generic-parameter parameter</member>
 				<member>class</member>
 			</simplelist>
 			
@@ -1872,7 +1938,7 @@ prints: '2 3 4 '
 			<title>generic-function</title>
 			
 			<simplelist role="layout">
-				<member>+ generic-parameter parameters</member>
+				<member>+ generic-parameter parameter</member>
 				<member>function</member>
 			</simplelist>
 			
@@ -1894,7 +1960,7 @@ println larger(2, 7) //prints "7"
 			<title>generic-interface</title>
 			
 			<simplelist role="layout">
-				<member>+ generic-parameter parameters</member>
+				<member>+ generic-parameter parameter</member>
 				<member>interface</member>
 			</simplelist>
 			
@@ -1921,9 +1987,16 @@ println list.removeBack() //prints "3"
 		<section xml:id="node.identifier">
 			<title>identifier</title>
 			
-			<para>Base node. Identifiers can sometimes evaluate to object references. Object references point to an object and have an active interface. Only properties declared by the active interface can be accessed, even if the object implements other interfaces.</para>
+			<para>Base/terminal node.</para>
 			
-			<para>When evaluating an identifier to an object: If the identifier is undefined in the current scope, move to the containing scope. If there is no containing scope, throw an UndefinedIdentifier error. Continue moving to outer scopes until the identifier is found or there is no containing scope. If the identifier is bound to an object, the identifier evaluates to that object. If the identifier has been declared that it can be bound to objects, but it is currently not bound to anything, return null. If the identifier is bound to a function, the identifier evaluates to the wrapper for that function, as defined in function-wrapper xxx. If the identifier is bound to a namespace, a NamespaceIdentifier error results.</para>
+			<orderedlist role="exec">
+				<listitem>Let ident be the identifier specified by this node.</listitem>
+				<listitem>Let scope be the current scope.</listitem>
+				<listitem>If scope has an identikey that is associated with ident, let scope be the parent scope of scope. If scope has no parent scope, throw an error. Continue moving through parent scopes until an identikey associated with ident is found. Let key be this identikey.</listitem>
+				<listitem>If key is a function identikey, find parent function identikeys with that name, but with different types, and merge all the functions together. (XXX elaborate)</listitem>
+				<listitem>If key is bound to a value, produce the value that key is bound to. If key has been declared that it can be bound to values, but it is currently not bound to anything, return null.</listitem>
+				<listitem>If key is bound to a namespace, throw an error.</listitem>
+			</orderedlist>
 		</section>
 		
 		<section xml:id="node.instantiate-generic">
@@ -1947,7 +2020,7 @@ println list.removeBack() //prints "3"
 			<title>interface</title>
 			
 			<simplelist role="layout">
-				<member>* expression inheritees</member>
+				<member>* expression inheritee</member>
 				<member>* statused-member</member>
 			</simplelist>
 			

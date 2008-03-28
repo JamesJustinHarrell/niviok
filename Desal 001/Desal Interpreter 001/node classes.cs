@@ -4,46 +4,6 @@
 
 using System.Collections.Generic;
 
-class Node_Possibility : INode_Expression {
-	INode_Expression m_test;
-	INode_Expression m_result;
-	
-	public Node_Possibility(
-	INode_Expression @test,
-	INode_Expression @result ) {
-		m_test = @test;
-		m_result = @result;
-	}
-	
-	public INode_Expression @test {
-		get { return m_test; }
-	}
-
-	public INode_Expression @result {
-		get { return m_result; }
-	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
-	}
-
-	public string typeName {
-		get { return "possibility"; }
-	}
-	
-	public ICollection<INode> childNodes {
-		get {
-			return G.collect<INode>(
-				m_test,
-				m_result );
-		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
-	}
-}
-
 class Node_And : INode_Expression {
 	INode_Expression m_first;
 	INode_Expression m_second;
@@ -62,10 +22,6 @@ class Node_And : INode_Expression {
 	public INode_Expression @second {
 		get { return m_second; }
 	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
-	}
 
 	public string typeName {
 		get { return "and"; }
@@ -77,10 +33,6 @@ class Node_And : INode_Expression {
 				m_first,
 				m_second );
 		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
 	}
 }
 
@@ -116,10 +68,6 @@ class Node_DeclareFirst : INode_Declaration {
 	public Node_Boolean @breed {
 		get { return m_breed; }
 	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
-	}
 
 	public string typeName {
 		get { return "declare-first"; }
@@ -134,9 +82,37 @@ class Node_DeclareFirst : INode_Declaration {
 				m_breed );
 		}
 	}
+}
+
+class Node_InstantiateGeneric : INode_Expression {
+	INode_Expression m_generic;
+	IList<Node_Argument> m_arguments;
 	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
+	public Node_InstantiateGeneric(
+	INode_Expression @generic,
+	IList<Node_Argument> @arguments ) {
+		m_generic = @generic;
+		m_arguments = @arguments;
+	}
+	
+	public INode_Expression @generic {
+		get { return m_generic; }
+	}
+
+	public IList<Node_Argument> @arguments {
+		get { return m_arguments; }
+	}
+
+	public string typeName {
+		get { return "instantiate-generic"; }
+	}
+	
+	public ICollection<INode> childNodes {
+		get {
+			return G.collect<INode>(
+				m_generic,
+				m_arguments );
+		}
 	}
 }
 
@@ -158,7 +134,7 @@ class Node_GenericParameter : INode {
 	public INode_Expression @defaultInterface {
 		get { return m_defaultInterface; }
 	}
-	
+
 	public string typeName {
 		get { return "generic-parameter"; }
 	}
@@ -169,10 +145,6 @@ class Node_GenericParameter : INode {
 				m_name,
 				m_defaultInterface );
 		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
 	}
 }
 
@@ -187,10 +159,6 @@ class Node_Unassign : INode_Expression {
 	public Node_Identifier @identifier {
 		get { return m_identifier; }
 	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
-	}
 
 	public string typeName {
 		get { return "unassign"; }
@@ -202,33 +170,25 @@ class Node_Unassign : INode_Expression {
 				m_identifier );
 		}
 	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
-	}
 }
 
 class Node_Chain : INode_Expression {
 	Node_NullableType m_nullableType;
-	IList<INode_Expression> m_element;
+	IList<INode_Expression> m_elements;
 	
 	public Node_Chain(
 	Node_NullableType @nullableType,
-	IList<INode_Expression> @element ) {
+	IList<INode_Expression> @elements ) {
 		m_nullableType = @nullableType;
-		m_element = @element;
+		m_elements = @elements;
 	}
 	
 	public Node_NullableType @nullableType {
 		get { return m_nullableType; }
 	}
 
-	public IList<INode_Expression> @element {
-		get { return m_element; }
-	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
+	public IList<INode_Expression> @elements {
+		get { return m_elements; }
 	}
 
 	public string typeName {
@@ -239,12 +199,8 @@ class Node_Chain : INode_Expression {
 		get {
 			return G.collect<INode>(
 				m_nullableType,
-				m_element );
+				m_elements );
 		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
 	}
 }
 
@@ -266,10 +222,6 @@ class Node_DeclareConstEmpty : INode_Declaration {
 	public Node_IdentikeyType @identikeyType {
 		get { return m_identikeyType; }
 	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
-	}
 
 	public string typeName {
 		get { return "declare-const-empty"; }
@@ -282,33 +234,25 @@ class Node_DeclareConstEmpty : INode_Declaration {
 				m_identikeyType );
 		}
 	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
-	}
 }
 
 class Node_Conditional : INode_Expression {
-	IList<Node_Possibility> m_possibility;
+	IList<Node_Possibility> m_possibilitys;
 	INode_Expression m_else;
 	
 	public Node_Conditional(
-	IList<Node_Possibility> @possibility,
+	IList<Node_Possibility> @possibilitys,
 	INode_Expression @else ) {
-		m_possibility = @possibility;
+		m_possibilitys = @possibilitys;
 		m_else = @else;
 	}
 	
-	public IList<Node_Possibility> @possibility {
-		get { return m_possibility; }
+	public IList<Node_Possibility> @possibilitys {
+		get { return m_possibilitys; }
 	}
 
 	public INode_Expression @else {
 		get { return m_else; }
-	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
 	}
 
 	public string typeName {
@@ -318,13 +262,9 @@ class Node_Conditional : INode_Expression {
 	public ICollection<INode> childNodes {
 		get {
 			return G.collect<INode>(
-				m_possibility,
+				m_possibilitys,
 				m_else );
 		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
 	}
 }
 
@@ -346,7 +286,7 @@ class Node_Argument : INode {
 	public INode_Expression @value {
 		get { return m_value; }
 	}
-	
+
 	public string typeName {
 		get { return "argument"; }
 	}
@@ -357,10 +297,6 @@ class Node_Argument : INode {
 				m_parameterName,
 				m_value );
 		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
 	}
 }
 
@@ -396,10 +332,6 @@ class Node_DeclareAssign : INode_Declaration {
 	public Node_Boolean @breed {
 		get { return m_breed; }
 	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
-	}
 
 	public string typeName {
 		get { return "declare-assign"; }
@@ -413,10 +345,6 @@ class Node_DeclareAssign : INode_Declaration {
 				m_value,
 				m_breed );
 		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
 	}
 }
 
@@ -438,10 +366,6 @@ class Node_Nand : INode_Expression {
 	public INode_Expression @second {
 		get { return m_second; }
 	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
-	}
 
 	public string typeName {
 		get { return "nand"; }
@@ -454,9 +378,27 @@ class Node_Nand : INode_Expression {
 				m_second );
 		}
 	}
+}
+
+class Node_StatusedMember : INode {
 	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
+	
+	public Node_StatusedMember(
+	 ) {
+		
+	}
+	
+	
+
+	public string typeName {
+		get { return "statused-member"; }
+	}
+	
+	public ICollection<INode> childNodes {
+		get {
+			return G.collect<INode>(
+				 );
+		}
 	}
 }
 
@@ -478,7 +420,7 @@ class Node_StaticMember : INode {
 	public Node_Access @access {
 		get { return m_access; }
 	}
-	
+
 	public string typeName {
 		get { return "static-member"; }
 	}
@@ -489,10 +431,6 @@ class Node_StaticMember : INode {
 				m_declaration,
 				m_access );
 		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
 	}
 }
 
@@ -528,10 +466,6 @@ class Node_ForManual : INode_Expression {
 	public Node_Block @action {
 		get { return m_action; }
 	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
-	}
 
 	public string typeName {
 		get { return "for-manual"; }
@@ -545,10 +479,6 @@ class Node_ForManual : INode_Expression {
 				m_postActions,
 				m_action );
 		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
 	}
 }
 
@@ -570,10 +500,6 @@ class Node_DoWhile : INode_Expression {
 	public INode_Expression @test {
 		get { return m_test; }
 	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
-	}
 
 	public string typeName {
 		get { return "do-while"; }
@@ -585,10 +511,6 @@ class Node_DoWhile : INode_Expression {
 				m_action,
 				m_test );
 		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
 	}
 }
 
@@ -624,7 +546,7 @@ class Node_ClassProperty : INode {
 	public Node_Function @setter {
 		get { return m_setter; }
 	}
-	
+
 	public string typeName {
 		get { return "class-property"; }
 	}
@@ -638,9 +560,27 @@ class Node_ClassProperty : INode {
 				m_setter );
 		}
 	}
+}
+
+class Node_Comprehension : INode_Expression {
 	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
+	
+	public Node_Comprehension(
+	 ) {
+		
+	}
+	
+	
+
+	public string typeName {
+		get { return "comprehension"; }
+	}
+	
+	public ICollection<INode> childNodes {
+		get {
+			return G.collect<INode>(
+				 );
+		}
 	}
 }
 
@@ -669,10 +609,6 @@ class Node_DoTimes : INode_Expression {
 	public INode_Expression @test {
 		get { return m_test; }
 	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
-	}
 
 	public string typeName {
 		get { return "do-times"; }
@@ -685,10 +621,6 @@ class Node_DoTimes : INode_Expression {
 				m_action,
 				m_test );
 		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
 	}
 }
 
@@ -710,7 +642,7 @@ class Node_DictionaryEntry : INode {
 	public INode_Expression @value {
 		get { return m_value; }
 	}
-	
+
 	public string typeName {
 		get { return "dictionary-entry"; }
 	}
@@ -721,10 +653,6 @@ class Node_DictionaryEntry : INode {
 				m_key,
 				m_value );
 		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
 	}
 }
 
@@ -774,10 +702,6 @@ class Node_ForPair : INode_Expression {
 	public Node_Block @action {
 		get { return m_action; }
 	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
-	}
 
 	public string typeName {
 		get { return "for-pair"; }
@@ -794,33 +718,25 @@ class Node_ForPair : INode_Expression {
 				m_action );
 		}
 	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
-	}
 }
 
 class Node_Array : INode_Expression {
 	Node_NullableType m_nullableType;
-	IList<INode_Expression> m_element;
+	IList<INode_Expression> m_elements;
 	
 	public Node_Array(
 	Node_NullableType @nullableType,
-	IList<INode_Expression> @element ) {
+	IList<INode_Expression> @elements ) {
 		m_nullableType = @nullableType;
-		m_element = @element;
+		m_elements = @elements;
 	}
 	
 	public Node_NullableType @nullableType {
 		get { return m_nullableType; }
 	}
 
-	public IList<INode_Expression> @element {
-		get { return m_element; }
-	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
+	public IList<INode_Expression> @elements {
+		get { return m_elements; }
 	}
 
 	public string typeName {
@@ -831,26 +747,22 @@ class Node_Array : INode_Expression {
 		get {
 			return G.collect<INode>(
 				m_nullableType,
-				m_element );
+				m_elements );
 		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
 	}
 }
 
 class Node_Select : INode_Expression {
 	INode_Expression m_value;
-	IList<Node_Case> m_case;
+	IList<Node_Case> m_cases;
 	INode_Expression m_else;
 	
 	public Node_Select(
 	INode_Expression @value,
-	IList<Node_Case> @case,
+	IList<Node_Case> @cases,
 	INode_Expression @else ) {
 		m_value = @value;
-		m_case = @case;
+		m_cases = @cases;
 		m_else = @else;
 	}
 	
@@ -858,16 +770,12 @@ class Node_Select : INode_Expression {
 		get { return m_value; }
 	}
 
-	public IList<Node_Case> @case {
-		get { return m_case; }
+	public IList<Node_Case> @cases {
+		get { return m_cases; }
 	}
 
 	public INode_Expression @else {
 		get { return m_else; }
-	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
 	}
 
 	public string typeName {
@@ -878,13 +786,31 @@ class Node_Select : INode_Expression {
 		get {
 			return G.collect<INode>(
 				m_value,
-				m_case,
+				m_cases,
 				m_else );
 		}
 	}
+}
+
+class Node_GenericInterface : INode_Expression {
 	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
+	
+	public Node_GenericInterface(
+	 ) {
+		
+	}
+	
+	
+
+	public string typeName {
+		get { return "generic-interface"; }
+	}
+	
+	public ICollection<INode> childNodes {
+		get {
+			return G.collect<INode>(
+				 );
+		}
 	}
 }
 
@@ -906,7 +832,7 @@ class Node_IgnoreMember : INode {
 	public Node_Integer @depth {
 		get { return m_depth; }
 	}
-	
+
 	public string typeName {
 		get { return "ignore-member"; }
 	}
@@ -917,10 +843,6 @@ class Node_IgnoreMember : INode {
 				m_name,
 				m_depth );
 		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
 	}
 }
 
@@ -942,10 +864,6 @@ class Node_Generator : INode_Expression {
 	public INode_Expression @expression {
 		get { return m_expression; }
 	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
-	}
 
 	public string typeName {
 		get { return "generator"; }
@@ -957,10 +875,6 @@ class Node_Generator : INode_Expression {
 				m_nullableType,
 				m_expression );
 		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
 	}
 }
 
@@ -1010,10 +924,6 @@ class Node_ForRange : INode_Expression {
 	public Node_Block @action {
 		get { return m_action; }
 	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
-	}
 
 	public string typeName {
 		get { return "for-range"; }
@@ -1029,10 +939,6 @@ class Node_ForRange : INode_Expression {
 				m_test,
 				m_action );
 		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
 	}
 }
 
@@ -1068,7 +974,7 @@ class Node_ExceptionHandler : INode {
 	public INode_Expression @result {
 		get { return m_result; }
 	}
-	
+
 	public string typeName {
 		get { return "exception-handler"; }
 	}
@@ -1081,10 +987,6 @@ class Node_ExceptionHandler : INode {
 				m_name,
 				m_result );
 		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
 	}
 }
 
@@ -1106,10 +1008,6 @@ class Node_Breed : INode_Expression {
 	public INode_Expression @interface {
 		get { return m_interface; }
 	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
-	}
 
 	public string typeName {
 		get { return "breed"; }
@@ -1121,10 +1019,6 @@ class Node_Breed : INode_Expression {
 				m_parent,
 				m_interface );
 		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
 	}
 }
 
@@ -1146,10 +1040,6 @@ class Node_Labeled : INode_Expression {
 	public INode_Expression @child {
 		get { return m_child; }
 	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
-	}
 
 	public string typeName {
 		get { return "labeled"; }
@@ -1161,10 +1051,6 @@ class Node_Labeled : INode_Expression {
 				m_label,
 				m_child );
 		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
 	}
 }
 
@@ -1186,7 +1072,7 @@ class Node_NamedFunction : INode {
 	public Node_Function @function {
 		get { return m_function; }
 	}
-	
+
 	public string typeName {
 		get { return "named-function"; }
 	}
@@ -1198,33 +1084,47 @@ class Node_NamedFunction : INode {
 				m_function );
 		}
 	}
+}
+
+class Node_Class : INode_Expression {
 	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
+	
+	public Node_Class(
+	 ) {
+		
+	}
+	
+	
+
+	public string typeName {
+		get { return "class"; }
+	}
+	
+	public ICollection<INode> childNodes {
+		get {
+			return G.collect<INode>(
+				 );
+		}
 	}
 }
 
 class Node_Call : INode_Expression {
 	INode_Expression m_value;
-	IList<Node_Argument> m_argument;
+	IList<Node_Argument> m_arguments;
 	
 	public Node_Call(
 	INode_Expression @value,
-	IList<Node_Argument> @argument ) {
+	IList<Node_Argument> @arguments ) {
 		m_value = @value;
-		m_argument = @argument;
+		m_arguments = @arguments;
 	}
 	
 	public INode_Expression @value {
 		get { return m_value; }
 	}
 
-	public IList<Node_Argument> @argument {
-		get { return m_argument; }
-	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
+	public IList<Node_Argument> @arguments {
+		get { return m_arguments; }
 	}
 
 	public string typeName {
@@ -1235,26 +1135,44 @@ class Node_Call : INode_Expression {
 		get {
 			return G.collect<INode>(
 				m_value,
-				m_argument );
+				m_arguments );
 		}
 	}
+}
+
+class Node_GenericClass : INode_Expression {
 	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
+	
+	public Node_GenericClass(
+	 ) {
+		
+	}
+	
+	
+
+	public string typeName {
+		get { return "generic-class"; }
+	}
+	
+	public ICollection<INode> childNodes {
+		get {
+			return G.collect<INode>(
+				 );
+		}
 	}
 }
 
 class Node_FunctionInterface : INode_Expression {
 	INode_Expression m_templateArgumentCount;
-	IList<Node_Parameter> m_parameter;
+	IList<Node_Parameter> m_parameters;
 	Node_NullableType m_returnInfo;
 	
 	public Node_FunctionInterface(
 	INode_Expression @templateArgumentCount,
-	IList<Node_Parameter> @parameter,
+	IList<Node_Parameter> @parameters,
 	Node_NullableType @returnInfo ) {
 		m_templateArgumentCount = @templateArgumentCount;
-		m_parameter = @parameter;
+		m_parameters = @parameters;
 		m_returnInfo = @returnInfo;
 	}
 	
@@ -1262,16 +1180,12 @@ class Node_FunctionInterface : INode_Expression {
 		get { return m_templateArgumentCount; }
 	}
 
-	public IList<Node_Parameter> @parameter {
-		get { return m_parameter; }
+	public IList<Node_Parameter> @parameters {
+		get { return m_parameters; }
 	}
 
 	public Node_NullableType @returnInfo {
 		get { return m_returnInfo; }
-	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
 	}
 
 	public string typeName {
@@ -1282,13 +1196,9 @@ class Node_FunctionInterface : INode_Expression {
 		get {
 			return G.collect<INode>(
 				m_templateArgumentCount,
-				m_parameter,
+				m_parameters,
 				m_returnInfo );
 		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
 	}
 }
 
@@ -1310,7 +1220,7 @@ class Node_Import : INode_ScopeAlteration {
 	public Node_Identifier @alias {
 		get { return m_alias; }
 	}
-	
+
 	public string typeName {
 		get { return "import"; }
 	}
@@ -1321,10 +1231,6 @@ class Node_Import : INode_ScopeAlteration {
 				m_library,
 				m_alias );
 		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
 	}
 }
 
@@ -1367,7 +1273,7 @@ class Node_Parameter : INode {
 	public INode_Expression @defaultValue {
 		get { return m_defaultValue; }
 	}
-	
+
 	public string typeName {
 		get { return "parameter"; }
 	}
@@ -1381,10 +1287,6 @@ class Node_Parameter : INode {
 				m_hasDefaultValue,
 				m_defaultValue );
 		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
 	}
 }
 
@@ -1406,7 +1308,7 @@ class Node_Method : INode {
 	public INode_Expression @interface {
 		get { return m_interface; }
 	}
-	
+
 	public string typeName {
 		get { return "method"; }
 	}
@@ -1418,28 +1320,24 @@ class Node_Method : INode {
 				m_interface );
 		}
 	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
-	}
 }
 
 class Node_Function : INode_Expression {
-	IList<Node_Parameter> m_parameter;
+	IList<Node_Parameter> m_parameters;
 	Node_NullableType m_returnInfo;
 	INode_Expression m_body;
 	
 	public Node_Function(
-	IList<Node_Parameter> @parameter,
+	IList<Node_Parameter> @parameters,
 	Node_NullableType @returnInfo,
 	INode_Expression @body ) {
-		m_parameter = @parameter;
+		m_parameters = @parameters;
 		m_returnInfo = @returnInfo;
 		m_body = @body;
 	}
 	
-	public IList<Node_Parameter> @parameter {
-		get { return m_parameter; }
+	public IList<Node_Parameter> @parameters {
+		get { return m_parameters; }
 	}
 
 	public Node_NullableType @returnInfo {
@@ -1449,10 +1347,6 @@ class Node_Function : INode_Expression {
 	public INode_Expression @body {
 		get { return m_body; }
 	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
-	}
 
 	public string typeName {
 		get { return "function"; }
@@ -1461,14 +1355,10 @@ class Node_Function : INode_Expression {
 	public ICollection<INode> childNodes {
 		get {
 			return G.collect<INode>(
-				m_parameter,
+				m_parameters,
 				m_returnInfo,
 				m_body );
 		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
 	}
 }
 
@@ -1490,10 +1380,6 @@ class Node_Xnor : INode_Expression {
 	public INode_Expression @second {
 		get { return m_second; }
 	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
-	}
 
 	public string typeName {
 		get { return "xnor"; }
@@ -1505,10 +1391,6 @@ class Node_Xnor : INode_Expression {
 				m_first,
 				m_second );
 		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
 	}
 }
 
@@ -1530,10 +1412,6 @@ class Node_NamespacedValueIdentikey : INode_Expression {
 	public Node_Identifier @identikeyName {
 		get { return m_identikeyName; }
 	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
-	}
 
 	public string typeName {
 		get { return "namespaced-value-identikey"; }
@@ -1545,10 +1423,6 @@ class Node_NamespacedValueIdentikey : INode_Expression {
 				m_namespaces,
 				m_identikeyName );
 		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
 	}
 }
 
@@ -1570,10 +1444,6 @@ class Node_Xor : INode_Expression {
 	public INode_Expression @second {
 		get { return m_second; }
 	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
-	}
 
 	public string typeName {
 		get { return "xor"; }
@@ -1585,10 +1455,6 @@ class Node_Xor : INode_Expression {
 				m_first,
 				m_second );
 		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
 	}
 }
 
@@ -1603,10 +1469,6 @@ class Node_Return : INode_Expression {
 	public INode_Expression @expression {
 		get { return m_expression; }
 	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
-	}
 
 	public string typeName {
 		get { return "return"; }
@@ -1617,10 +1479,6 @@ class Node_Return : INode_Expression {
 			return G.collect<INode>(
 				m_expression );
 		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
 	}
 }
 
@@ -1642,10 +1500,6 @@ class Node_Implements : INode_Expression {
 	public INode_Expression @interface {
 		get { return m_interface; }
 	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
-	}
 
 	public string typeName {
 		get { return "implements"; }
@@ -1658,24 +1512,20 @@ class Node_Implements : INode_Expression {
 				m_interface );
 		}
 	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
-	}
 }
 
 class Node_Dictionary : INode_Expression {
 	Node_NullableType m_keyType;
 	Node_NullableType m_valueType;
-	IList<Node_DictionaryEntry> m_dictionaryEntry;
+	IList<Node_DictionaryEntry> m_dictionaryEntrys;
 	
 	public Node_Dictionary(
 	Node_NullableType @keyType,
 	Node_NullableType @valueType,
-	IList<Node_DictionaryEntry> @dictionaryEntry ) {
+	IList<Node_DictionaryEntry> @dictionaryEntrys ) {
 		m_keyType = @keyType;
 		m_valueType = @valueType;
-		m_dictionaryEntry = @dictionaryEntry;
+		m_dictionaryEntrys = @dictionaryEntrys;
 	}
 	
 	public Node_NullableType @keyType {
@@ -1686,12 +1536,8 @@ class Node_Dictionary : INode_Expression {
 		get { return m_valueType; }
 	}
 
-	public IList<Node_DictionaryEntry> @dictionaryEntry {
-		get { return m_dictionaryEntry; }
-	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
+	public IList<Node_DictionaryEntry> @dictionaryEntrys {
+		get { return m_dictionaryEntrys; }
 	}
 
 	public string typeName {
@@ -1703,69 +1549,65 @@ class Node_Dictionary : INode_Expression {
 			return G.collect<INode>(
 				m_keyType,
 				m_valueType,
-				m_dictionaryEntry );
+				m_dictionaryEntrys );
 		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
 	}
 }
 
 class Node_InterfaceImplementation : INode {
-	IList<Node_InterfaceImplementation> m_children;
+	IList<Node_InterfaceImplementation> m_childImplemenatations;
 	INode_Expression m_interface;
-	IList<Node_Function> m_callee;
-	IList<Node_NamedFunction> m_getter;
-	IList<Node_NamedFunction> m_setter;
-	IList<Node_NamedFunction> m_method;
+	IList<Node_Function> m_callees;
+	IList<Node_NamedFunction> m_getters;
+	IList<Node_NamedFunction> m_setters;
+	IList<Node_NamedFunction> m_methods;
 	Node_Boolean m_default;
 	
 	public Node_InterfaceImplementation(
-	IList<Node_InterfaceImplementation> @children,
+	IList<Node_InterfaceImplementation> @childImplemenatations,
 	INode_Expression @interface,
-	IList<Node_Function> @callee,
-	IList<Node_NamedFunction> @getter,
-	IList<Node_NamedFunction> @setter,
-	IList<Node_NamedFunction> @method,
+	IList<Node_Function> @callees,
+	IList<Node_NamedFunction> @getters,
+	IList<Node_NamedFunction> @setters,
+	IList<Node_NamedFunction> @methods,
 	Node_Boolean @default ) {
-		m_children = @children;
+		m_childImplemenatations = @childImplemenatations;
 		m_interface = @interface;
-		m_callee = @callee;
-		m_getter = @getter;
-		m_setter = @setter;
-		m_method = @method;
+		m_callees = @callees;
+		m_getters = @getters;
+		m_setters = @setters;
+		m_methods = @methods;
 		m_default = @default;
 	}
 	
-	public IList<Node_InterfaceImplementation> @children {
-		get { return m_children; }
+	public IList<Node_InterfaceImplementation> @childImplemenatations {
+		get { return m_childImplemenatations; }
 	}
 
 	public INode_Expression @interface {
 		get { return m_interface; }
 	}
 
-	public IList<Node_Function> @callee {
-		get { return m_callee; }
+	public IList<Node_Function> @callees {
+		get { return m_callees; }
 	}
 
-	public IList<Node_NamedFunction> @getter {
-		get { return m_getter; }
+	public IList<Node_NamedFunction> @getters {
+		get { return m_getters; }
 	}
 
-	public IList<Node_NamedFunction> @setter {
-		get { return m_setter; }
+	public IList<Node_NamedFunction> @setters {
+		get { return m_setters; }
 	}
 
-	public IList<Node_NamedFunction> @method {
-		get { return m_method; }
+	public IList<Node_NamedFunction> @methods {
+		get { return m_methods; }
 	}
 
 	public Node_Boolean @default {
 		get { return m_default; }
 	}
-	
+
 	public string typeName {
 		get { return "interface-implementation"; }
 	}
@@ -1773,33 +1615,29 @@ class Node_InterfaceImplementation : INode {
 	public ICollection<INode> childNodes {
 		get {
 			return G.collect<INode>(
-				m_children,
+				m_childImplemenatations,
 				m_interface,
-				m_callee,
-				m_getter,
-				m_setter,
-				m_method,
+				m_callees,
+				m_getters,
+				m_setters,
+				m_methods,
 				m_default );
 		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
 	}
 }
 
 class Node_Expose : INode_ScopeAlteration {
-	IList<Node_Identifier> m_identifier;
+	IList<Node_Identifier> m_identifiers;
 	
 	public Node_Expose(
-	IList<Node_Identifier> @identifier ) {
-		m_identifier = @identifier;
+	IList<Node_Identifier> @identifiers ) {
+		m_identifiers = @identifiers;
 	}
 	
-	public IList<Node_Identifier> @identifier {
-		get { return m_identifier; }
+	public IList<Node_Identifier> @identifiers {
+		get { return m_identifiers; }
 	}
-	
+
 	public string typeName {
 		get { return "expose"; }
 	}
@@ -1807,12 +1645,8 @@ class Node_Expose : INode_ScopeAlteration {
 	public ICollection<INode> childNodes {
 		get {
 			return G.collect<INode>(
-				m_identifier );
+				m_identifiers );
 		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
 	}
 }
 
@@ -1834,10 +1668,6 @@ class Node_DeclareEmpty : INode_Declaration {
 	public Node_IdentikeyType @identikeyType {
 		get { return m_identikeyType; }
 	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
-	}
 
 	public string typeName {
 		get { return "declare-empty"; }
@@ -1850,9 +1680,37 @@ class Node_DeclareEmpty : INode_Declaration {
 				m_identikeyType );
 		}
 	}
+}
+
+class Node_Possibility : INode_Expression {
+	INode_Expression m_test;
+	INode_Expression m_result;
 	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
+	public Node_Possibility(
+	INode_Expression @test,
+	INode_Expression @result ) {
+		m_test = @test;
+		m_result = @result;
+	}
+	
+	public INode_Expression @test {
+		get { return m_test; }
+	}
+
+	public INode_Expression @result {
+		get { return m_result; }
+	}
+
+	public string typeName {
+		get { return "possibility"; }
+	}
+	
+	public ICollection<INode> childNodes {
+		get {
+			return G.collect<INode>(
+				m_test,
+				m_result );
+		}
 	}
 }
 
@@ -1867,10 +1725,6 @@ class Node_Break : INode_Expression {
 	public Node_Identifier @label {
 		get { return m_label; }
 	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
-	}
 
 	public string typeName {
 		get { return "break"; }
@@ -1881,10 +1735,6 @@ class Node_Break : INode_Expression {
 			return G.collect<INode>(
 				m_label );
 		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
 	}
 }
 
@@ -1906,10 +1756,6 @@ class Node_GenericFunction : INode_Expression {
 	public Node_Function @function {
 		get { return m_function; }
 	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
-	}
 
 	public string typeName {
 		get { return "generic-function"; }
@@ -1922,33 +1768,25 @@ class Node_GenericFunction : INode_Expression {
 				m_function );
 		}
 	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
-	}
 }
 
 class Node_Enum : INode_Expression {
 	Node_NullableType m_nullableType;
-	IList<Node_EnumEntry> m_enumEntry;
+	IList<Node_EnumEntry> m_enumEntrys;
 	
 	public Node_Enum(
 	Node_NullableType @nullableType,
-	IList<Node_EnumEntry> @enumEntry ) {
+	IList<Node_EnumEntry> @enumEntrys ) {
 		m_nullableType = @nullableType;
-		m_enumEntry = @enumEntry;
+		m_enumEntrys = @enumEntrys;
 	}
 	
 	public Node_NullableType @nullableType {
 		get { return m_nullableType; }
 	}
 
-	public IList<Node_EnumEntry> @enumEntry {
-		get { return m_enumEntry; }
-	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
+	public IList<Node_EnumEntry> @enumEntrys {
+		get { return m_enumEntrys; }
 	}
 
 	public string typeName {
@@ -1959,12 +1797,40 @@ class Node_Enum : INode_Expression {
 		get {
 			return G.collect<INode>(
 				m_nullableType,
-				m_enumEntry );
+				m_enumEntrys );
 		}
 	}
+}
+
+class Node_Plane : INode {
+	IList<INode_ScopeAlteration> m_scopeAlterations;
+	IList<Node_DeclareFirst> m_declareFirsts;
 	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
+	public Node_Plane(
+	IList<INode_ScopeAlteration> @scopeAlterations,
+	IList<Node_DeclareFirst> @declareFirsts ) {
+		m_scopeAlterations = @scopeAlterations;
+		m_declareFirsts = @declareFirsts;
+	}
+	
+	public IList<INode_ScopeAlteration> @scopeAlterations {
+		get { return m_scopeAlterations; }
+	}
+
+	public IList<Node_DeclareFirst> @declareFirsts {
+		get { return m_declareFirsts; }
+	}
+
+	public string typeName {
+		get { return "plane"; }
+	}
+	
+	public ICollection<INode> childNodes {
+		get {
+			return G.collect<INode>(
+				m_scopeAlterations,
+				m_declareFirsts );
+		}
 	}
 }
 
@@ -1986,7 +1852,7 @@ class Node_NullableType : INode {
 	public Node_Boolean @nullable {
 		get { return m_nullable; }
 	}
-	
+
 	public string typeName {
 		get { return "nullable-type"; }
 	}
@@ -1997,50 +1863,6 @@ class Node_NullableType : INode {
 				m_interface,
 				m_nullable );
 		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
-	}
-}
-
-class Node_InstantiateGeneric : INode_Expression {
-	INode_Expression m_generic;
-	IList<Node_Argument> m_argument;
-	
-	public Node_InstantiateGeneric(
-	INode_Expression @generic,
-	IList<Node_Argument> @argument ) {
-		m_generic = @generic;
-		m_argument = @argument;
-	}
-	
-	public INode_Expression @generic {
-		get { return m_generic; }
-	}
-
-	public IList<Node_Argument> @argument {
-		get { return m_argument; }
-	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
-	}
-
-	public string typeName {
-		get { return "instantiate-generic"; }
-	}
-	
-	public ICollection<INode> childNodes {
-		get {
-			return G.collect<INode>(
-				m_generic,
-				m_argument );
-		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
 	}
 }
 
@@ -2076,10 +1898,6 @@ class Node_ForKey : INode_Expression {
 	public Node_Block @action {
 		get { return m_action; }
 	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
-	}
 
 	public string typeName {
 		get { return "for-key"; }
@@ -2094,31 +1912,27 @@ class Node_ForKey : INode_Expression {
 				m_action );
 		}
 	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
-	}
 }
 
 class Node_Using : INode_ScopeAlteration {
-	IList<Node_Identifier> m_target;
+	IList<Node_Identifier> m_targets;
 	Node_Identifier m_name;
 	
 	public Node_Using(
-	IList<Node_Identifier> @target,
+	IList<Node_Identifier> @targets,
 	Node_Identifier @name ) {
-		m_target = @target;
+		m_targets = @targets;
 		m_name = @name;
 	}
 	
-	public IList<Node_Identifier> @target {
-		get { return m_target; }
+	public IList<Node_Identifier> @targets {
+		get { return m_targets; }
 	}
 
 	public Node_Identifier @name {
 		get { return m_name; }
 	}
-	
+
 	public string typeName {
 		get { return "using"; }
 	}
@@ -2126,13 +1940,9 @@ class Node_Using : INode_ScopeAlteration {
 	public ICollection<INode> childNodes {
 		get {
 			return G.collect<INode>(
-				m_target,
+				m_targets,
 				m_name );
 		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
 	}
 }
 
@@ -2161,10 +1971,6 @@ class Node_SetProperty : INode_Expression {
 	public INode_Expression @value {
 		get { return m_value; }
 	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
-	}
 
 	public string typeName {
 		get { return "set-property"; }
@@ -2177,10 +1983,6 @@ class Node_SetProperty : INode_Expression {
 				m_propertyName,
 				m_value );
 		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
 	}
 }
 
@@ -2202,10 +2004,6 @@ class Node_ExtractMember : INode_Expression {
 	public Node_Identifier @memberName {
 		get { return m_memberName; }
 	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
-	}
 
 	public string typeName {
 		get { return "extract-member"; }
@@ -2217,10 +2015,6 @@ class Node_ExtractMember : INode_Expression {
 				m_source,
 				m_memberName );
 		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
 	}
 }
 
@@ -2235,10 +2029,6 @@ class Node_Throw : INode_Expression {
 	public INode_Expression @expression {
 		get { return m_expression; }
 	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
-	}
 
 	public string typeName {
 		get { return "throw"; }
@@ -2249,10 +2039,6 @@ class Node_Throw : INode_Expression {
 			return G.collect<INode>(
 				m_expression );
 		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
 	}
 }
 
@@ -2274,10 +2060,6 @@ class Node_Nor : INode_Expression {
 	public INode_Expression @second {
 		get { return m_second; }
 	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
-	}
 
 	public string typeName {
 		get { return "nor"; }
@@ -2289,10 +2071,6 @@ class Node_Nor : INode_Expression {
 				m_first,
 				m_second );
 		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
 	}
 }
 
@@ -2314,7 +2092,7 @@ class Node_Case : INode {
 	public INode_Expression @result {
 		get { return m_result; }
 	}
-	
+
 	public string typeName {
 		get { return "case"; }
 	}
@@ -2326,9 +2104,45 @@ class Node_Case : INode {
 				m_result );
 		}
 	}
+}
+
+class Node_Bundle : INode_Expression {
+	IList<Node_Import> m_imports;
+	IList<INode_ScopeAlteration> m_scopeAlterations;
+	IList<Node_Plane> m_planes;
 	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
+	public Node_Bundle(
+	IList<Node_Import> @imports,
+	IList<INode_ScopeAlteration> @scopeAlterations,
+	IList<Node_Plane> @planes ) {
+		m_imports = @imports;
+		m_scopeAlterations = @scopeAlterations;
+		m_planes = @planes;
+	}
+	
+	public IList<Node_Import> @imports {
+		get { return m_imports; }
+	}
+
+	public IList<INode_ScopeAlteration> @scopeAlterations {
+		get { return m_scopeAlterations; }
+	}
+
+	public IList<Node_Plane> @planes {
+		get { return m_planes; }
+	}
+
+	public string typeName {
+		get { return "bundle"; }
+	}
+	
+	public ICollection<INode> childNodes {
+		get {
+			return G.collect<INode>(
+				m_imports,
+				m_scopeAlterations,
+				m_planes );
+		}
 	}
 }
 
@@ -2357,7 +2171,7 @@ class Node_Property : INode {
 	public Node_Access @access {
 		get { return m_access; }
 	}
-	
+
 	public string typeName {
 		get { return "property"; }
 	}
@@ -2370,25 +2184,21 @@ class Node_Property : INode {
 				m_access );
 		}
 	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
-	}
 }
 
 class Node_TryCatch : INode_Expression {
 	INode_Expression m_try;
-	IList<Node_ExceptionHandler> m_exceptionHandler;
+	IList<Node_ExceptionHandler> m_exceptionHandlers;
 	INode_Expression m_else;
 	INode_Expression m_finally;
 	
 	public Node_TryCatch(
 	INode_Expression @try,
-	IList<Node_ExceptionHandler> @exceptionHandler,
+	IList<Node_ExceptionHandler> @exceptionHandlers,
 	INode_Expression @else,
 	INode_Expression @finally ) {
 		m_try = @try;
-		m_exceptionHandler = @exceptionHandler;
+		m_exceptionHandlers = @exceptionHandlers;
 		m_else = @else;
 		m_finally = @finally;
 	}
@@ -2397,8 +2207,8 @@ class Node_TryCatch : INode_Expression {
 		get { return m_try; }
 	}
 
-	public IList<Node_ExceptionHandler> @exceptionHandler {
-		get { return m_exceptionHandler; }
+	public IList<Node_ExceptionHandler> @exceptionHandlers {
+		get { return m_exceptionHandlers; }
 	}
 
 	public INode_Expression @else {
@@ -2407,10 +2217,6 @@ class Node_TryCatch : INode_Expression {
 
 	public INode_Expression @finally {
 		get { return m_finally; }
-	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
 	}
 
 	public string typeName {
@@ -2421,36 +2227,32 @@ class Node_TryCatch : INode_Expression {
 		get {
 			return G.collect<INode>(
 				m_try,
-				m_exceptionHandler,
+				m_exceptionHandlers,
 				m_else,
 				m_finally );
 		}
 	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
-	}
 }
 
 class Node_Callee : INode {
-	IList<Node_Parameter> m_parameter;
+	IList<Node_Parameter> m_parameters;
 	Node_NullableType m_returnInfo;
 	
 	public Node_Callee(
-	IList<Node_Parameter> @parameter,
+	IList<Node_Parameter> @parameters,
 	Node_NullableType @returnInfo ) {
-		m_parameter = @parameter;
+		m_parameters = @parameters;
 		m_returnInfo = @returnInfo;
 	}
 	
-	public IList<Node_Parameter> @parameter {
-		get { return m_parameter; }
+	public IList<Node_Parameter> @parameters {
+		get { return m_parameters; }
 	}
 
 	public Node_NullableType @returnInfo {
 		get { return m_returnInfo; }
 	}
-	
+
 	public string typeName {
 		get { return "callee"; }
 	}
@@ -2458,13 +2260,41 @@ class Node_Callee : INode {
 	public ICollection<INode> childNodes {
 		get {
 			return G.collect<INode>(
-				m_parameter,
+				m_parameters,
 				m_returnInfo );
 		}
 	}
+}
+
+class Node_Interface : INode_Expression {
+	IList<Node_Property> m_propertys;
+	IList<Node_Method> m_methods;
 	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
+	public Node_Interface(
+	IList<Node_Property> @propertys,
+	IList<Node_Method> @methods ) {
+		m_propertys = @propertys;
+		m_methods = @methods;
+	}
+	
+	public IList<Node_Property> @propertys {
+		get { return m_propertys; }
+	}
+
+	public IList<Node_Method> @methods {
+		get { return m_methods; }
+	}
+
+	public string typeName {
+		get { return "interface"; }
+	}
+	
+	public ICollection<INode> childNodes {
+		get {
+			return G.collect<INode>(
+				m_propertys,
+				m_methods );
+		}
 	}
 }
 
@@ -2486,10 +2316,6 @@ class Node_Caller : INode_Expression {
 	public Node_Identifier @methodName {
 		get { return m_methodName; }
 	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
-	}
 
 	public string typeName {
 		get { return "caller"; }
@@ -2501,10 +2327,6 @@ class Node_Caller : INode_Expression {
 				m_interface,
 				m_methodName );
 		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
 	}
 }
 
@@ -2519,10 +2341,6 @@ class Node_Yield : INode_Expression {
 	public INode_Expression @expression {
 		get { return m_expression; }
 	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
-	}
 
 	public string typeName {
 		get { return "yield"; }
@@ -2533,10 +2351,6 @@ class Node_Yield : INode_Expression {
 			return G.collect<INode>(
 				m_expression );
 		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
 	}
 }
 
@@ -2558,10 +2372,6 @@ class Node_Or : INode_Expression {
 	public INode_Expression @second {
 		get { return m_second; }
 	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
-	}
 
 	public string typeName {
 		get { return "or"; }
@@ -2574,33 +2384,25 @@ class Node_Or : INode_Expression {
 				m_second );
 		}
 	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
-	}
 }
 
 class Node_Ignore : INode_Expression {
 	INode_Expression m_content;
-	IList<Node_IgnoreMember> m_ignoreMember;
+	IList<Node_IgnoreMember> m_ignoreMembers;
 	
 	public Node_Ignore(
 	INode_Expression @content,
-	IList<Node_IgnoreMember> @ignoreMember ) {
+	IList<Node_IgnoreMember> @ignoreMembers ) {
 		m_content = @content;
-		m_ignoreMember = @ignoreMember;
+		m_ignoreMembers = @ignoreMembers;
 	}
 	
 	public INode_Expression @content {
 		get { return m_content; }
 	}
 
-	public IList<Node_IgnoreMember> @ignoreMember {
-		get { return m_ignoreMember; }
-	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
+	public IList<Node_IgnoreMember> @ignoreMembers {
+		get { return m_ignoreMembers; }
 	}
 
 	public string typeName {
@@ -2611,12 +2413,8 @@ class Node_Ignore : INode_Expression {
 		get {
 			return G.collect<INode>(
 				m_content,
-				m_ignoreMember );
+				m_ignoreMembers );
 		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
 	}
 }
 
@@ -2638,10 +2436,6 @@ class Node_Cast : INode_Expression {
 	public INode_Expression @interface {
 		get { return m_interface; }
 	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
-	}
 
 	public string typeName {
 		get { return "cast"; }
@@ -2653,10 +2447,6 @@ class Node_Cast : INode_Expression {
 				m_object,
 				m_interface );
 		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
 	}
 }
 
@@ -2678,10 +2468,6 @@ class Node_While : INode_Expression {
 	public Node_Block @block {
 		get { return m_block; }
 	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
-	}
 
 	public string typeName {
 		get { return "while"; }
@@ -2693,10 +2479,6 @@ class Node_While : INode_Expression {
 				m_test,
 				m_block );
 		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
 	}
 }
 
@@ -2725,7 +2507,7 @@ class Node_IdentikeyType : INode {
 	public Node_Boolean @constant {
 		get { return m_constant; }
 	}
-	
+
 	public string typeName {
 		get { return "identikey-type"; }
 	}
@@ -2737,10 +2519,6 @@ class Node_IdentikeyType : INode {
 				m_nullableType,
 				m_constant );
 		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
 	}
 }
 
@@ -2776,10 +2554,6 @@ class Node_ForValue : INode_Expression {
 	public Node_Block @action {
 		get { return m_action; }
 	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
-	}
 
 	public string typeName {
 		get { return "for-value"; }
@@ -2794,33 +2568,25 @@ class Node_ForValue : INode_Expression {
 				m_action );
 		}
 	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
-	}
 }
 
 class Node_Block : INode_Expression {
-	IList<INode_ScopeAlteration> m_scopeAlteration;
+	IList<INode_ScopeAlteration> m_scopeAlterations;
 	IList<INode_Expression> m_members;
 	
 	public Node_Block(
-	IList<INode_ScopeAlteration> @scopeAlteration,
+	IList<INode_ScopeAlteration> @scopeAlterations,
 	IList<INode_Expression> @members ) {
-		m_scopeAlteration = @scopeAlteration;
+		m_scopeAlterations = @scopeAlterations;
 		m_members = @members;
 	}
 	
-	public IList<INode_ScopeAlteration> @scopeAlteration {
-		get { return m_scopeAlteration; }
+	public IList<INode_ScopeAlteration> @scopeAlterations {
+		get { return m_scopeAlterations; }
 	}
 
 	public IList<INode_Expression> @members {
 		get { return m_members; }
-	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
 	}
 
 	public string typeName {
@@ -2830,13 +2596,9 @@ class Node_Block : INode_Expression {
 	public ICollection<INode> childNodes {
 		get {
 			return G.collect<INode>(
-				m_scopeAlteration,
+				m_scopeAlterations,
 				m_members );
 		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
 	}
 }
 
@@ -2858,7 +2620,7 @@ class Node_EnumEntry : INode {
 	public INode_Expression @value {
 		get { return m_value; }
 	}
-	
+
 	public string typeName {
 		get { return "enum-entry"; }
 	}
@@ -2869,10 +2631,6 @@ class Node_EnumEntry : INode {
 				m_name,
 				m_value );
 		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
 	}
 }
 
@@ -2887,7 +2645,7 @@ class Node_Convertor : INode {
 	public INode_Expression @interface {
 		get { return m_interface; }
 	}
-	
+
 	public string typeName {
 		get { return "convertor"; }
 	}
@@ -2898,23 +2656,19 @@ class Node_Convertor : INode {
 				m_interface );
 		}
 	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
-	}
 }
 
 class Node_Curry : INode_Expression {
 	INode_Expression m_function;
-	IList<Node_Argument> m_argument;
+	IList<Node_Argument> m_arguments;
 	Node_Boolean m_call;
 	
 	public Node_Curry(
 	INode_Expression @function,
-	IList<Node_Argument> @argument,
+	IList<Node_Argument> @arguments,
 	Node_Boolean @call ) {
 		m_function = @function;
-		m_argument = @argument;
+		m_arguments = @arguments;
 		m_call = @call;
 	}
 	
@@ -2922,16 +2676,12 @@ class Node_Curry : INode_Expression {
 		get { return m_function; }
 	}
 
-	public IList<Node_Argument> @argument {
-		get { return m_argument; }
+	public IList<Node_Argument> @arguments {
+		get { return m_arguments; }
 	}
 
 	public Node_Boolean @call {
 		get { return m_call; }
-	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
 	}
 
 	public string typeName {
@@ -2942,13 +2692,9 @@ class Node_Curry : INode_Expression {
 		get {
 			return G.collect<INode>(
 				m_function,
-				m_argument,
+				m_arguments,
 				m_call );
 		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
 	}
 }
 
@@ -2977,10 +2723,6 @@ class Node_Assign : INode_Expression {
 	public Node_Boolean @breed {
 		get { return m_breed; }
 	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
-	}
 
 	public string typeName {
 		get { return "assign"; }
@@ -2993,10 +2735,6 @@ class Node_Assign : INode_Expression {
 				m_value,
 				m_breed );
 		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
 	}
 }
 
@@ -3011,10 +2749,6 @@ class Node_Loop : INode_Expression {
 	public Node_Block @block {
 		get { return m_block; }
 	}
-	
-	public IValue execute(Scope scope) {
-		return Interpreter.execute(this, scope);
-	}
 
 	public string typeName {
 		get { return "loop"; }
@@ -3025,10 +2759,6 @@ class Node_Loop : INode_Expression {
 			return G.collect<INode>(
 				m_block );
 		}
-	}
-	
-	public HashSet<Identifier> identikeyDependencies {
-		get { return Depends.depends(this); }
 	}
 }
 

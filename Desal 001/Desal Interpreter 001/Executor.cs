@@ -1,54 +1,17 @@
+using System;
 using System.Collections.Generic;
+using Reflection = System.Reflection;
 
-/*
-executes and "evaluates" nodes
-execution is defined by the Desal Semantics specification
-evaluation is for nodes that cannot be executed,
-	but contain children that can be executed
-*/
-static class Interpreter {
-	//parameter
-	public static Parameter evaluate(Node_Parameter node, Scope scope) {
-		return new Parameter(
-			evaluate(node.nullableType, scope),
-			node.name.value,
-		    node.hasDefaultValue.value,
-		    ( node.defaultValue == null ?
-		    	null :
-		    	node.defaultValue.execute(scope) ));
-	}
-	
-	//nullable-type
-	public static NullableType evaluate(Node_NullableType node, Scope scope) {
-		IInterface iface = ( node.@interface == null ?
-			null :
-			InterfaceFromValue.wrap(node.@interface.execute(scope)) );
-		return new NullableType(iface, node.nullable.value);
-	}
-	
-	//property
-	public static PropertyInfo evaluate(Node_Property node, Scope scope) {
-		return new PropertyInfo(
-			node.name.value,
-			evaluate(node.nullableType, scope),
-			node.access.value );
-	}
-	
-	//method
-	public static MethodInfo evaluate(Node_Method node, Scope scope) {
-		return new MethodInfo(
-			node.name.value, null );
-			//xxx InterfaceFromValue.wrap(node.@interface.execute(scope)) );
-	}
-
+//executes expression nodes, as defined by the Desal Semantics specification
+static class Executor {
 	//and
 	public static IValue execute(Node_And node, Scope scope) {
-		IValue first = node.first.execute(scope);
+		IValue first = execute(node.first, scope);
 		//xxx downcast
 		if( Bridge.unwrapBoolean(first) == false )
 			return Bridge.wrapBoolean(false);
 		
-		IValue second = node.second.execute(scope);
+		IValue second = execute(node.second, scope);
 		//xxx downcast
 		if( Bridge.unwrapBoolean(second) == false )
 			return Bridge.wrapBoolean(false);
@@ -63,7 +26,7 @@ static class Interpreter {
 
 	//assign
 	public static IValue execute(Node_Assign node, Scope scope) {
-		IValue val = node.value.execute(scope);
+		IValue val = execute(node.value, scope);
 		scope.assign( node.name.value, val );
 		return val;
 	}
@@ -80,7 +43,7 @@ static class Interpreter {
 
 		IValue rv = new NullValue();
 		foreach( INode_Expression expr in node.members ) {
-			rv = expr.execute(innerScope);
+			rv = execute(expr, innerScope);
 		}
 		return rv;
 	}
@@ -94,18 +57,49 @@ static class Interpreter {
 	public static IValue execute(Node_Breed node, Scope scope) {
 		throw new Error_Unimplemented();
 	}
+	
+	//bundle
+	public static IValue execute(Node_Bundle node, Scope scope) {
+		foreach( Node_Plane plane in node.planes ) {
+			foreach( Node_DeclareFirst decl in plane.declareFirsts )
+				scope.reserveDeclareFirst( decl.name.value );
+		}
+		
+		foreach( Node_Plane plane in node.planes ) {
+			foreach( Node_DeclareFirst decl in plane.declareFirsts )
+				Executor.execute(decl, scope);
+		}
+		
+		IValue rv;
+		try {
+			IValue val = scope.evaluateIdentifier( new Identifier("main") );
+			rv = val.call(
+				new Arguments(
+					new IValue[]{},
+					new Dictionary<Identifier, IValue>() ));
+		}
+		catch(ClientException e) {
+			e.pushFunc("main (called while executing Node_Bundle)");
+			throw e;
+		}
+
+		if( rv is NullValue )
+			return Bridge.wrapInteger(0);
+		else
+			return rv;
+	}
 
 	//call
 	public static IValue execute(Node_Call node, Scope scope) {
 		IList<IValue> evaledArgs = new List<IValue>();
-		foreach( Node_Argument argument in node.argument ) {
-			evaledArgs.Add( argument.value.execute(scope) );
+		foreach( Node_Argument argument in node.arguments ) {
+			evaledArgs.Add( execute(argument.value, scope) );
 		}
 	
 		Arguments args = new Arguments(
 			evaledArgs,
 			new Dictionary<Identifier, IValue>() );
-		IValue func = node.value.execute(scope);
+		IValue func = execute(node.value, scope);
 	
 		try {
 			return func.call(args);
@@ -146,7 +140,7 @@ static class Interpreter {
 	
 	//declare-assign
 	public static IValue execute(Node_DeclareAssign node, Scope scope) {
-		IValue val = node.value.execute(scope);
+		IValue val = execute(node.value, scope);
 		scope.declareAssign(node.name.value, val);
 		return val;
 	}
@@ -164,7 +158,7 @@ static class Interpreter {
 
 	//declare-first
 	public static IValue execute(Node_DeclareFirst node, Scope scope) {
-		IValue val = node.value.execute(scope);
+		IValue val = execute(node.value, scope);
 		scope.declareFirst(node.name.value, val);
 		return val;
 	}
@@ -191,9 +185,9 @@ static class Interpreter {
 	
 	//extract-member
 	public static IValue execute(Node_ExtractMember node, Scope scope) {
-		IValue source = node.source.execute(scope);
+		IValue source = execute(node.source, scope);
 		Identifier memberName = node.memberName.value;
-		return source.extractNamedMember(memberName);
+		return source.extractMember(memberName);
 	}
 	
 	//for-key
@@ -213,14 +207,14 @@ static class Interpreter {
 	
 	//for-range
 	public static IValue execute(Node_ForRange node, Scope scope) {
-		IValue start = node.start.execute(scope);
+		IValue start = execute(node.start, scope);
 		long current = Bridge.unwrapInteger(start);
-		IValue limit = node.limit.execute(scope);
+		IValue limit = execute(node.limit, scope);
 		while( current < Bridge.unwrapInteger(limit) ) {
 			Scope innerScope = new Scope(scope);
 			innerScope.declareAssign(
 				node.name.value, Bridge.wrapInteger(current) );
-			node.action.execute(innerScope);
+			execute(node.action, innerScope);
 			current++;
 		}
 		return new NullValue();
@@ -235,17 +229,17 @@ static class Interpreter {
 	public static IValue execute(Node_Function node, Scope scope) {
 		//evaluate parameters
 		IList<Parameter> evaledParams = new List<Parameter>();
-		foreach( Node_Parameter paramNode in node.parameter ) {
-			evaledParams.Add( evaluate(paramNode, scope) );
+		foreach( Node_Parameter paramNode in node.parameters ) {
+			evaledParams.Add( Evaluator.evaluate(paramNode, scope) );
 		}
 		
 		NullableType returnType = ( node.returnInfo == null ?
 			null :
-			evaluate(node.returnInfo, scope) );
+			Evaluator.evaluate(node.returnInfo, scope) );
 		
 		IFunction function = new Client_Function(
 			evaledParams, returnType, node.body,
-			scope.createClosure(node.identikeyDependencies) );
+			scope.createClosure(Depends.depends(node)) );
 		
 		return FunctionWrapper.wrap(function);
 	}
@@ -265,6 +259,11 @@ static class Interpreter {
 		throw new Error_Unimplemented();
 	}
 	
+	//identifier
+	public static IValue execute(Node_Identifier node, Scope scope) {
+		return scope.evaluateIdentifier(node.value);
+	}
+	
 	//ignore
 	public static IValue execute(Node_Ignore node, Scope scope) {
 		throw new Error_Unimplemented();
@@ -280,6 +279,16 @@ static class Interpreter {
 		throw new Error_Unimplemented();
 	}
 	
+	//interface
+	public static IValue execute(Node_Interface node, Scope scope) {
+		return Bridge.wrapInterface( Evaluator.evaluate(node, scope) );
+	}
+	
+	//integer
+	public static IValue execute(Node_Integer node, Scope scope) {
+		return Bridge.wrapInteger(node.value);
+	}
+	
 	//labeled
 	public static IValue execute(Node_Labeled node, Scope scope) {
 		throw new Error_Unimplemented();
@@ -288,18 +297,18 @@ static class Interpreter {
 	//loop
 	public static IValue execute(Node_Loop node, Scope scope) {
 		for(;;)
-			node.block.execute(scope);
+			execute(node.block, scope);
 		return new NullValue();
 	}
 	
 	//nand
 	public static IValue execute(Node_Nand node, Scope scope) {
-		IValue first = node.first.execute(scope);
+		IValue first = execute(node.first, scope);
 		//xxx downcast
 		if( Bridge.unwrapBoolean(first) == false )
 			return Bridge.wrapBoolean(true);
 		
-		IValue second = node.second.execute(scope);
+		IValue second = execute(node.second, scope);
 		//xxx downcast
 		if( Bridge.unwrapBoolean(second) == false )
 			return Bridge.wrapBoolean(true);
@@ -314,12 +323,12 @@ static class Interpreter {
 	
 	//nor
 	public static IValue execute(Node_Nor node, Scope scope) {
-		IValue first = node.first.execute(scope);
+		IValue first = execute(node.first, scope);
 		//xxx downcast
 		if( Bridge.unwrapBoolean(first) == true )
 			return Bridge.wrapBoolean(false);
 		
-		IValue second = node.second.execute(scope);
+		IValue second = execute(node.second, scope);
 		//xxx downcast
 		if( Bridge.unwrapBoolean(second) == true )
 			return Bridge.wrapBoolean(false);
@@ -329,12 +338,12 @@ static class Interpreter {
 	
 	//or
 	public static IValue execute(Node_Or node, Scope scope) {
-		IValue first = node.first.execute(scope);
+		IValue first = execute(node.first, scope);
 		//xxx downcast
 		if( Bridge.unwrapBoolean(first) == true )
 			return Bridge.wrapBoolean(true);
 		
-		IValue second = node.second.execute(scope);
+		IValue second = execute(node.second, scope);
 		//xxx downcast
 		if( Bridge.unwrapBoolean(second) == true )
 			return Bridge.wrapBoolean(true);
@@ -344,14 +353,19 @@ static class Interpreter {
 	
 	//possibility
 	public static IValue execute(Node_Possibility node, Scope scope) {
-		IValue testVal = node.test.execute(scope);
+		IValue testVal = execute(node.test, scope);
 
 		if( testVal.activeInterface != Bridge.Bool )
 			throw new ClientException("test must be a Bool");
 		
 		return ( Bridge.unwrapBoolean(testVal) ?
-			node.result.execute(scope) :
+			execute(node.result, scope) :
 			new NullValue() );
+	}
+	
+	//rational
+	public static IValue execute(Node_Rational node, Scope scope) {
+		return Bridge.wrapRational(node.value);
 	}
 	
 	//return
@@ -366,10 +380,15 @@ static class Interpreter {
 	
 	//set-property
 	public static IValue execute(Node_SetProperty node, Scope scope) {
-		IValue val = node.value.execute(scope);
-		node.source.execute(scope).setProperty(
+		IValue val = execute(node.value, scope);
+		execute(node.source, scope).setProperty(
 			node.propertyName.value, val );
 		return val;
+	}
+	
+	//string
+	public static IValue execute(Node_String node, Scope scope) {
+		return Bridge.wrapString(node.value);
 	}
 	
 	//throw
@@ -384,22 +403,22 @@ static class Interpreter {
 	
 	//unassign
 	public static IValue execute(Node_Unassign node, Scope scope) {
-		IValue val = node.identifier.execute(scope);
+		IValue val = execute(node.identifier, scope);
 		scope.assign(node.identifier.value, new NullValue());
 		return val;
 	}
 	
 	//while
 	public static IValue execute(Node_While node, Scope scope) {
-		while( Bridge.unwrapBoolean(node.test.execute(scope)) )
-			node.block.execute(scope);
+		while( Bridge.unwrapBoolean(execute(node.test, scope)) )
+			execute(node.block, scope);
 		return new NullValue();
 	}
 	
 	//xnor
 	public static IValue execute(Node_Xnor node, Scope scope) {
-		IValue first = node.first.execute(scope);
-		IValue second = node.second.execute(scope);
+		IValue first = execute(node.first, scope);
+		IValue second = execute(node.second, scope);
 
 		return Bridge.wrapBoolean(
 			Bridge.unwrapBoolean(first) == Bridge.unwrapBoolean(second) );
@@ -407,8 +426,8 @@ static class Interpreter {
 	
 	//xor
 	public static IValue execute(Node_Xor node, Scope scope) {
-		IValue first = node.first.execute(scope);
-		IValue second = node.second.execute(scope);
+		IValue first = execute(node.first, scope);
+		IValue second = execute(node.second, scope);
 		
 		return Bridge.wrapBoolean(
 			Bridge.unwrapBoolean(first) != Bridge.unwrapBoolean(second) );
@@ -417,5 +436,26 @@ static class Interpreter {
 	//yield
 	public static IValue execute(Node_Yield node, Scope scope) {
 		throw new Error_Unimplemented();
+	}
+	
+	//any expression node
+	public static IValue execute(INode_Expression node, Scope scope) {
+		Type classType = typeof(Executor);
+		Type nodeType = ((Object)node).GetType();
+		Reflection.MethodInfo meth = classType.GetMethod(
+			"execute",
+			new Type[]{ nodeType, typeof(Scope) });
+		if( meth == null ||
+		meth.GetParameters()[0].ParameterType == typeof(INode_Expression) )
+			throw new Exception(
+				String.Format("can't execute node of type {0}", node.typeName));
+		try {
+			return (IValue)meth.Invoke(null, new object[]{ node, scope });
+		}
+		catch(Reflection.TargetInvocationException e) {
+			if( e.InnerException is ClientException )
+				throw e.InnerException;
+			throw e;
+		}
 	}
 }

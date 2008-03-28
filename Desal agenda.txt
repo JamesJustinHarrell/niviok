@@ -795,6 +795,43 @@ bundle {
 	}
 }
 
+(bundle
+	pragma_namespace omp = "OpenMP"
+	pragma_namespace html = "http://www.w3.org/1999/xhtml"
+	pragma_namespace foo = "{0454-64113-54-7-984-13213213-3133333}"
+	
+	(plane
+		(func main()
+			pragma omp parallel for
+			(for i from 0 to 100
+				(println i)))))
+
+
+
+
+Ensure Desal supports contract programming. Add as many contract programming features as you can find from other languages. Also ensure Desal has good asert() functions, including one that is disabled for builds, one that is enabled for all builds, and one that only outputs warnings (e.g. debugAssert, assert, and warnAssert).
+
+
+
+
+
+Explain typing in Desal.
+
+static typing where possible, dynamic typing elsewhere
+
+static typing -
+	checking type safety before execution
+	requiring types are known before execution
+	type information stripped away before execution
+dynamic typing -
+	checking type safety during execution
+	allowing types to be defined/modified during execution
+	type information available during execution
+
+Desal does not require types be known before execution (unlike statically type languages). However, it intends to facilitate static type checking (unlike dynamically typed languages). Type information can only be stripped away during static type checking if that information would not be beneficial during execution. Desal intends to be capable of being compiled or interpreted without differing semantics or behavior.
+
+
+
 
 
 

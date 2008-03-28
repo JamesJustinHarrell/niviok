@@ -267,7 +267,7 @@ document.body.appendChild(container);
 					<possibility label='members'>
 						<identifier label='test'>true</identifier>
 						<block label='result'>
-							<call label="expression">
+							<call label='members'>
 								<identifier label='value'>println</identifier>
 								<argument>
 									<string label='value'>this is a test</string>
@@ -317,7 +317,7 @@ document.body.appendChild(container);
 						<integer label='limit'>20</integer>
 						<boolean label='inclusive'>false</boolean>
 						<block label='action'>
-							<call label="expression">
+							<call label='members'>
 								<identifier label='value'>println</identifier>
 								<argument>
 									<call label='value'>
