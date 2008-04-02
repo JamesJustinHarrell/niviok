@@ -461,70 +461,73 @@
                 <a href="#standard-library">12. Standard library</a>
                 <ol>
                     <li>
-                        <a href="#object.activeInterface">12.1. activeInterface</a>
+                        <a href="#object.println">12.1. println</a>
                     </li>
                     <li>
-                        <a href="#object.String">12.2. String</a>
+                        <a href="#object.activeInterface">12.2. activeInterface</a>
                     </li>
                     <li>
-                        <a href="#object.cast">12.3. func{I}(dyn)I cast</a>
+                        <a href="#object.String">12.3. String</a>
                     </li>
                     <li>
-                        <a href="#object.ceil">12.4. ceil</a>
+                        <a href="#object.cast">12.4. func{I}(dyn)I cast</a>
                     </li>
                     <li>
-                        <a href="#object.floor">12.5. floor</a>
+                        <a href="#object.ceil">12.5. ceil</a>
                     </li>
                     <li>
-                        <a href="#object.modulo">12.6. modulo</a>
+                        <a href="#object.floor">12.6. floor</a>
                     </li>
                     <li>
-                        <a href="#object.round">12.7. round</a>
+                        <a href="#object.modulo">12.7. modulo</a>
                     </li>
                     <li>
-                        <a href="#object.generator">12.8. interface generator</a>
+                        <a href="#object.round">12.8. round</a>
                     </li>
                     <li>
-                        <a href="#object.id">12.9. func id</a>
+                        <a href="#object.generator">12.9. interface generator</a>
                     </li>
                     <li>
-                        <a href="#object.sameObject_q">12.10. func sameObject?</a>
+                        <a href="#object.id">12.10. func id</a>
                     </li>
                     <li>
-                        <a href="#object.implements_q">12.11. func(obj, interface)bool implements?</a>
+                        <a href="#object.sameObject_q">12.11. func sameObject?</a>
                     </li>
                     <li>
-                        <a href="#ident.Int">12.12. interface Int</a>
+                        <a href="#object.implements_q">12.12. func(obj, interface)bool implements?</a>
                     </li>
                     <li>
-                        <a href="#object.BigInt">12.13. interface BigInt</a>
+                        <a href="#ident.Int">12.13. interface Int</a>
                     </li>
                     <li>
-                        <a href="#object.BigRat">12.14. interface BigRat</a>
+                        <a href="#object.BigInt">12.14. interface BigInt</a>
                     </li>
                     <li>
-                        <a href="#ident.Interface">12.15. interface Interface</a>
+                        <a href="#object.BigRat">12.15. interface BigRat</a>
                     </li>
                     <li>
-                        <a href="#object.Object">12.16. interface Object</a>
+                        <a href="#ident.Interface">12.16. interface Interface</a>
                     </li>
                     <li>
-                        <a href="#interface.rat">12.17. interface rat</a>
+                        <a href="#object.Object">12.17. interface Object</a>
                     </li>
                     <li>
-                        <a href="#Generator">12.18. Generator</a>
+                        <a href="#interface.rat">12.18. interface rat</a>
                     </li>
                     <li>
-                        <a href="#InterfaceBuilder">12.19. InterfaceBuilder</a>
+                        <a href="#Generator">12.19. Generator</a>
                     </li>
                     <li>
-                        <a href="#Iterator">12.20. Iterator</a>
+                        <a href="#InterfaceBuilder">12.20. InterfaceBuilder</a>
                     </li>
                     <li>
-                        <a href="#CInterfaceBuilder">12.21. CInterfaceBuilder</a>
+                        <a href="#Iterator">12.21. Iterator</a>
                     </li>
                     <li>
-                        <a href="#getFuncInterface">12.22. getFuncInterface</a>
+                        <a href="#CInterfaceBuilder">12.22. CInterfaceBuilder</a>
+                    </li>
+                    <li>
+                        <a href="#getFuncInterface">12.23. getFuncInterface</a>
                     </li>
                 </ol>
             </li>
@@ -1254,7 +1257,7 @@ alpha
                     <p>A group of declarations within a bundle.</p>
                     <ul class="layout">
                         <li>* 
-                        <a href="#node.scope-alteration">scope-alteration</a></li>
+                        <a href="#node.scope-alteration">scope-alteration</a>alt</li>
                         <li>+ 
                         <a href="#node.declare-first">declare-first</a></li>
                     </ul>
@@ -1499,14 +1502,14 @@ test
                 <div id="node.return">
                     <h3>10.4.8. return</h3>
                     <ul class="layout">
-                        <li>? expression</li>
+                        <li>? expression value</li>
                     </ul>
                     <p>Function call ends and evaluates to expression.</p>
                 </div>
                 <div id="node.throw">
                     <h3>10.4.9. throw</h3>
                     <ul class="layout">
-                        <li>expression</li>
+                        <li>expression value</li>
                     </ul>
                     <p>If the expression isn't an Exception, wrap it with NonExceptionThrownError.</p>
                 </div>
@@ -1514,7 +1517,7 @@ test
                     <h3>10.4.10. yield</h3>
                     <p>Within a generator, specifies the next value for the generator to yield.</p>
                     <ul class="layout">
-                        <li>expression</li>
+                        <li>expression value</li>
                     </ul>
                     <p class="process">Must be a descendant of a generator node, and not inside a function or class node. (XXX spec out the kind of barriers function and class nodes create)</p>
                 </div>
@@ -1556,7 +1559,7 @@ test
                     <p class="xxx">Come up with better name.</p>
                     <ul class="layout">
                         <li>* 
-                        <a href="#node.scope-alteration">scope-alteration</a></li>
+                        <a href="#node.scope-alteration">scope-alteration</a>alt</li>
                         <li>* expression member</li>
                     </ul>
                     <p>Has scope.</p>
@@ -1842,6 +1845,8 @@ test
                             <li>If [2] and [4] are the same, evaluate to true. Otherwise, evaluate to false.</li>
                         </ol>
                     </div>
+                    <code xml:space="preserve">true and false true xnor false</code>
+                    <code xml:space="preserve">(and true false) (xnor true false)</code>
                 </div>
                 <div id="node.array">
                     <h3>10.6.2. array</h3>
@@ -1853,6 +1858,8 @@ test
                     </ul>
                     <p>Evaluates to an object with interface array as the active interface. The object may implement other interfaces if they do not conflict with the array interface.</p>
                     <p>Each [element] is cast to [interface]. If a cast error results, it raises out of the array node, so that the array node doesn't evaluate to anything.</p>
+                    <code xml:space="preserve">decl numbers = array Int { 1, 2, 3 } numbers[2] = 5 each( print, numbers ) //prints: "125"</code>
+                    <code xml:space="preserve">(decl auto numbers (array Int (1 2 3))) ([]= numbers 2 5) (each print numbers)</code>
                 </div>
                 <div id="node.breed">
                     <h3>10.6.3. breed</h3>
@@ -1870,6 +1877,7 @@ test
                         <li>Produce the new value produced by the breeder.</li>
                     </ol>
                     <code xml:space="preserve">decl Int num1 = 987 decl Int num2 = copy(num) decl Rat num3 = (num to Rat)</code>
+                    <code xml:space="preserve">(decl Int num1 987) (decl Int num2 (copy num)) (decl Rat num3 (breed num Rat))</code>
                 </div>
                 <div id="node.bundle">
                     <h3>10.6.4. bundle</h3>
@@ -1878,7 +1886,7 @@ test
                         <li>* 
                         <a href="#node.import">import</a></li>
                         <li>* 
-                        <a href="#node.scope-alteration">scope-alteration</a></li>
+                        <a href="#node.scope-alteration">scope-alteration</a>alt</li>
                         <li>+ 
                         <a href="#node.plane">plane</a></li>
                     </ul>
@@ -1927,7 +1935,8 @@ test
                         <a href="#node.identifier">identifier</a>method name</li>
                     </ul>
                     <p>Creates a function that, when passed the type specified by [interface], calls the method named [method name] on the first argument with the rest of the arguments sent to it. It's purpose is to help with functional programming.</p>
-                    <code xml:space="preserve">interface Foo { func doStuff(Int, Int) Rat } Foo foo = getFoo() func(Foo,Int,Int)Rat doStuffer = Foo::doStuff println doStuffer(foo,3,7) dyn doStuffer2 = dyn::doStuff println doStuffer2(foo,3,7) //below all equilavent: println Foo::doStuff(foo,3,7) println dyn::doStuff(foo,3,7) println foo.doStuff(3,7)</code>
+                    <code xml:space="preserve">interface Foo { func doStuff(Int, Int) Rat } decl Foo foo = getFoo() decl func(Foo,Int,Int)Rat doStuffer = Foo::doStuff println doStuffer(foo,3,7) decl doStuffer2 = dyn::doStuff println doStuffer2(foo,3,7) //below all equilavent: println Foo::doStuff(foo,3,7) println dyn::doStuff(foo,3,7) println foo.doStuff(3,7)</code>
+                    <code xml:space="preserve">(decl Foo foo (getFoo)) (decl auto doStuffer (caller Foo doStuff)) (println (doStuffer foo 3 7)) (decl const doStuffer2 (caller dyn doStuff)) (println (doStuffer2 foo 3 7))</code>
                 </div>
                 <div id="node.chain">
                     <h3>10.6.6. chain</h3>
@@ -1940,6 +1949,8 @@ test
                     </ul>
                     <p>Evaluates to a list, as if calling CList&lt; [interface] &gt; ( [element], [element], ... )</p>
                     <p>Each [element] is cast to [interface]. If a cast error results, it raises out of the list node, so that the list node doesn't evaluate to anything.</p>
+                    <code xml:space="preserve">decl numbers = chain Int { 1, 2, 3, 4, 5, 6 } for number in numbers println number</code>
+                    <code xml:space="preserve">(decl const numbers (chain Int (1 2 3 4 5 6))) (for number numbers (println number))</code>
                 </div>
                 <div id="node.class">
                     <h3>10.6.7. class</h3>
@@ -2046,8 +2057,7 @@ test
                         <h4>10.6.7.1. static-member</h4>
                         <ul class="layout">
                             <li>
-                                <a href="#node.declaration">declaration</a>
-                            </li>
+                            <a href="#node.declaration">declaration</a>decl</li>
                             <li>? 
                             <a href="#node.access">access</a></li>
                         </ul>
@@ -2167,6 +2177,8 @@ test
                             <li>expression value</li>
                         </ul>
                     </div>
+                    <code xml:space="preserve">decl ages = dict (String, Int) { "Saray" : 12, "John" : 70, "Mike" : 23 } for pair name, age in ages println name " " age</code>
+                    <code xml:space="preserve">(decl const ages (dict String Int (("Saray" 12) ("John" 70) ("Mike" 23)))) (forpair name age ages (println name " " age))</code>
                 </div>
                 <div id="node.enum">
                     <h3>10.6.10. enum</h3>
@@ -2245,6 +2257,7 @@ for animal in Animal
 activeInterface(Animal) == Interface + Enum&lt;EntryFace&gt; + EnumList
 (Animal as Interface) == EntryFace
 </pre>
+                    <code xml:space="preserve">(enum Animal (dog cat fish parrot ferret gerbil hamster) (for animal Animal (println animal.name))</code>
                 </div>
                 <div id="node.extract-member">
                     <h3>10.6.11. extract-member</h3>
@@ -2254,6 +2267,8 @@ activeInterface(Animal) == Interface + Enum&lt;EntryFace&gt; + EnumList
                         <a href="#node.identifier">identifier</a>member name</li>
                     </ul>
                     <p>Retrieves the a method or the value of a property from the value specified by [source]. If the active interface of the value specified by [source] does not have a property or method with the specified name, throw an exception.</p>
+                    <code xml:space="preserve">println( alpha.beta ) alpha.doStuff()</code>
+                    <code xml:space="preserve">(println alpha.beta) (alpha.doStuff)</code>
                 </div>
                 <div id="node.function">
                     <h3>10.6.12. function</h3>
@@ -2267,6 +2282,10 @@ activeInterface(Animal) == Interface + Enum&lt;EntryFace&gt; + EnumList
                     <p class="xxx">Specify barrier, which is like the kind of barrier that is in class nodes. Compare this kind of barrier to scope barriers -- nodes that "have scope". The [body] node is not executed when this node is executed, but it may be executed after this node has executed.</p>
                     <p>If [return info] is not present, the function does not return anything. I.e., it does not produced a value when call.</p>
                     <p>When this node is executed, it produces a value with a function interface as the active interface. Only the [parameter] node and [return info]'s [interface] nodes are executed at this time. When the resultant value is called, the [body] node is executed in the scope of this function node.</p>
+                    <code xml:space="preserve">decl square = func(a) { a * a } println( square(2) )</code>
+                    <code xml:space="preserve">(decl const square (function (a) void (* a a))) (println (square 2))</code>
+                    <code xml:space="preserve">decl square = {a|a*a} println( square(2) )</code>
+                    <code xml:space="preserve">println( {a|a*a} 2 )</code>
                 </div>
                 <div id="node.function-interface">
                     <h3>10.6.13. function-interface</h3>
@@ -2277,6 +2296,8 @@ activeInterface(Animal) == Interface + Enum&lt;EntryFace&gt; + EnumList
                         <li>? 
                         <a href="#node.nullable-type">nullable-type</a>return info</li>
                     </ul>
+                    <code xml:space="preserve">println( func(Int,Int)Rat )</code>
+                    <code xml:space="preserve">(println (funcface (Int Int) Rat))</code>
                 </div>
                 <div id="node.generator">
                     <h3>10.6.14. generator</h3>
@@ -2284,13 +2305,14 @@ activeInterface(Animal) == Interface + Enum&lt;EntryFace&gt; + EnumList
                     <ul class="layout">
                         <li>? 
                         <a href="#node.nullable-type">nullable-type</a></li>
-                        <li>expression</li>
+                        <li>expression body</li>
                     </ul>
                     <p>Has scope.</p>
                     <p>If [type] is not given, the generator does not produce. (The generator could still be useful for producing side effects.)</p>
-                    <code xml:space="preserve">decl foo = generator { decl Int i = 2 while i lt 5 { yield i i++ } } for i in foo { print foo print " " } prints: '2 3 4 ' interface of foo == Generator&lt;Int&gt;</code>
-                    <code xml:space="preserve">decl foo = func(Int a, Int b) Generator&lt;Int&gt; { return generator { decl Int i = a while i &lt; b { yield i i++ } } } for i in foo(2, 5) { print foo print " " } prints: '2 3 4 '</code>
-                    <code xml:space="preserve">A representation could provide a construct like that in other languages by combining functions and generators. decl foo = generator(Int a, Int b) Int { decl Int i = a while i &lt; b { yield i i++ } } for i in foo(2, 5) { print foo print " " } prints: '2 3 4 '</code>
+                    <code xml:space="preserve">decl foo = generator { decl Int i = 2 while i lt 5 { yield i i++ } } for i in foo { print i " " } prints: '2 3 4 ' interface of foo == Generator&lt;Int&gt;</code>
+                    <code xml:space="preserve">(decl const foo (generator (decl Int i 2) (while (lt i 5) (block (yield i) (++ i))))) (forin i foo (print i " "))</code>
+                    <code xml:space="preserve">decl foo = func(Int a, Int b) Generator&lt;Int&gt; { return generator { decl Int i = a while i lt b { yield i i++ } } } for i in foo(2, 5) { print i " " } prints: '2 3 4 '</code>
+                    <code xml:space="preserve">decl foo = genfunc(Int a, Int b) Int { decl Int i = a while i &lt; b { yield i i++ } } for i in foo(2, 5) { print i " " } prints: '2 3 4 '</code>
                 </div>
                 <div id="node.generic-class">
                     <h3>10.6.15. generic-class</h3>
@@ -2313,7 +2335,8 @@ activeInterface(Animal) == Interface + Enum&lt;EntryFace&gt; + EnumList
                         </li>
                     </ul>
                     <p>Evaluates to a value with an active interface that inherits from GenericClass and one or more function interfaces. When called, the value returns the value returned from evaluating the function node.</p>
-                    <code xml:space="preserve">generic(T) func larger(T a, T b) T { if a &lt; b return b return a } println larger(2, 7) //prints "7"</code>
+                    <code xml:space="preserve">func larger&lt;T&gt;(T a, T b) T { if a lt b return b return a } println larger(2, 7) //prints "7"</code>
+                    <code xml:space="preserve">(declfirst auto larger (genericfunction (T) ((T a) (T b)) T (if (lt a b) (return b)) (return a))) (println (larger 2 7))</code>
                 </div>
                 <div id="node.generic-interface">
                     <h3>10.6.17. generic-interface</h3>
@@ -2325,7 +2348,8 @@ activeInterface(Animal) == Interface + Enum&lt;EntryFace&gt; + EnumList
                         </li>
                     </ul>
                     <p>Evaluates to a value with an active interface that inherits from GenericClass and one or more function interfaces. When called, the value returns the value returned from evaluating the interface node.</p>
-                    <code xml:space="preserve">generic(T) interface List { func addFront(T) func addBack(T) func removeFront() T func removeBack() T } List(Int) list = ... list.addFront(2) list.addBack(3) list.addFront(1) println list.removeFront() //prints "1" println list.removeBack() //prints "3"</code>
+                    <code xml:space="preserve">interface List&lt;T&gt; { func addFront(T) func addBack(T) func removeFront() T func removeBack() T } decl List&lt;Int&gt; list = getNumbers() list.addFront(2) list.addBack(3) list.addFront(1) println list.removeFront() //prints "1" println list.removeBack() //prints "3"</code>
+                    <code xml:space="preserve">(declfirst auto List (genericinterface (T) (func addFront (T) void) (func addBack (T) void) (func removeFront () T) (func removeBack () T))) (decl List&lt;Int&gt; list (getNumbers)) (list.addFront 2) (list.addBack 3) (list.addFront 1) (println (list.removeFront)) (println (list.removeBack))</code>
                 </div>
                 <div id="node.identifier">
                     <h3>10.6.18. identifier</h3>
@@ -2338,6 +2362,8 @@ activeInterface(Animal) == Interface + Enum&lt;EntryFace&gt; + EnumList
                         <li>If key is bound to a value, produce the value that key is bound to. If key has been declared that it can be bound to values, but it is currently not bound to anything, return null.</li>
                         <li>If key is bound to a namespace, throw an error.</li>
                     </ol>
+                    <code xml:space="preserve">println( foo )</code>
+                    <code xml:space="preserve">(println foo)</code>
                 </div>
                 <div id="node.instantiate-generic">
                     <h3>10.6.19. instantiate-generic</h3>
@@ -2347,10 +2373,14 @@ activeInterface(Animal) == Interface + Enum&lt;EntryFace&gt; + EnumList
                         <li>+ 
                         <a href="#node.argument">argument</a></li>
                     </ul>
+                    <code xml:space="preserve">decl List&lt;Int&gt; numbers</code>
+                    <code xml:space="preserve">(decl List&lt;Int&gt; numbers)</code>
                 </div>
                 <div id="node.integer">
                     <h3>10.6.20. integer</h3>
                     <p>Base node. Evaluates to an object reference with BigInt as the active interface. The object may implement other interfaces if they do not conflict with the BigInt interface. Must not implement the LimInt interface.</p>
+                    <code xml:space="preserve">println( 789 )</code>
+                    <code xml:space="preserve">(println 789)</code>
                 </div>
                 <div id="node.interface">
                     <h3>10.6.21. interface</h3>
@@ -2404,7 +2434,8 @@ activeInterface(Animal) == Interface + Enum&lt;EntryFace&gt; + EnumList
                                 <a href="#node.nullable-type">nullable-type</a>
                             </li>
                             <li>
-                            <a href="#node.access">access</a>access</li>
+                                <a href="#node.access">access</a>
+                            </li>
                         </ul>
                     </div>
                     <div id="node.method">
@@ -2428,10 +2459,13 @@ activeInterface(Animal) == Interface + Enum&lt;EntryFace&gt; + EnumList
                     </ul>
                     <p>Returns a bool object reference to the true or false objects. True if [object] implements [interface], false otherwise.</p>
                     <code xml:space="preserve">if (o impls Foo) (o as Foo).propOfFoo()</code>
+                    <code xml:space="preserve">(if (impls o Foo) ((cast o Foo).propOfFoo))</code>
                 </div>
                 <div id="node.rational">
                     <h3>10.6.23. rational</h3>
                     <p>Base node. Evaluates to an object with BigRat as the active interface. The object may implement other interfaces if they do not conflict with the BigRat interface. Must not implement the LimRat interface.</p>
+                    <code xml:space="preserve">println( 123.456 )</code>
+                    <code xml:space="preserve">(println 123.456)</code>
                 </div>
                 <div id="node.set-property">
                     <h3>10.6.24. set-property</h3>
@@ -2442,12 +2476,16 @@ activeInterface(Animal) == Interface + Enum&lt;EntryFace&gt; + EnumList
                         <li>expression value</li>
                     </ul>
                     <p>Sets the value of a property. If the active interface of the value does not have a property with the specified name, or the property cannot be set, an error results. Evaluates to the value given by [value].</p>
+                    <code xml:space="preserve">alpha.beta = "gamma"</code>
+                    <code xml:space="preserve">(= alpha.beta "gamma")</code>
                 </div>
                 <div id="node.string">
                     <h3>10.6.25. string</h3>
                     <p>string nodes consist of text</p>
                     <p>strings are expressions</p>
                     <p>Base node. Evaluates to an object with interface string as the active interface. The object may implement other interfaces if they do not conflict with the string interface.</p>
+                    <code xml:space="preserve">println( "this is a string" )</code>
+                    <code xml:space="preserve">(println "this is a string")</code>
                 </div>
             </div>
         </div>
@@ -2543,8 +2581,22 @@ interface&lt;U&gt; EnumDictEntry
         inherit EnumEntry
         get U value
 </pre>
+            <div id="object.println">
+                <h2>12.1. println</h2>
+                <pre>
+interface PrintLnFace {
+        call( param Stringable objs[] ) PrintLnFace
+}
+declfirst PrintLnFace println = ...
+</pre>
+                <p class="xxx">Need some way for client code to obtain function interfaces that return themselves. For example, "func(...)Self" and "getRecursiveFuncFace(...)". Then, the interface of println could be defined as something like "func(param Stringable objs[]) Self".</p>
+                <p class="xxx">Need to define argvars.</p>
+                <p>Takes in multiple Stringable values, prints each to standard output, and returns itself.</p>
+                <code xml:space="preserve">println( 1, " ", 2, " ", 3 ) /* call once with multiple arguments */ println(1)(" ")(2)(" ")(3) /* call several times with one argument each time */ println 1 " " 2 " " 3 /* call several times with one argument each time */</code>
+                <code xml:space="preserve">(println 1 " " 2 " " 3) /* call once with multiple arguments */ (((((println 1) " ") 2) " ") 3) /* call several times with one argument each time */</code>
+            </div>
             <div id="object.activeInterface">
-                <h2>12.1. activeInterface</h2>
+                <h2>12.2. activeInterface</h2>
                 <pre>
 func activeInterface(dyn) Interface
 
@@ -2553,32 +2605,32 @@ println( activeInterface(false) == Bool ) //true
                 <p>Returns the interface that is the active interafce of the specified value.</p>
             </div>
             <div id="object.String">
-                <h2>12.2. String</h2>
+                <h2>12.3. String</h2>
                 <p>Besides downcasting to an Interface, String can also be called to produce a String.</p>
                 <pre>
 func String( Collection&lt;Int&gt; unicodeCodePoints ) String
 </pre>
             </div>
             <div id="object.cast">
-                <h2>12.3. func{I}(dyn)I cast</h2>
+                <h2>12.4. func{I}(dyn)I cast</h2>
                 <p>The cast function returns an object cast to the specified interface, or throws a cast error. The returned object must be the same object that was passed in.</p>
                 <code xml:space="preserve">if (foo is Bar) cast&lt;Bar&gt;(foo).propOfBar()</code>
             </div>
             <div id="object.ceil">
-                <h2>12.4. ceil</h2>
+                <h2>12.5. ceil</h2>
                 <pre>
 func ceil(Rat) Int
 </pre>
                 <p>Finds the ceiling of the specified rational number.</p>
             </div>
             <div id="object.floor">
-                <h2>12.5. floor</h2>
+                <h2>12.6. floor</h2>
                 <pre>
 func floor(Rat) Int
 </pre>
             </div>
             <div id="object.modulo">
-                <h2>12.6. modulo</h2>
+                <h2>12.7. modulo</h2>
                 <p>Finds the remainder of dividing two integers.</p>
                 <pre>
 func modulo( Int dividend, Int divisor, ModuloMethod method = ModuloMethod.divisor ) Int
@@ -2616,7 +2668,7 @@ modulo(-15, -4, negative) -&gt; -3
 </pre>
             </div>
             <div id="object.round">
-                <h2>12.7. round</h2>
+                <h2>12.8. round</h2>
                 <pre>
 func round(Rat, RoundMethod = nearest_away) Int
 
@@ -2663,7 +2715,7 @@ round(8.6, nearest_unbiased) -&gt; 9
 </pre>
             </div>
             <div id="object.generator">
-                <h2>12.8. interface generator</h2>
+                <h2>12.9. interface generator</h2>
                 <pre>
 interface{I} generator
         func next() I
@@ -2673,7 +2725,7 @@ interface{I} generator
                 <code xml:space="preserve">MyClass[] objs for each o in objs o.doStuff()</code>
             </div>
             <div id="object.id">
-                <h2>12.9. func id</h2>
+                <h2>12.10. func id</h2>
                 <pre>
 func id(obj) Int
 
@@ -2683,7 +2735,7 @@ println( id(true) )
                 <p>Returns a different number for every object. Always returns the same number for the same object, even if that object is a part of different values (the same object cast to different interfaces).</p>
             </div>
             <div id="object.sameObject_q">
-                <h2>12.10. func sameObject?</h2>
+                <h2>12.11. func sameObject?</h2>
                 <p>Determines whether the two values have the same object.</p>
                 <pre>
 func sameObject?(obj, obj) Bool
@@ -2697,12 +2749,12 @@ println( id(foo) == id(bar) )
                 <p>Tells whether the values are associated with the same object.</p>
             </div>
             <div id="object.implements_q">
-                <h2>12.11. func(obj, interface)bool implements?</h2>
+                <h2>12.12. func(obj, interface)bool implements?</h2>
                 <p>Tells whether the object implements the interface, like the implements node.</p>
                 <code xml:space="preserve">if implements(foo, Bar) (foo as Bar).propOfBar()</code>
             </div>
             <div id="ident.Int">
-                <h2>12.12. interface Int</h2>
+                <h2>12.13. interface Int</h2>
                 <ul>
                     <li>func lessThan?(Int) Bool</li>
                     <li>func lessThanOrEqual?(Int) Bool</li>
@@ -2739,15 +2791,15 @@ println( id(foo) == id(bar) )
                 <p>The String produced by the String convertee must represent the stored integer absolutely, with no loss of precision. It may throw an error if it is incapable of producing such a representation. There are no restrictions on how the integer should be represented, although Int implementations generally should try to produce a representation that is simple and short. Implementations of Int should prefer exotic and strange representations over throwing an error. For example, implementations should prefer representing a googolplex with e.g. "10E(10E100)" ofer throwing an error.</p>
             </div>
             <div id="object.BigInt">
-                <h2>12.13. interface BigInt</h2>
+                <h2>12.14. interface BigInt</h2>
                 <p>Inherits from Int.</p>
             </div>
             <div id="object.BigRat">
-                <h2>12.14. interface BigRat</h2>
+                <h2>12.15. interface BigRat</h2>
                 <p>Inherits from Rat.</p>
             </div>
             <div id="ident.Interface">
-                <h2>12.15. interface Interface</h2>
+                <h2>12.16. interface Interface</h2>
                 <ul>
                     <li>get Bool fromAddition?</li>
                     <li>get Set{Interface} inheritees</li>
@@ -2761,7 +2813,7 @@ println( id(foo) == id(bar) )
                 <p>Implements itself.</p>
             </div>
             <div id="object.Object">
-                <h2>12.16. interface Object</h2>
+                <h2>12.17. interface Object</h2>
                 <ul>
                     <li>Bool builtin?</li>
                     <li>Bool mutable?</li>
@@ -2774,7 +2826,7 @@ println( id(foo) == id(bar) )
                 <p>The builtin? property tells whether the object is implemented by the Desal implementation, such as for integers and strings. The implements? method tells whether the object implements a specified interface.</p>
             </div>
             <div id="interface.rat">
-                <h2>12.17. interface rat</h2>
+                <h2>12.18. interface rat</h2>
                 <ul>
                     <li>func toInt() int</li>
                     <li>func round() int</li>
@@ -2795,11 +2847,11 @@ println( id(foo) == id(bar) )
                 <li>func{I}(I)SelfGen println</li>
             </ul>
             <div id="Generator">
-                <h2>12.18. Generator</h2>
+                <h2>12.19. Generator</h2>
                 <code xml:space="preserve">generic&lt;T&gt; interface Generator { func yield() T //throws a GeneratorExhausted exception (which inherits from SpecialCase) when all values have been yielded }</code>
             </div>
             <div id="InterfaceBuilder">
-                <h2>12.19. InterfaceBuilder</h2>
+                <h2>12.20. InterfaceBuilder</h2>
                 <ul>
                     <li>map{string, interface} properties</li>
                     <li>bool alwaysImmutable?</li>
@@ -2808,7 +2860,7 @@ println( id(foo) == id(bar) )
                 <p>interface interface is always immutable, so InterfaceBuilder exists to allow creating interface objects procedurally.</p>
             </div>
             <div id="Iterator">
-                <h2>12.20. Iterator</h2>
+                <h2>12.21. Iterator</h2>
                 <pre>
 interface{I} Iterator
         //values may change
@@ -2858,11 +2910,11 @@ interface{I} Iterator
                 <code xml:space="preserve">Container{int} numbers; Iterator iter = numbers.iterate(); int num = iter.value while( iter.valid? ) int num = iter.value iter.moveForward()</code>
             </div>
             <div id="CInterfaceBuilder">
-                <h2>12.21. CInterfaceBuilder</h2>
+                <h2>12.22. CInterfaceBuilder</h2>
                 <p>CInterfaceBuilder, when called, returns an object that can be used to procedurally and/or dynamically create interface objects.</p>
             </div>
             <div id="getFuncInterface">
-                <h2>12.22. getFuncInterface</h2>
+                <h2>12.23. getFuncInterface</h2>
                 <pre>
 func getFuncInterface (
         int templateParamCount,

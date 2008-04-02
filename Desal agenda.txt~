@@ -816,6 +816,9 @@ Ensure Desal supports contract programming. Add as many contract programming fea
 
 
 Explain typing in Desal.
+
+static typing where possible, dynamic typing elsewhere
+
 static typing -
 	checking type safety before execution
 	requiring types are known before execution
@@ -831,8 +834,104 @@ Desal does not require types be known before execution (unlike statically type l
 
 
 
+Writing an interpreter/compiler is hard. See http://www.python.org/dev/peps/pep-0339/ in case you weren't already convinced. My Dextr implementations should try to shove all the work onto something else ASAP. That means targeting a common bytecode (probably CLI/Mono, but maybe also Java) or a compiler (like GCC's GENERIC/GIMPLE), instead of trying to do anything myself. A Desal implementation should do nothing more than parse, validate, translate, and hand off work to others.
 
------ Dextr
+Hand-writing a class for each node type, that can possible .execute(), is not a good idea. Instead, the layout should be stored in a file (e.g. XML) and the code to deal with the layout should be generated automatically. A node class should not have an .execute() method. If I insist on writing my own interpreter, it should be separate. Also, much of the Desible parser should be generated automatically.
+
+Here's what desal001 should be able to do:
+* output information about a representation (Desible, Dextr)
+	- is it valid?
+	- Dextr: list of tokens
+* translate between representations (Dextr to Desible, Desible to executable)
+* execute a representation
+
+CLI interface:
+1) Create a string->string dict. Set "mode" equal to "execute".
+2) Read all arguments that begin with a dash until the first argument that does not begin with a dash (ignore arguments that begin with a dash after that argument).
+3) For each argument, strip the initial dash. Then split whats left around the first equals sign. If an equals sign is not present, throw an error. Add the pair to a dict with the first part as the key and the second part as the value.
+4) Create a sequence of the remaining arguments (the ones that did not start with a dash or came after an argument that did not start with a dash).
+4) Continue according to the mode.
+
+Mode can be "info", "execute", or "translate".
+
+desal001 -mode=info -repr=dextr -infomode=tokenlist "test.dextr" > file
+desal001 -mode=info -repr=dextr -infomode=tokenlist -outpath="tokenlist.txt" "test.dextr"
+
+if mode is info:
+	First non-dash argument is the input file. There should be no other non-dash arguments.
+
+if mode is execute:
+	First non-dash argument is the path of the input file. Rest of the non-dash arguments are the arguments to the bundle represented by the input file.
+
+
+Could something refer to an outer identifier before declaring its own?
+	func foo() {
+		println( something ) //outer
+		decl something = 123
+		println( something ) //inner
+	}
+	I'm thinking no, but this needs to be speced. However, this would be okay:
+	func foo() {
+		println( outer:something ) //outer
+		decl something = 123
+		println( something ) //inner
+	}
+
+
+Note that in Desal, everything that can be a function should be, to facilitate functional programming. (e.g. map(), filter())
+Q: What about caller, breed, and cast?
+
+Make Desal declare-first nodes scope-alteration nodes, but no longer expressions.
+class Node_DeclareFirst : INode_ScopeAlteration {...}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+=============  Dextr  ================
+
+make "dyn ?" the default return type for functions
+func foo() {...} //same as below
+func foo()dyn ? {...} //nullable dyn
+func foo()dyn {...} //non-nullable dyn
+
+
+--- Dextr tokenization
+
+Define the first two stages of the three-stage process of extracting Desal semantics from Dextr:
+1) tokenization
+2) fixup
+(parsing the tokens would come next)
+
+The first stage should be specified using BNF. It takes in a string (a sequence of Unicode code points) and outputs a sequence of tokens, including space, tab, and comment tokens.
+
+The second stage should be specified using English. It removes the space and comment tokens, throwing an error when they appear where they shouldn't. It also replaces tabs with indent_open and indent_close tokens.
+
+This two-stage process allows much of the heavy lifting to be done by automatically generated tokenizers, so that the hand-coded portion can be much simpler.
+
+
+
 
 namespaced-value-identikey
 	identifier:identfier:identifier

@@ -10,8 +10,8 @@ import subprocess
 
 #constants
 specsDir = "/media/files/Desal/specs"
-inputDir = specsDir + '/docbook'
-outputDir = specsDir + '/html'
+inputDir = os.path.join(specsDir,'docbook')
+outputDir = os.path.join(specsDir,'html')
 docbookDir = "/media/files/other/docbook"
 fileBases = (
 	'Desal Semantics',

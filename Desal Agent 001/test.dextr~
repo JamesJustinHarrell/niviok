@@ -1,0 +1,119 @@
+expose std
+
+func main() {
+	headerize("doStuff", doStuff)
+	headerize("testNonProducers", testNonProducers)
+	headerize("testSometimesProducers", testSometimesProducers)
+	headerize("testAlwaysProducers", testAlwaysProducers)
+}
+
+func header(title) {
+	println("")
+	println(title.concat(" :"))
+}
+
+func headerize(title, callback) {
+	header("calling ".concat(title))
+	callback()
+	println("")
+	println("done with ".concat(title))
+}
+
+func doStuff()
+	if true
+		println("this is a test")
+	decl String str = "🿰 Hello,".concat(" World 🿱")
+	println(str)
+											# look at me!
+	println(str.length)
+	for x from 1 to 20
+		println( x.add(10000) ) /* this is a comment
+that tests some stuff */
+	println("still in doStuff()") #yep, sure are
+	/* blah blah
+				blah blah
+blah blah
+	blah blah */
+	println("still (!) in doStuff()") # will we ever get out?!
+	
+	decl foo1 = 2 /* comment */ + 3
+
+	decl foo2 = 2 + 3 #comment
+	
+	/* comment
+				comment comment */
+	decl foo3 = 2 + ( func()*
+		3
+	)() + 6
+	
+	decl foo4 = 2 + 3 /* comment
+comment comment */
+	nextLine()
+	
+	decl foo = 2 +
+/* comment */
+		3 +
+			4 +
+				5 + 6 + 7
+	
+	/*
+	For the above, the identented part is parsed as a block node.
+	So we have:
+		decl foo = 2 + { 3 + 4 + 5 + 6 + 7 }
+	*/
+	
+	decl lastInDoStuff
+
+func testNonProducers() {}
+
+func testSometimesProducers() {}
+
+func testAlwaysProducers() {
+	headerize("testBooleanLogic", testBooleanLogic)
+
+	header("active-interface")
+	println( activeInterface(true).equals?(Bool) )
+	
+	header("func")
+	println( (func()void{ "some stuff" })() )
+	
+	header("identifier")
+	println( true )
+	
+	header("rational")
+	println( 123.456 )
+	
+	header("string")
+	println( "This is some text." )
+}
+
+func testBooleanLogic() {
+	decl t = true
+	decl f = false
+
+	# for (n)and and (n)or: shortcut, then not shortcut
+
+	header("and")
+	println( f and t )
+	println( t and t )
+
+	header("nand")
+	println( f nand t )
+	println( t nand t )
+
+	header("or")
+	println( t or f )
+	println( f or f )
+
+	header("nor")
+	println( t nor f )
+	println( f nor f )
+	
+	header("xor")
+	println( t xor f )
+	println( t xor t )
+	
+	header("xnor")
+	println( t xnor f )
+	println( t xnor t )
+}

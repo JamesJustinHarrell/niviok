@@ -1,0 +1,24 @@
+//should guarantee the character sequence is valid according to Unicode
+interface String {
+	inherit Sequence<Character>
+}
+
+//a Unicode character
+interface Character {
+	inherit Int
+	breed String /* e.g. "U+00000F" */
+}
+
+//a Sequence can be read from
+//an instance may be mutable, but
+//	this interface doesn't provide any way to mutate it (like e.g. MuSequence)
+interface Sequence<T> {
+	inherit Collection<T>
+	func combine(Sequence<T>) Sequence<T>
+}
+
+interface Collection<T> {
+	prop ro Bool empty?
+	func getIterator() Iterator<T>
+}
+

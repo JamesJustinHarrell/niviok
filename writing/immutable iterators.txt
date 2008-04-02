@@ -1,0 +1,46 @@
+--- Lisp ; no mutations
+
+(define (print-list a-list)
+	(println (car a-list))
+	(print-list (cdr a-list)))
+(print-list (get-a-list))
+
+
+--- Desal ; explicit mutations
+
+decl Iterator it = getAList().getIterator()
+while it.valid?
+	println it.current
+	it.advance()
+
+
+--- Desal ; implicit mutations
+
+for element in getAList()
+	println element
+
+
+--- Desal ; no mutations
+
+func printList<T>(ForwardImmutableIterator<T> aList)
+	println aList.current
+	printList(aList.nextIterator)
+printList(getAList().getIterator())
+
+
+
+interface ForwardImmutableIterator<T>
+	prop ro T current
+	prop ro ForwardImmutableIterator<T> nextIterator
+
+
+Rationale:
+Allow Lisp-style iteration, but expanded to work with any kind of collection.
+
+
+
+Of course, a much better way than any of these would be to just use a function like each().
+
+(each println (get-a-list))
+each(println, getAList())
+

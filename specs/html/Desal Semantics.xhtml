@@ -27,7 +27,7 @@
 		<p>Permission is granted to use, copy, display, modify, sell, and distribute this document. This document is provided &quot;as is&quot; without warrany of any kind. In no event shall anyone be liable for any damages or other liability arising from use of this document.</p>
 	
 	
-	<ol class="toc"><li><a href="#introduction">1. Introduction</a><ol><li><a href="#intro-basic">1.1. Basic</a></li><li><a href="#version">1.2. Version</a><ol><li><a href="#desal-version">1.2.1. Desal version</a></li><li><a href="#specification-version">1.2.2. Specification version</a></li><li><a href="#version-notation">1.2.3. Version notation</a></li></ol></li><li><a href="#specification-scope">1.3. Scope</a></li><li><a href="#compliance">1.4. Compliance</a></li><li><a href="#executing-nodes">1.5. Executing nodes</a></li><li><a href="#definitions">1.6. Definitions</a></li></ol></li><li><a href="#overview">2. Overview</a><ol><li><a href="#identikeys">2.1. identikeys</a></li><li><a href="#ext-namespace">2.2. ext namespace</a></li><li><a href="#builtin-numbers">2.3. Built-in numbers</a></li></ol></li><li><a href="#values">3. Values</a></li><li><a href="#functions">4. Functions</a><ol><li><a href="#function-interfaces">4.1. Function interfaces</a></li></ol></li><li><a href="#interfaces">5. Interfaces</a><ol><li><a href="#interface-operations">5.1. Adding and subtracting interfaces</a></li></ol></li><li><a href="#special-members">6. Special members</a><ol><li><a href="#member.add">6.1. add</a></li><li><a href="#member.equals">6.2. equals?</a></li><li><a href="#member.extract">6.3. extract</a></li><li><a href="#member.insert">6.4. insert</a></li><li><a href="#member.throwDivide">6.5. throwDivide</a></li></ol></li><li><a href="#scopes">7. Scopes</a></li><li><a href="#handling-declare-first">8. Handling declare-first nodes</a></li><li><a href="#nodes">9. Nodes</a><ol><li><a href="#node-terminology">9.1. Node terminology</a></li><li><a href="#tree-node-layout">9.2. Tree node layout</a></li><li><a href="#node-supertypes">9.3. Node supertypes</a></li></ol></li><li><a href="#node-types">10. Node types</a><ol><li><a href="#base-node-types">10.1. Base nodes</a></li><li><a href="#tree-node-layout-key">10.2. Tree node layout key</a></li><li><a href="#non-executable">10.3. Non-executable</a><ol><li><a href="#node.argument">10.3.1. argument</a></li><li><a href="#node.boolean">10.3.2. boolean</a></li><li><a href="#node.direction">10.3.3. direction</a></li><li><a href="#node.expose">10.3.4. expose</a></li><li><a href="#node.generic-parameter">10.3.5. generic-parameter</a></li><li><a href="#node.identikey-category">10.3.6. identikey-category</a></li><li><a href="#node.identikey-type">10.3.7. identikey-type</a></li><li><a href="#node.import">10.3.8. import</a></li><li><a href="#node.nullable-type">10.3.9. nullable-type</a></li><li><a href="#node.parameter">10.3.10. parameter</a></li><li><a href="#node.plane">10.3.11. plane</a></li><li><a href="#node.scope-alteration">10.3.12. scope-alteration</a></li><li><a href="#node.using">10.3.13. using</a></li></ol></li><li><a href="#non-producing-expressions">10.4. Non-producing expressions</a><ol><li><a href="#iteration">10.4.1. Iteration</a><ol><li><a href="#node.do-while">10.4.1.1. do-while</a></li><li><a href="#node.do-times">10.4.1.2. do-times</a></li><li><a href="#node.for-key">10.4.1.3. for-key</a></li><li><a href="#node.for-pair">10.4.1.4. for-pair</a></li><li><a href="#node.for-manual">10.4.1.5. for-manual</a></li><li><a href="#node.for-range">10.4.1.6. for-range</a></li><li><a href="#node.for-value">10.4.1.7. for-value</a></li><li><a href="#node.loop">10.4.1.8. loop</a></li><li><a href="#node.while">10.4.1.9. while</a></li></ol></li><li><a href="#node.break">10.4.2. break</a></li><li><a href="#node.continue">10.4.3. continue</a></li><li><a href="#node.declare-empty">10.4.4. declare-empty</a></li><li><a href="#node.declare-first">10.4.5. declare-first</a></li><li><a href="#node.labeled">10.4.6. labeled</a></li><li><a href="#node.null">10.4.7. null</a></li><li><a href="#node.return">10.4.8. return</a></li><li><a href="#node.throw">10.4.9. throw</a></li><li><a href="#node.yield">10.4.10. yield</a></li></ol></li><li><a href="#sometimes-producing-expressions">10.5. Sometimes producing expressions</a><ol><li><a href="#node.assign">10.5.1. assign</a></li><li><a href="#node.block">10.5.2. block</a></li><li><a href="#node.call">10.5.3. call</a></li><li><a href="#node.cast">10.5.4. cast</a></li><li><a href="#node.conditional">10.5.5. conditional</a></li><li><a href="#node.curry">10.5.6. curry</a></li><li><a href="#node.declare-assign">10.5.7. declare-assign</a></li><li><a href="#node.ignore">10.5.8. ignore</a><ol><li><a href="#node.ignore-member">10.5.8.1. ignore-member</a></li></ol></li><li><a href="#node.namespaced-value-identikey">10.5.9. namespaced-value-identikey</a></li><li><a href="#node.possibility">10.5.10. possibility</a></li><li><a href="#node.select">10.5.11. select</a><ol><li><a href="#node.case">10.5.11.1. case</a></li></ol></li><li><a href="#node.try-catch">10.5.12. try-catch</a><ol><li><a href="#node.exception-handler">10.5.12.1. exception-handler</a></li></ol></li></ol></li><li><a href="#always-producing-expresions">10.6. Always producing expressions</a><ol><li><a href="#boolean-logic">10.6.1. Boolean logic</a><ol><li><a href="#node.and">10.6.1.1. and</a></li><li><a href="#node.nand">10.6.1.2. nand</a></li><li><a href="#node.or">10.6.1.3. or</a></li><li><a href="#node.nor">10.6.1.4. nor</a></li><li><a href="#node.xor">10.6.1.5. xor</a></li><li><a href="#node.xnor">10.6.1.6. xnor</a></li></ol></li><li><a href="#node.array">10.6.2. array</a></li><li><a href="#node.breed">10.6.3. breed</a></li><li><a href="#node.bundle">10.6.4. bundle</a></li><li><a href="#node.caller">10.6.5. caller</a></li><li><a href="#node.chain">10.6.6. chain</a></li><li><a href="#node.class">10.6.7. class</a><ol><li><a href="#node.static-member">10.6.7.1. static-member</a></li><li><a href="#node.declaration">10.6.7.2. declaration</a></li><li><a href="#node.declare-const-empty">10.6.7.3. declare-const-empty</a></li><li><a href="#node.interface-implementation">10.6.7.4. interface-implementation</a></li><li><a href="#node.named-function">10.6.7.5. named-function</a></li><li><a href="#node.class-property">10.6.7.6. class-property</a></li></ol></li><li><a href="#node.comprehension">10.6.8. comprehension</a><ol><li><a href="#node.comprehension-type">10.6.8.1. comprehension-type</a></li></ol></li><li><a href="#node.dictionary">10.6.9. dictionary</a><ol><li><a href="#node.dictionary-entry">10.6.9.1. dictionary-entry</a></li></ol></li><li><a href="#node.enum">10.6.10. enum</a><ol><li><a href="#node.enum-entry">10.6.10.1. enum-entry</a></li></ol></li><li><a href="#node.extract-member">10.6.11. extract-member</a></li><li><a href="#node.function">10.6.12. function</a></li><li><a href="#node.function-interface">10.6.13. function-interface</a></li><li><a href="#node.generator">10.6.14. generator</a></li><li><a href="#node.generic-class">10.6.15. generic-class</a></li><li><a href="#node.generic-function">10.6.16. generic-function</a></li><li><a href="#node.generic-interface">10.6.17. generic-interface</a></li><li><a href="#node.identifier">10.6.18. identifier</a></li><li><a href="#node.instantiate-generic">10.6.19. instantiate-generic</a></li><li><a href="#node.integer">10.6.20. integer</a></li><li><a href="#node.interface">10.6.21. interface</a><ol><li><a href="#node.statused-member">10.6.21.1. statused-member</a></li><li><a href="#node.member-status">10.6.21.2. member-status</a></li><li><a href="#node.interface-member">10.6.21.3. interface-member</a></li><li><a href="#node.convertor">10.6.21.4. convertor</a></li><li><a href="#node.callee">10.6.21.5. callee</a></li><li><a href="#node.property">10.6.21.6. property</a></li><li><a href="#node.method">10.6.21.7. method</a></li><li><a href="#node.access">10.6.21.8. access</a></li></ol></li><li><a href="#node.implements">10.6.22. implements</a></li><li><a href="#node.rational">10.6.23. rational</a></li><li><a href="#node.set-property">10.6.24. set-property</a></li><li><a href="#node.string">10.6.25. string</a></li></ol></li></ol></li><li><a href="#reserved-identikey-names">11. Reserved identikey names</a></li><li><a href="#standard-library">12. Standard library</a><ol><li><a href="#object.activeInterface">12.1. activeInterface</a></li><li><a href="#object.String">12.2. String</a></li><li><a href="#object.cast">12.3. func{I}(dyn)I cast</a></li><li><a href="#object.ceil">12.4. ceil</a></li><li><a href="#object.floor">12.5. floor</a></li><li><a href="#object.modulo">12.6. modulo</a></li><li><a href="#object.round">12.7. round</a></li><li><a href="#object.generator">12.8. interface generator</a></li><li><a href="#object.id">12.9. func id</a></li><li><a href="#object.sameObject_q">12.10. func sameObject?</a></li><li><a href="#object.implements_q">12.11. func(obj, interface)bool implements?</a></li><li><a href="#ident.Int">12.12. interface Int</a></li><li><a href="#object.BigInt">12.13. interface BigInt</a></li><li><a href="#object.BigRat">12.14. interface BigRat</a></li><li><a href="#ident.Interface">12.15. interface Interface</a></li><li><a href="#object.Object">12.16. interface Object</a></li><li><a href="#interface.rat">12.17. interface rat</a></li><li><a href="#Generator">12.18. Generator</a></li><li><a href="#InterfaceBuilder">12.19. InterfaceBuilder</a></li><li><a href="#Iterator">12.20. Iterator</a></li><li><a href="#CInterfaceBuilder">12.21. CInterfaceBuilder</a></li><li><a href="#getFuncInterface">12.22. getFuncInterface</a></li></ol></li><li><a href="#warnings-list">13. Warnings</a></li><li><a href="#error-handling-processing">14. Error handling during processing</a></li><li><a href="#warnings">15. warnings</a></li><li><a href="#rationales">16. Rationales</a><ol><li><a href="#rationale.dynamic-static-typing">16.1. Dynamic static typing</a></li><li><a href="#rationale.terms">16.2. Terms</a><ol><li><a href="#rationale.get-set">16.2.1. get/set</a></li></ol></li><li><a href="#rationale.executing-boolean-logic">16.3. Executing boolean logic nodes</a></li><li><a href="#executing-declaration-first">16.4. Disallowing executing declaration-first</a></li></ol></li><li><a href="#unsorted-stuff">17. unsorted stuff</a><ol><li><a href="#closures">17.1. Closures</a></li><li><a href="#tree-examples">17.2. Tree examples</a><ol><li><a href="#tree-example-1">17.2.1. Example 1</a></li><li><a href="#tree-example-2">17.2.2. Example 2</a></li><li><a href="#tree-example-3">17.2.3. Example 3</a></li></ol></li><li><a href="#get-interface">17.3. get interface</a></li><li><a href="#obj-interface">17.4. obj interface</a></li><li><a href="#identifier-binding">17.5. Binding to identifiers</a></li><li><a href="#print-println-return-interfaces">17.6. Return interfaces of print and println</a></li><li><a href="#adjuncts">17.7. Adjuncts</a></li><li><a href="#runtime-inteface">17.8. runtime interface implementation</a></li><li><a href="#runtime-interface-creation">17.9. Runtime interface creation</a></li><li><a href="#self-return-type">17.10. &quot;self&quot; return type</a></li><li><a href="#bind">17.11. Bind</a></li><li><a href="#classes">17.12. Classes</a></li><li><a href="#noninstantiated-interface-templates">17.13. Noninstantiated interface templates</a></li><li><a href="#dynamic-library-loading">17.14. Dynamic library loading</a></li><li><a href="#static-typing">17.15. Static typing</a></li></ol></li></ol><div id="introduction">
+	<ol class="toc"><li><a href="#introduction">1. Introduction</a><ol><li><a href="#intro-basic">1.1. Basic</a></li><li><a href="#version">1.2. Version</a><ol><li><a href="#desal-version">1.2.1. Desal version</a></li><li><a href="#specification-version">1.2.2. Specification version</a></li><li><a href="#version-notation">1.2.3. Version notation</a></li></ol></li><li><a href="#specification-scope">1.3. Scope</a></li><li><a href="#compliance">1.4. Compliance</a></li><li><a href="#executing-nodes">1.5. Executing nodes</a></li><li><a href="#definitions">1.6. Definitions</a></li></ol></li><li><a href="#overview">2. Overview</a><ol><li><a href="#identikeys">2.1. identikeys</a></li><li><a href="#ext-namespace">2.2. ext namespace</a></li><li><a href="#builtin-numbers">2.3. Built-in numbers</a></li></ol></li><li><a href="#values">3. Values</a></li><li><a href="#functions">4. Functions</a><ol><li><a href="#function-interfaces">4.1. Function interfaces</a></li></ol></li><li><a href="#interfaces">5. Interfaces</a><ol><li><a href="#interface-operations">5.1. Adding and subtracting interfaces</a></li></ol></li><li><a href="#special-members">6. Special members</a><ol><li><a href="#member.add">6.1. add</a></li><li><a href="#member.equals">6.2. equals?</a></li><li><a href="#member.extract">6.3. extract</a></li><li><a href="#member.insert">6.4. insert</a></li><li><a href="#member.throwDivide">6.5. throwDivide</a></li></ol></li><li><a href="#scopes">7. Scopes</a></li><li><a href="#handling-declare-first">8. Handling declare-first nodes</a></li><li><a href="#nodes">9. Nodes</a><ol><li><a href="#node-terminology">9.1. Node terminology</a></li><li><a href="#tree-node-layout">9.2. Tree node layout</a></li><li><a href="#node-supertypes">9.3. Node supertypes</a></li></ol></li><li><a href="#node-types">10. Node types</a><ol><li><a href="#base-node-types">10.1. Base nodes</a></li><li><a href="#tree-node-layout-key">10.2. Tree node layout key</a></li><li><a href="#non-executable">10.3. Non-executable</a><ol><li><a href="#node.argument">10.3.1. argument</a></li><li><a href="#node.boolean">10.3.2. boolean</a></li><li><a href="#node.direction">10.3.3. direction</a></li><li><a href="#node.expose">10.3.4. expose</a></li><li><a href="#node.generic-parameter">10.3.5. generic-parameter</a></li><li><a href="#node.identikey-category">10.3.6. identikey-category</a></li><li><a href="#node.identikey-type">10.3.7. identikey-type</a></li><li><a href="#node.import">10.3.8. import</a></li><li><a href="#node.nullable-type">10.3.9. nullable-type</a></li><li><a href="#node.parameter">10.3.10. parameter</a></li><li><a href="#node.plane">10.3.11. plane</a></li><li><a href="#node.scope-alteration">10.3.12. scope-alteration</a></li><li><a href="#node.using">10.3.13. using</a></li></ol></li><li><a href="#non-producing-expressions">10.4. Non-producing expressions</a><ol><li><a href="#iteration">10.4.1. Iteration</a><ol><li><a href="#node.do-while">10.4.1.1. do-while</a></li><li><a href="#node.do-times">10.4.1.2. do-times</a></li><li><a href="#node.for-key">10.4.1.3. for-key</a></li><li><a href="#node.for-pair">10.4.1.4. for-pair</a></li><li><a href="#node.for-manual">10.4.1.5. for-manual</a></li><li><a href="#node.for-range">10.4.1.6. for-range</a></li><li><a href="#node.for-value">10.4.1.7. for-value</a></li><li><a href="#node.loop">10.4.1.8. loop</a></li><li><a href="#node.while">10.4.1.9. while</a></li></ol></li><li><a href="#node.break">10.4.2. break</a></li><li><a href="#node.continue">10.4.3. continue</a></li><li><a href="#node.declare-empty">10.4.4. declare-empty</a></li><li><a href="#node.declare-first">10.4.5. declare-first</a></li><li><a href="#node.labeled">10.4.6. labeled</a></li><li><a href="#node.null">10.4.7. null</a></li><li><a href="#node.return">10.4.8. return</a></li><li><a href="#node.throw">10.4.9. throw</a></li><li><a href="#node.yield">10.4.10. yield</a></li></ol></li><li><a href="#sometimes-producing-expressions">10.5. Sometimes producing expressions</a><ol><li><a href="#node.assign">10.5.1. assign</a></li><li><a href="#node.block">10.5.2. block</a></li><li><a href="#node.call">10.5.3. call</a></li><li><a href="#node.cast">10.5.4. cast</a></li><li><a href="#node.conditional">10.5.5. conditional</a></li><li><a href="#node.curry">10.5.6. curry</a></li><li><a href="#node.declare-assign">10.5.7. declare-assign</a></li><li><a href="#node.ignore">10.5.8. ignore</a><ol><li><a href="#node.ignore-member">10.5.8.1. ignore-member</a></li></ol></li><li><a href="#node.namespaced-value-identikey">10.5.9. namespaced-value-identikey</a></li><li><a href="#node.possibility">10.5.10. possibility</a></li><li><a href="#node.select">10.5.11. select</a><ol><li><a href="#node.case">10.5.11.1. case</a></li></ol></li><li><a href="#node.try-catch">10.5.12. try-catch</a><ol><li><a href="#node.exception-handler">10.5.12.1. exception-handler</a></li></ol></li></ol></li><li><a href="#always-producing-expresions">10.6. Always producing expressions</a><ol><li><a href="#boolean-logic">10.6.1. Boolean logic</a><ol><li><a href="#node.and">10.6.1.1. and</a></li><li><a href="#node.nand">10.6.1.2. nand</a></li><li><a href="#node.or">10.6.1.3. or</a></li><li><a href="#node.nor">10.6.1.4. nor</a></li><li><a href="#node.xor">10.6.1.5. xor</a></li><li><a href="#node.xnor">10.6.1.6. xnor</a></li></ol></li><li><a href="#node.array">10.6.2. array</a></li><li><a href="#node.breed">10.6.3. breed</a></li><li><a href="#node.bundle">10.6.4. bundle</a></li><li><a href="#node.caller">10.6.5. caller</a></li><li><a href="#node.chain">10.6.6. chain</a></li><li><a href="#node.class">10.6.7. class</a><ol><li><a href="#node.static-member">10.6.7.1. static-member</a></li><li><a href="#node.declaration">10.6.7.2. declaration</a></li><li><a href="#node.declare-const-empty">10.6.7.3. declare-const-empty</a></li><li><a href="#node.interface-implementation">10.6.7.4. interface-implementation</a></li><li><a href="#node.named-function">10.6.7.5. named-function</a></li><li><a href="#node.class-property">10.6.7.6. class-property</a></li></ol></li><li><a href="#node.comprehension">10.6.8. comprehension</a><ol><li><a href="#node.comprehension-type">10.6.8.1. comprehension-type</a></li></ol></li><li><a href="#node.dictionary">10.6.9. dictionary</a><ol><li><a href="#node.dictionary-entry">10.6.9.1. dictionary-entry</a></li></ol></li><li><a href="#node.enum">10.6.10. enum</a><ol><li><a href="#node.enum-entry">10.6.10.1. enum-entry</a></li></ol></li><li><a href="#node.extract-member">10.6.11. extract-member</a></li><li><a href="#node.function">10.6.12. function</a></li><li><a href="#node.function-interface">10.6.13. function-interface</a></li><li><a href="#node.generator">10.6.14. generator</a></li><li><a href="#node.generic-class">10.6.15. generic-class</a></li><li><a href="#node.generic-function">10.6.16. generic-function</a></li><li><a href="#node.generic-interface">10.6.17. generic-interface</a></li><li><a href="#node.identifier">10.6.18. identifier</a></li><li><a href="#node.instantiate-generic">10.6.19. instantiate-generic</a></li><li><a href="#node.integer">10.6.20. integer</a></li><li><a href="#node.interface">10.6.21. interface</a><ol><li><a href="#node.statused-member">10.6.21.1. statused-member</a></li><li><a href="#node.member-status">10.6.21.2. member-status</a></li><li><a href="#node.interface-member">10.6.21.3. interface-member</a></li><li><a href="#node.convertor">10.6.21.4. convertor</a></li><li><a href="#node.callee">10.6.21.5. callee</a></li><li><a href="#node.property">10.6.21.6. property</a></li><li><a href="#node.method">10.6.21.7. method</a></li><li><a href="#node.access">10.6.21.8. access</a></li></ol></li><li><a href="#node.implements">10.6.22. implements</a></li><li><a href="#node.rational">10.6.23. rational</a></li><li><a href="#node.set-property">10.6.24. set-property</a></li><li><a href="#node.string">10.6.25. string</a></li></ol></li></ol></li><li><a href="#reserved-identikey-names">11. Reserved identikey names</a></li><li><a href="#standard-library">12. Standard library</a><ol><li><a href="#object.println">12.1. println</a></li><li><a href="#object.activeInterface">12.2. activeInterface</a></li><li><a href="#object.String">12.3. String</a></li><li><a href="#object.cast">12.4. func{I}(dyn)I cast</a></li><li><a href="#object.ceil">12.5. ceil</a></li><li><a href="#object.floor">12.6. floor</a></li><li><a href="#object.modulo">12.7. modulo</a></li><li><a href="#object.round">12.8. round</a></li><li><a href="#object.generator">12.9. interface generator</a></li><li><a href="#object.id">12.10. func id</a></li><li><a href="#object.sameObject_q">12.11. func sameObject?</a></li><li><a href="#object.implements_q">12.12. func(obj, interface)bool implements?</a></li><li><a href="#ident.Int">12.13. interface Int</a></li><li><a href="#object.BigInt">12.14. interface BigInt</a></li><li><a href="#object.BigRat">12.15. interface BigRat</a></li><li><a href="#ident.Interface">12.16. interface Interface</a></li><li><a href="#object.Object">12.17. interface Object</a></li><li><a href="#interface.rat">12.18. interface rat</a></li><li><a href="#Generator">12.19. Generator</a></li><li><a href="#InterfaceBuilder">12.20. InterfaceBuilder</a></li><li><a href="#Iterator">12.21. Iterator</a></li><li><a href="#CInterfaceBuilder">12.22. CInterfaceBuilder</a></li><li><a href="#getFuncInterface">12.23. getFuncInterface</a></li></ol></li><li><a href="#warnings-list">13. Warnings</a></li><li><a href="#error-handling-processing">14. Error handling during processing</a></li><li><a href="#warnings">15. warnings</a></li><li><a href="#rationales">16. Rationales</a><ol><li><a href="#rationale.dynamic-static-typing">16.1. Dynamic static typing</a></li><li><a href="#rationale.terms">16.2. Terms</a><ol><li><a href="#rationale.get-set">16.2.1. get/set</a></li></ol></li><li><a href="#rationale.executing-boolean-logic">16.3. Executing boolean logic nodes</a></li><li><a href="#executing-declaration-first">16.4. Disallowing executing declaration-first</a></li></ol></li><li><a href="#unsorted-stuff">17. unsorted stuff</a><ol><li><a href="#closures">17.1. Closures</a></li><li><a href="#tree-examples">17.2. Tree examples</a><ol><li><a href="#tree-example-1">17.2.1. Example 1</a></li><li><a href="#tree-example-2">17.2.2. Example 2</a></li><li><a href="#tree-example-3">17.2.3. Example 3</a></li></ol></li><li><a href="#get-interface">17.3. get interface</a></li><li><a href="#obj-interface">17.4. obj interface</a></li><li><a href="#identifier-binding">17.5. Binding to identifiers</a></li><li><a href="#print-println-return-interfaces">17.6. Return interfaces of print and println</a></li><li><a href="#adjuncts">17.7. Adjuncts</a></li><li><a href="#runtime-inteface">17.8. runtime interface implementation</a></li><li><a href="#runtime-interface-creation">17.9. Runtime interface creation</a></li><li><a href="#self-return-type">17.10. &quot;self&quot; return type</a></li><li><a href="#bind">17.11. Bind</a></li><li><a href="#classes">17.12. Classes</a></li><li><a href="#noninstantiated-interface-templates">17.13. Noninstantiated interface templates</a></li><li><a href="#dynamic-library-loading">17.14. Dynamic library loading</a></li><li><a href="#static-typing">17.15. Static typing</a></li></ol></li></ol><div id="introduction">
 		<h1>Chapter 1. Introduction</h1>
 		
 		<div id="intro-basic">
@@ -952,7 +952,7 @@ alias: Xml</code>
 			<p>A group of declarations within a bundle.</p>
 			
 			<ul class="layout">
-				<li>* <a href="#node.scope-alteration">scope-alteration</a> </li>
+				<li>* <a href="#node.scope-alteration">scope-alteration</a> alt</li>
 				<li>+ <a href="#node.declare-first">declare-first</a> </li>
 			</ul>
 			
@@ -1343,7 +1343,7 @@ decl String ? bar = (foo as void)</code>
 			<h3>10.4.8. return</h3>
 			
 			<ul class="layout">
-				<li>? expression </li>
+				<li>? expression value</li>
 			</ul>
 			
 			<p>Function call ends and evaluates to expression.</p>
@@ -1353,7 +1353,7 @@ decl String ? bar = (foo as void)</code>
 			<h3>10.4.9. throw</h3>
 			
 			<ul class="layout">
-				<li>expression </li>
+				<li>expression value</li>
 			</ul>
 			
 			<p>If the expression isn't an Exception, wrap it with NonExceptionThrownError.</p>
@@ -1365,7 +1365,7 @@ decl String ? bar = (foo as void)</code>
 			<p>Within a generator, specifies the next value for the generator to yield.</p>
 			
 			<ul class="layout">
-				<li>expression </li>
+				<li>expression value</li>
 			</ul>
 			
 			<p class="process">Must be a descendant of a generator node, and not inside a function or class node. (XXX spec out the kind of barriers function and class nodes create)</p>
@@ -1433,7 +1433,7 @@ println( person1.name ) //Michael</code>
 			<p class="xxx">Come up with better name.</p>
 			
 			<ul class="layout">
-				<li>* <a href="#node.scope-alteration">scope-alteration</a> </li>
+				<li>* <a href="#node.scope-alteration">scope-alteration</a> alt</li>
 				<li>* expression member</li>
 			</ul>
 			
@@ -1947,6 +1947,12 @@ observe
 					<li>If [2] and [4] are the same, evaluate to true. Otherwise, evaluate to false.</li>
 				</ol>
 			</div>
+			
+			<code xml:space="preserve">true and false
+true xnor false</code>
+			
+			<code xml:space="preserve">(and true false)
+(xnor true false)</code>
 		</div>
 		
 		<div id="node.array">
@@ -1960,6 +1966,15 @@ observe
 			<p>Evaluates to an object with interface array as the active interface. The object may implement other interfaces if they do not conflict with the array interface.</p>
 			
 			<p>Each [element] is cast to [interface]. If a cast error results, it raises out of the array node, so that the array node doesn't evaluate to anything.</p>
+			
+			<code xml:space="preserve">decl numbers = array Int { 1, 2, 3 }
+numbers[2] = 5
+each( print, numbers ) //prints: &quot;125&quot;</code>
+			
+			<code xml:space="preserve">(decl auto numbers
+	(array Int (1 2 3)))
+([]= numbers 2 5)
+(each print numbers)</code>
 		</div>
 		
 		<div id="node.breed">
@@ -1985,6 +2000,10 @@ observe
 			<code xml:space="preserve">decl Int num1 = 987
 decl Int num2 = copy(num)
 decl Rat num3 = (num to Rat)</code>
+			
+			<code xml:space="preserve">(decl Int num1 987)
+(decl Int num2 (copy num))
+(decl Rat num3 (breed num Rat))</code>
 		</div>
 		
 		<div id="node.bundle">
@@ -1994,7 +2013,7 @@ decl Rat num3 = (num to Rat)</code>
 			
 			<ul class="layout">
 				<li>* <a href="#node.import">import</a> </li>
-				<li>* <a href="#node.scope-alteration">scope-alteration</a> </li>
+				<li>* <a href="#node.scope-alteration">scope-alteration</a> alt</li>
 				<li>+ <a href="#node.plane">plane</a> </li>
 			</ul>
 			
@@ -2050,17 +2069,27 @@ decl Rat num3 = (num to Rat)</code>
 	func doStuff(Int, Int) Rat
 }
 
-Foo foo = getFoo()
-func(Foo,Int,Int)Rat doStuffer = Foo::doStuff
+decl Foo foo = getFoo()
+decl func(Foo,Int,Int)Rat doStuffer = Foo::doStuff
 println doStuffer(foo,3,7)
 
-dyn doStuffer2 = dyn::doStuff
+decl doStuffer2 = dyn::doStuff
 println doStuffer2(foo,3,7)
 
 //below all equilavent:
 println Foo::doStuff(foo,3,7)
 println dyn::doStuff(foo,3,7)
 println foo.doStuff(3,7)</code>
+			
+			<code xml:space="preserve">(decl Foo foo
+	(getFoo))
+(decl auto doStuffer
+	(caller Foo doStuff))
+(println (doStuffer foo 3 7))
+
+(decl const doStuffer2
+	(caller dyn doStuff))
+(println (doStuffer2 foo 3 7))</code>
 		</div>
 		
 		<div id="node.chain">
@@ -2076,6 +2105,15 @@ println foo.doStuff(3,7)</code>
 			<p>Evaluates to a list, as if calling CList&lt; [interface] &gt; ( [element], [element], ... )</p>
 			
 			<p>Each [element] is cast to [interface]. If a cast error results, it raises out of the list node, so that the list node doesn't evaluate to anything.</p>
+			
+			<code xml:space="preserve">decl numbers = chain Int { 1, 2, 3, 4, 5, 6 }
+for number in numbers
+	println number</code>
+			
+			<code xml:space="preserve">(decl const numbers
+	(chain Int (1 2 3 4 5 6)))
+(for number numbers
+	(println number))</code>
 		</div>
 		
 		<div id="node.class">
@@ -2206,7 +2244,7 @@ println foo.doStuff(3,7)</code>
 				<h4>10.6.7.1. static-member</h4>
 				
 				<ul class="layout">
-					<li><a href="#node.declaration">declaration</a> </li>
+					<li><a href="#node.declaration">declaration</a> decl</li>
 					<li>? <a href="#node.access">access</a> </li>
 				</ul>
 				
@@ -2366,6 +2404,22 @@ for o in [2*x for x in L if x^2 &gt; 3] {
 					<li>expression value</li>
 				</ul>
 			</div>
+			
+			<code xml:space="preserve">decl ages = dict (String, Int) {
+	&quot;Saray&quot; : 12,
+	&quot;John&quot; : 70,
+	&quot;Mike&quot; : 23
+}
+
+for pair name, age in ages
+	println name &quot; &quot; age</code>
+			
+			<code xml:space="preserve">(decl const ages
+	(dict String Int
+		((&quot;Saray&quot; 12) (&quot;John&quot; 70) (&quot;Mike&quot; 23))))
+
+(forpair name age ages
+	(println name &quot; &quot; age))</code>
 		</div>
 		
 		<div id="node.enum">
@@ -2451,6 +2505,12 @@ for animal in Animal
 
 activeInterface(Animal) == Interface + Enum&lt;EntryFace&gt; + EnumList
 (Animal as Interface) == EntryFace</pre>
+			
+			<code xml:space="preserve">(enum Animal
+	(dog cat fish parrot ferret gerbil hamster)
+
+(for animal Animal
+	(println animal.name))</code>
 		</div>
 		
 		<div id="node.extract-member">
@@ -2462,6 +2522,12 @@ activeInterface(Animal) == Interface + Enum&lt;EntryFace&gt; + EnumList
 			</ul>
 			
 			<p>Retrieves the a method or the value of a property from the value specified by [source]. If the active interface of the value specified by [source] does not have a property or method with the specified name, throw an exception.</p>
+			
+			<code xml:space="preserve">println( alpha.beta )
+alpha.doStuff()</code>
+			
+			<code xml:space="preserve">(println alpha.beta)
+(alpha.doStuff)</code>
 		</div>
 
 		<div id="node.function">
@@ -2478,6 +2544,23 @@ activeInterface(Animal) == Interface + Enum&lt;EntryFace&gt; + EnumList
 			<p>If [return info] is not present, the function does not return anything. I.e., it does not produced a value when call.</p>
 			
 			<p>When this node is executed, it produces a value with a function interface as the active interface. Only the [parameter] node and [return info]'s [interface] nodes are executed at this time. When the resultant value is called, the [body] node is executed in the scope of this function node.</p>
+			
+			<code xml:space="preserve">decl square = func(a) {
+	a * a
+}
+
+println( square(2) )</code>
+			
+			<code xml:space="preserve">(decl const square
+	(function (a) void
+		(* a a)))
+
+(println (square 2))</code>
+			
+			<code xml:space="preserve">decl square = {a|a*a}
+println( square(2) )</code>
+			
+			<code xml:space="preserve">println( {a|a*a} 2 )</code>
 		</div>
 		
 		<div id="node.function-interface">
@@ -2488,6 +2571,10 @@ activeInterface(Animal) == Interface + Enum&lt;EntryFace&gt; + EnumList
 				<li>* <a href="#node.parameter">parameter</a> </li>
 				<li>? <a href="#node.nullable-type">nullable-type</a> return info</li>
 			</ul>
+			
+			<code xml:space="preserve">println( func(Int,Int)Rat )</code>
+			
+			<code xml:space="preserve">(println (funcface (Int Int) Rat))</code>
 		</div>
 		
 		<div id="node.generator">
@@ -2497,7 +2584,7 @@ activeInterface(Animal) == Interface + Enum&lt;EntryFace&gt; + EnumList
 			
 			<ul class="layout">
 				<li>? <a href="#node.nullable-type">nullable-type</a> </li>
-				<li>expression </li>
+				<li>expression body</li>
 			</ul>
 			
 			<p>Has scope.</p>
@@ -2513,18 +2600,28 @@ activeInterface(Animal) == Interface + Enum&lt;EntryFace&gt; + EnumList
 }
 
 for i in foo {
-	print foo
-	print &quot; &quot;
+	print i &quot; &quot;
 }
 
 prints: '2 3 4 '
 
 interface of foo == Generator&lt;Int&gt;</code>
+			
+			<code xml:space="preserve">(decl const foo
+	(generator
+		(decl Int i 2)
+		(while (lt i 5)
+			(block
+				(yield i)
+				(++ i)))))
+
+(forin i foo
+	(print i &quot; &quot;))</code>
 
 			<code xml:space="preserve">decl foo = func(Int a, Int b) Generator&lt;Int&gt; {
 	return generator {
 		decl Int i = a
-		while i &lt; b {
+		while i lt b {
 			yield i
 			i++
 		}
@@ -2532,15 +2629,12 @@ interface of foo == Generator&lt;Int&gt;</code>
 }
 
 for i in foo(2, 5) {
-	print foo
-	print &quot; &quot;
+	print i &quot; &quot;
 }
 
 prints: '2 3 4 '</code>
 			
-			<code xml:space="preserve">A representation could provide a construct like that in other languages by combining functions and generators.
-
-decl foo = generator(Int a, Int b) Int {
+			<code xml:space="preserve">decl foo = genfunc(Int a, Int b) Int {
 	decl Int i = a
 	while i &lt; b {
 		yield i
@@ -2549,8 +2643,7 @@ decl foo = generator(Int a, Int b) Int {
 }
 
 for i in foo(2, 5) {
-	print foo
-	print &quot; &quot;
+	print i &quot; &quot;
 }
 
 prints: '2 3 4 '</code>
@@ -2577,14 +2670,21 @@ prints: '2 3 4 '</code>
 			
 			<p>Evaluates to a value with an active interface that inherits from GenericClass and one or more function interfaces. When called, the value returns the value returned from evaluating the function node.</p>
 			
-			<code xml:space="preserve">generic(T)
-func larger(T a, T b) T {
-	if a &lt; b
+			<code xml:space="preserve">func larger&lt;T&gt;(T a, T b) T {
+	if a lt b
 		return b
 	return a
 }
 
 println larger(2, 7) //prints &quot;7&quot;</code>
+			
+			<code xml:space="preserve">(declfirst auto larger
+	(genericfunction (T) ((T a) (T b)) T
+		(if (lt a b)
+			(return b))
+		(return a)))
+
+(println (larger 2 7))</code>
 		</div>
 		
 		<div id="node.generic-interface">
@@ -2597,20 +2697,34 @@ println larger(2, 7) //prints &quot;7&quot;</code>
 			
 			<p>Evaluates to a value with an active interface that inherits from GenericClass and one or more function interfaces. When called, the value returns the value returned from evaluating the interface node.</p>
 			
-			<code xml:space="preserve">generic(T)
-interface List {
+			<code xml:space="preserve">interface List&lt;T&gt; {
 	func addFront(T)
 	func addBack(T)
 	func removeFront() T
 	func removeBack() T
 }
 
-List(Int) list = ...
+decl List&lt;Int&gt; list = getNumbers()
 list.addFront(2)
 list.addBack(3)
 list.addFront(1)
 println list.removeFront() //prints &quot;1&quot;
 println list.removeBack() //prints &quot;3&quot;</code>
+			
+			<code xml:space="preserve">(declfirst auto List
+	(genericinterface (T)
+		(func addFront (T) void)
+		(func addBack (T) void)
+		(func removeFront () T)
+		(func removeBack () T)))
+
+(decl List&lt;Int&gt; list
+	(getNumbers))
+(list.addFront 2)
+(list.addBack 3)
+(list.addFront 1)
+(println (list.removeFront))
+(println (list.removeBack))</code>
 		</div>
 		
 		<div id="node.identifier">
@@ -2626,6 +2740,10 @@ println list.removeBack() //prints &quot;3&quot;</code>
 				<li>If key is bound to a value, produce the value that key is bound to. If key has been declared that it can be bound to values, but it is currently not bound to anything, return null.</li>
 				<li>If key is bound to a namespace, throw an error.</li>
 			</ol>
+			
+			<code xml:space="preserve">println( foo )</code>
+			
+			<code xml:space="preserve">(println foo)</code>
 		</div>
 		
 		<div id="node.instantiate-generic">
@@ -2637,12 +2755,20 @@ println list.removeBack() //prints &quot;3&quot;</code>
 				<li>expression generic</li>
 				<li>+ <a href="#node.argument">argument</a> </li>
 			</ul>
+			
+			<code xml:space="preserve">decl List&lt;Int&gt; numbers</code>
+			
+			<code xml:space="preserve">(decl List&lt;Int&gt; numbers)</code>
 		</div>
 		
 		<div id="node.integer">
 			<h3>10.6.20. integer</h3>
 			
 			<p>Base node. Evaluates to an object reference with BigInt as the active interface. The object may implement other interfaces if they do not conflict with the BigInt interface. Must not implement the LimInt interface.</p>
+			
+			<code xml:space="preserve">println( 789 )</code>
+			
+			<code xml:space="preserve">(println 789)</code>
 		</div>
 		
 		<div id="node.interface">
@@ -2701,7 +2827,7 @@ println list.removeBack() //prints &quot;3&quot;</code>
 				<ul class="layout">
 					<li><a href="#node.identifier">identifier</a> name</li>
 					<li><a href="#node.nullable-type">nullable-type</a> </li>
-					<li><a href="#node.access">access</a> access</li>
+					<li><a href="#node.access">access</a> </li>
 				</ul>
 			</div>
 			
@@ -2733,12 +2859,19 @@ println list.removeBack() //prints &quot;3&quot;</code>
 			
 			<code xml:space="preserve">if (o impls Foo)
 	(o as Foo).propOfFoo()</code>
+			
+			<code xml:space="preserve">(if (impls o Foo)
+	((cast o Foo).propOfFoo))</code>
 		</div>
 		
 		<div id="node.rational">
 			<h3>10.6.23. rational</h3>
 			
 			<p>Base node. Evaluates to an object with BigRat as the active interface. The object may implement other interfaces if they do not conflict with the BigRat interface. Must not implement the LimRat interface.</p>
+			
+			<code xml:space="preserve">println( 123.456 )</code>
+			
+			<code xml:space="preserve">(println 123.456)</code>
 		</div>
 		
 		<div id="node.set-property">
@@ -2751,6 +2884,10 @@ println list.removeBack() //prints &quot;3&quot;</code>
 			</ul>
 			
 			<p>Sets the value of a property. If the active interface of the value does not have a property with the specified name, or the property cannot be set, an error results. Evaluates to the value given by [value].</p>
+			
+			<code xml:space="preserve">alpha.beta = &quot;gamma&quot;</code>
+			
+			<code xml:space="preserve">(= alpha.beta &quot;gamma&quot;)</code>
 		</div>
 
 		<div id="node.string">
@@ -2761,6 +2898,10 @@ println list.removeBack() //prints &quot;3&quot;</code>
 			<p>strings are expressions</p>
 			
 			<p>Base node. Evaluates to an object with interface string as the active interface. The object may implement other interfaces if they do not conflict with the string interface.</p>
+			
+			<code xml:space="preserve">println( &quot;this is a string&quot; )</code>
+			
+			<code xml:space="preserve">(println &quot;this is a string&quot;)</code>
 		</div>
 	</div>
 </div>
@@ -2867,8 +3008,30 @@ interface&lt;U&gt; EnumDictEntry
 	inherit EnumEntry
 	get U value</pre>
 
+		<div id="object.println">
+			<h2>12.1. println</h2>
+			
+			<pre>interface PrintLnFace {
+	call( param Stringable objs[] ) PrintLnFace
+}
+declfirst PrintLnFace println = ...</pre>
+			
+			<p class="xxx">Need some way for client code to obtain function interfaces that return themselves. For example, &quot;func(...)Self&quot; and &quot;getRecursiveFuncFace(...)&quot;. Then, the interface of println could be defined as something like &quot;func(param Stringable objs[]) Self&quot;.</p>
+			
+			<p class="xxx">Need to define argvars.</p>
+			
+			<p>Takes in multiple Stringable values, prints each to standard output, and returns itself.</p>
+			
+			<code xml:space="preserve">println( 1, &quot; &quot;, 2, &quot; &quot;, 3 ) /* call once with multiple arguments */
+println(1)(&quot; &quot;)(2)(&quot; &quot;)(3) /* call several times with one argument each time */
+println 1 &quot; &quot; 2 &quot; &quot; 3 /* call several times with one argument each time */</code>
+			
+			<code xml:space="preserve">(println 1 &quot; &quot; 2 &quot; &quot; 3) /* call once with multiple arguments */
+(((((println 1) &quot; &quot;) 2) &quot; &quot;) 3) /* call several times with one argument each time */</code>
+		</div>
+		
 		<div id="object.activeInterface">
-			<h2>12.1. activeInterface</h2>
+			<h2>12.2. activeInterface</h2>
 			
 			<pre>func activeInterface(dyn) Interface
 
@@ -2878,7 +3041,7 @@ println( activeInterface(false) == Bool ) //true</pre>
 		</div>
 		
 		<div id="object.String">
-			<h2>12.2. String</h2>
+			<h2>12.3. String</h2>
 			
 			<p>Besides downcasting to an Interface, String can also be called to produce a String.</p>
 			
@@ -2886,7 +3049,7 @@ println( activeInterface(false) == Bool ) //true</pre>
 		</div>
 		
 		<div id="object.cast">
-			<h2>12.3. func{I}(dyn)I cast</h2>
+			<h2>12.4. func{I}(dyn)I cast</h2>
 			
 			<p>The cast function returns an object cast to the specified interface, or throws a cast error. The returned object must be the same object that was passed in.</p>
 			
@@ -2895,7 +3058,7 @@ println( activeInterface(false) == Bool ) //true</pre>
 		</div>
 		
 		<div id="object.ceil">
-			<h2>12.4. ceil</h2>
+			<h2>12.5. ceil</h2>
 			
 			<pre>func ceil(Rat) Int</pre>
 			
@@ -2903,13 +3066,13 @@ println( activeInterface(false) == Bool ) //true</pre>
 		</div>
 		
 		<div id="object.floor">
-			<h2>12.5. floor</h2>
+			<h2>12.6. floor</h2>
 			
 			<pre>func floor(Rat) Int</pre>
 		</div>
 		
 		<div id="object.modulo">
-			<h2>12.6. modulo</h2>
+			<h2>12.7. modulo</h2>
 			
 			<p>Finds the remainder of dividing two integers.</p>
 			
@@ -2952,7 +3115,7 @@ modulo(-15, -4, negative) -&gt; -3</pre>
 		</div>
 		
 		<div id="object.round">
-			<h2>12.7. round</h2>
+			<h2>12.8. round</h2>
 			
 			<pre>func round(Rat, RoundMethod = nearest_away) Int
 
@@ -2999,7 +3162,7 @@ round(8.6, nearest_unbiased) -&gt; 9</pre>
 		</div>
 		
 		<div id="object.generator">
-			<h2>12.8. interface generator</h2>
+			<h2>12.9. interface generator</h2>
 			
 			<pre>interface{I} generator
 	func next() I</pre>
@@ -3014,7 +3177,7 @@ for each o in objs
 		</div>
 		
 		<div id="object.id">
-			<h2>12.9. func id</h2>
+			<h2>12.10. func id</h2>
 			
 			<pre>func id(obj) Int
 
@@ -3026,7 +3189,7 @@ println( id(true) )</pre>
 		</div>
 		
 		<div id="object.sameObject_q">
-			<h2>12.10. func sameObject?</h2>
+			<h2>12.11. func sameObject?</h2>
 			
 			<p>Determines whether the two values have the same object.</p>
 			
@@ -3042,7 +3205,7 @@ println( id(foo) == id(bar) )</pre>
 		</div>
 		
 		<div id="object.implements_q">
-			<h2>12.11. func(obj, interface)bool implements?</h2>
+			<h2>12.12. func(obj, interface)bool implements?</h2>
 			
 			<p>Tells whether the object implements the interface, like the implements node.</p>
 			
@@ -3052,7 +3215,7 @@ println( id(foo) == id(bar) )</pre>
 		
 		
 		<div id="ident.Int">
-			<h2>12.12. interface Int</h2>
+			<h2>12.13. interface Int</h2>
 			
 			<ul>
 				
@@ -3103,19 +3266,19 @@ println( id(foo) == id(bar) )</pre>
 		</div>
 		
 		<div id="object.BigInt">
-			<h2>12.13. interface BigInt</h2>
+			<h2>12.14. interface BigInt</h2>
 			
 			<p>Inherits from Int.</p>
 		</div>
 		
 		<div id="object.BigRat">
-			<h2>12.14. interface BigRat</h2>
+			<h2>12.15. interface BigRat</h2>
 			
 			<p>Inherits from Rat.</p>
 		</div>
 
 		<div id="ident.Interface">
-			<h2>12.15. interface Interface</h2>
+			<h2>12.16. interface Interface</h2>
 			
 			<ul>
 				<li>get Bool fromAddition?</li>
@@ -3132,7 +3295,7 @@ println( id(foo) == id(bar) )</pre>
 		</div>
 		
 		<div id="object.Object">
-			<h2>12.16. interface Object</h2>
+			<h2>12.17. interface Object</h2>
 			
 			<ul>
 				<li>Bool builtin?</li>
@@ -3149,7 +3312,7 @@ println( id(foo) == id(bar) )</pre>
 		</div>
 		
 		<div id="interface.rat">
-			<h2>12.17. interface rat</h2>
+			<h2>12.18. interface rat</h2>
 			
 			<ul>
 				<li>func toInt() int</li>
@@ -3181,7 +3344,7 @@ println( id(foo) == id(bar) )</pre>
 		</ul>
 		
 		<div id="Generator">
-			<h2>12.18. Generator</h2>
+			<h2>12.19. Generator</h2>
 			
 			<code xml:space="preserve">generic&lt;T&gt;
 interface Generator {
@@ -3191,7 +3354,7 @@ interface Generator {
 		
 		
 		<div id="InterfaceBuilder">
-			<h2>12.19. InterfaceBuilder</h2>
+			<h2>12.20. InterfaceBuilder</h2>
 		
 			<ul>
 				<li>map{string, interface} properties</li>
@@ -3204,7 +3367,7 @@ interface Generator {
 		</div>
 		
 		<div id="Iterator">
-			<h2>12.20. Iterator</h2>
+			<h2>12.21. Iterator</h2>
 			
 			<pre>interface{I} Iterator
 	//values may change
@@ -3267,13 +3430,13 @@ while( iter.valid? )
 		</div>
 		
 		<div id="CInterfaceBuilder">
-			<h2>12.21. CInterfaceBuilder</h2>
+			<h2>12.22. CInterfaceBuilder</h2>
 			
 			<p>CInterfaceBuilder, when called, returns an object that can be used to procedurally and/or dynamically create interface objects.</p>
 		</div>
 		
 		<div id="getFuncInterface">
-			<h2>12.22. getFuncInterface</h2>
+			<h2>12.23. getFuncInterface</h2>
 			
 			<pre>func getFuncInterface (
 	int templateParamCount,

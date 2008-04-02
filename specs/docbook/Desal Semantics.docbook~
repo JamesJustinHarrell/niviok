@@ -2,7 +2,7 @@
 xmlns:xi="http://www.w3.org/2003/XInclude">
 	
 	<title>Desal Semantics 1.0</title>
-	<subtitle>Edition 1 Draft 2008-02-13</subtitle>
+	<subtitle>Edition 1 Draft 2008-03-26</subtitle>
 	
 	<info>
 		<copyright>
@@ -850,6 +850,34 @@ interface<U> EnumDictEntry
 ]]>
 		</screen>
 
+		<section xml:id="object.println">
+			<title>println</title>
+			
+			<screen>
+interface PrintLnFace {
+	call( param Stringable objs[] ) PrintLnFace
+}
+declfirst PrintLnFace println = ...
+			</screen>
+			
+			<para role="xxx">Need some way for client code to obtain function interfaces that return themselves. For example, "func(...)Self" and "getRecursiveFuncFace(...)". Then, the interface of println could be defined as something like "func(param Stringable objs[]) Self".</para>
+			
+			<para role="xxx">Need to define argvars.</para>
+			
+			<para>Takes in multiple Stringable parameters, prints each to standard output, and returns itself.</para>
+			
+			<programlisting>
+println( 1, " ", 2, " ", 3 ) /* call once with multiple arguments */
+println(1)(" ")(2)(" ")(3) /* call several times with one argument each time */
+println 1 " " 2 " " 3 /* call several times with one argument each time */
+			</programlisting>
+			
+			<programlisting>
+(println 1 " " 2 " " 3) /* call once with multiple arguments */
+(((((println 1) " ") 2) " ") 3) /* call several times with one argument each time */
+			</programlisting>
+		</section>
+		
 		<section xml:id="object.activeInterface">
 			<title>activeInterface</title>
 			

@@ -239,7 +239,7 @@ alias: Xml
 			<para>A group of declarations within a bundle.</para>
 			
 			<simplelist role="layout">
-				<member>* scope-alteration</member>
+				<member>* scope-alteration alt</member>
 				<member>+ declare-first</member>
 			</simplelist>
 			
@@ -664,7 +664,7 @@ decl String ? bar = (foo as void)
 			<title>return</title>
 			
 			<simplelist role="layout">
-				<member>? expression</member>
+				<member>? expression value</member>
 			</simplelist>
 			
 			<para>Function call ends and evaluates to expression.</para>
@@ -674,7 +674,7 @@ decl String ? bar = (foo as void)
 			<title>throw</title>
 			
 			<simplelist role="layout">
-				<member>expression</member>
+				<member>expression value</member>
 			</simplelist>
 			
 			<para>If the expression isn't an Exception, wrap it with NonExceptionThrownError.</para>
@@ -686,7 +686,7 @@ decl String ? bar = (foo as void)
 			<para>Within a generator, specifies the next value for the generator to yield.</para>
 			
 			<simplelist role="layout">
-				<member>expression</member>
+				<member>expression value</member>
 			</simplelist>
 			
 			<para role="process">Must be a descendant of a generator node, and not inside a function or class node. (XXX spec out the kind of barriers function and class nodes create)</para>
@@ -756,7 +756,7 @@ println( person1.name ) //Michael
 			<para role="xxx">Come up with better name.</para>
 			
 			<simplelist role="layout">
-				<member>* scope-alteration</member>
+				<member>* scope-alteration alt</member>
 				<member>* expression member</member>
 			</simplelist>
 			
@@ -1294,6 +1294,16 @@ observe
 					<listitem>If [2] and [4] are the same, evaluate to true. Otherwise, evaluate to false.</listitem>
 				</orderedlist>
 			</section>
+			
+			<programlisting>
+true and false
+true xnor false
+			</programlisting>
+			
+			<programlisting>
+(and true false)
+(xnor true false)
+			</programlisting>
 		</section>
 		
 		<section xml:id="node.array">
@@ -1307,6 +1317,19 @@ observe
 			<para>Evaluates to an object with interface array as the active interface. The object may implement other interfaces if they do not conflict with the array interface.</para>
 			
 			<para>Each [element] is cast to [interface]. If a cast error results, it raises out of the array node, so that the array node doesn't evaluate to anything.</para>
+			
+			<programlisting>
+decl numbers = array Int { 1, 2, 3 }
+numbers[2] = 5
+each( print, numbers ) //prints: "125"
+			</programlisting>
+			
+			<programlisting>
+(decl auto numbers
+	(array Int (1 2 3)))
+([]= numbers 2 5)
+(each print numbers)
+			</programlisting>
 		</section>
 		
 		<section xml:id="node.breed">
@@ -1334,6 +1357,12 @@ decl Int num1 = 987
 decl Int num2 = copy(num)
 decl Rat num3 = (num to Rat)
 			</programlisting>
+			
+			<programlisting>
+(decl Int num1 987)
+(decl Int num2 (copy num))
+(decl Rat num3 (breed num Rat))
+			</programlisting>
 		</section>
 		
 		<section xml:id="node.bundle">
@@ -1343,7 +1372,7 @@ decl Rat num3 = (num to Rat)
 			
 			<simplelist role="layout">
 				<member>* import</member>
-				<member>* scope-alteration</member>
+				<member>* scope-alteration alt</member>
 				<member>+ plane</member>
 			</simplelist>
 			
@@ -1400,17 +1429,29 @@ interface Foo {
 	func doStuff(Int, Int) Rat
 }
 
-Foo foo = getFoo()
-func(Foo,Int,Int)Rat doStuffer = Foo::doStuff
+decl Foo foo = getFoo()
+decl func(Foo,Int,Int)Rat doStuffer = Foo::doStuff
 println doStuffer(foo,3,7)
 
-dyn doStuffer2 = dyn::doStuff
+decl doStuffer2 = dyn::doStuff
 println doStuffer2(foo,3,7)
 
 //below all equilavent:
 println Foo::doStuff(foo,3,7)
 println dyn::doStuff(foo,3,7)
 println foo.doStuff(3,7)
+			</programlisting>
+			
+			<programlisting>
+(decl Foo foo
+	(getFoo))
+(decl auto doStuffer
+	(caller Foo doStuff))
+(println (doStuffer foo 3 7))
+
+(decl const doStuffer2
+	(caller dyn doStuff))
+(println (doStuffer2 foo 3 7))
 			</programlisting>
 		</section>
 		
@@ -1427,6 +1468,19 @@ println foo.doStuff(3,7)
 			<para>Evaluates to a list, as if calling CList&lt; [interface] > ( [element], [element], ... )</para>
 			
 			<para>Each [element] is cast to [interface]. If a cast error results, it raises out of the list node, so that the list node doesn't evaluate to anything.</para>
+			
+			<programlisting>
+decl numbers = chain Int { 1, 2, 3, 4, 5, 6 }
+for number in numbers
+	println number
+			</programlisting>
+			
+			<programlisting>
+(decl const numbers
+	(chain Int (1 2 3 4 5 6)))
+(for number numbers
+	(println number))
+			</programlisting>
 		</section>
 		
 		<section xml:id="node.class">
@@ -1557,7 +1611,7 @@ println foo.doStuff(3,7)
 				<title>static-member</title>
 				
 				<simplelist role="layout">
-					<member>declaration</member>
+					<member>declaration decl</member>
 					<member>? access</member>
 				</simplelist>
 				
@@ -1723,6 +1777,26 @@ for o in [2*x for x in L if x^2 > 3] {
 					<member>expression value</member>
 				</simplelist>
 			</section>
+			
+			<programlisting>
+decl ages = dict (String, Int) {
+	"Saray" : 12,
+	"John" : 70,
+	"Mike" : 23
+}
+
+for pair name, age in ages
+	println name " " age
+			</programlisting>
+			
+			<programlisting>
+(decl const ages
+	(dict String Int
+		(("Saray" 12) ("John" 70) ("Mike" 23))))
+
+(forpair name age ages
+	(println name " " age))
+			</programlisting>
 		</section>
 		
 		<section xml:id="node.enum">
@@ -1812,6 +1886,14 @@ activeInterface(Animal) == Interface + Enum<EntryFace> + EnumList
 (Animal as Interface) == EntryFace
 ]]>
 			</screen>
+			
+			<programlisting>
+(enum Animal
+	(dog cat fish parrot ferret gerbil hamster)
+
+(for animal Animal
+	(println animal.name))
+			</programlisting>
 		</section>
 		
 		<section xml:id="node.extract-member">
@@ -1823,6 +1905,16 @@ activeInterface(Animal) == Interface + Enum<EntryFace> + EnumList
 			</simplelist>
 			
 			<para>Retrieves the a method or the value of a property from the value specified by [source]. If the active interface of the value specified by [source] does not have a property or method with the specified name, throw an exception.</para>
+			
+			<programlisting>
+println( alpha.beta )
+alpha.doStuff()
+			</programlisting>
+			
+			<programlisting>
+(println alpha.beta)
+(alpha.doStuff)
+			</programlisting>
 		</section>
 
 		<section xml:id="node.function">
@@ -1839,6 +1931,31 @@ activeInterface(Animal) == Interface + Enum<EntryFace> + EnumList
 			<para>If [return info] is not present, the function does not return anything. I.e., it does not produced a value when call.</para>
 			
 			<para>When this node is executed, it produces a value with a function interface as the active interface. Only the [parameter] node and [return info]'s [interface] nodes are executed at this time. When the resultant value is called, the [body] node is executed in the scope of this function node.</para>
+			
+			<programlisting>
+decl square = func(a) {
+	a * a
+}
+
+println( square(2) )
+			</programlisting>
+			
+			<programlisting>
+(decl const square
+	(function (a) void
+		(* a a)))
+
+(println (square 2))
+			</programlisting>
+			
+			<programlisting>
+decl square = {a|a*a}
+println( square(2) )
+			</programlisting>
+			
+			<programlisting>
+println( {a|a*a} 2 )
+			</programlisting>
 		</section>
 		
 		<section xml:id="node.function-interface">
@@ -1849,6 +1966,14 @@ activeInterface(Animal) == Interface + Enum<EntryFace> + EnumList
 				<member>* parameter</member>
 				<member>? nullable-type return info</member>
 			</simplelist>
+			
+			<programlisting>
+println( func(Int,Int)Rat )
+			</programlisting>
+			
+			<programlisting>
+(println (funcface (Int Int) Rat))
+			</programlisting>
 		</section>
 		
 		<section xml:id="node.generator">
@@ -1858,7 +1983,7 @@ activeInterface(Animal) == Interface + Enum<EntryFace> + EnumList
 			
 			<simplelist role="layout">
 				<member>? nullable-type</member>
-				<member>expression</member>
+				<member>expression body</member>
 			</simplelist>
 			
 			<para>Has scope.</para>
@@ -1875,20 +2000,32 @@ decl foo = generator {
 }
 
 for i in foo {
-	print foo
-	print " "
+	print i " "
 }
 
 prints: '2 3 4 '
 
 interface of foo == Generator&lt;Int>
 			</programlisting>
+			
+			<programlisting>
+(decl const foo
+	(generator
+		(decl Int i 2)
+		(while (lt i 5)
+			(block
+				(yield i)
+				(++ i)))))
+
+(forin i foo
+	(print i " "))
+			</programlisting>
 
 			<programlisting>
 decl foo = func(Int a, Int b) Generator&lt;Int> {
 	return generator {
 		decl Int i = a
-		while i &lt; b {
+		while i lt b {
 			yield i
 			i++
 		}
@@ -1896,17 +2033,14 @@ decl foo = func(Int a, Int b) Generator&lt;Int> {
 }
 
 for i in foo(2, 5) {
-	print foo
-	print " "
+	print i " "
 }
 
 prints: '2 3 4 '
 			</programlisting>
 			
 			<programlisting>
-A representation could provide a construct like that in other languages by combining functions and generators.
-
-decl foo = generator(Int a, Int b) Int {
+decl foo = genfunc(Int a, Int b) Int {
 	decl Int i = a
 	while i &lt; b {
 		yield i
@@ -1915,8 +2049,7 @@ decl foo = generator(Int a, Int b) Int {
 }
 
 for i in foo(2, 5) {
-	print foo
-	print " "
+	print i " "
 }
 
 prints: '2 3 4 '
@@ -1945,14 +2078,23 @@ prints: '2 3 4 '
 			<para>Evaluates to a value with an active interface that inherits from GenericClass and one or more function interfaces. When called, the value returns the value returned from evaluating the function node.</para>
 			
 			<programlisting>
-generic(T)
-func larger(T a, T b) T {
-	if a &lt; b
+func larger&lt;T>(T a, T b) T {
+	if a lt b
 		return b
 	return a
 }
 
 println larger(2, 7) //prints "7"
+			</programlisting>
+			
+			<programlisting>
+(declfirst auto larger
+	(genericfunction (T) ((T a) (T b)) T
+		(if (lt a b)
+			(return b))
+		(return a)))
+
+(println (larger 2 7))
 			</programlisting>
 		</section>
 		
@@ -1967,20 +2109,36 @@ println larger(2, 7) //prints "7"
 			<para>Evaluates to a value with an active interface that inherits from GenericClass and one or more function interfaces. When called, the value returns the value returned from evaluating the interface node.</para>
 			
 			<programlisting>
-generic(T)
-interface List {
+interface List&lt;T> {
 	func addFront(T)
 	func addBack(T)
 	func removeFront() T
 	func removeBack() T
 }
 
-List(Int) list = ...
+decl List&lt;Int> list = getNumbers()
 list.addFront(2)
 list.addBack(3)
 list.addFront(1)
 println list.removeFront() //prints "1"
 println list.removeBack() //prints "3"
+			</programlisting>
+			
+			<programlisting>
+(declfirst auto List
+	(genericinterface (T)
+		(func addFront (T) void)
+		(func addBack (T) void)
+		(func removeFront () T)
+		(func removeBack () T)))
+
+(decl List&lt;Int> list
+	(getNumbers))
+(list.addFront 2)
+(list.addBack 3)
+(list.addFront 1)
+(println (list.removeFront))
+(println (list.removeBack))
 			</programlisting>
 		</section>
 		
@@ -1997,6 +2155,14 @@ println list.removeBack() //prints "3"
 				<listitem>If key is bound to a value, produce the value that key is bound to. If key has been declared that it can be bound to values, but it is currently not bound to anything, return null.</listitem>
 				<listitem>If key is bound to a namespace, throw an error.</listitem>
 			</orderedlist>
+			
+			<programlisting>
+println( foo )
+			</programlisting>
+			
+			<programlisting>
+(println foo)
+			</programlisting>
 		</section>
 		
 		<section xml:id="node.instantiate-generic">
@@ -2008,12 +2174,28 @@ println list.removeBack() //prints "3"
 				<member>expression generic</member>
 				<member>+ argument</member>
 			</simplelist>
+			
+			<programlisting>
+decl List&lt;Int> numbers
+			</programlisting>
+			
+			<programlisting>
+(decl List&lt;Int> numbers)
+			</programlisting>
 		</section>
 		
 		<section xml:id="node.integer">
 			<title>integer</title>
 			
 			<para>Base node. Evaluates to an object reference with BigInt as the active interface. The object may implement other interfaces if they do not conflict with the BigInt interface. Must not implement the LimInt interface.</para>
+			
+			<programlisting>
+println( 789 )
+			</programlisting>
+			
+			<programlisting>
+(println 789)
+			</programlisting>
 		</section>
 		
 		<section xml:id="node.interface">
@@ -2072,7 +2254,7 @@ println list.removeBack() //prints "3"
 				<simplelist role="layout">
 					<member>identifier name</member>
 					<member>nullable-type</member>
-					<member>access access</member>
+					<member>access</member>
 				</simplelist>
 			</section>
 			
@@ -2106,12 +2288,25 @@ println list.removeBack() //prints "3"
 if (o impls Foo)
 	(o as Foo).propOfFoo()
 			</programlisting>
+			
+			<programlisting>
+(if (impls o Foo)
+	((cast o Foo).propOfFoo))
+			</programlisting>
 		</section>
 		
 		<section xml:id="node.rational">
 			<title>rational</title>
 			
 			<para>Base node. Evaluates to an object with BigRat as the active interface. The object may implement other interfaces if they do not conflict with the BigRat interface. Must not implement the LimRat interface.</para>
+			
+			<programlisting>
+println( 123.456 )
+			</programlisting>
+			
+			<programlisting>
+(println 123.456)
+			</programlisting>
 		</section>
 		
 		<section xml:id="node.set-property">
@@ -2124,6 +2319,14 @@ if (o impls Foo)
 			</simplelist>
 			
 			<para>Sets the value of a property. If the active interface of the value does not have a property with the specified name, or the property cannot be set, an error results. Evaluates to the value given by [value].</para>
+			
+			<programlisting>
+alpha.beta = "gamma"
+			</programlisting>
+			
+			<programlisting>
+(= alpha.beta "gamma")
+			</programlisting>
 		</section>
 
 		<section xml:id="node.string">
@@ -2134,6 +2337,14 @@ if (o impls Foo)
 			<para>strings are expressions</para>
 			
 			<para>Base node. Evaluates to an object with interface string as the active interface. The object may implement other interfaces if they do not conflict with the string interface.</para>
+			
+			<programlisting>
+println( "this is a string" )
+			</programlisting>
+			
+			<programlisting>
+(println "this is a string")
+			</programlisting>
 		</section>
 	</section>
 </chapter>

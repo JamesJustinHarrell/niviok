@@ -1,0 +1,17 @@
+<Combine name="Desal Agent 001" fileversion="2.0" outputpath="./build/bin/">
+  <Configurations active="Debug">
+    <Configuration name="Debug" ctype="CombineConfiguration">
+      <Entry build="True" name="Desal Agent 001" configuration="Debug" />
+    </Configuration>
+    <Configuration name="Release" ctype="CombineConfiguration">
+      <Entry build="True" name="Desal Agent 001" configuration="Release" />
+    </Configuration>
+  </Configurations>
+  <StartMode startupentry="Desal Agent 001" single="True">
+    <Execute type="None" entry="Desal Agent 001" />
+  </StartMode>
+  <DeployTargets />
+  <Entries>
+    <Entry filename="./Desal Agent 001/Desal Agent 001.mdp" />
+  </Entries>
+</Combine>

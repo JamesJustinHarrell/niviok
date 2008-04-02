@@ -1,0 +1,19 @@
+﻿<UserCombinePreferences version="1.0" filename="/home/justin/files/Desal/Desal Agent 001/Desal Agent 001.mds">
+  <Files />
+  <Views>
+    <ViewMemento id="ProjectPad">
+      <Node expanded="True">
+        <Node name="Desal Agent 001" expanded="True" selected="True" />
+      </Node>
+    </ViewMemento>
+    <ViewMemento id="ClassPad">
+      <Node expanded="True" selected="True">
+        <Node name="Desal Agent 001" expanded="True" />
+      </Node>
+    </ViewMemento>
+  </Views>
+  <Properties>
+    <Property key="ActiveWindow" value="" />
+    <Property key="ActiveConfiguration" value="Debug" />
+  </Properties>
+</UserCombinePreferences>

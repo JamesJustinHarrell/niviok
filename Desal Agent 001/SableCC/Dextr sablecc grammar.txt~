@@ -1,0 +1,281 @@
+<!--
+XML is used to divide this document into sections, to make manipulating it easier, but it is otherwise not formatted as XML.
+
+This grammar is currently tailored pretty strongly for SableCC.
+-->
+
+<grammar>
+
+<!--
+character types:
+
+	illegal
+		not allowed anywhere, even in strings or comments
+		
+	reserved
+		e.g. + - * / space \n \t
+		not allowed in identifiers, but allowed in strings and comments
+		
+	numerical
+		e.g. 0 1 2 3 4 5 6 7 8 9
+		
+	free
+		any character that is not in one of the other categories
+
+-->
+
+<character-types><![CDATA[
+	char = [0..0x10FFFF] ;
+	illegal = [0..8] ;
+	legal = [char - illegal] ;
+	reserved = [[[[[[[[[[[[[[[[[[[[[
+		0x09 + //tab
+		0x0A ]+ //linefeed
+		0x0D ]+ //carriage return
+		0x20 ]+ //space
+		'+' ]+
+		'-' ]+
+		'*' ]+
+		'/' ]+
+		'.' ]+
+		',' ]+
+		'=' ]+
+		'"' ]+
+		''' ]+
+		'#' ]+
+		'(' ]+
+		')' ]+
+		'{' ]+
+		'}' ]+
+		'<' ]+
+		'>' ]+
+		'[' ]+
+		']' ] ;
+	newline_chars = [0x0A + 0x0D] ;
+	legalline = [legal - newline_chars] ;
+	numerical = ['0' + ['1'..'9']] ;
+	free = [[legal - reserved] - numerical] ;
+]]></character-types>
+
+<regular-tokens>
+	//stage 1 and stage 2
+	newline = newline_chars ;
+	identifier = free (free | numerical)* ;
+	integer = numerical+ ;
+	rational = numerical+ '.' numerical+ ;
+	string = '"' [[free + reserved] - '"']* '"' ;
+	
+	//stage 1 only -- removed by hand-written code
+	tab = 0x09 ;
+	space = 0x20 ;
+	line_comment
+		= '/*' [legalline - '*']+ '*'+ ([[legalline - '*'] - '/'] [legalline - '*']* '*'+)* '/'
+		| '#' legalline* ;
+	multiline_comment = '/*' [legal - '*']+ '*'+ ([[legal - '*'] - '/'] [legal - '*']* '*'+)* '/' ;
+	
+	//stage 2 only -- inserted by hand-written code
+	indent_open = 'xxxIndentOpen' ;
+	indent_close = 'xxxIndentClose' ;
+</regular-tokens>
+
+<operator-names>
+	{ opening brace
+	} closing brace
+	( opening parenthesis
+	) closing parenthesis
+	[ opening square bracket
+	] closing square bracket
+	&lt; opening triangular bracket
+	> closing triangular bracket
+	+ plus
+	- minus
+	* times
+	/ divide
+	= assign
+	. extract member
+	, comma
+</operator-names>
+
+<!--
+production syntax:
+
+	rule
+		Name = ... ;
+	optional (0 or 1)
+		[ ... ]
+	0 or more
+		{ ... }
+	1 or more
+		... +
+	grouping
+		( ... )
+	options
+		... | ...
+
+production syntax for SableCC:
+	optional
+		... ?
+	0 or more
+		... *
+-->
+
+<productions>
+Document
+	= NEWLINE? Expose* DocumentInside NEWLINE? ;
+Expose
+	= "expose" Identifier NEWLINE ;
+DocumentInside
+	= PlaneReference+
+	| DeclareFirstList
+	| PlaneReference+ DeclareFirstList ;
+PlaneReference
+	= "plane" STRING NEWLINE ;
+DeclareFirstList
+	= DeclareFirst
+	| DeclareFirstList NEWLINE DeclareFirst ;
+
+Add
+	= Mult
+	| Add "+" Mult
+	| Add "-" Mult ;
+
+ArgumentList
+	= Expression
+	| ArgumentList "," Expression ;
+
+Block
+	= BraceBlock
+	| TabBlock
+	| BraceTabBlock ;
+
+BraceBlock
+	= "{" BraceBlockInside? "}" ;
+	
+/*xxx
+BraceBlockInside is currently very limited because the original
+was ambiguous with BraceTabBlock.
+To fix, need to define a LineExpression production that
+cannot contain newlines, and use it in place of Expression.
+BraceBlockInside
+	= Expression
+	| BraceBlockInside "," Expression ;
+*/
+BraceBlockinside
+	= Primary ;
+
+//the tokenizer ensures a newline comes before every indent open
+//the newline is declared optional to allow, e.g. NEWLINE TabBlock
+TabBlock
+	= NEWLINE? INDENT_OPEN TabBlockInside? NEWLINE? INDENT_CLOSE ;
+TabBlockInside
+	= Expression
+	| TabBlockInside NEWLINE Expression ;
+
+BraceTabBlock
+	= "{" NEWLINE TabBlock NEWLINE "}" ;
+
+BooleanLogic
+	= Simple BooleanFunction Simple ;
+BooleanFunction
+	= "and"
+	| "nand"
+	| "or"
+	| "nor"
+	| "xor"
+	| "xnor" ;
+
+Call
+	= Simple "(" ArgumentList? ")" ;
+
+DeclareAssign
+	= "decl" Simple? Identifier "=" Expression ;
+
+DeclareEmpty
+	= "decl" Simple? Identifier ;
+
+DeclareFirst
+	= DeclareFirstNormal
+	| FunctionDeclaration ;
+
+DeclareFirstNormal
+	= "declfirst" Identifier "=" Expression ;
+
+Expression
+	= Add
+	| BooleanLogic
+	| DeclareAssign
+	| DeclareEmpty
+	| DeclareFirst
+	| ForRange
+	| Function
+	| IfElse
+	| Test ;
+
+ExtractMember
+	= Simple "." Identifier ;
+
+ForRange
+	= "for" Identifier "from" Simple "to" Simple Block ;
+
+Function
+	= "func" "(" ")" Type? Block ;
+Type
+	= "dyn"
+	| "void" ;
+
+FunctionDeclaration
+	= "func" Identifier "(" ParameterList? ")" Block ;
+
+IfElse
+	= If Elif? Else? ;
+IfExpr
+	= Simple
+	| Test ;
+If
+	= "if" IfExpr Block ;
+Elif
+	= "elif" IfExpr Block
+	| Elif "elif" IfExpr Block ;
+Else
+	= "else" Block ;
+
+Mult
+	= Simple
+	| Simple "*" Simple
+	| Simple "/" Simple ;
+
+Parameter
+	= Identifier ;
+
+ParameterList
+	= Parameter
+	| ParameterList "," Parameter ;
+
+Parenthetical
+	= "(" Expression Newline? ")" ;
+
+Primary
+	= Identifier
+	| INTEGER
+	| RATIONAL
+	| STRING
+	| Parenthetical ;
+
+Simple
+	= Block
+	| Call
+	| ExtractMember
+	| Primary ;
+
+Test
+	= Simple ComparisonFunction Simple ;
+ComparisonFunction
+	= "lt"
+	| "lte"
+	| "eql"
+	| "gte"
+	| "gt"
+	| "dne" ;
+</productions>
+
+</grammar>
