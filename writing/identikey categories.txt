@@ -1,0 +1,55 @@
+declare-* nodes:
+	declare-first
+	declare-empty
+	declare-assign
+
+identikey categories:
+
+namespace
+	always constant
+	bound to a namespace, instead of a value like other nodes
+	has it's own creation nodes (e.g. import, using)
+
+dynamic
+	value and type can change
+	examples
+		decl foo = 123
+		decl ? foo = 123
+
+typed
+	value can change, but type cannot
+	does not do function merging
+	if type is automatically determined, cannot be created with declare-empty
+	examples
+		decl auto foo = 123
+		decl auto ? foo = 123
+		decl Int foo = 123
+		decl Int ? foo = 123
+
+constant
+	single value (so single type)
+	cannot be created with declare-empty
+	examples
+		decl const foo = 123
+		decl const ? foo = 123
+		decl const Int foo = 123
+		decl const Int ? foo = 123
+
+function
+	multiple values
+		but all declared when identikey created
+		after creation, values can't be changed
+		each value of a different type
+	assigning null still creates the identikey (if it wasn't already created), but doesn't bind the identikey to a value
+	does function merging
+	can only be creatd with declare-first nodes
+		not declare-empty or declare-assign
+	examples:
+		declfirst func foo = func(Int a) { a * 2 * 3 }
+		declfirst func foo = func(Int a, Int b) { a * b * 2 }
+		declfirst func foo = func(Int a, b, c) { a * b * c }
+		declfirst func func()Int foo = getSomeFunction()
+
+
+The nullable-type associated with an identikey can be used to downcast the value before assigning, but otherwise should have no effect on program execution.
+

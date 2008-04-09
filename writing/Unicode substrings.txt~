@@ -1,0 +1,43 @@
+Unicode strings should not be handled on a character-by-character basis. That would produce bad sequences. For example, a combining character without a character to combine with. Reversing a string by reversing the characters in that string could cause combining characters to combine with the wrong characters.
+
+A modern programming language should provide excellent Unicode support, and that includes built-in support for obtaining the smallest sized valid subsequences.
+
+For example, imagine X is a combining character is this string:
+ABCXDEFXG
+
+When iterating over this string, an old crusty language my yield this:
+A, B, C, X, D, E, F, X, G
+
+But Desal should instead yield the smallest vaild subsquences:
+A, B, CX, D, E, FX, G
+
+
+func reverse(String s)
+	decl rv = Chain<String>()
+	for sub in s
+		rv.addBack(sub)
+	return join(rv, "")
+	
+reverse("ABCXDEFXG")
+	-> "GFXEDCXBA"
+
+
+This strengthens the argument that String types are not just sequences of characters. A String in Desal should always be valid and meaningful.
+
+
+When obtaining characters (or code points), it should be explicit.
+
+e.g. ("text" to Sequence<Char>)
+
+
+If programmers want to work with individual characters, they should have to do it explicitly, and not expect the language to be junked up with shit that supports it.
+
+
+Problem: String is now a collection of Strings. (Similar to in Python.) Should a MinString type be created? Then a String could be a collection of MinString. I'm not sure that's a good idea though.
+
+Perhaps a String should not inherit Collection. Characters can be obtained by breeding a Sequence<Char> and substrings can be obtained with e.g. String.minsubs(), String.split(), or String.maxsplit().
+
+
+Constructor: String(Sequence<Char>)
+If the sequence is invalid in some way, an exception should be thrown.
+

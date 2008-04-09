@@ -1,3 +1,4 @@
+using System;
 using System.Xml;
 using System.Collections.Generic;
 
@@ -8,6 +9,8 @@ partial class Bridge {
 		
 		doc.LoadXml(@"
 			<wrapper xmlns='urn:desible1'>
+				<interface xml:id='object'/>
+			
 				<interface xml:id='bool'>
 				</interface>
 				
@@ -66,19 +69,27 @@ partial class Bridge {
 				<interface xml:id='interface'/>
 			</wrapper>
 		");
-	
-		//xxx bridge parameter is null
+		
+		XmlNamespaceManager nsMan = new XmlNamespaceManager(doc.NameTable);
+
+		//note: for unknown reasons, all XPath expressions that specify a tag name fail
+		//e.g. "./*" succeeds, but "./wrapper" fails
+
+		//xxx bridge parameter should not be null
+		_objectFace = DesibleParser.createNativeInterface( null,
+			(XmlElement)doc.SelectSingleNode("//*[@xml:id='object']", nsMan));
 		_boolFace = DesibleParser.createNativeInterface( null,
-			(XmlElement)doc.GetElementsByTagName("interface")[0] );
+			(XmlElement)doc.SelectSingleNode("//*[@xml:id='bool']", nsMan));
 		_intFace = DesibleParser.createNativeInterface( null,
-			(XmlElement)doc.GetElementsByTagName("interface")[1] );
+			(XmlElement)doc.SelectSingleNode("//*[@xml:id='int']", nsMan));
 		_ratFace = DesibleParser.createNativeInterface( null,
-			(XmlElement)doc.GetElementsByTagName("interface")[2] );
+			(XmlElement)doc.SelectSingleNode("//*[@xml:id='rat']", nsMan));
 		_stringFace = DesibleParser.createNativeInterface( null,
-			(XmlElement)doc.GetElementsByTagName("interface")[3] );
+			(XmlElement)doc.SelectSingleNode("//*[@xml:id='string']", nsMan));
 		_interfaceFace = DesibleParser.createNativeInterface( null,
-			(XmlElement)doc.GetElementsByTagName("interface")[4] );
-	
+			(XmlElement)doc.SelectSingleNode("//*[@xml:id='interface']", nsMan));
+		
+		
 		InterfaceImplementationBuilder<Client_String> stringBuilder =
 			new InterfaceImplementationBuilder<Client_String>();
 

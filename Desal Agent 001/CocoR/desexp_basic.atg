@@ -1,0 +1,82 @@
+using System.Collections.Generic;
+
+COMPILER Desexp
+	public LinkedList<Sexp> roots;
+
+CHARACTERS
+	cLEGAL = ANY - "\0" .
+	cNUMERAL = "0123456789" .
+	cINSIDESTRING = cLEGAL - "\"" .
+	cWHITESPACE = " \r\t\n" .
+	cRESERVED = "\"()-." .
+	cNONFREE = cNUMERAL + cWHITESPACE + cRESERVED .
+	cFREE = cLEGAL - cNONFREE .
+
+TOKENS
+	tINTEGER = cNUMERAL { cNUMERAL } .
+	tRATIONAL = cNUMERAL { cNUMERAL } "." cNUMERAL { cNUMERAL } .
+	tPARENOPEN = "(" .
+	tPARENCLOSE = ")" .
+	tPLACEHOLDER = "-" .
+	tSTRING = '"' [ cINSIDESTRING { cINSIDESTRING } ] '"' .
+	tWORD = cFREE { cFREE | cNUMERAL | '-' } .
+
+COMMENTS FROM "/*" TO "*/"
+COMMENTS FROM "#" TO '\n'
+
+IGNORE '\n' + '\r' + '\t'
+
+PRODUCTIONS
+
+Desexp
+	(.
+		roots = new LinkedList<Sexp>();
+		Sexp sexp;
+	.)
+=
+	SExpression<out sexp> (. roots.AddLast(sexp); .)
+	{
+		SExpression<out sexp> (. roots.AddLast(sexp); .)
+	}
+.
+
+List<out Sexp sexp>
+	(.
+		LinkedList<Sexp> list = new LinkedList<Sexp>();
+		Sexp member;
+		int beginLine;
+		int beginColumn;
+	.)
+=
+	"(" (. beginLine = t.line; beginColumn = t.col; .)
+	{
+		SExpression<out member> (. list.AddLast(member); .)
+	}
+	")"
+	(. sexp = new Sexp(SexpType.LIST,
+		null, list, beginLine, beginColumn); .)
+.
+
+SExpression<out Sexp sexp>
+	(.
+		sexp = null;
+	.)
+	= tINTEGER
+		(. sexp = new Sexp(SexpType.INTEGER,
+			t.val, null, t.line, t.col); .)
+	| tPLACEHOLDER
+		(. sexp = new Sexp(SexpType.PLACEHOLDER,
+			t.val, null, t.line, t.col); .)
+	| tRATIONAL
+		(. sexp = new Sexp(SexpType.RATIONAL,
+			t.val, null, t.line, t.col); .)
+	| tSTRING
+		(. sexp = new Sexp(SexpType.STRING,
+			t.val, null, t.line, t.col); .)
+	| tWORD
+		(. sexp = new Sexp(SexpType.WORD,
+			t.val, null, t.line, t.col); .)
+	| List<out sexp>
+.
+
+END Desexp .

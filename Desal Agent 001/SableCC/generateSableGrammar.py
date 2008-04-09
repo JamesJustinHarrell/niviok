@@ -31,16 +31,15 @@ def getElemText(doc, name) :
 
 #get lines that aren't just whitespace
 def contentLines(text) :
-	return filter(
-		(lambda x : x.strip() != ""),
-		text.splitlines() )
+	return [x for x in text.splitlines() if x.strip() != ""]
 
 #creates a name for a number
-#e.g. 111 -> aaa, 123 -> abc
+#e.g. 000 -> "aaa", 012 -> "abc"
 def alphaFromNumber(number) :
-	nums = map(int, list(str(number))) #e.g. 123 -> [1, 2, 3]
-	nums = map( (lambda x : ord("a") + x), nums )
-	return "".join(map(chr, nums))
+	nums = map(int, list(str(number))) #e.g. 012 -> [0, 1, 2]
+	nums = [ord("a") + x for x in nums] #e.g. [0, 1, 2] -> [97, 98, 99]
+	chars = map(chr, nums) #e.g. [97, 98, 99] -> ["a", "b", "c"]
+	return "".join(chars)
 
 doc = DOM.parse(inputGrammarPath)
 
@@ -106,23 +105,6 @@ def handleProduction(text) :
 productions = productionsText.split(";")
 productions = map( handleProduction, productions )
 productionsText = ";".join(productions)
-
-"""
-def addLabels(text, sep, i) :
-	pieces = productionsText.split(sep)
-	out = []
-	out.append(pieces.pop(0))
-	while len(pieces) > 0 :
-		out.append(sep)
-		out.append("{%s}" % alphaFromNumber(i))
-		i = i + 1
-		out.append(pieces.pop(0))
-	return ("".join(out), i)
-
-i = 0
-(productionsText, i) = addLabels(productionsText, "=", i)
-(productionsText, i) = addLabels(productionsText, "|", i)
-"""
 
 file = open(outputGrammarPath, "w")
 file.write(outputTemplate % {

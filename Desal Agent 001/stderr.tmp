@@ -1,5 +1,0 @@
-
-Unhandled Exception: System.NullReferenceException: Object reference not set to an instance of an object
-  at DesalAgent001.printNode (Int32 level, INode node) [0x00007] in /home/justin/files/Desal/Desal Agent 001/Desal Agent 001/DesalAgent001.cs:165 
-  at DesalAgent001.printTree (.Node_Bundle root) [0x00000] in /home/justin/files/Desal/Desal Agent 001/Desal Agent 001/DesalAgent001.cs:203 
-  at DesalAgent001.Main (System.String[] arguments) [0x0022c] in /home/justin/files/Desal/Desal Agent 001/Desal Agent 001/DesalAgent001.cs:78 

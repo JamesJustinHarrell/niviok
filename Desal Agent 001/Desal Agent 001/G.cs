@@ -27,6 +27,10 @@ static class G {
 		return collect__<T>(args);
 	}
 	
+	public static T parseEnum<T>(string text) {
+		return (T)Enum.Parse(typeof(T), text, true);
+	}
+
 	public static void printSableccToken( Dextr.Sablecc.node.Token token ) {
 		if( token is Dextr.Sablecc.node.TIndentOpen )
 			Console.Write("INDENTPOPEN");
@@ -36,5 +40,19 @@ static class G {
 			Console.Write("NEWLINE");
 		else
 			Console.Write(token.Text);
+	}
+	
+	//tells whether a inherits b or a == b
+	//xxx think up better parameter names
+	public static bool inheritsOrIs(IInterface a, IInterface b) {
+		return (a == b) || inherits(a, b);
+	}
+	
+	//tells whether a inherits b
+	public static bool inherits(IInterface a, IInterface b) {
+		foreach( IInterface c in a.inheritees )
+			if( inheritsOrIs(c, b) )
+				return true;
+		return false;
 	}
 }

@@ -99,15 +99,15 @@ static class Executor {
 		Arguments args = new Arguments(
 			evaledArgs,
 			new Dictionary<Identifier, IValue>() );
-		IValue func = execute(node.value, scope);
+		IValue func = execute(node.receiver, scope);
 	
 		try {
 			return func.call(args);
 		}
 		catch(ClientException e) {
 			e.pushFunc(
-				( node.value is Node_Identifier ?
-					node.value.ToString() :
+				( node.receiver is Node_Identifier ?
+					node.receiver.ToString() :
 					"(anonymous)" ));
 			throw e;
 		}
@@ -120,7 +120,11 @@ static class Executor {
 	
 	//cast
 	public static IValue execute(Node_Cast node, Scope scope) {
-		throw new Error_Unimplemented();
+		IValue source = execute(node.source, scope);
+		NullableType nt = Evaluator.evaluate(node.nullableType, scope);
+		if( source is NullValue && nt.nullable == false )
+			throw new ClientException("attempted to cast null to non-nullable type");
+		return source.cast(nt.face);
 	}
 	
 	//chain
@@ -130,7 +134,12 @@ static class Executor {
 
 	//conditional
 	public static IValue execute(Node_Conditional node, Scope scope) {
-		throw new Error_Unimplemented();
+		foreach( Node_Possibility p in node.possibilitys )
+			if( Bridge.unwrapBoolean(execute(p.test, scope)) )
+				return execute(p.result, scope);
+		if( node.@else != null )
+			return execute(node.@else, scope);
+		return new NullValue(null);				
 	}
 	
 	//curry

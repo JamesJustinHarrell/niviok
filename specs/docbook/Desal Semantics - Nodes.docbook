@@ -160,7 +160,7 @@ decl Array&lt;Int> numbers = generateNumbers()
 		<section xml:id="node.identikey-category">
 			<title>identikey-category</title>
 			
-			<para>specifies one of: namespace, dynamic, automatic, strict, function</para>
+			<para>specifies one of: namespace, dynamic, typed, constant, function</para>
 			
 			<para>See the <link linkend="identikeys">section on identikeys</link>.</para>
 		</section>
@@ -170,19 +170,14 @@ decl Array&lt;Int> numbers = generateNumbers()
 			
 			<simplelist role="layout">
 				<member>identikey-category</member>
-				<member>? nullable-type</member>
-				<member>? boolean constant</member>
+				<member>nullable-type</member>
 			</simplelist>
 
-			<para role="process">[type] must be present if and only if the identikey-category is not namespace. The [type] must specify an [interface] if the identikey-category is strict. The [type] can specify an [interface] if the identikey-category is function. The [type] must not specify an [interface] if the identikey-category is namespace, dynamic, or automatic. The [type] must specify false for [nullable] if identikey-category is function. [constant] must not be specified if and only if the identikey-category is namespace or dynamic.</para>
-			
-			<para>If the category is strict, the active interface of any value bound to the identikey must be that interface. If the category is function, and the interface is given, functions bound to the identikey must specify that interface as the return type.</para>
-			
-			<para>The default value of [constant] is false. If [constant] is true, the identifier thereafter always refers to the same value. The identifier cannot be bound to a different value, or unbound. The active interface also cannot be changed.</para>
+			<para role="process">[identikey-category] must not be namespace. [nullable-type] must not specify an interface if [identikey-category] is dynamic. [nullable-type] must specify nullable as false if [identikey-category] is function. (Note: The @@declare-first node has additional restrictions.)</para>
 			
 			<programlisting>
-Int a = 3
-func Int a = func()Int { return 3 }
+decl Int a = 3
+declfirst func b = func()Int { 3 }
 			</programlisting>
 		</section>
 		
@@ -447,7 +442,7 @@ iterator.hasMore? ; iterator.moveNext() )
 					<member>expression limit</member>
 					<member>boolean inclusive</member>
 					<member>? expression test</member>
-					<member>block action</member>
+					<member>expression action</member>
 				</simplelist>
 				
 				<para>Has scope.</para>
@@ -556,62 +551,16 @@ while container.hasMore?
 				<member>identikey-type</member>
 			</simplelist>
 			
-			<para role="process">The identikey-type must not be constant.</para>
+			<para role="process">The identikey-category of the identikey-type must not specify "namespace", "function", or "constant". The identikey-category of the identikey-type must not specify "typed" if the nullable-type of the identikey-type does not specify an interface. The nullable-type of the identikey-type must not specifiy nullable as false.</para>
 			
 			<para>Creates an identikey in the parent scope with the specified type. After this node executes, the produced identikey does not yet point to any values.</para>
 
 			<programlisting>
-decl func Int foo
-foo = func()Int { return 3 }
-foo = func(Int a)Int { return a * 2 }
-print foo() //prints 3
-print foo(2) //prints 4
-
-//xxx does this produce error or replace?
-foo = func()Int { return 5 }
-			</programlisting>
-
-			<programlisting>
-decl func()Int foo
-foo = func()Int { return 3 }
-print foo() //prints 3
-foo = func()Int { return 5 }
-print foo() //prints 5
-foo = func(Int a)Int { return a * 2 } //error - interface mismatch
-			</programlisting>
-		</section>
-		
-		<section xml:id="node.declare-first">
-			<title>declare-first</title>
-			
-			<simplelist role="layout">
-				<member>identifier name</member>
-				<member>identikey-type</member>
-				<member>expression value</member>
-				<member>boolean breed</member>
-			</simplelist>
-			
-			<para role="process">The identikey-type must be constant, and must have a category of automatic, strict, or function.</para>
-			
-			<para>Creates an identikey in the parent scope with the specified type, then assigns the specified value to it.</para>
-			
-			<para>When a block contains declare-first nodes, the declare-first nodes are executed before the other expressions in the block are executed. The value expressions of declare-first nodes may depend on the values of other declare-first nodes in the same block. For example, two interfaces could reference each other.</para>
-			
-			<para>This node can create identikeys before execution reaches it. For more information, see <link linkend="handling-declare-first">this section</link>.</para>
-			
-			<para role="exec">Produce the value bound to the identikey created by this node.</para>
-			
-			<programlisting>
-declfirst auto Foo = interface {
-	get Bar bar
-}
-
-declfirst auto Bar = interface {
-	get Foo foo
-}
-
-Foo foo = ...
-foo.bar.foo.bar...
+decl foo
+foo = 123
+println(foo)
+foo = 456
+println(foo)
 			</programlisting>
 		</section>
 		
@@ -677,7 +626,7 @@ decl String ? bar = (foo as void)
 				<member>expression value</member>
 			</simplelist>
 			
-			<para>If the expression isn't an Exception, wrap it with NonExceptionThrownError.</para>
+			<para>If the expression isn't an Exception, throw a NonExceptionThrownError with the value from [value] as the wrapped value.</para>
 		</section>
 	
 		<section xml:id="node.yield">
@@ -705,8 +654,8 @@ decl String ? bar = (foo as void)
 			
 			<simplelist role="layout">
 				<member>identifier name</member>
-				<member>expression value</member>
 				<member>boolean breed</member>
+				<member>expression value</member>
 			</simplelist>
 			
 			<para role="process">The identikey's type must be dynamic, automatic, or strict. If the identikey's type is automatic or strict, the identifier must be variable (not constant).</para>
@@ -783,16 +732,16 @@ block {
 			<title>call</title>
 
 			<simplelist role="layout">
-				<member>expression value</member>
+				<member>expression receiver</member>
 				<member>* argument</member>
 			</simplelist>
 			
 			<orderedlist role="exec">
-				<listitem>Execute [value].</listitem>
-				<listitem>If the resultant value is not callable, throw an error.</listitem>
-				<listitem>Execute the argument expressions in order.</listitem>
-				<listitem>Send argument values to the [value] value for execution.</listitem>
-				<listitem>Produce the returned value.</listitem>
+				<listitem>Execute [receiver], and let receiver be the result.</listitem>
+				<listitem>If result is not callable, throw an error.</listitem>
+				<listitem>Execute the argument values in order.</listitem>
+				<listitem>Send argument values to receiver for execution.</listitem>
+				<listitem>Produce the result on the previous step.</listitem>
 			</orderedlist>
 		</section>
 		
@@ -969,13 +918,48 @@ bar3()
 			<simplelist role="layout">
 				<member>identifier name</member>
 				<member>identikey-type</member>
-				<member>expression value</member>
 				<member>boolean breed</member>
+				<member>expression value</member>
 			</simplelist>
 			
-			<para role="process">The identikey-category of the identikey-type node must be dynamic, automatic, strict, or function.</para>
+			<para role="process">The identikey-category of the identikey-type node must not specify "namespace" or "function".</para>
 			
 			<para>Creates an identikey in the parent scope with the specified type, then assigns the specified value to it.</para>
+		</section>
+		
+		<section xml:id="node.declare-first">
+			<title>declare-first</title>
+			
+			<simplelist role="layout">
+				<member>identifier name</member>
+				<member>identikey-type</member>
+				<member>boolean breed</member>
+				<member>expression value</member>
+			</simplelist>
+			
+			<para role="process">The identikey-category of the identikey-type must specify "constant" or "function". (Should breed be required to be false if the identikey-category is function?)</para>
+			
+			<para>Creates an identikey in the parent scope with the specified type, then assigns the specified value to it.</para>
+			
+			<para>When a block contains declare-first nodes, the declare-first nodes are executed before the other expressions in the block are executed. The value expressions of declare-first nodes may depend on the values of other declare-first nodes in the same block. For example, two interfaces could reference each other.</para>
+			
+			<para>This node can create identikeys before execution reaches it. For more information, see <link linkend="handling-declare-first">this section</link>.</para>
+			
+			<para role="exec">Produce the value bound to the identikey created by this node.</para>
+			
+			<programlisting>
+declfirst Foo = interface {
+	prop ro Bar bar
+	prop ro Int number
+}
+
+declfirst Bar = interface {
+	prop ro Foo foo
+}
+
+Foo foo = getFoo()
+println( foo.bar.foo.bar.foo.bar.foo.number )
+			</programlisting>
 		</section>
 		
 		<section xml:id="node.ignore">

@@ -46,9 +46,10 @@ Tokens
 	keyword_or = 'or' ;
 	keyword_dyn = 'dyn' ;
 	operator_times = '*' ;
-	keyword_dne = 'dne' ;
+	keyword_import = 'import' ;
 	keyword_nand = 'nand' ;
 	keyword_gte = 'gte' ;
+	keyword_dne = 'dne' ;
 	keyword_plane = 'plane' ;
 	operator_closing_brace = '}' ;
 	keyword_from = 'from' ;
@@ -71,6 +72,7 @@ Tokens
 	keyword_decl = 'decl' ;
 	keyword_func = 'func' ;
 	keyword_lte = 'lte' ;
+	keyword_using = 'using' ;
 	keyword_expose = 'expose' ;
 	operator_extract_member = '.' ;
 	operator_comma = ',' ;
@@ -97,13 +99,10 @@ Productions
 
 
 document
-	=  [a]:newline? expose* documentinside  [b]:newline? ;
-expose
-	= keyword_expose identifier newline ;
+	=  [a]:newline? import* scopealteration* documentinside  [b]:newline? ;
 documentinside
-	= {a}  planereference+
-	| {b}  declarefirstlist
-	| {c}  planereference+ declarefirstlist ;
+	= {a}  declarefirstlist
+	| {b}  planereference+ scopealteration* declarefirstlist ;
 planereference
 	= keyword_plane string newline ;
 declarefirstlist
@@ -176,6 +175,9 @@ declarefirst
 declarefirstnormal
 	= keyword_declfirst identifier operator_assign expression ;
 
+expose
+	= keyword_expose identifier newline ;
+
 expression
 	= {a}  add
 	| {b}  booleanlogic
@@ -215,6 +217,9 @@ elif
 else
 	= keyword_else block ;
 
+import
+	= keyword_import string newline ;
+
 mult
 	= {a}  simple
 	| {b}   [a]:simple operator_times  [b]:simple
@@ -237,6 +242,10 @@ primary
 	| {d}  string
 	| {e}  parenthetical ;
 
+scopealteration
+	= {a}  expose
+	| {b}  using ;
+
 simple
 	= {a}  block
 	| {b}  call
@@ -252,5 +261,8 @@ comparisonfunction
 	| {d}  keyword_gte
 	| {e}  keyword_gt
 	| {f}  keyword_dne ;
+
+using
+	= keyword_using identifier newline ;
 
 

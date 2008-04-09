@@ -2,7 +2,7 @@
 xmlns:xi="http://www.w3.org/2003/XInclude">
 	
 	<title>Desal Semantics 1.0</title>
-	<subtitle>Edition 1 Draft 2008-03-26</subtitle>
+	<subtitle>Edition 1 Draft @@CURRENTDATE</subtitle>
 	
 	<info>
 		<copyright>
@@ -864,7 +864,7 @@ declfirst PrintLnFace println = ...
 			
 			<para role="xxx">Need to define argvars.</para>
 			
-			<para>Takes in multiple Stringable parameters, prints each to standard output, and returns itself.</para>
+			<para>Takes in multiple Stringable values, prints each to standard output, and returns itself.</para>
 			
 			<programlisting>
 println( 1, " ", 2, " ", 3 ) /* call once with multiple arguments */

@@ -1,0 +1,169 @@
+#comment test
+
+/* comment test */
+
+(expose (std))
+
+(declare-first header
+	(function (- false)) false
+	(function
+		(
+			(in (- false) title false -))
+		-
+		(block () (
+			(println "")
+			(println ((extract-member title concat) " :"))
+		))))
+
+(declare-first headerize
+	(function (- false)) false
+	(function
+		(
+			(in (- false) title false -)
+			(in (- false) func false -))
+		-
+		(block () (
+			(header ((extract-member "calling " concat) title))
+			(func)
+			(println "")
+			(println ((extract-member "done with " concat) title))
+		))))
+
+(declare-first main
+	(function (- false)) false
+	(function () -
+		(block () (
+			(headerize "doStuff" doStuff)
+			(headerize "testNonProducers" testNonProducers)
+			(headerize "testSometimesProducers" testSometimesProducers)
+			(headerize "testAlwaysProducers" testAlwaysProducers)
+		))))
+
+(declare-first doStuff
+	(function (- false)) false
+	(function () -
+		(block () (
+			(possibility
+				true
+				(println "this is a test"))
+			(declare-assign str (constant (String false)) false
+				((extract-member "🿰 Hello," concat) " World 🿱"))
+			(println str)
+			(println (extract-member str length))
+			(for-range x 1 20 false -
+				(println ((extract-member x add) 10000)))
+			(declare-assign 🿰🿱 (constant (- false)) false
+				"astral characters in identifiers")
+			(println 🿰🿱)
+		))))
+
+(declare-first testNonProducers
+	(function (- false)) false
+	(function () -
+		(block () (
+			
+		))))
+
+(declare-first testSometimesProducers
+	(function (- false)) false
+	(function () -
+		(block () (
+			(header "assign, block, call")
+			(declare-empty foo (constant (- false)) false)
+			(assign foo false (block () (123)))
+			(println foo)
+			
+			(header "cast")
+			(println (cast 123 (Object false)))
+			
+			(header "conditional")
+			(println
+				(conditional
+					(
+						(false 000)
+						(true 111))
+					222))
+		))))
+
+(declare-first testAlwaysProducers
+	(function (- false)) false
+	(function () -
+		(block () (
+			(header "testBooleanLogic")
+			(testBooleanLogic)
+			
+			(header "function")
+			(println ((function()- "some stuff")))
+
+			(header "identifier")
+			(println true)
+			
+			(header "integer")
+			(println 98765)
+			
+			(header "rational")
+			(println 123.456)
+			
+			(header "string")
+			(println "This is some text.")
+			
+		))))
+
+(declare-first testBooleanLogic
+	(function (- false)) false
+	(function () -
+		(block () (
+			/*
+			for "and", "nand", "or", and "nor" node tests:
+			first come values that should shortcut,
+			then values that should not shortcut
+			*/
+			(declare-assign t
+				(constant (- false)) false
+				true)
+			(declare-assign f
+				(constant (- false)) false
+				false)
+		
+			(header "and")
+			(println (and f t))
+			(println (and t t))
+			
+			(header "nand")
+			(println (nand f t))
+			(println (nand t t))
+			
+			(header "or")
+			(println (or t f))
+			(println (or f f))
+			
+			(header "nor")
+			(println (nor t f))
+			(println (nor f f))
+
+			(header "xor")
+			(println (xor t f))
+			(println (xor t t))
+			
+			(header "xnor")
+			(println (xnor t f))
+			(println (xnor t t))
+
+		))))
+
+
+
+
+/*
+constructs needed to make this less verbose:
+declfunc pseudo-node
+call syntax
+extract member syntax
+
+That will reduce the header function to this:
+(declfunc header
+	((in (- false) title false -))
+	(block () (
+		(println "")
+		(println (title.add " :")))))
+*/

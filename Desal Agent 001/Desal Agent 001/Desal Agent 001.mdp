@@ -1,10 +1,10 @@
 <Project name="Desal Agent 001" fileversion="2.0" language="C#" clr-version="Net_2_0" ctype="DotNetProject">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
-      <Output directory="./bin/Debug" assembly="Desal Agent 001" />
+      <Output directory="./bin/Debug" assemblyKeyFile="./" assembly="Desal Agent 001" />
       <Build debugmode="True" target="Exe" />
-      <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
-      <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
+      <Execution runwithwarnings="False" commandlineparameters="-debug" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
+      <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" generatexmldocumentation="False" win32Icon="./" ctype="CSharpCompilerParameters" />
     </Configuration>
     <Configuration name="Release" ctype="DotNetProjectConfiguration">
       <Output directory="./bin/Release" assembly="Desal Agent 001" />
@@ -80,8 +80,8 @@
     <File name="./BoundMethod.cs" subtype="Code" buildaction="Compile" />
     <File name="./G.cs" subtype="Code" buildaction="Compile" />
     <File name="./HashSet.cs" subtype="Code" buildaction="Compile" />
-    <File name="./node classes.cs" subtype="Code" buildaction="Compile" />
-    <File name="./DesibleParser auto.cs" subtype="Code" buildaction="Compile" />
+    <File name="./node classes auto.cs" subtype="Code" buildaction="Compile" />
+    <File name="./DesibleParserAuto.cs" subtype="Code" buildaction="Compile" />
     <File name="./Node_Direction.cs" subtype="Code" buildaction="Compile" />
     <File name="./Executor.cs" subtype="Code" buildaction="Compile" />
     <File name="./Depends.cs" subtype="Code" buildaction="Compile" />
@@ -89,7 +89,7 @@
     <File name="./Direction.cs" subtype="Code" buildaction="Compile" />
     <File name="./Evaluator.cs" subtype="Code" buildaction="Compile" />
     <File name="./DesibleSerializer.cs" subtype="Code" buildaction="Compile" />
-    <File name="./DesibleSerializer auto.cs" subtype="Code" buildaction="Compile" />
+    <File name="./DesibleSerializerAuto.cs" subtype="Code" buildaction="Compile" />
     <File name="../SableCC/out3b3alt/analysis.cs" subtype="Code" buildaction="Compile" />
     <File name="../SableCC/out3b3alt/lexer.cs" subtype="Code" buildaction="Compile" />
     <File name="../SableCC/out3b3alt/nodes.cs" subtype="Code" buildaction="Compile" />
@@ -97,6 +97,10 @@
     <File name="../SableCC/out3b3alt/prods.cs" subtype="Code" buildaction="Compile" />
     <File name="../SableCC/out3b3alt/tokens.cs" subtype="Code" buildaction="Compile" />
     <File name="./Dextr_Custom_SableCCLexer.cs" subtype="Code" buildaction="Compile" />
+    <File name="../CocoR/Parser.cs" subtype="Code" buildaction="Compile" />
+    <File name="../CocoR/Scanner.cs" subtype="Code" buildaction="Compile" />
+    <File name="./DesexpParser.cs" subtype="Code" buildaction="Compile" />
+    <File name="./DesexpParserAuto.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

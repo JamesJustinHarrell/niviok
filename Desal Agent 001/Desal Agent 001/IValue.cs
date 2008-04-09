@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+//xxx using System.Collections.Generic;
 
 interface IValue {
 	IInterface activeInterface { get; }
@@ -6,7 +6,9 @@ interface IValue {
 	IValue call(Arguments arguments);
 	IValue extractMember(Identifier name);
 	void setProperty(Identifier propName, IValue aValue);
-	//long objectID { get; }
-	//IValue getProperty(Identifier name);
-	//IValue callMethod(Identifier name, Arguments arguments);
+/*xxx
+	long objectID { get; }
+	IValue getProperty(Identifier name);
+	IValue callMethod(Identifier name, Arguments arguments);
+*/
 }

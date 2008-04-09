@@ -7,17 +7,24 @@ import libxml2 #see /var/lib/python-support/python2.5/libxml2.py for documentati
 import xml.dom.minidom as dom
 from random import random
 import subprocess
+import datetime
 
 #constants
 specsDir = "/media/files/Desal/specs"
 inputDir = os.path.join(specsDir,'docbook')
 outputDir = os.path.join(specsDir,'html')
 docbookDir = "/media/files/other/docbook"
+knownRoles = ( 'exec', 'family-members', 'layout', 'process', 'xxx' )
+xhtmlNS = "http://www.w3.org/1999/xhtml"
+domImpl = dom.getDOMImplementation()
+relaxngSchema = libxml2.relaxNGNewParserCtxt(os.path.join(docbookDir,"docbook.rng")).relaxNGParse()
+
 fileBases = (
 	'Desal Semantics',
 	'Desal XML Representation',
 	'Desal Text Representation'
 )
+
 tagMap = {
 	'chapter' : 'div',
 	'glossdef' : 'dd',
@@ -46,10 +53,6 @@ tagMap = {
 	'variablelist' : 'dl',
 	'year' : None
 }
-knownRoles = ( 'exec', 'family-members', 'layout', 'process', 'xxx' )
-xhtmlNS = "http://www.w3.org/1999/xhtml"
-domImpl = dom.getDOMImplementation()
-relaxngSchema = libxml2.relaxNGNewParserCtxt(os.path.join(docbookDir,"docbook.rng")).relaxNGParse()
 
 def warn(message) :
 	print "WARNING: %s" % message
@@ -392,7 +395,9 @@ def normalize(node) :
 
 #converts @@foo to <link linkend="node.foo">foo</link>
 def setupMarkup(markup) :
-	return re.sub(r"@@([a-z\-]+)", r'<link linkend="node.\1">\1</link>', markup)
+	markup = re.sub(r"@@([a-z\-]+)", r'<link linkend="node.\1">\1</link>', markup)
+	markup = markup.replace("$$$CURRENTDATE$$$", datetime.date.today().isoformat())
+	return markup
 
 #valid Docbook document at @path and generate DOM
 def getDocbookDom(path) :
@@ -409,11 +414,11 @@ def getDocbookDom(path) :
 
 #output an XHTML and HTML document from the specified Docbook document
 def createHtmlFile(fileBase) :
-	inputPath = "%s/docbook/%s.docbook" % (specsDir, fileBase)
-	xhtmlOutputPath = "%s/html/%s.xhtml" % (specsDir, fileBase)
-	htmlOutputPath = "%s/html/%s.html" % (specsDir, fileBase)
-	
 	print fileBase + ":"
+	
+	inputPath = os.path.join(inputDir, "%s.docbook" % fileBase)
+	xhtmlOutputPath = os.path.join(outputDir, "%s.xhtml" % fileBase)
+	htmlOutputPath = os.path.join(outputDir, "%s.html" % fileBase)
 	
 	docbookDocument = getDocbookDom(inputPath)
 	htmlDocument = createHtmlDocument(docbookDocument)

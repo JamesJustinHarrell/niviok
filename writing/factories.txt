@@ -1,0 +1,230 @@
+a factory produces objects of the same type
+the values of those objects is controlled via arguments
+
+therefore:
+	* classes are factories
+	* generic func/class/face are also factories
+
+
+
+
+
+thought: merge object literals with classes and generics? That would allow classes and generics to implement interfaces easier, and would ensure object literals would be well supported.
+
+example for rationale: compare this to the original code at http://en.wikipedia.org/wiki/Abstract_factory_pattern
+The original code created classes where instances of the class implement the GuiFactory interface, even though every instance of the class would be the exact same and hold no state, because Java did not provide a means of creating single objects that implement the GuiFactory interface.
+
+func getGuiFactory() GuiFactory
+    int sys = readFromConfigFile("OS_TYPE")
+    if sys == 0 : WinFactory
+    else : OsxFactory
+
+interface GuiFactory
+    func createButton() Button
+    func createWindow() Window
+
+//create on object that implements GuiFactory
+decl const GuiFactory WinFactory = object {
+	implement GuiFactory
+		func createButton() Button
+			WinButton()
+		func createWindow() Window
+			WinWindow()
+}
+
+//create an object that implements GuiFactory
+decl const GuiFactory OsxFactory = object {
+	implement OsxFactory
+		func createButton() Button
+			OsxButton()
+		func createWindow() Window
+			OsxWindow()
+}
+
+interface Button
+    func paint()
+
+class WinButton
+	implement Button
+    	func paint()
+        	println("I'm a WinButton")
+
+class OSXButton
+	implement Button
+    	func paint()
+        	println("I'm an OsXButton")
+
+func main()
+	GuiFactory factory = getGuiFactory()
+	Button button = factory.createButton()
+	button.paint()
+	Window window = factory.createWindow()
+	window.paint()
+
+
+
+
+To write the WinButton class using object literals:
+
+declfirst const WinButton = object {
+	implement Interface <-> Button
+	
+	call() Button
+		object {
+			implement Button
+				func pain()
+					println("I'm a WinButton")
+		}
+}
+
+
+
+class ALPHA
+	BETA
+	
+	implement GAMMA
+		DELTA
+	
+	implement EPSILON
+		ZETA
+---or
+declfirst const ALPHA = object (
+	implement Interface <-> GAMMA + EPSILON
+
+	implement funcface(|GAMMA+EPSILON)
+		call()GAMMA+EPSILON
+			object (
+				BETA
+				implement GAMMA
+					DELTA
+				implement EPSILON
+					ZETA
+			)
+)
+---or
+declfirst const ALPHA = object (
+	implement Interface <-> GAMMA + EPSILON
+
+	call()GAMMA+EPSILON //implicitly implement funcface(|GAMMA+EPSILON)
+		object (
+			BETA
+			implement GAMMA
+				DELTA
+			implement EPSILON
+				ZETA
+		)
+)
+
+
+
+"classes" in Desal are just callable objects that return the same type. The "class" node can be replaced with object literals without the slightest bit of difference.
+
+Generic functions/classes and generic interfaces are fundamentally different. For example, a generic function can be called, and implicitily instantiated using the types of the arguments. This means Desal would be quite different if generic functions weren'd built into the language, while it would not be any different at all if the class node were to be removed. Objects that implement the GenericFunction interface could implement 
+
+
+
+1) function nodes consists of:
+	Parameter declarations (0 or more)
+	Return declaration (optional)
+	body
+
+examples:
+	{Int a, Int b -> Int | a * b}
+	
+	{Int a, Int b -> Int |
+		println a * b
+		a * b
+	}
+	
+	{Int a, Int b -> Int | println a * b, a * b }
+	
+	{a,b|a*b}
+
+	rejected:
+		func(Int a, Int b) Int => a * b
+	
+		func(Int a, Int b) Int ( a * b )
+	
+		func(Int a, Int b) Int
+			println a * b
+			a * b
+	
+		(func(Int a, Int b) Int
+			println a * b
+			a * b
+		)
+
+
+2) declare-first with function nodes as the value consists of:
+	Identifier (name)
+	Parameter declarations (0 or more)
+	Return declaration (optional)
+	body
+
+examples:
+	func doStuff(Int a, Int b) Int = a * b
+	
+	func doStuff(Int a, Int b) Int =
+		a * b
+	
+	declfirst function {Int,Int->Int} doStuff = {Int a, Int b -> Int | a * b}
+	
+	func doStuff(Int a, Int b) Int =
+		println a * b
+		a * b
+	
+	func doStuff(Int a, Int b) Int = (
+		println a * b
+		a * b
+	)
+
+
+
+2.5) declare-first without function node as the value:
+	func doStuff(Int,Int)Int = getSomeFunction()
+	declfirst func {Int,Int->Int} doStuff = getSomeFunction()
+
+
+
+
+
+
+
+
+
+
+
+
+
+Hold up! Why is the syntax for defining a function identikey so different from the syntax for defining an inline function? This is something I wanted to avoid! And why is the syntax for defining a function identikey so different depending on whether the value is a function node or not? The syntax is not matching up very well with the semantics!
+
+
+TODO: Replace the class node with an object node. Say that Dextr has a "class" pseudo-node that translates to object nodes. Remove the special syntax for assigning a function node to a function identikey. (There should be on diference in Desal, unlike e.g. Python, which has "def doStuff: ..." and "doStuff = (lambda ...)".) 
+
+
+
+
+
+
+
+
+
+
+
+3) function-interface consists of:
+	Parameter declarations (0 or more)
+	Return declaration (optional)
+
+examples :
+	{Int, Int -> Int}
+	{Int, Int}
+	{-> Int}
+
+
+
+default return types:
+	for function interfaces: dyn ?
+	for function nodes:
+		if has body (besides "null"): dyn ?
+		if has no body, or has "null" as body: void
+

@@ -2,17 +2,18 @@ using System;
 using System.Collections.Generic;
 using System.Xml;
 
-//static
-partial class DesibleParser {
+abstract class DesibleParserBase {
+	protected delegate INode ParseFunc(XmlElement element);
+	
+	protected abstract void addParser<T>(string tagName, ParseFunc func);
+	protected abstract T parseOne<T>(XmlElement element, string label, string tagName);
+	protected abstract T parseOpt<T>(XmlElement element, string label, string tagName);
+	protected abstract IList<T> parseMult<T>(XmlElement element, string label, string tagName);
+}
 
-	class UnexpectedElementError : System.ApplicationException {
-		public UnexpectedElementError(string expectedTag, string actualTag)
-		: base( System.String.Format(
-			"expected tag name '{0}' but found '{1}'", expectedTag, actualTag ))
-		{}
-	}
+class DesibleParser : DesibleParserAuto {
+	//----- static
 
-	delegate INode ParseFunc(XmlElement element);
 	const string desible1NS = "urn:desible1";
 
 	public static IInterface createNativeInterface(Bridge bridge, XmlElement element) {
@@ -39,11 +40,8 @@ partial class DesibleParser {
 			parser.warnAboutUnhandled(root, warnAllNS);
 		return bundle;
 	}
-}
 
-
-//instance
-partial class DesibleParser {
+	//----- instance
 
 	Bridge _bridge; //used for outputing warnings
 	XmlNamespaceManager _nsManager; //maps tag name prefixes to namespace URIs
@@ -51,7 +49,7 @@ partial class DesibleParser {
 	IDictionary<string, Type> _tagToType;
 	IDictionary<Type, ParseFunc> _parseFuncs;
 	
-	public DesibleParser(Bridge bridge, XmlDocument document) {
+	DesibleParser(Bridge bridge, XmlDocument document) {
 		_bridge = bridge;
 		_nsManager = new XmlNamespaceManager(document.NameTable);
 		_nsManager.AddNamespace("desible1", desible1NS);
@@ -79,32 +77,39 @@ partial class DesibleParser {
 		//----- base
 		
 		addParser<Node_Access>("access", delegate(XmlElement element) {
-			return new Node_Access(parseEnum<Access>(element));
+			return new Node_Access(
+				G.parseEnum<Access>(element.InnerText));
 		});
 				
 		addParser<Node_Boolean>("boolean", delegate(XmlElement element) {
-			return new Node_Boolean(System.Boolean.Parse(element.InnerText));
+			return new Node_Boolean(
+				Boolean.Parse(element.InnerText));
 		});
 		
 		addParser<Node_Direction>("direction", delegate(XmlElement element) {
-			return new Node_Direction(parseEnum<Direction>(element));
+			return new Node_Direction(
+				G.parseEnum<Direction>(element.InnerText));
 		});
 		
 		addParser<Node_Identifier>("identifier", delegate(XmlElement element) {
-			return new Node_Identifier(new Identifier(element.InnerText));
+			return new Node_Identifier(
+				new Identifier(element.InnerText));
 		});
 		
 		addParser<Node_IdentikeyCategory>("identikey-category", delegate(XmlElement element) {
-			return new Node_IdentikeyCategory(parseEnum<IdentikeyCategory>(element));
+			return new Node_IdentikeyCategory(
+				G.parseEnum<IdentikeyCategory>(element.InnerText));
 		});
 		
 		addParser<Node_Integer>("integer", delegate(XmlElement element) {
 			//xxx use bignum
-			return new Node_Integer( System.Int64.Parse(element.InnerText) );
+			return new Node_Integer(
+				Int64.Parse(element.InnerText));
 		});
 
 		addParser<Node_Rational>("rational", delegate(XmlElement element) {
-			return new Node_Rational( System.Double.Parse(element.InnerText) );
+			return new Node_Rational(
+				Double.Parse(element.InnerText) );
 		});
 		
 		addParser<Node_String>("string", delegate(XmlElement element) {		
@@ -134,18 +139,18 @@ partial class DesibleParser {
 					parseMult<Node_DeclareFirst>(element, "declare-first", null));
 			}
 			else {
-				throw new System.Exception();
+				throw new Exception("only inline-plane planes are supported for now");
 			}
 		});
 		_tagToType.Add("inline-plane", typeof(Node_Plane));
 		_tagToType.Add("plane-reference", typeof(Node_Plane));
-	}
-
+	}	
+	
 	void addParser<T>(ParseFunc func) {
 		_parseFuncs.Add( typeof(T), func );
 	}		
 
-	void addParser<T>(string tagName, ParseFunc func) {
+	protected override void addParser<T>(string tagName, ParseFunc func) {
 		Type type = typeof(T);	
 		_tagToType.Add( tagName, type );
 		_parseFuncs.Add(
@@ -157,11 +162,18 @@ partial class DesibleParser {
 	}
 	
 	void checkElement(XmlElement element, string expectedTagName) {
-		if( element.LocalName != expectedTagName )
-			throw new UnexpectedElementError(expectedTagName, element.LocalName);
-		if( element.NamespaceURI != desible1NS )
-			throw new System.Exception(
-				"attempted to handle an element in namespace '" + element.NamespaceURI + "'");
+		if( element.LocalName != expectedTagName ) {
+			throw new Exception(
+				String.Format(
+					"expected tag name '{0}' but found '{1}'",
+					expectedTagName, element.LocalName));
+		}
+		if( element.NamespaceURI != desible1NS ) {
+			throw new Exception(
+				String.Format(
+					"attempted to handle an element in namespace '{0}",
+					element.NamespaceURI));
+		}
 		_handledElements.Add(element);
 	}
 	
@@ -177,7 +189,7 @@ partial class DesibleParser {
 		}
 		else {
 			_bridge.warning(
-				System.String.Format(
+				String.Format(
 					"unhandled element with tag name '{0}' in namespace '{1}'\n{2}",
 					element.LocalName, element.NamespaceURI, element.OuterXml ) );
 		}
@@ -187,8 +199,10 @@ partial class DesibleParser {
 		Type type = typeof(T);
 		
 		if( ! _parseFuncs.ContainsKey(type) ) {
-			throw new ApplicationException(
-				"no parser defined for the specifed type " + type.FullName);
+			throw new Exception(
+				String.Format(
+					"no parser defined for type '{0}'",
+					type.FullName));
 		}
 		
 		return _parseFuncs[type];
@@ -211,10 +225,10 @@ partial class DesibleParser {
 	XmlElement selectFirst(XmlElement element, string tagName, string label) {
 		XmlElement child = trySelectFirst(element, tagName, label);
 		if( child == null ) {
-			throw new System.Exception(
+			throw new Exception(
 				String.Format(
-					"element with tag name '{0}' did not contain element with label '{1}'",
-					element.LocalName, label ));
+					"'{0}' element did not contain '{1}' element with '{2}' label",
+					element.LocalName, tagName, label ));
 		}
 		return child;
 	}
@@ -228,17 +242,12 @@ partial class DesibleParser {
 	//----- parse
 	
 	//parse first child with label
-	T parseOne<T>(XmlElement element, string label, string tagName) {
-		try { //try-catch for debugging
-			return (T)getParseFunc<T>()( selectFirst(element, label, tagName) );
-		}
-		catch(Exception e) {
-			throw new Exception("inside parseOne", e);
-		}
+	protected override T parseOne<T>(XmlElement element, string label, string tagName) {
+		return (T)getParseFunc<T>()( selectFirst(element, label, tagName) );
 	}
 
 	//parse first child with label, if such a child exists
-	T parseOpt<T>(XmlElement element, string label, string tagName) {
+	protected override T parseOpt<T>(XmlElement element, string label, string tagName) {
 		XmlElement child = trySelectFirst(element, label, tagName);
 		if( child == null )
 			return default(T); //null - google CS0403 for info
@@ -246,7 +255,7 @@ partial class DesibleParser {
 	}
 
 	//parse all children with label
-	IList<T> parseMult<T>(XmlElement element, string label, string tagName) {
+	protected override IList<T> parseMult<T>(XmlElement element, string label, string tagName) {
 		ParseFunc func = getParseFunc<T>();
 		IList<T> rv = new List<T>();
 		foreach( XmlElement child in selectAll(element, label, tagName) ) {
@@ -255,10 +264,6 @@ partial class DesibleParser {
 		return rv;
 	}
 	
-	T parseEnum<T>(XmlElement element) {
-		return (T)System.Enum.Parse(typeof(T), element.InnerText, true);
-	}
-
 	//parse element as a super type
 	//should only be used by expression/statement/declaration-any parser delegates
 	T parseSuper<T>(XmlElement element, string typeName) {
@@ -269,9 +274,10 @@ partial class DesibleParser {
 			return (T)parser(element);
 		}
 		else {
-			throw new ApplicationException( String.Format(
-				"element with tag name '{0}' and label '{1}' is not an {2}",
-				tagName, element.GetAttribute("label"), typeName ));
+			throw new Exception(
+				String.Format(
+					"element with tag name '{0}' and label '{1}' is not an {2}",
+					tagName, element.GetAttribute("label"), typeName ));
 		}
 	}
 	
@@ -279,3 +285,4 @@ partial class DesibleParser {
 		return (T)_parseFuncs[typeof(T)](element);
 	}
 }
+

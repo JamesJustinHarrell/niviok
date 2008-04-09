@@ -90,7 +90,12 @@ class InterfaceImplementation<T> : FaceImplBase<T>, IInterfaceImplementation<T> 
 		get { return _face; }
 	}
 	
-	public IInterfaceImplementation<T> cast(IInterface @interface) {
+	public IInterfaceImplementation<T> cast(IInterface face) {
+		if( _face == face )
+			return this;
+		if( face == Bridge.Object )
+			//xxx it would be better to not recreate this InterfaceImplemention every time
+			return new InterfaceImplementationBuilder<T>().compile(Bridge.Object);
 		throw new Error_Unimplemented();
 	}
 	

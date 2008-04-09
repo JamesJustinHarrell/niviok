@@ -1,0 +1,44 @@
+The "type select" node performs an action based on the first interface that a certain object implements. It has a boolean property "require handling".
+
+type-select ::=
+	boolean require handling
+	+ case
+	? expression else
+
+interface Node
+	...
+
+interface Text
+	inherit Node
+	...
+
+interface Document
+	inherit Node
+	...
+
+interface Element
+	inherit Node
+	...
+
+typeselect getElement()
+	case Text
+		foo()
+	case Document
+		bar()
+
+If the value returned by getElement() is not a Text or Document object, the typeselect node simply produces null.
+
+But here:
+
+typeselect require getElement()
+	case Text
+		foo()
+	case Document
+		bar()
+
+An error exception would be thrown. (Thus an agent may warn before execution that this will happen, and even refuse to work with the Desal bundle.)
+
+
+This also gives Desal better supported of algebraic data types, a.k.a. tagged unions.
+
+

@@ -12,16 +12,22 @@ using System.Xml;
 using System.Collections.Generic;
 
 partial class Bridge {
+	static IInterface _objectFace;
 	static IInterface _boolFace;
 	static IInterface _intFace;
 	static IInterface _ratFace;
 	static IInterface _stringFace;
 	static IInterface _interfaceFace;
+	
 	static IInterfaceImplementation<Client_Boolean> _boolImpl;
 	static IInterfaceImplementation<Client_Integer> _intImpl;
 	static IInterfaceImplementation<Client_Rational> _ratImpl;
 	static IInterfaceImplementation<Client_String> _stringImpl;
 	static IInterfaceImplementation<Client_Interface> _interfaceImpl;
+
+	public static IInterface Object {
+		get { return _objectFace; }
+	}
 
 	public static IInterface Bool {
 		get { return _boolFace; }

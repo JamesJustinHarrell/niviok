@@ -4,7 +4,7 @@ import re
 import sys
 import xml.dom.minidom as DOM
 
-pathbase = "/media/files/Desal/SableCC"
+pathbase = "/media/files/Desal/Desal Agent 001/SableCC"
 inputGrammarPath = os.path.join(pathbase,"Dextr sablecc grammar.txt")
 outputGrammarPath = os.path.join(pathbase,"dextr.sablecc")
 
@@ -31,16 +31,15 @@ def getElemText(doc, name) :
 
 #get lines that aren't just whitespace
 def contentLines(text) :
-	return filter(
-		(lambda x : x.strip() != ""),
-		text.splitlines() )
+	return [x for x in text.splitlines() if x.strip() != ""]
 
 #creates a name for a number
-#e.g. 111 -> aaa, 123 -> abc
+#e.g. 000 -> "aaa", 012 -> "abc"
 def alphaFromNumber(number) :
-	nums = map(int, list(str(number))) #e.g. 123 -> [1, 2, 3]
-	nums = map( (lambda x : ord("a") + x), nums )
-	return "".join(map(chr, nums))
+	nums = map(int, list(str(number))) #e.g. 012 -> [0, 1, 2]
+	nums = [ord("a") + x for x in nums] #e.g. [0, 1, 2] -> [97, 98, 99]
+	chars = map(chr, nums) #e.g. [97, 98, 99] -> ["a", "b", "c"]
+	return "".join(chars)
 
 doc = DOM.parse(inputGrammarPath)
 

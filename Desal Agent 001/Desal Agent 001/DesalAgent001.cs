@@ -1,11 +1,17 @@
-using System; //for System.Console
+using System;
+using System.Diagnostics;
 using System.Collections.Generic;
+using System.Xml;
 
 class DesalAgent001 {
 	
 	//entry point
 	//arguments have the form: -key=value
 	static int Main(string[] arguments) {
+		Debug.Listeners.Add(
+			new TextWriterTraceListener(
+				Console.Error));
+	
 		DesalAgent001 program = new DesalAgent001();
 		Bridge bridge = new Bridge();	
 		
@@ -17,6 +23,8 @@ class DesalAgent001 {
 		args.Add("dextr-parser", "Coco/R");
 		args.Add("desible-warn-unhandled", "true");
 		args.Add("desible-warn-allNS", "true");
+		args.Add("test-desible-serializer", "false");
+		args.Add("output-desible", "false");
 		
 		foreach( string arg in arguments ) {
 			if( arg[0] == '-' ) {
@@ -49,33 +57,66 @@ class DesalAgent001 {
 		
 		Node_Bundle bundle;
 		
-		if( args["representation"] == "dextr" ) {
-			string parserName = args["dextr-parser"];
-			bundle = Dextr.Custom.ParserManager.parseDocument(
-				bridge, path, parserName);
-			if( parserName == "token-displayer" || parserName == "token-info-displayer" )
-				return 0;
+		string representation = args["representation"];
+		
+		try {
+			if( representation == "desexp" ) {
+				bundle = Desexp.DesexpParser.parseFile(bridge, path);
+			}
+			else if( representation == "desible" ) {		
+				bool warnUnhandled = bool.Parse(args["desible-warn-unhandled"]);
+				bool warnAllNS = bool.Parse(args["desible-warn-allNS"]);
+				bundle = DesibleParser.parseDocument(
+					bridge, path, warnUnhandled, warnAllNS);
+			}
+			else if( representation == "dextr" ) {
+				string parserName = args["dextr-parser"];
+				bundle = Dextr.Custom.ParserManager.parseDocument(
+					bridge, path, parserName);
+				if( parserName == "token-displayer" || parserName == "token-info-displayer" )
+					return 0;
+			}
+			else {
+				bridge.error(
+					String.Format(
+						"Unknown representation '{0}'.",
+						representation));
+				return 1;
+			}
 		}
-		else if( args["representation"] == "desible" ) {		
-			bool warnUnhandled = bool.Parse(args["desible-warn-unhandled"]);
-			bool warnAllNS = bool.Parse(args["desible-warn-allNS"]);
-			bundle = DesibleParser.parseDocument(
-				bridge, path, warnUnhandled, warnAllNS);
-			
-			//xxxv serialize bundle and then reparse
-			bundle = DesibleParser.parseDocument(
-				bridge,
-				DesibleSerializer.serializeToDocument(bundle),
-				warnUnhandled,
-				warnAllNS );
-		}
-		else {
-			bridge.error("unknown representation");
+		catch(Exception e) {
+			bridge.error(
+				String.Format(
+					"Unable to parse {0} document\n"+
+					"at '{1}'\n" +
+					"because: {2}",
+					representation, path, e));
 			return 1;
 		}
 		
 		if( bool.Parse(args["print-tree"]) ) {
 			program.printTree(bundle);
+		}
+		
+		if(	bool.Parse(args["test-desible-serializer"]) ) {
+			//serialize bundle and then reparse
+			bundle = DesibleParser.parseDocument(
+				bridge,
+				DesibleSerializer.serializeToDocument(bundle),
+				true,
+				true);
+			bridge.println("Desible serializer seems to be working okay.");
+		}
+		
+		if( bool.Parse(args["output-desible"]) ) {
+			string outputPath = args["desible-output-path"];
+			XmlDocument doc = DesibleSerializer.serializeToDocument(bundle);
+			XmlWriterSettings settings = new XmlWriterSettings();
+			settings.Indent = true;
+			settings.IndentChars = "\t";
+			using(XmlWriter writer = XmlWriter.Create(outputPath, settings)) {
+				doc.WriteTo(writer);
+			}
 		}
 		
 		if( bool.Parse(args["run"]) ) {
@@ -128,6 +169,11 @@ class DesalAgent001 {
 		scope.declareAssign(
 			new Identifier("Bool"),
 			Bridge.wrapInterface(Bridge.Bool) );
+		
+		//Object
+		scope.declareAssign(
+			new Identifier("Object"),
+			Bridge.wrapInterface(Bridge.Object) );
 
 		return scope;
 	}
@@ -154,6 +200,8 @@ class DesalAgent001 {
 			bridge.output( Bridge.unwrapBoolean(arg).ToString() );
 		else if( arg.activeInterface == Bridge.Rat )
 			bridge.output( Bridge.unwrapRational(arg).ToString() );
+		else if( arg.activeInterface == Bridge.Object )
+			bridge.output( "object" );
 		else if( arg is NullValue )
 			bridge.output( "null" );
 		else

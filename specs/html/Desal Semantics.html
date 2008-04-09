@@ -7,7 +7,7 @@
     </head>
     <body>
         <h1>Desal Semantics 1.0</h1>
-        <h2>Edition 1 Draft 2008-03-26</h2>
+        <h2>Edition 1 Draft 2008-04-08</h2>
         <p>Copyright © 2008 James Justin Harrell</p>
         <p>Permission is granted to use, copy, display, modify, sell, and distribute this document. This document is provided "as is" without warrany of any kind. In no event shall anyone be liable for any damages or other liability arising from use of this document.</p>
         <ol class="toc">
@@ -216,22 +216,19 @@
                                 <a href="#node.declare-empty">10.4.4. declare-empty</a>
                             </li>
                             <li>
-                                <a href="#node.declare-first">10.4.5. declare-first</a>
+                                <a href="#node.labeled">10.4.5. labeled</a>
                             </li>
                             <li>
-                                <a href="#node.labeled">10.4.6. labeled</a>
+                                <a href="#node.null">10.4.6. null</a>
                             </li>
                             <li>
-                                <a href="#node.null">10.4.7. null</a>
+                                <a href="#node.return">10.4.7. return</a>
                             </li>
                             <li>
-                                <a href="#node.return">10.4.8. return</a>
+                                <a href="#node.throw">10.4.8. throw</a>
                             </li>
                             <li>
-                                <a href="#node.throw">10.4.9. throw</a>
-                            </li>
-                            <li>
-                                <a href="#node.yield">10.4.10. yield</a>
+                                <a href="#node.yield">10.4.9. yield</a>
                             </li>
                         </ol>
                     </li>
@@ -260,32 +257,35 @@
                                 <a href="#node.declare-assign">10.5.7. declare-assign</a>
                             </li>
                             <li>
-                                <a href="#node.ignore">10.5.8. ignore</a>
+                                <a href="#node.declare-first">10.5.8. declare-first</a>
+                            </li>
+                            <li>
+                                <a href="#node.ignore">10.5.9. ignore</a>
                                 <ol>
                                     <li>
-                                        <a href="#node.ignore-member">10.5.8.1. ignore-member</a>
+                                        <a href="#node.ignore-member">10.5.9.1. ignore-member</a>
                                     </li>
                                 </ol>
                             </li>
                             <li>
-                                <a href="#node.namespaced-value-identikey">10.5.9. namespaced-value-identikey</a>
+                                <a href="#node.namespaced-value-identikey">10.5.10. namespaced-value-identikey</a>
                             </li>
                             <li>
-                                <a href="#node.possibility">10.5.10. possibility</a>
+                                <a href="#node.possibility">10.5.11. possibility</a>
                             </li>
                             <li>
-                                <a href="#node.select">10.5.11. select</a>
+                                <a href="#node.select">10.5.12. select</a>
                                 <ol>
                                     <li>
-                                        <a href="#node.case">10.5.11.1. case</a>
+                                        <a href="#node.case">10.5.12.1. case</a>
                                     </li>
                                 </ol>
                             </li>
                             <li>
-                                <a href="#node.try-catch">10.5.12. try-catch</a>
+                                <a href="#node.try-catch">10.5.13. try-catch</a>
                                 <ol>
                                     <li>
-                                        <a href="#node.exception-handler">10.5.12.1. exception-handler</a>
+                                        <a href="#node.exception-handler">10.5.13.1. exception-handler</a>
                                     </li>
                                 </ol>
                             </li>
@@ -1193,7 +1193,7 @@ alpha
                 </div>
                 <div id="node.identikey-category">
                     <h3>10.3.6. identikey-category</h3>
-                    <p>specifies one of: namespace, dynamic, automatic, strict, function</p>
+                    <p>specifies one of: namespace, dynamic, typed, constant, function</p>
                     <p>See the 
                     <a href="#identikeys">section on identikeys</a>.</p>
                 </div>
@@ -1203,15 +1203,13 @@ alpha
                         <li>
                             <a href="#node.identikey-category">identikey-category</a>
                         </li>
-                        <li>? 
-                        <a href="#node.nullable-type">nullable-type</a></li>
-                        <li>? 
-                        <a href="#node.boolean">boolean</a>constant</li>
+                        <li>
+                            <a href="#node.nullable-type">nullable-type</a>
+                        </li>
                     </ul>
-                    <p class="process">[type] must be present if and only if the identikey-category is not namespace. The [type] must specify an [interface] if the identikey-category is strict. The [type] can specify an [interface] if the identikey-category is function. The [type] must not specify an [interface] if the identikey-category is namespace, dynamic, or automatic. The [type] must specify false for [nullable] if identikey-category is function. [constant] must not be specified if and only if the identikey-category is namespace or dynamic.</p>
-                    <p>If the category is strict, the active interface of any value bound to the identikey must be that interface. If the category is function, and the interface is given, functions bound to the identikey must specify that interface as the return type.</p>
-                    <p>The default value of [constant] is false. If [constant] is true, the identifier thereafter always refers to the same value. The identifier cannot be bound to a different value, or unbound. The active interface also cannot be changed.</p>
-                    <code xml:space="preserve">Int a = 3 func Int a = func()Int { return 3 }</code>
+                    <p class="process">[identikey-category] must not be namespace. [nullable-type] must not specify an interface if [identikey-category] is dynamic. [nullable-type] must specify nullable as false if [identikey-category] is function. (Note: The 
+                    <a href="#node.declare-first">declare-first</a>node has additional restrictions.)</p>
+                    <code xml:space="preserve">decl Int a = 3 declfirst func b = func()Int { 3 }</code>
                 </div>
                 <div id="node.import">
                     <h3>10.3.8. import</h3>
@@ -1393,8 +1391,7 @@ test
                             <li>
                             <a href="#node.boolean">boolean</a>inclusive</li>
                             <li>? expression test</li>
-                            <li>
-                            <a href="#node.block">block</a>action</li>
+                            <li>expression action</li>
                         </ul>
                         <p>Has scope.</p>
                         <p>[inclusive] determines whether the loop should iterate one last time if the iteration value is equal to the limit, and it is false by default.</p>
@@ -1457,33 +1454,12 @@ test
                             <a href="#node.identikey-type">identikey-type</a>
                         </li>
                     </ul>
-                    <p class="process">The identikey-type must not be constant.</p>
+                    <p class="process">The identikey-category of the identikey-type must not specify "namespace", "function", or "constant". The identikey-category of the identikey-type must not specify "typed" if the nullable-type of the identikey-type does not specify an interface. The nullable-type of the identikey-type must not specifiy nullable as false.</p>
                     <p>Creates an identikey in the parent scope with the specified type. After this node executes, the produced identikey does not yet point to any values.</p>
-                    <code xml:space="preserve">decl func Int foo foo = func()Int { return 3 } foo = func(Int a)Int { return a * 2 } print foo() //prints 3 print foo(2) //prints 4 //xxx does this produce error or replace? foo = func()Int { return 5 }</code>
-                    <code xml:space="preserve">decl func()Int foo foo = func()Int { return 3 } print foo() //prints 3 foo = func()Int { return 5 } print foo() //prints 5 foo = func(Int a)Int { return a * 2 } //error - interface mismatch</code>
-                </div>
-                <div id="node.declare-first">
-                    <h3>10.4.5. declare-first</h3>
-                    <ul class="layout">
-                        <li>
-                        <a href="#node.identifier">identifier</a>name</li>
-                        <li>
-                            <a href="#node.identikey-type">identikey-type</a>
-                        </li>
-                        <li>expression value</li>
-                        <li>
-                        <a href="#node.boolean">boolean</a>breed</li>
-                    </ul>
-                    <p class="process">The identikey-type must be constant, and must have a category of automatic, strict, or function.</p>
-                    <p>Creates an identikey in the parent scope with the specified type, then assigns the specified value to it.</p>
-                    <p>When a block contains declare-first nodes, the declare-first nodes are executed before the other expressions in the block are executed. The value expressions of declare-first nodes may depend on the values of other declare-first nodes in the same block. For example, two interfaces could reference each other.</p>
-                    <p>This node can create identikeys before execution reaches it. For more information, see 
-                    <a href="#handling-declare-first">this section</a>.</p>
-                    <p class="exec">Produce the value bound to the identikey created by this node.</p>
-                    <code xml:space="preserve">declfirst auto Foo = interface { get Bar bar } declfirst auto Bar = interface { get Foo foo } Foo foo = ... foo.bar.foo.bar...</code>
+                    <code xml:space="preserve">decl foo foo = 123 println(foo) foo = 456 println(foo)</code>
                 </div>
                 <div id="node.labeled">
-                    <h3>10.4.6. labeled</h3>
+                    <h3>10.4.5. labeled</h3>
                     <ul class="layout">
                         <li>
                         <a href="#node.identifier">identifier</a>label</li>
@@ -1493,28 +1469,28 @@ test
                     <code xml:space="preserve">func setupCell(Int searchID) { decl Cell wantedCell outer: for row in table { for cell in row if cell.ID eql searchID wantedCell = cell break outer } if wantedCell != null doSomething(wantedCell) }</code>
                 </div>
                 <div id="node.null">
-                    <h3>10.4.7. null</h3>
+                    <h3>10.4.6. null</h3>
                     <p>Produces an untyped null.</p>
                     <p>(XXX move) An untyped null can be cast to any interface, implicitly or explicitly, to form a typed null. A typed null can be downcast.</p>
                     <code xml:space="preserve">decl Int ? foo = 123 foo = null //untyped null implicitly cast to an Int null foo //evaluates to an Int null decl String ? bar = (foo as void)</code>
                     <p class="xxx">Why not just have a global reserved identikey named "null" of type void? It would always evaluate to an untyped null.</p>
                 </div>
                 <div id="node.return">
-                    <h3>10.4.8. return</h3>
+                    <h3>10.4.7. return</h3>
                     <ul class="layout">
                         <li>? expression value</li>
                     </ul>
                     <p>Function call ends and evaluates to expression.</p>
                 </div>
                 <div id="node.throw">
-                    <h3>10.4.9. throw</h3>
+                    <h3>10.4.8. throw</h3>
                     <ul class="layout">
                         <li>expression value</li>
                     </ul>
-                    <p>If the expression isn't an Exception, wrap it with NonExceptionThrownError.</p>
+                    <p>If the expression isn't an Exception, throw a NonExceptionThrownError with the value from [value] as the wrapped value.</p>
                 </div>
                 <div id="node.yield">
-                    <h3>10.4.10. yield</h3>
+                    <h3>10.4.9. yield</h3>
                     <p>Within a generator, specifies the next value for the generator to yield.</p>
                     <ul class="layout">
                         <li>expression value</li>
@@ -1531,9 +1507,9 @@ test
                     <ul class="layout">
                         <li>
                         <a href="#node.identifier">identifier</a>name</li>
-                        <li>expression value</li>
                         <li>
                         <a href="#node.boolean">boolean</a>breed</li>
+                        <li>expression value</li>
                     </ul>
                     <p class="process">The identikey's type must be dynamic, automatic, or strict. If the identikey's type is automatic or strict, the identifier must be variable (not constant).</p>
                     <p>If bree is false:</p>
@@ -1572,16 +1548,16 @@ test
                 <div id="node.call">
                     <h3>10.5.3. call</h3>
                     <ul class="layout">
-                        <li>expression value</li>
+                        <li>expression receiver</li>
                         <li>* 
                         <a href="#node.argument">argument</a></li>
                     </ul>
                     <ol class="exec">
-                        <li>Execute [value].</li>
-                        <li>If the resultant value is not callable, throw an error.</li>
-                        <li>Execute the argument expressions in order.</li>
-                        <li>Send argument values to the [value] value for execution.</li>
-                        <li>Produce the returned value.</li>
+                        <li>Execute [receiver], and let receiver be the result.</li>
+                        <li>If result is not callable, throw an error.</li>
+                        <li>Execute the argument values in order.</li>
+                        <li>Send argument values to receiver for execution.</li>
+                        <li>Produce the result on the previous step.</li>
                     </ol>
                 </div>
                 <div id="node.cast">
@@ -1647,15 +1623,35 @@ test
                         <li>
                             <a href="#node.identikey-type">identikey-type</a>
                         </li>
-                        <li>expression value</li>
                         <li>
                         <a href="#node.boolean">boolean</a>breed</li>
+                        <li>expression value</li>
                     </ul>
-                    <p class="process">The identikey-category of the identikey-type node must be dynamic, automatic, strict, or function.</p>
+                    <p class="process">The identikey-category of the identikey-type node must not specify "namespace" or "function".</p>
                     <p>Creates an identikey in the parent scope with the specified type, then assigns the specified value to it.</p>
                 </div>
+                <div id="node.declare-first">
+                    <h3>10.5.8. declare-first</h3>
+                    <ul class="layout">
+                        <li>
+                        <a href="#node.identifier">identifier</a>name</li>
+                        <li>
+                            <a href="#node.identikey-type">identikey-type</a>
+                        </li>
+                        <li>
+                        <a href="#node.boolean">boolean</a>breed</li>
+                        <li>expression value</li>
+                    </ul>
+                    <p class="process">The identikey-category of the identikey-type must specify "constant" or "function". (Should breed be required to be false if the identikey-category is function?)</p>
+                    <p>Creates an identikey in the parent scope with the specified type, then assigns the specified value to it.</p>
+                    <p>When a block contains declare-first nodes, the declare-first nodes are executed before the other expressions in the block are executed. The value expressions of declare-first nodes may depend on the values of other declare-first nodes in the same block. For example, two interfaces could reference each other.</p>
+                    <p>This node can create identikeys before execution reaches it. For more information, see 
+                    <a href="#handling-declare-first">this section</a>.</p>
+                    <p class="exec">Produce the value bound to the identikey created by this node.</p>
+                    <code xml:space="preserve">declfirst Foo = interface { prop ro Bar bar prop ro Int number } declfirst Bar = interface { prop ro Foo foo } Foo foo = getFoo() println( foo.bar.foo.bar.foo.bar.foo.number )</code>
+                </div>
                 <div id="node.ignore">
-                    <h3>10.5.8. ignore</h3>
+                    <h3>10.5.9. ignore</h3>
                     <p>Instructs an agent to not output certain warnings.</p>
                     <ul class="layout">
                         <li>expression content</li>
@@ -1663,7 +1659,7 @@ test
                         <a href="#node.ignore-member">ignore-member</a></li>
                     </ul>
                     <div id="node.ignore-member">
-                        <h4>10.5.8.1. ignore-member</h4>
+                        <h4>10.5.9.1. ignore-member</h4>
                         <ul class="layout">
                             <li>
                             <a href="#node.string">string</a>name</li>
@@ -1678,7 +1674,7 @@ test
                     </div>
                 </div>
                 <div id="node.namespaced-value-identikey">
-                    <h3>10.5.9. namespaced-value-identikey</h3>
+                    <h3>10.5.10. namespaced-value-identikey</h3>
                     <ul class="layout">
                         <li>+ 
                         <a href="#node.identifier">identifier</a>namespace</li>
@@ -1688,7 +1684,7 @@ test
                     <code xml:space="preserve">namespace foo { namespace bar { decl Int alpha = 123 } } decl Int alpha = foo:bar:alpha println( alpha ) //123</code>
                 </div>
                 <div id="node.possibility">
-                    <h3>10.5.10. possibility</h3>
+                    <h3>10.5.11. possibility</h3>
                     <ul class="layout">
                         <li>expression test</li>
                         <li>expression result</li>
@@ -1704,7 +1700,7 @@ test
                     <code xml:space="preserve">if not foo.isSetup? { foo.setup() }</code>
                 </div>
                 <div id="node.select">
-                    <h3>10.5.11. select</h3>
+                    <h3>10.5.12. select</h3>
                     <ul class="layout">
                         <li>expression value</li>
                         <li>* 
@@ -1713,7 +1709,7 @@ test
                     </ul>
                     <p class="exec">Execute [value]. Execute each [values] child of each [case] and compare them to the [value] value (with the .equals? method of the [value] value) until finding a match. Then, execute the [result] of that case and produce the result. If no match is found, and [else] is given, execute [else] and produce its result.</p>
                     <div id="node.case">
-                        <h4>10.5.11.1. case</h4>
+                        <h4>10.5.12.1. case</h4>
                         <ul class="layout">
                             <li>+ expression value</li>
                             <li>expression result</li>
@@ -1722,7 +1718,7 @@ test
                     <code xml:space="preserve">select event.type case Events.QUIT { return } case Events.FOO, Events.BAR, Events.MAZ { //no action } else { throw ErrorClass("unknown event type") } select foo case 1 doStuff1() case 2 doStuff2() else doDefault() decl bar = select foo case 1 : getOne() case 2 : getTwo() else getDefault()</code>
                 </div>
                 <div id="node.try-catch">
-                    <h3>10.5.12. try-catch</h3>
+                    <h3>10.5.13. try-catch</h3>
                     <ul class="layout">
                         <li>expression try</li>
                         <li>* 
@@ -1733,7 +1729,7 @@ test
                     <p class="xxx">The term "else" is not descriptive enough in this situation. Possible replacements: "onsuccess", "then"</p>
                     <p class="process">Must contain more than just [try].</p>
                     <div id="node.exception-handler">
-                        <h4>10.5.12.1. exception-handler</h4>
+                        <h4>10.5.13.1. exception-handler</h4>
                         <ul class="layout">
                             <li>
                             <a href="#node.boolean">boolean</a>catch</li>

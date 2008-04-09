@@ -16,10 +16,8 @@ public interface Analysis : Switch
 
     void CaseStart(Start node);
     void CaseADocument(ADocument node);
-    void CaseAExpose(AExpose node);
     void CaseAADocumentinside(AADocumentinside node);
     void CaseABDocumentinside(ABDocumentinside node);
-    void CaseACDocumentinside(ACDocumentinside node);
     void CaseAPlanereference(APlanereference node);
     void CaseAADeclarefirstlist(AADeclarefirstlist node);
     void CaseABDeclarefirstlist(ABDeclarefirstlist node);
@@ -50,6 +48,7 @@ public interface Analysis : Switch
     void CaseAADeclarefirst(AADeclarefirst node);
     void CaseABDeclarefirst(ABDeclarefirst node);
     void CaseADeclarefirstnormal(ADeclarefirstnormal node);
+    void CaseAExpose(AExpose node);
     void CaseAAExpression(AAExpression node);
     void CaseABExpression(ABExpression node);
     void CaseACExpression(ACExpression node);
@@ -72,6 +71,7 @@ public interface Analysis : Switch
     void CaseAAElif(AAElif node);
     void CaseABElif(ABElif node);
     void CaseAElse(AElse node);
+    void CaseAImport(AImport node);
     void CaseAAMult(AAMult node);
     void CaseABMult(ABMult node);
     void CaseACMult(ACMult node);
@@ -84,6 +84,8 @@ public interface Analysis : Switch
     void CaseACPrimary(ACPrimary node);
     void CaseADPrimary(ADPrimary node);
     void CaseAEPrimary(AEPrimary node);
+    void CaseAAScopealteration(AAScopealteration node);
+    void CaseABScopealteration(ABScopealteration node);
     void CaseAASimple(AASimple node);
     void CaseABSimple(ABSimple node);
     void CaseACSimple(ACSimple node);
@@ -95,6 +97,7 @@ public interface Analysis : Switch
     void CaseADComparisonfunction(ADComparisonfunction node);
     void CaseAEComparisonfunction(AEComparisonfunction node);
     void CaseAFComparisonfunction(AFComparisonfunction node);
+    void CaseAUsing(AUsing node);
 
     void CaseTOperatorMinus(TOperatorMinus node);
     void CaseTOperatorPlus(TOperatorPlus node);
@@ -104,9 +107,10 @@ public interface Analysis : Switch
     void CaseTKeywordOr(TKeywordOr node);
     void CaseTKeywordDyn(TKeywordDyn node);
     void CaseTOperatorTimes(TOperatorTimes node);
-    void CaseTKeywordDne(TKeywordDne node);
+    void CaseTKeywordImport(TKeywordImport node);
     void CaseTKeywordNand(TKeywordNand node);
     void CaseTKeywordGte(TKeywordGte node);
+    void CaseTKeywordDne(TKeywordDne node);
     void CaseTKeywordPlane(TKeywordPlane node);
     void CaseTOperatorClosingBrace(TOperatorClosingBrace node);
     void CaseTKeywordFrom(TKeywordFrom node);
@@ -129,6 +133,7 @@ public interface Analysis : Switch
     void CaseTKeywordDecl(TKeywordDecl node);
     void CaseTKeywordFunc(TKeywordFunc node);
     void CaseTKeywordLte(TKeywordLte node);
+    void CaseTKeywordUsing(TKeywordUsing node);
     void CaseTKeywordExpose(TKeywordExpose node);
     void CaseTOperatorExtractMember(TOperatorExtractMember node);
     void CaseTOperatorComma(TOperatorComma node);
@@ -213,19 +218,11 @@ public class AnalysisAdapter : Analysis
     {
         DefaultCase(node);
     }
-    public virtual void CaseAExpose(AExpose node)
-    {
-        DefaultCase(node);
-    }
     public virtual void CaseAADocumentinside(AADocumentinside node)
     {
         DefaultCase(node);
     }
     public virtual void CaseABDocumentinside(ABDocumentinside node)
-    {
-        DefaultCase(node);
-    }
-    public virtual void CaseACDocumentinside(ACDocumentinside node)
     {
         DefaultCase(node);
     }
@@ -349,6 +346,10 @@ public class AnalysisAdapter : Analysis
     {
         DefaultCase(node);
     }
+    public virtual void CaseAExpose(AExpose node)
+    {
+        DefaultCase(node);
+    }
     public virtual void CaseAAExpression(AAExpression node)
     {
         DefaultCase(node);
@@ -437,6 +438,10 @@ public class AnalysisAdapter : Analysis
     {
         DefaultCase(node);
     }
+    public virtual void CaseAImport(AImport node)
+    {
+        DefaultCase(node);
+    }
     public virtual void CaseAAMult(AAMult node)
     {
         DefaultCase(node);
@@ -485,6 +490,14 @@ public class AnalysisAdapter : Analysis
     {
         DefaultCase(node);
     }
+    public virtual void CaseAAScopealteration(AAScopealteration node)
+    {
+        DefaultCase(node);
+    }
+    public virtual void CaseABScopealteration(ABScopealteration node)
+    {
+        DefaultCase(node);
+    }
     public virtual void CaseAASimple(AASimple node)
     {
         DefaultCase(node);
@@ -529,6 +542,10 @@ public class AnalysisAdapter : Analysis
     {
         DefaultCase(node);
     }
+    public virtual void CaseAUsing(AUsing node)
+    {
+        DefaultCase(node);
+    }
 
     public virtual void CaseTOperatorMinus(TOperatorMinus node)
     {
@@ -562,7 +579,7 @@ public class AnalysisAdapter : Analysis
     {
         DefaultCase(node);
     }
-    public virtual void CaseTKeywordDne(TKeywordDne node)
+    public virtual void CaseTKeywordImport(TKeywordImport node)
     {
         DefaultCase(node);
     }
@@ -571,6 +588,10 @@ public class AnalysisAdapter : Analysis
         DefaultCase(node);
     }
     public virtual void CaseTKeywordGte(TKeywordGte node)
+    {
+        DefaultCase(node);
+    }
+    public virtual void CaseTKeywordDne(TKeywordDne node)
     {
         DefaultCase(node);
     }
@@ -659,6 +680,10 @@ public class AnalysisAdapter : Analysis
         DefaultCase(node);
     }
     public virtual void CaseTKeywordLte(TKeywordLte node)
+    {
+        DefaultCase(node);
+    }
+    public virtual void CaseTKeywordUsing(TKeywordUsing node)
     {
         DefaultCase(node);
     }
@@ -776,11 +801,19 @@ public class DepthFirstAdapter : AnalysisAdapter
             node.GetA().Apply(this);
         }
         {
-            Object[] temp = new Object[node.GetExpose().Count];
-            node.GetExpose().CopyTo(temp, 0);
+            Object[] temp = new Object[node.GetImport().Count];
+            node.GetImport().CopyTo(temp, 0);
             for(int i = 0; i < temp.Length; i++)
             {
-                ((PExpose) temp[i]).Apply(this);
+                ((PImport) temp[i]).Apply(this);
+            }
+        }
+        {
+            Object[] temp = new Object[node.GetScopealteration().Count];
+            node.GetScopealteration().CopyTo(temp, 0);
+            for(int i = 0; i < temp.Length; i++)
+            {
+                ((PScopealteration) temp[i]).Apply(this);
             }
         }
         if(node.GetDocumentinside() != null)
@@ -792,33 +825,6 @@ public class DepthFirstAdapter : AnalysisAdapter
             node.GetB().Apply(this);
         }
         OutADocument(node);
-    }
-    public virtual void InAExpose(AExpose node)
-    {
-        DefaultIn(node);
-    }
-
-    public virtual void OutAExpose(AExpose node)
-    {
-        DefaultOut(node);
-    }
-
-    public override void CaseAExpose(AExpose node)
-    {
-        InAExpose(node);
-        if(node.GetKeywordExpose() != null)
-        {
-            node.GetKeywordExpose().Apply(this);
-        }
-        if(node.GetIdentifier() != null)
-        {
-            node.GetIdentifier().Apply(this);
-        }
-        if(node.GetNewline() != null)
-        {
-            node.GetNewline().Apply(this);
-        }
-        OutAExpose(node);
     }
     public virtual void InAADocumentinside(AADocumentinside node)
     {
@@ -833,13 +839,9 @@ public class DepthFirstAdapter : AnalysisAdapter
     public override void CaseAADocumentinside(AADocumentinside node)
     {
         InAADocumentinside(node);
+        if(node.GetDeclarefirstlist() != null)
         {
-            Object[] temp = new Object[node.GetPlanereference().Count];
-            node.GetPlanereference().CopyTo(temp, 0);
-            for(int i = 0; i < temp.Length; i++)
-            {
-                ((PPlanereference) temp[i]).Apply(this);
-            }
+            node.GetDeclarefirstlist().Apply(this);
         }
         OutAADocumentinside(node);
     }
@@ -856,25 +858,6 @@ public class DepthFirstAdapter : AnalysisAdapter
     public override void CaseABDocumentinside(ABDocumentinside node)
     {
         InABDocumentinside(node);
-        if(node.GetDeclarefirstlist() != null)
-        {
-            node.GetDeclarefirstlist().Apply(this);
-        }
-        OutABDocumentinside(node);
-    }
-    public virtual void InACDocumentinside(ACDocumentinside node)
-    {
-        DefaultIn(node);
-    }
-
-    public virtual void OutACDocumentinside(ACDocumentinside node)
-    {
-        DefaultOut(node);
-    }
-
-    public override void CaseACDocumentinside(ACDocumentinside node)
-    {
-        InACDocumentinside(node);
         {
             Object[] temp = new Object[node.GetPlanereference().Count];
             node.GetPlanereference().CopyTo(temp, 0);
@@ -883,11 +866,19 @@ public class DepthFirstAdapter : AnalysisAdapter
                 ((PPlanereference) temp[i]).Apply(this);
             }
         }
+        {
+            Object[] temp = new Object[node.GetScopealteration().Count];
+            node.GetScopealteration().CopyTo(temp, 0);
+            for(int i = 0; i < temp.Length; i++)
+            {
+                ((PScopealteration) temp[i]).Apply(this);
+            }
+        }
         if(node.GetDeclarefirstlist() != null)
         {
             node.GetDeclarefirstlist().Apply(this);
         }
-        OutACDocumentinside(node);
+        OutABDocumentinside(node);
     }
     public virtual void InAPlanereference(APlanereference node)
     {
@@ -1603,6 +1594,33 @@ public class DepthFirstAdapter : AnalysisAdapter
         }
         OutADeclarefirstnormal(node);
     }
+    public virtual void InAExpose(AExpose node)
+    {
+        DefaultIn(node);
+    }
+
+    public virtual void OutAExpose(AExpose node)
+    {
+        DefaultOut(node);
+    }
+
+    public override void CaseAExpose(AExpose node)
+    {
+        InAExpose(node);
+        if(node.GetKeywordExpose() != null)
+        {
+            node.GetKeywordExpose().Apply(this);
+        }
+        if(node.GetIdentifier() != null)
+        {
+            node.GetIdentifier().Apply(this);
+        }
+        if(node.GetNewline() != null)
+        {
+            node.GetNewline().Apply(this);
+        }
+        OutAExpose(node);
+    }
     public virtual void InAAExpression(AAExpression node)
     {
         DefaultIn(node);
@@ -2129,6 +2147,33 @@ public class DepthFirstAdapter : AnalysisAdapter
         }
         OutAElse(node);
     }
+    public virtual void InAImport(AImport node)
+    {
+        DefaultIn(node);
+    }
+
+    public virtual void OutAImport(AImport node)
+    {
+        DefaultOut(node);
+    }
+
+    public override void CaseAImport(AImport node)
+    {
+        InAImport(node);
+        if(node.GetKeywordImport() != null)
+        {
+            node.GetKeywordImport().Apply(this);
+        }
+        if(node.GetString() != null)
+        {
+            node.GetString().Apply(this);
+        }
+        if(node.GetNewline() != null)
+        {
+            node.GetNewline().Apply(this);
+        }
+        OutAImport(node);
+    }
     public virtual void InAAMult(AAMult node)
     {
         DefaultIn(node);
@@ -2393,6 +2438,44 @@ public class DepthFirstAdapter : AnalysisAdapter
         }
         OutAEPrimary(node);
     }
+    public virtual void InAAScopealteration(AAScopealteration node)
+    {
+        DefaultIn(node);
+    }
+
+    public virtual void OutAAScopealteration(AAScopealteration node)
+    {
+        DefaultOut(node);
+    }
+
+    public override void CaseAAScopealteration(AAScopealteration node)
+    {
+        InAAScopealteration(node);
+        if(node.GetExpose() != null)
+        {
+            node.GetExpose().Apply(this);
+        }
+        OutAAScopealteration(node);
+    }
+    public virtual void InABScopealteration(ABScopealteration node)
+    {
+        DefaultIn(node);
+    }
+
+    public virtual void OutABScopealteration(ABScopealteration node)
+    {
+        DefaultOut(node);
+    }
+
+    public override void CaseABScopealteration(ABScopealteration node)
+    {
+        InABScopealteration(node);
+        if(node.GetUsing() != null)
+        {
+            node.GetUsing().Apply(this);
+        }
+        OutABScopealteration(node);
+    }
     public virtual void InAASimple(AASimple node)
     {
         DefaultIn(node);
@@ -2609,6 +2692,33 @@ public class DepthFirstAdapter : AnalysisAdapter
             node.GetKeywordDne().Apply(this);
         }
         OutAFComparisonfunction(node);
+    }
+    public virtual void InAUsing(AUsing node)
+    {
+        DefaultIn(node);
+    }
+
+    public virtual void OutAUsing(AUsing node)
+    {
+        DefaultOut(node);
+    }
+
+    public override void CaseAUsing(AUsing node)
+    {
+        InAUsing(node);
+        if(node.GetKeywordUsing() != null)
+        {
+            node.GetKeywordUsing().Apply(this);
+        }
+        if(node.GetIdentifier() != null)
+        {
+            node.GetIdentifier().Apply(this);
+        }
+        if(node.GetNewline() != null)
+        {
+            node.GetNewline().Apply(this);
+        }
+        OutAUsing(node);
     }
 }
 
@@ -2663,11 +2773,19 @@ public class ReversedDepthFirstAdapter : AnalysisAdapter
             node.GetDocumentinside().Apply(this);
         }
         {
-            Object[] temp = new Object[node.GetExpose().Count];
-            node.GetExpose().CopyTo(temp, 0);
+            Object[] temp = new Object[node.GetScopealteration().Count];
+            node.GetScopealteration().CopyTo(temp, 0);
             for(int i = temp.Length - 1; i >= 0; i--)
             {
-                ((PExpose) temp[i]).Apply(this);
+                ((PScopealteration) temp[i]).Apply(this);
+            }
+        }
+        {
+            Object[] temp = new Object[node.GetImport().Count];
+            node.GetImport().CopyTo(temp, 0);
+            for(int i = temp.Length - 1; i >= 0; i--)
+            {
+                ((PImport) temp[i]).Apply(this);
             }
         }
         if(node.GetA() != null)
@@ -2675,33 +2793,6 @@ public class ReversedDepthFirstAdapter : AnalysisAdapter
             node.GetA().Apply(this);
         }
         OutADocument(node);
-    }
-    public virtual void InAExpose(AExpose node)
-    {
-        DefaultIn(node);
-    }
-
-    public virtual void OutAExpose(AExpose node)
-    {
-        DefaultOut(node);
-    }
-
-    public override void CaseAExpose(AExpose node)
-    {
-        InAExpose(node);
-        if(node.GetNewline() != null)
-        {
-            node.GetNewline().Apply(this);
-        }
-        if(node.GetIdentifier() != null)
-        {
-            node.GetIdentifier().Apply(this);
-        }
-        if(node.GetKeywordExpose() != null)
-        {
-            node.GetKeywordExpose().Apply(this);
-        }
-        OutAExpose(node);
     }
     public virtual void InAADocumentinside(AADocumentinside node)
     {
@@ -2716,13 +2807,9 @@ public class ReversedDepthFirstAdapter : AnalysisAdapter
     public override void CaseAADocumentinside(AADocumentinside node)
     {
         InAADocumentinside(node);
+        if(node.GetDeclarefirstlist() != null)
         {
-            Object[] temp = new Object[node.GetPlanereference().Count];
-            node.GetPlanereference().CopyTo(temp, 0);
-            for(int i = temp.Length - 1; i >= 0; i--)
-            {
-                ((PPlanereference) temp[i]).Apply(this);
-            }
+            node.GetDeclarefirstlist().Apply(this);
         }
         OutAADocumentinside(node);
     }
@@ -2743,24 +2830,13 @@ public class ReversedDepthFirstAdapter : AnalysisAdapter
         {
             node.GetDeclarefirstlist().Apply(this);
         }
-        OutABDocumentinside(node);
-    }
-    public virtual void InACDocumentinside(ACDocumentinside node)
-    {
-        DefaultIn(node);
-    }
-
-    public virtual void OutACDocumentinside(ACDocumentinside node)
-    {
-        DefaultOut(node);
-    }
-
-    public override void CaseACDocumentinside(ACDocumentinside node)
-    {
-        InACDocumentinside(node);
-        if(node.GetDeclarefirstlist() != null)
         {
-            node.GetDeclarefirstlist().Apply(this);
+            Object[] temp = new Object[node.GetScopealteration().Count];
+            node.GetScopealteration().CopyTo(temp, 0);
+            for(int i = temp.Length - 1; i >= 0; i--)
+            {
+                ((PScopealteration) temp[i]).Apply(this);
+            }
         }
         {
             Object[] temp = new Object[node.GetPlanereference().Count];
@@ -2770,7 +2846,7 @@ public class ReversedDepthFirstAdapter : AnalysisAdapter
                 ((PPlanereference) temp[i]).Apply(this);
             }
         }
-        OutACDocumentinside(node);
+        OutABDocumentinside(node);
     }
     public virtual void InAPlanereference(APlanereference node)
     {
@@ -3486,6 +3562,33 @@ public class ReversedDepthFirstAdapter : AnalysisAdapter
         }
         OutADeclarefirstnormal(node);
     }
+    public virtual void InAExpose(AExpose node)
+    {
+        DefaultIn(node);
+    }
+
+    public virtual void OutAExpose(AExpose node)
+    {
+        DefaultOut(node);
+    }
+
+    public override void CaseAExpose(AExpose node)
+    {
+        InAExpose(node);
+        if(node.GetNewline() != null)
+        {
+            node.GetNewline().Apply(this);
+        }
+        if(node.GetIdentifier() != null)
+        {
+            node.GetIdentifier().Apply(this);
+        }
+        if(node.GetKeywordExpose() != null)
+        {
+            node.GetKeywordExpose().Apply(this);
+        }
+        OutAExpose(node);
+    }
     public virtual void InAAExpression(AAExpression node)
     {
         DefaultIn(node);
@@ -4012,6 +4115,33 @@ public class ReversedDepthFirstAdapter : AnalysisAdapter
         }
         OutAElse(node);
     }
+    public virtual void InAImport(AImport node)
+    {
+        DefaultIn(node);
+    }
+
+    public virtual void OutAImport(AImport node)
+    {
+        DefaultOut(node);
+    }
+
+    public override void CaseAImport(AImport node)
+    {
+        InAImport(node);
+        if(node.GetNewline() != null)
+        {
+            node.GetNewline().Apply(this);
+        }
+        if(node.GetString() != null)
+        {
+            node.GetString().Apply(this);
+        }
+        if(node.GetKeywordImport() != null)
+        {
+            node.GetKeywordImport().Apply(this);
+        }
+        OutAImport(node);
+    }
     public virtual void InAAMult(AAMult node)
     {
         DefaultIn(node);
@@ -4276,6 +4406,44 @@ public class ReversedDepthFirstAdapter : AnalysisAdapter
         }
         OutAEPrimary(node);
     }
+    public virtual void InAAScopealteration(AAScopealteration node)
+    {
+        DefaultIn(node);
+    }
+
+    public virtual void OutAAScopealteration(AAScopealteration node)
+    {
+        DefaultOut(node);
+    }
+
+    public override void CaseAAScopealteration(AAScopealteration node)
+    {
+        InAAScopealteration(node);
+        if(node.GetExpose() != null)
+        {
+            node.GetExpose().Apply(this);
+        }
+        OutAAScopealteration(node);
+    }
+    public virtual void InABScopealteration(ABScopealteration node)
+    {
+        DefaultIn(node);
+    }
+
+    public virtual void OutABScopealteration(ABScopealteration node)
+    {
+        DefaultOut(node);
+    }
+
+    public override void CaseABScopealteration(ABScopealteration node)
+    {
+        InABScopealteration(node);
+        if(node.GetUsing() != null)
+        {
+            node.GetUsing().Apply(this);
+        }
+        OutABScopealteration(node);
+    }
     public virtual void InAASimple(AASimple node)
     {
         DefaultIn(node);
@@ -4492,6 +4660,33 @@ public class ReversedDepthFirstAdapter : AnalysisAdapter
             node.GetKeywordDne().Apply(this);
         }
         OutAFComparisonfunction(node);
+    }
+    public virtual void InAUsing(AUsing node)
+    {
+        DefaultIn(node);
+    }
+
+    public virtual void OutAUsing(AUsing node)
+    {
+        DefaultOut(node);
+    }
+
+    public override void CaseAUsing(AUsing node)
+    {
+        InAUsing(node);
+        if(node.GetNewline() != null)
+        {
+            node.GetNewline().Apply(this);
+        }
+        if(node.GetIdentifier() != null)
+        {
+            node.GetIdentifier().Apply(this);
+        }
+        if(node.GetKeywordUsing() != null)
+        {
+            node.GetKeywordUsing().Apply(this);
+        }
+        OutAUsing(node);
     }
 }
 } // namespace Dextr.Sablecc.analysis

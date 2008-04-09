@@ -3,11 +3,16 @@ using Reflection = System.Reflection;
 using System.Collections.Generic;
 using System.Xml;
 
-partial class DesibleSerializer {
+abstract class DesibleSerializerBase {
+	protected const string desible1NS = "urn:desible1";
+	protected XmlDocument _doc;
+	protected abstract void append<T>(XmlElement parent, ICollection<T> children, string label) where T : INode;
+	protected abstract void append<T>(XmlElement parent, T child, string label) where T : INode;
+}
+
+class DesibleSerializer : DesibleSerializerAuto {
 	//----- static
-	
-	const string desible1NS = "urn:desible1";
-	
+
 	public static string serializeToMarkup(INode node) {
 		return serializeToElement(node, new XmlDocument()).OuterXml;
 	}
@@ -22,22 +27,19 @@ partial class DesibleSerializer {
 		DesibleSerializer ser = new DesibleSerializer(doc);
 		return ser.serialize(node);
 	}
-	
 
 	//----- instance
 
-	XmlDocument _doc;
-	
 	DesibleSerializer(XmlDocument doc) {
 		_doc = doc;
 	}
 
-	void append<T>(XmlElement parent, ICollection<T> children, string label) where T : INode {
+	protected override void append<T>(XmlElement parent, ICollection<T> children, string label) {
 		foreach( T child in children )
 			append<T>(parent, child, label);
 	}
 	
-	void append<T>(XmlElement parent, T child, string label) where T : INode {
+	protected override void append<T>(XmlElement parent, T child, string label) {
 		if( child == null )
 			return;
 		XmlElement childElem = serialize(child);
@@ -104,3 +106,4 @@ partial class DesibleSerializer {
 		}
 	}
 }
+

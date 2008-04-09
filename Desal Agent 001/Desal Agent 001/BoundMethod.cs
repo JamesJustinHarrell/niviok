@@ -17,6 +17,11 @@ class BoundMethod<T> : IValue {
 		_state = state;
 		_faceimpl = faceimpl;
 		_name = name;
+		
+		if( typeof(T) == typeof(Node_String) ) {
+			System.Console.WriteLine("NOTICE:");
+			System.Console.WriteLine(name);
+		}
 	}
 	
 	public IInterface activeInterface {

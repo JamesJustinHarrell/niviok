@@ -209,14 +209,14 @@ public sealed class TOperatorTimes : Token
     }
 }
 
-public sealed class TKeywordDne : Token
+public sealed class TKeywordImport : Token
 {
-    public TKeywordDne(string text)
+    public TKeywordImport(string text)
     {
         Text = text;
     }
 
-    public TKeywordDne(string text, int line, int pos)
+    public TKeywordImport(string text, int line, int pos)
     {
         Text = text;
         Line = line;
@@ -225,12 +225,12 @@ public sealed class TKeywordDne : Token
 
     public override Object Clone()
     {
-      return new TKeywordDne(Text, Line, Pos);
+      return new TKeywordImport(Text, Line, Pos);
     }
 
     public override void Apply(Switch sw)
     {
-        ((Analysis) sw).CaseTKeywordDne(this);
+        ((Analysis) sw).CaseTKeywordImport(this);
     }
 }
 
@@ -281,6 +281,31 @@ public sealed class TKeywordGte : Token
     public override void Apply(Switch sw)
     {
         ((Analysis) sw).CaseTKeywordGte(this);
+    }
+}
+
+public sealed class TKeywordDne : Token
+{
+    public TKeywordDne(string text)
+    {
+        Text = text;
+    }
+
+    public TKeywordDne(string text, int line, int pos)
+    {
+        Text = text;
+        Line = line;
+        Pos = pos;
+    }
+
+    public override Object Clone()
+    {
+      return new TKeywordDne(Text, Line, Pos);
+    }
+
+    public override void Apply(Switch sw)
+    {
+        ((Analysis) sw).CaseTKeywordDne(this);
     }
 }
 
@@ -831,6 +856,31 @@ public sealed class TKeywordLte : Token
     public override void Apply(Switch sw)
     {
         ((Analysis) sw).CaseTKeywordLte(this);
+    }
+}
+
+public sealed class TKeywordUsing : Token
+{
+    public TKeywordUsing(string text)
+    {
+        Text = text;
+    }
+
+    public TKeywordUsing(string text, int line, int pos)
+    {
+        Text = text;
+        Line = line;
+        Pos = pos;
+    }
+
+    public override Object Clone()
+    {
+      return new TKeywordUsing(Text, Line, Pos);
+    }
+
+    public override void Apply(Switch sw)
+    {
+        ((Analysis) sw).CaseTKeywordUsing(this);
     }
 }
 

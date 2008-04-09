@@ -1,0 +1,14 @@
+I should see what the smallest syntax for declaring functions is. Dextr may be the smallest, though seeing as there are thousands of programming languages, and especially when considering esoteric programming languages, that seems unlikely.
+
+function that takes no arguments and returns nothing:
+{|}
+
+function that takes no arguments and returns the number three:
+{|3}
+
+function that takes one argument and ignores it:
+{x|}
+
+function that takes one argument and returns its square:
+{x|x*x}
+

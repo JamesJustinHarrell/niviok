@@ -12,10 +12,6 @@ public abstract class PDocument : Node
 {
 }
 
-public abstract class PExpose : Node
-{
-}
-
 public abstract class PDocumentinside : Node
 {
 }
@@ -88,6 +84,10 @@ public abstract class PDeclarefirstnormal : Node
 {
 }
 
+public abstract class PExpose : Node
+{
+}
+
 public abstract class PExpression : Node
 {
 }
@@ -132,6 +132,10 @@ public abstract class PElse : Node
 {
 }
 
+public abstract class PImport : Node
+{
+}
+
 public abstract class PMult : Node
 {
 }
@@ -152,6 +156,10 @@ public abstract class PPrimary : Node
 {
 }
 
+public abstract class PScopealteration : Node
+{
+}
+
 public abstract class PSimple : Node
 {
 }
@@ -164,30 +172,40 @@ public abstract class PComparisonfunction : Node
 {
 }
 
+public abstract class PUsing : Node
+{
+}
+
 
 public sealed class ADocument : PDocument
 {
     private TNewline _a_;
-    private TypedList _expose_;
+    private TypedList _import_;
+    private TypedList _scopealteration_;
     private PDocumentinside _documentinside_;
     private TNewline _b_;
 
     public ADocument ()
     {
-        this._expose_ = new TypedList(new Expose_Cast(this));
+        this._import_ = new TypedList(new Import_Cast(this));
+        this._scopealteration_ = new TypedList(new Scopealteration_Cast(this));
     }
 
     public ADocument (
             TNewline _a_,
-            IList _expose_,
+            IList _import_,
+            IList _scopealteration_,
             PDocumentinside _documentinside_,
             TNewline _b_
     )
     {
         SetA (_a_);
-        this._expose_ = new TypedList(new Expose_Cast(this));
-        this._expose_.Clear();
-        this._expose_.AddAll(_expose_);
+        this._import_ = new TypedList(new Import_Cast(this));
+        this._import_.Clear();
+        this._import_.AddAll(_import_);
+        this._scopealteration_ = new TypedList(new Scopealteration_Cast(this));
+        this._scopealteration_.Clear();
+        this._scopealteration_.AddAll(_scopealteration_);
         SetDocumentinside (_documentinside_);
         SetB (_b_);
     }
@@ -196,7 +214,8 @@ public sealed class ADocument : PDocument
     {
         return new ADocument (
             (TNewline)CloneNode (_a_),
-            CloneList (_expose_),
+            CloneList (_import_),
+            CloneList (_scopealteration_),
             (PDocumentinside)CloneNode (_documentinside_),
             (TNewline)CloneNode (_b_)
         );
@@ -231,15 +250,25 @@ public sealed class ADocument : PDocument
 
         _a_ = node;
     }
-    public IList GetExpose ()
+    public IList GetImport ()
     {
-        return _expose_;
+        return _import_;
     }
 
-    public void setExpose (IList list)
+    public void setImport (IList list)
     {
-        _expose_.Clear();
-        _expose_.AddAll(list);
+        _import_.Clear();
+        _import_.AddAll(list);
+    }
+    public IList GetScopealteration ()
+    {
+        return _scopealteration_;
+    }
+
+    public void setScopealteration (IList list)
+    {
+        _scopealteration_.Clear();
+        _scopealteration_.AddAll(list);
     }
     public PDocumentinside GetDocumentinside ()
     {
@@ -294,7 +323,8 @@ public sealed class ADocument : PDocument
     {
         return ""
             + ToString (_a_)
-            + ToString (_expose_)
+            + ToString (_import_)
+            + ToString (_scopealteration_)
             + ToString (_documentinside_)
             + ToString (_b_)
         ;
@@ -307,9 +337,14 @@ public sealed class ADocument : PDocument
             _a_ = null;
             return;
         }
-        if ( _expose_.Contains(child) )
+        if ( _import_.Contains(child) )
         {
-            _expose_.Remove(child);
+            _import_.Remove(child);
+            return;
+        }
+        if ( _scopealteration_.Contains(child) )
+        {
+            _scopealteration_.Remove(child);
             return;
         }
         if ( _documentinside_ == child )
@@ -331,19 +366,36 @@ public sealed class ADocument : PDocument
             SetA ((TNewline) newChild);
             return;
         }
-        for ( int i = 0; i < _expose_.Count; i++ )
+        for ( int i = 0; i < _import_.Count; i++ )
         {
-            Node n = (Node)_expose_[i];
+            Node n = (Node)_import_[i];
             if(n == oldChild)
             {
                 if(newChild != null)
                 {
-                    _expose_[i] = newChild;
+                    _import_[i] = newChild;
                     oldChild.Parent(null);
                     return;
                 }
 
-                _expose_.RemoveAt(i);
+                _import_.RemoveAt(i);
+                oldChild.Parent(null);
+                return;
+            }
+        }
+        for ( int i = 0; i < _scopealteration_.Count; i++ )
+        {
+            Node n = (Node)_scopealteration_[i];
+            if(n == oldChild)
+            {
+                if(newChild != null)
+                {
+                    _scopealteration_[i] = newChild;
+                    oldChild.Parent(null);
+                    return;
+                }
+
+                _scopealteration_.RemoveAt(i);
                 oldChild.Parent(null);
                 return;
             }
@@ -360,18 +412,18 @@ public sealed class ADocument : PDocument
         }
     }
 
-    private class Expose_Cast : Cast
+    private class Import_Cast : Cast
     {
         ADocument obj;
 
-        internal Expose_Cast (ADocument obj)
+        internal Import_Cast (ADocument obj)
         {
           this.obj = obj;
         }
 
         public Object Cast(Object o)
         {
-            PExpose node = (PExpose) o;
+            PImport node = (PImport) o;
 
             if((node.Parent() != null) &&
                 (node.Parent() != obj))
@@ -390,291 +442,56 @@ public sealed class ADocument : PDocument
 
         public Object UnCast(Object o)
         {
-            PExpose node = (PExpose) o;
+            PImport node = (PImport) o;
             node.Parent(null);
             return node;
         }
     }
-}
-public sealed class AExpose : PExpose
-{
-    private TKeywordExpose _keyword_expose_;
-    private TIdentifier _identifier_;
-    private TNewline _newline_;
-
-    public AExpose ()
+    private class Scopealteration_Cast : Cast
     {
-    }
+        ADocument obj;
 
-    public AExpose (
-            TKeywordExpose _keyword_expose_,
-            TIdentifier _identifier_,
-            TNewline _newline_
-    )
-    {
-        SetKeywordExpose (_keyword_expose_);
-        SetIdentifier (_identifier_);
-        SetNewline (_newline_);
-    }
-
-    public override Object Clone()
-    {
-        return new AExpose (
-            (TKeywordExpose)CloneNode (_keyword_expose_),
-            (TIdentifier)CloneNode (_identifier_),
-            (TNewline)CloneNode (_newline_)
-        );
-    }
-
-    public override void Apply(Switch sw)
-    {
-        ((Analysis) sw).CaseAExpose(this);
-    }
-
-    public TKeywordExpose GetKeywordExpose ()
-    {
-        return _keyword_expose_;
-    }
-
-    public void SetKeywordExpose (TKeywordExpose node)
-    {
-        if(_keyword_expose_ != null)
+        internal Scopealteration_Cast (ADocument obj)
         {
-            _keyword_expose_.Parent(null);
+          this.obj = obj;
         }
 
-        if(node != null)
+        public Object Cast(Object o)
         {
-            if(node.Parent() != null)
+            PScopealteration node = (PScopealteration) o;
+
+            if((node.Parent() != null) &&
+                (node.Parent() != obj))
             {
                 node.Parent().RemoveChild(node);
             }
 
-            node.Parent(this);
-        }
-
-        _keyword_expose_ = node;
-    }
-    public TIdentifier GetIdentifier ()
-    {
-        return _identifier_;
-    }
-
-    public void SetIdentifier (TIdentifier node)
-    {
-        if(_identifier_ != null)
-        {
-            _identifier_.Parent(null);
-        }
-
-        if(node != null)
-        {
-            if(node.Parent() != null)
+            if((node.Parent() == null) ||
+                (node.Parent() != obj))
             {
-                node.Parent().RemoveChild(node);
+                node.Parent(obj);
             }
 
-            node.Parent(this);
+            return node;
         }
 
-        _identifier_ = node;
-    }
-    public TNewline GetNewline ()
-    {
-        return _newline_;
-    }
-
-    public void SetNewline (TNewline node)
-    {
-        if(_newline_ != null)
+        public Object UnCast(Object o)
         {
-            _newline_.Parent(null);
-        }
-
-        if(node != null)
-        {
-            if(node.Parent() != null)
-            {
-                node.Parent().RemoveChild(node);
-            }
-
-            node.Parent(this);
-        }
-
-        _newline_ = node;
-    }
-
-    public override string ToString()
-    {
-        return ""
-            + ToString (_keyword_expose_)
-            + ToString (_identifier_)
-            + ToString (_newline_)
-        ;
-    }
-
-    internal override void RemoveChild(Node child)
-    {
-        if ( _keyword_expose_ == child )
-        {
-            _keyword_expose_ = null;
-            return;
-        }
-        if ( _identifier_ == child )
-        {
-            _identifier_ = null;
-            return;
-        }
-        if ( _newline_ == child )
-        {
-            _newline_ = null;
-            return;
+            PScopealteration node = (PScopealteration) o;
+            node.Parent(null);
+            return node;
         }
     }
-
-    internal override void ReplaceChild(Node oldChild, Node newChild)
-    {
-        if ( _keyword_expose_ == oldChild )
-        {
-            SetKeywordExpose ((TKeywordExpose) newChild);
-            return;
-        }
-        if ( _identifier_ == oldChild )
-        {
-            SetIdentifier ((TIdentifier) newChild);
-            return;
-        }
-        if ( _newline_ == oldChild )
-        {
-            SetNewline ((TNewline) newChild);
-            return;
-        }
-    }
-
 }
 public sealed class AADocumentinside : PDocumentinside
 {
-    private TypedList _planereference_;
+    private PDeclarefirstlist _declarefirstlist_;
 
     public AADocumentinside ()
     {
-        this._planereference_ = new TypedList(new Planereference_Cast(this));
     }
 
     public AADocumentinside (
-            IList _planereference_
-    )
-    {
-        this._planereference_ = new TypedList(new Planereference_Cast(this));
-        this._planereference_.Clear();
-        this._planereference_.AddAll(_planereference_);
-    }
-
-    public override Object Clone()
-    {
-        return new AADocumentinside (
-            CloneList (_planereference_)
-        );
-    }
-
-    public override void Apply(Switch sw)
-    {
-        ((Analysis) sw).CaseAADocumentinside(this);
-    }
-
-    public IList GetPlanereference ()
-    {
-        return _planereference_;
-    }
-
-    public void setPlanereference (IList list)
-    {
-        _planereference_.Clear();
-        _planereference_.AddAll(list);
-    }
-
-    public override string ToString()
-    {
-        return ""
-            + ToString (_planereference_)
-        ;
-    }
-
-    internal override void RemoveChild(Node child)
-    {
-        if ( _planereference_.Contains(child) )
-        {
-            _planereference_.Remove(child);
-            return;
-        }
-    }
-
-    internal override void ReplaceChild(Node oldChild, Node newChild)
-    {
-        for ( int i = 0; i < _planereference_.Count; i++ )
-        {
-            Node n = (Node)_planereference_[i];
-            if(n == oldChild)
-            {
-                if(newChild != null)
-                {
-                    _planereference_[i] = newChild;
-                    oldChild.Parent(null);
-                    return;
-                }
-
-                _planereference_.RemoveAt(i);
-                oldChild.Parent(null);
-                return;
-            }
-        }
-    }
-
-    private class Planereference_Cast : Cast
-    {
-        AADocumentinside obj;
-
-        internal Planereference_Cast (AADocumentinside obj)
-        {
-          this.obj = obj;
-        }
-
-        public Object Cast(Object o)
-        {
-            PPlanereference node = (PPlanereference) o;
-
-            if((node.Parent() != null) &&
-                (node.Parent() != obj))
-            {
-                node.Parent().RemoveChild(node);
-            }
-
-            if((node.Parent() == null) ||
-                (node.Parent() != obj))
-            {
-                node.Parent(obj);
-            }
-
-            return node;
-        }
-
-        public Object UnCast(Object o)
-        {
-            PPlanereference node = (PPlanereference) o;
-            node.Parent(null);
-            return node;
-        }
-    }
-}
-public sealed class ABDocumentinside : PDocumentinside
-{
-    private PDeclarefirstlist _declarefirstlist_;
-
-    public ABDocumentinside ()
-    {
-    }
-
-    public ABDocumentinside (
             PDeclarefirstlist _declarefirstlist_
     )
     {
@@ -683,7 +500,99 @@ public sealed class ABDocumentinside : PDocumentinside
 
     public override Object Clone()
     {
+        return new AADocumentinside (
+            (PDeclarefirstlist)CloneNode (_declarefirstlist_)
+        );
+    }
+
+    public override void Apply(Switch sw)
+    {
+        ((Analysis) sw).CaseAADocumentinside(this);
+    }
+
+    public PDeclarefirstlist GetDeclarefirstlist ()
+    {
+        return _declarefirstlist_;
+    }
+
+    public void SetDeclarefirstlist (PDeclarefirstlist node)
+    {
+        if(_declarefirstlist_ != null)
+        {
+            _declarefirstlist_.Parent(null);
+        }
+
+        if(node != null)
+        {
+            if(node.Parent() != null)
+            {
+                node.Parent().RemoveChild(node);
+            }
+
+            node.Parent(this);
+        }
+
+        _declarefirstlist_ = node;
+    }
+
+    public override string ToString()
+    {
+        return ""
+            + ToString (_declarefirstlist_)
+        ;
+    }
+
+    internal override void RemoveChild(Node child)
+    {
+        if ( _declarefirstlist_ == child )
+        {
+            _declarefirstlist_ = null;
+            return;
+        }
+    }
+
+    internal override void ReplaceChild(Node oldChild, Node newChild)
+    {
+        if ( _declarefirstlist_ == oldChild )
+        {
+            SetDeclarefirstlist ((PDeclarefirstlist) newChild);
+            return;
+        }
+    }
+
+}
+public sealed class ABDocumentinside : PDocumentinside
+{
+    private TypedList _planereference_;
+    private TypedList _scopealteration_;
+    private PDeclarefirstlist _declarefirstlist_;
+
+    public ABDocumentinside ()
+    {
+        this._planereference_ = new TypedList(new Planereference_Cast(this));
+        this._scopealteration_ = new TypedList(new Scopealteration_Cast(this));
+    }
+
+    public ABDocumentinside (
+            IList _planereference_,
+            IList _scopealteration_,
+            PDeclarefirstlist _declarefirstlist_
+    )
+    {
+        this._planereference_ = new TypedList(new Planereference_Cast(this));
+        this._planereference_.Clear();
+        this._planereference_.AddAll(_planereference_);
+        this._scopealteration_ = new TypedList(new Scopealteration_Cast(this));
+        this._scopealteration_.Clear();
+        this._scopealteration_.AddAll(_scopealteration_);
+        SetDeclarefirstlist (_declarefirstlist_);
+    }
+
+    public override Object Clone()
+    {
         return new ABDocumentinside (
+            CloneList (_planereference_),
+            CloneList (_scopealteration_),
             (PDeclarefirstlist)CloneNode (_declarefirstlist_)
         );
     }
@@ -693,91 +602,6 @@ public sealed class ABDocumentinside : PDocumentinside
         ((Analysis) sw).CaseABDocumentinside(this);
     }
 
-    public PDeclarefirstlist GetDeclarefirstlist ()
-    {
-        return _declarefirstlist_;
-    }
-
-    public void SetDeclarefirstlist (PDeclarefirstlist node)
-    {
-        if(_declarefirstlist_ != null)
-        {
-            _declarefirstlist_.Parent(null);
-        }
-
-        if(node != null)
-        {
-            if(node.Parent() != null)
-            {
-                node.Parent().RemoveChild(node);
-            }
-
-            node.Parent(this);
-        }
-
-        _declarefirstlist_ = node;
-    }
-
-    public override string ToString()
-    {
-        return ""
-            + ToString (_declarefirstlist_)
-        ;
-    }
-
-    internal override void RemoveChild(Node child)
-    {
-        if ( _declarefirstlist_ == child )
-        {
-            _declarefirstlist_ = null;
-            return;
-        }
-    }
-
-    internal override void ReplaceChild(Node oldChild, Node newChild)
-    {
-        if ( _declarefirstlist_ == oldChild )
-        {
-            SetDeclarefirstlist ((PDeclarefirstlist) newChild);
-            return;
-        }
-    }
-
-}
-public sealed class ACDocumentinside : PDocumentinside
-{
-    private TypedList _planereference_;
-    private PDeclarefirstlist _declarefirstlist_;
-
-    public ACDocumentinside ()
-    {
-        this._planereference_ = new TypedList(new Planereference_Cast(this));
-    }
-
-    public ACDocumentinside (
-            IList _planereference_,
-            PDeclarefirstlist _declarefirstlist_
-    )
-    {
-        this._planereference_ = new TypedList(new Planereference_Cast(this));
-        this._planereference_.Clear();
-        this._planereference_.AddAll(_planereference_);
-        SetDeclarefirstlist (_declarefirstlist_);
-    }
-
-    public override Object Clone()
-    {
-        return new ACDocumentinside (
-            CloneList (_planereference_),
-            (PDeclarefirstlist)CloneNode (_declarefirstlist_)
-        );
-    }
-
-    public override void Apply(Switch sw)
-    {
-        ((Analysis) sw).CaseACDocumentinside(this);
-    }
-
     public IList GetPlanereference ()
     {
         return _planereference_;
@@ -787,6 +611,16 @@ public sealed class ACDocumentinside : PDocumentinside
     {
         _planereference_.Clear();
         _planereference_.AddAll(list);
+    }
+    public IList GetScopealteration ()
+    {
+        return _scopealteration_;
+    }
+
+    public void setScopealteration (IList list)
+    {
+        _scopealteration_.Clear();
+        _scopealteration_.AddAll(list);
     }
     public PDeclarefirstlist GetDeclarefirstlist ()
     {
@@ -817,6 +651,7 @@ public sealed class ACDocumentinside : PDocumentinside
     {
         return ""
             + ToString (_planereference_)
+            + ToString (_scopealteration_)
             + ToString (_declarefirstlist_)
         ;
     }
@@ -826,6 +661,11 @@ public sealed class ACDocumentinside : PDocumentinside
         if ( _planereference_.Contains(child) )
         {
             _planereference_.Remove(child);
+            return;
+        }
+        if ( _scopealteration_.Contains(child) )
+        {
+            _scopealteration_.Remove(child);
             return;
         }
         if ( _declarefirstlist_ == child )
@@ -854,6 +694,23 @@ public sealed class ACDocumentinside : PDocumentinside
                 return;
             }
         }
+        for ( int i = 0; i < _scopealteration_.Count; i++ )
+        {
+            Node n = (Node)_scopealteration_[i];
+            if(n == oldChild)
+            {
+                if(newChild != null)
+                {
+                    _scopealteration_[i] = newChild;
+                    oldChild.Parent(null);
+                    return;
+                }
+
+                _scopealteration_.RemoveAt(i);
+                oldChild.Parent(null);
+                return;
+            }
+        }
         if ( _declarefirstlist_ == oldChild )
         {
             SetDeclarefirstlist ((PDeclarefirstlist) newChild);
@@ -863,9 +720,9 @@ public sealed class ACDocumentinside : PDocumentinside
 
     private class Planereference_Cast : Cast
     {
-        ACDocumentinside obj;
+        ABDocumentinside obj;
 
-        internal Planereference_Cast (ACDocumentinside obj)
+        internal Planereference_Cast (ABDocumentinside obj)
         {
           this.obj = obj;
         }
@@ -892,6 +749,41 @@ public sealed class ACDocumentinside : PDocumentinside
         public Object UnCast(Object o)
         {
             PPlanereference node = (PPlanereference) o;
+            node.Parent(null);
+            return node;
+        }
+    }
+    private class Scopealteration_Cast : Cast
+    {
+        ABDocumentinside obj;
+
+        internal Scopealteration_Cast (ABDocumentinside obj)
+        {
+          this.obj = obj;
+        }
+
+        public Object Cast(Object o)
+        {
+            PScopealteration node = (PScopealteration) o;
+
+            if((node.Parent() != null) &&
+                (node.Parent() != obj))
+            {
+                node.Parent().RemoveChild(node);
+            }
+
+            if((node.Parent() == null) ||
+                (node.Parent() != obj))
+            {
+                node.Parent(obj);
+            }
+
+            return node;
+        }
+
+        public Object UnCast(Object o)
+        {
+            PScopealteration node = (PScopealteration) o;
             node.Parent(null);
             return node;
         }
@@ -4641,6 +4533,162 @@ public sealed class ADeclarefirstnormal : PDeclarefirstnormal
     }
 
 }
+public sealed class AExpose : PExpose
+{
+    private TKeywordExpose _keyword_expose_;
+    private TIdentifier _identifier_;
+    private TNewline _newline_;
+
+    public AExpose ()
+    {
+    }
+
+    public AExpose (
+            TKeywordExpose _keyword_expose_,
+            TIdentifier _identifier_,
+            TNewline _newline_
+    )
+    {
+        SetKeywordExpose (_keyword_expose_);
+        SetIdentifier (_identifier_);
+        SetNewline (_newline_);
+    }
+
+    public override Object Clone()
+    {
+        return new AExpose (
+            (TKeywordExpose)CloneNode (_keyword_expose_),
+            (TIdentifier)CloneNode (_identifier_),
+            (TNewline)CloneNode (_newline_)
+        );
+    }
+
+    public override void Apply(Switch sw)
+    {
+        ((Analysis) sw).CaseAExpose(this);
+    }
+
+    public TKeywordExpose GetKeywordExpose ()
+    {
+        return _keyword_expose_;
+    }
+
+    public void SetKeywordExpose (TKeywordExpose node)
+    {
+        if(_keyword_expose_ != null)
+        {
+            _keyword_expose_.Parent(null);
+        }
+
+        if(node != null)
+        {
+            if(node.Parent() != null)
+            {
+                node.Parent().RemoveChild(node);
+            }
+
+            node.Parent(this);
+        }
+
+        _keyword_expose_ = node;
+    }
+    public TIdentifier GetIdentifier ()
+    {
+        return _identifier_;
+    }
+
+    public void SetIdentifier (TIdentifier node)
+    {
+        if(_identifier_ != null)
+        {
+            _identifier_.Parent(null);
+        }
+
+        if(node != null)
+        {
+            if(node.Parent() != null)
+            {
+                node.Parent().RemoveChild(node);
+            }
+
+            node.Parent(this);
+        }
+
+        _identifier_ = node;
+    }
+    public TNewline GetNewline ()
+    {
+        return _newline_;
+    }
+
+    public void SetNewline (TNewline node)
+    {
+        if(_newline_ != null)
+        {
+            _newline_.Parent(null);
+        }
+
+        if(node != null)
+        {
+            if(node.Parent() != null)
+            {
+                node.Parent().RemoveChild(node);
+            }
+
+            node.Parent(this);
+        }
+
+        _newline_ = node;
+    }
+
+    public override string ToString()
+    {
+        return ""
+            + ToString (_keyword_expose_)
+            + ToString (_identifier_)
+            + ToString (_newline_)
+        ;
+    }
+
+    internal override void RemoveChild(Node child)
+    {
+        if ( _keyword_expose_ == child )
+        {
+            _keyword_expose_ = null;
+            return;
+        }
+        if ( _identifier_ == child )
+        {
+            _identifier_ = null;
+            return;
+        }
+        if ( _newline_ == child )
+        {
+            _newline_ = null;
+            return;
+        }
+    }
+
+    internal override void ReplaceChild(Node oldChild, Node newChild)
+    {
+        if ( _keyword_expose_ == oldChild )
+        {
+            SetKeywordExpose ((TKeywordExpose) newChild);
+            return;
+        }
+        if ( _identifier_ == oldChild )
+        {
+            SetIdentifier ((TIdentifier) newChild);
+            return;
+        }
+        if ( _newline_ == oldChild )
+        {
+            SetNewline ((TNewline) newChild);
+            return;
+        }
+    }
+
+}
 public sealed class AAExpression : PExpression
 {
     private PAdd _add_;
@@ -7410,6 +7458,162 @@ public sealed class AElse : PElse
     }
 
 }
+public sealed class AImport : PImport
+{
+    private TKeywordImport _keyword_import_;
+    private TString _string_;
+    private TNewline _newline_;
+
+    public AImport ()
+    {
+    }
+
+    public AImport (
+            TKeywordImport _keyword_import_,
+            TString _string_,
+            TNewline _newline_
+    )
+    {
+        SetKeywordImport (_keyword_import_);
+        SetString (_string_);
+        SetNewline (_newline_);
+    }
+
+    public override Object Clone()
+    {
+        return new AImport (
+            (TKeywordImport)CloneNode (_keyword_import_),
+            (TString)CloneNode (_string_),
+            (TNewline)CloneNode (_newline_)
+        );
+    }
+
+    public override void Apply(Switch sw)
+    {
+        ((Analysis) sw).CaseAImport(this);
+    }
+
+    public TKeywordImport GetKeywordImport ()
+    {
+        return _keyword_import_;
+    }
+
+    public void SetKeywordImport (TKeywordImport node)
+    {
+        if(_keyword_import_ != null)
+        {
+            _keyword_import_.Parent(null);
+        }
+
+        if(node != null)
+        {
+            if(node.Parent() != null)
+            {
+                node.Parent().RemoveChild(node);
+            }
+
+            node.Parent(this);
+        }
+
+        _keyword_import_ = node;
+    }
+    public TString GetString ()
+    {
+        return _string_;
+    }
+
+    public void SetString (TString node)
+    {
+        if(_string_ != null)
+        {
+            _string_.Parent(null);
+        }
+
+        if(node != null)
+        {
+            if(node.Parent() != null)
+            {
+                node.Parent().RemoveChild(node);
+            }
+
+            node.Parent(this);
+        }
+
+        _string_ = node;
+    }
+    public TNewline GetNewline ()
+    {
+        return _newline_;
+    }
+
+    public void SetNewline (TNewline node)
+    {
+        if(_newline_ != null)
+        {
+            _newline_.Parent(null);
+        }
+
+        if(node != null)
+        {
+            if(node.Parent() != null)
+            {
+                node.Parent().RemoveChild(node);
+            }
+
+            node.Parent(this);
+        }
+
+        _newline_ = node;
+    }
+
+    public override string ToString()
+    {
+        return ""
+            + ToString (_keyword_import_)
+            + ToString (_string_)
+            + ToString (_newline_)
+        ;
+    }
+
+    internal override void RemoveChild(Node child)
+    {
+        if ( _keyword_import_ == child )
+        {
+            _keyword_import_ = null;
+            return;
+        }
+        if ( _string_ == child )
+        {
+            _string_ = null;
+            return;
+        }
+        if ( _newline_ == child )
+        {
+            _newline_ = null;
+            return;
+        }
+    }
+
+    internal override void ReplaceChild(Node oldChild, Node newChild)
+    {
+        if ( _keyword_import_ == oldChild )
+        {
+            SetKeywordImport ((TKeywordImport) newChild);
+            return;
+        }
+        if ( _string_ == oldChild )
+        {
+            SetString ((TString) newChild);
+            return;
+        }
+        if ( _newline_ == oldChild )
+        {
+            SetNewline ((TNewline) newChild);
+            return;
+        }
+    }
+
+}
 public sealed class AAMult : PMult
 {
     private PSimple _simple_;
@@ -8697,6 +8901,162 @@ public sealed class AEPrimary : PPrimary
     }
 
 }
+public sealed class AAScopealteration : PScopealteration
+{
+    private PExpose _expose_;
+
+    public AAScopealteration ()
+    {
+    }
+
+    public AAScopealteration (
+            PExpose _expose_
+    )
+    {
+        SetExpose (_expose_);
+    }
+
+    public override Object Clone()
+    {
+        return new AAScopealteration (
+            (PExpose)CloneNode (_expose_)
+        );
+    }
+
+    public override void Apply(Switch sw)
+    {
+        ((Analysis) sw).CaseAAScopealteration(this);
+    }
+
+    public PExpose GetExpose ()
+    {
+        return _expose_;
+    }
+
+    public void SetExpose (PExpose node)
+    {
+        if(_expose_ != null)
+        {
+            _expose_.Parent(null);
+        }
+
+        if(node != null)
+        {
+            if(node.Parent() != null)
+            {
+                node.Parent().RemoveChild(node);
+            }
+
+            node.Parent(this);
+        }
+
+        _expose_ = node;
+    }
+
+    public override string ToString()
+    {
+        return ""
+            + ToString (_expose_)
+        ;
+    }
+
+    internal override void RemoveChild(Node child)
+    {
+        if ( _expose_ == child )
+        {
+            _expose_ = null;
+            return;
+        }
+    }
+
+    internal override void ReplaceChild(Node oldChild, Node newChild)
+    {
+        if ( _expose_ == oldChild )
+        {
+            SetExpose ((PExpose) newChild);
+            return;
+        }
+    }
+
+}
+public sealed class ABScopealteration : PScopealteration
+{
+    private PUsing _using_;
+
+    public ABScopealteration ()
+    {
+    }
+
+    public ABScopealteration (
+            PUsing _using_
+    )
+    {
+        SetUsing (_using_);
+    }
+
+    public override Object Clone()
+    {
+        return new ABScopealteration (
+            (PUsing)CloneNode (_using_)
+        );
+    }
+
+    public override void Apply(Switch sw)
+    {
+        ((Analysis) sw).CaseABScopealteration(this);
+    }
+
+    public PUsing GetUsing ()
+    {
+        return _using_;
+    }
+
+    public void SetUsing (PUsing node)
+    {
+        if(_using_ != null)
+        {
+            _using_.Parent(null);
+        }
+
+        if(node != null)
+        {
+            if(node.Parent() != null)
+            {
+                node.Parent().RemoveChild(node);
+            }
+
+            node.Parent(this);
+        }
+
+        _using_ = node;
+    }
+
+    public override string ToString()
+    {
+        return ""
+            + ToString (_using_)
+        ;
+    }
+
+    internal override void RemoveChild(Node child)
+    {
+        if ( _using_ == child )
+        {
+            _using_ = null;
+            return;
+        }
+    }
+
+    internal override void ReplaceChild(Node oldChild, Node newChild)
+    {
+        if ( _using_ == oldChild )
+        {
+            SetUsing ((PUsing) newChild);
+            return;
+        }
+    }
+
+}
 public sealed class AASimple : PSimple
 {
     private PBlock _block_;
@@ -9628,6 +9988,162 @@ public sealed class AFComparisonfunction : PComparisonfunction
         if ( _keyword_dne_ == oldChild )
         {
             SetKeywordDne ((TKeywordDne) newChild);
+            return;
+        }
+    }
+
+}
+public sealed class AUsing : PUsing
+{
+    private TKeywordUsing _keyword_using_;
+    private TIdentifier _identifier_;
+    private TNewline _newline_;
+
+    public AUsing ()
+    {
+    }
+
+    public AUsing (
+            TKeywordUsing _keyword_using_,
+            TIdentifier _identifier_,
+            TNewline _newline_
+    )
+    {
+        SetKeywordUsing (_keyword_using_);
+        SetIdentifier (_identifier_);
+        SetNewline (_newline_);
+    }
+
+    public override Object Clone()
+    {
+        return new AUsing (
+            (TKeywordUsing)CloneNode (_keyword_using_),
+            (TIdentifier)CloneNode (_identifier_),
+            (TNewline)CloneNode (_newline_)
+        );
+    }
+
+    public override void Apply(Switch sw)
+    {
+        ((Analysis) sw).CaseAUsing(this);
+    }
+
+    public TKeywordUsing GetKeywordUsing ()
+    {
+        return _keyword_using_;
+    }
+
+    public void SetKeywordUsing (TKeywordUsing node)
+    {
+        if(_keyword_using_ != null)
+        {
+            _keyword_using_.Parent(null);
+        }
+
+        if(node != null)
+        {
+            if(node.Parent() != null)
+            {
+                node.Parent().RemoveChild(node);
+            }
+
+            node.Parent(this);
+        }
+
+        _keyword_using_ = node;
+    }
+    public TIdentifier GetIdentifier ()
+    {
+        return _identifier_;
+    }
+
+    public void SetIdentifier (TIdentifier node)
+    {
+        if(_identifier_ != null)
+        {
+            _identifier_.Parent(null);
+        }
+
+        if(node != null)
+        {
+            if(node.Parent() != null)
+            {
+                node.Parent().RemoveChild(node);
+            }
+
+            node.Parent(this);
+        }
+
+        _identifier_ = node;
+    }
+    public TNewline GetNewline ()
+    {
+        return _newline_;
+    }
+
+    public void SetNewline (TNewline node)
+    {
+        if(_newline_ != null)
+        {
+            _newline_.Parent(null);
+        }
+
+        if(node != null)
+        {
+            if(node.Parent() != null)
+            {
+                node.Parent().RemoveChild(node);
+            }
+
+            node.Parent(this);
+        }
+
+        _newline_ = node;
+    }
+
+    public override string ToString()
+    {
+        return ""
+            + ToString (_keyword_using_)
+            + ToString (_identifier_)
+            + ToString (_newline_)
+        ;
+    }
+
+    internal override void RemoveChild(Node child)
+    {
+        if ( _keyword_using_ == child )
+        {
+            _keyword_using_ = null;
+            return;
+        }
+        if ( _identifier_ == child )
+        {
+            _identifier_ = null;
+            return;
+        }
+        if ( _newline_ == child )
+        {
+            _newline_ = null;
+            return;
+        }
+    }
+
+    internal override void ReplaceChild(Node oldChild, Node newChild)
+    {
+        if ( _keyword_using_ == oldChild )
+        {
+            SetKeywordUsing ((TKeywordUsing) newChild);
+            return;
+        }
+        if ( _identifier_ == oldChild )
+        {
+            SetIdentifier ((TIdentifier) newChild);
+            return;
+        }
+        if ( _newline_ == oldChild )
+        {
+            SetNewline ((TNewline) newChild);
             return;
         }
     }

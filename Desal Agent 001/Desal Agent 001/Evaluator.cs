@@ -32,7 +32,7 @@ static class Evaluator {
 	public static NullableType evaluate(Node_NullableType node, Scope scope) {
 		IInterface iface = ( node.@interface == null ?
 			null :
-			InterfaceFromValue.wrap(Executor.execute(node.@interface, scope)) );
+			Bridge.unwrapInterface(Executor.execute(node.@interface, scope)) );
 		return new NullableType(iface, node.nullable.value);
 	}
 

@@ -121,13 +121,10 @@ production syntax for SableCC:
 
 <productions>
 Document
-	= NEWLINE? Expose* DocumentInside NEWLINE? ;
-Expose
-	= "expose" Identifier NEWLINE ;
+	= NEWLINE? Import* ScopeAlteration* DocumentInside NEWLINE? ;
 DocumentInside
-	= PlaneReference+
-	| DeclareFirstList
-	| PlaneReference+ DeclareFirstList ;
+	= DeclareFirstList
+	| PlaneReference+ ScopeAlteration* DeclareFirstList ;
 PlaneReference
 	= "plane" STRING NEWLINE ;
 DeclareFirstList
@@ -200,6 +197,9 @@ DeclareFirst
 DeclareFirstNormal
 	= "declfirst" Identifier "=" Expression ;
 
+Expose
+	= "expose" Identifier NEWLINE ;
+
 Expression
 	= Add
 	| BooleanLogic
@@ -239,6 +239,9 @@ Elif
 Else
 	= "else" Block ;
 
+Import
+	= "import" String NEWLINE ;
+
 Mult
 	= Simple
 	| Simple "*" Simple
@@ -261,6 +264,10 @@ Primary
 	| STRING
 	| Parenthetical ;
 
+ScopeAlteration
+	= Expose
+	| Using ;
+
 Simple
 	= Block
 	| Call
@@ -276,6 +283,9 @@ ComparisonFunction
 	| "gte"
 	| "gt"
 	| "dne" ;
+
+Using
+	= "using" Identifier NEWLINE ;
 </productions>
 
 </grammar>

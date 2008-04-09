@@ -1,0 +1,8 @@
+Dextr floor division operator
+
+3 / 4 == .75
+3.divide(4) == .75
+
+3 // 4 == 0
+3.floorDivide(4) == 0
+
