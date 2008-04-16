@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using Reflection = System.Reflection;
 
 //executes expression nodes, as defined by the Desal Semantics specification
-static class Executor {
+static partial class Executor {
 	//and
-	public static IValue execute(Node_And node, Scope scope) {
-		IValue first = execute(node.first, scope);
+	public static IWorker execute(Node_And node, Scope scope) {
+		IWorker first = execute(node.first, scope);
 		//xxx downcast
 		if( Bridge.unwrapBoolean(first) == false )
 			return Bridge.wrapBoolean(false);
 		
-		IValue second = execute(node.second, scope);
+		IWorker second = execute(node.second, scope);
 		//xxx downcast
 		if( Bridge.unwrapBoolean(second) == false )
 			return Bridge.wrapBoolean(false);
@@ -20,19 +20,19 @@ static class Executor {
 	}
 
 	//array
-	public static IValue execute(Node_Array node, Scope scope) {
+	public static IWorker execute(Node_Array node, Scope scope) {
 		throw new Error_Unimplemented();
 	}
 
 	//assign
-	public static IValue execute(Node_Assign node, Scope scope) {
-		IValue val = execute(node.value, scope);
+	public static IWorker execute(Node_Assign node, Scope scope) {
+		IWorker val = execute(node.value, scope);
 		scope.assign( node.name.value, val );
 		return val;
 	}
 
 	//block
-	public static IValue execute(Node_Block node, Scope scope) {
+	public static IWorker execute(Node_Block node, Scope scope) {
 		Scope innerScope = new Scope(scope);
 		
 		//reserve identikeys, so the closures will include
@@ -41,7 +41,7 @@ static class Executor {
 			if( member is Node_DeclareFirst )
 				scope.reserveDeclareFirst( (member as Node_DeclareFirst).name.value );
 
-		IValue rv = new NullValue();
+		IWorker rv = new Null();
 		foreach( INode_Expression expr in node.members ) {
 			rv = execute(expr, innerScope);
 		}
@@ -49,17 +49,17 @@ static class Executor {
 	}
 
 	//break
-	public static IValue execute(Node_Break node, Scope scope) {
+	public static IWorker execute(Node_Break node, Scope scope) {
 		throw new Error_Unimplemented();
 	}
 
 	//breed
-	public static IValue execute(Node_Breed node, Scope scope) {
+	public static IWorker execute(Node_Breed node, Scope scope) {
 		throw new Error_Unimplemented();
 	}
 	
 	//bundle
-	public static IValue execute(Node_Bundle node, Scope scope) {
+	public static IWorker execute(Node_Bundle node, Scope scope) {
 		foreach( Node_Plane plane in node.planes ) {
 			foreach( Node_DeclareFirst decl in plane.declareFirsts )
 				scope.reserveDeclareFirst( decl.name.value );
@@ -70,36 +70,29 @@ static class Executor {
 				Executor.execute(decl, scope);
 		}
 		
-		IValue rv;
+		IWorker rv;
 		try {
-			IValue val = scope.evaluateIdentifier( new Identifier("main") );
-			rv = val.call(
-				new Arguments(
-					new IValue[]{},
-					new Dictionary<Identifier, IValue>() ));
+			IWorker val = scope.evaluateIdentifier( new Identifier("main") );
+			rv = val.call(new Argument[]{});
 		}
 		catch(ClientException e) {
 			e.pushFunc("main (called while executing Node_Bundle)");
 			throw e;
 		}
 
-		if( rv is NullValue )
+		if( rv is Null )
 			return Bridge.wrapInteger(0);
 		else
 			return rv;
 	}
 
 	//call
-	public static IValue execute(Node_Call node, Scope scope) {
-		IList<IValue> evaledArgs = new List<IValue>();
-		foreach( Node_Argument argument in node.arguments ) {
-			evaledArgs.Add( execute(argument.value, scope) );
-		}
-	
-		Arguments args = new Arguments(
-			evaledArgs,
-			new Dictionary<Identifier, IValue>() );
-		IValue func = execute(node.receiver, scope);
+	public static IWorker execute(Node_Call node, Scope scope) {
+		IWorker func = execute(node.receiver, scope);
+		
+		IList<Argument> args = new List<Argument>();
+		foreach( Node_Argument argument in node.arguments )
+			args.Add(Evaluator.evaluate(argument, scope));
 	
 		try {
 			return func.call(args);
@@ -114,111 +107,104 @@ static class Executor {
 	}
 	
 	//caller
-	public static IValue execute(Node_Caller node, Scope scope) {
+	public static IWorker execute(Node_Caller node, Scope scope) {
 		throw new Error_Unimplemented();
 	}
 	
 	//cast
-	public static IValue execute(Node_Cast node, Scope scope) {
-		IValue source = execute(node.source, scope);
-		NullableType nt = Evaluator.evaluate(node.nullableType, scope);
-		if( source is NullValue && nt.nullable == false )
-			throw new ClientException("attempted to cast null to non-nullable type");
-		return source.cast(nt.face);
+	public static IWorker execute(Node_Cast node, Scope scope) {
+		return G.cast(
+			execute(node.source, scope),
+			Evaluator.evaluate(node.nullableType, scope));
 	}
 	
 	//chain
-	public static IValue execute(Node_Chain node, Scope scope) {
+	public static IWorker execute(Node_Chain node, Scope scope) {
 		throw new Error_Unimplemented();
 	}
 
 	//conditional
-	public static IValue execute(Node_Conditional node, Scope scope) {
+	public static IWorker execute(Node_Conditional node, Scope scope) {
 		foreach( Node_Possibility p in node.possibilitys )
 			if( Bridge.unwrapBoolean(execute(p.test, scope)) )
 				return execute(p.result, scope);
 		if( node.@else != null )
 			return execute(node.@else, scope);
-		return new NullValue(null);				
+		return new Null(null);				
 	}
 	
 	//curry
-	public static IValue execute(Node_Curry node, Scope scope) {
+	public static IWorker execute(Node_Curry node, Scope scope) {
 		throw new Error_Unimplemented();
 	}
 	
 	//declare-assign
-	public static IValue execute(Node_DeclareAssign node, Scope scope) {
-		IValue val = execute(node.value, scope);
+	public static IWorker execute(Node_DeclareAssign node, Scope scope) {
+		IWorker val = execute(node.value, scope);
 		scope.declareAssign(node.name.value, val);
 		return val;
 	}
 
-	//declare-const-empty
-	public static IValue execute(Node_DeclareConstEmpty node, Scope scope) {
-		throw new Error_Unimplemented();
-	}
-
 	//declare-empty
-	public static IValue execute(Node_DeclareEmpty node, Scope scope) {
+	public static IWorker execute(Node_DeclareEmpty node, Scope scope) {
 		scope.declareEmpty(node.name.value);
-		return new NullValue();
+		return new Null();
 	}
 
 	//declare-first
-	public static IValue execute(Node_DeclareFirst node, Scope scope) {
-		IValue val = execute(node.value, scope);
+	public static IWorker execute(Node_DeclareFirst node, Scope scope) {
+		IWorker val = execute(node.value, scope);
 		scope.declareFirst(node.name.value, val);
 		return val;
 	}
 	
 	//dictionary
-	public static IValue execute(Node_Dictionary node, Scope scope) {
+	public static IWorker execute(Node_Dictionary node, Scope scope) {
 		throw new Error_Unimplemented();
 	}
 	
 	//do-while
-	public static IValue execute(Node_DoWhile node, Scope scope) {
+	public static IWorker execute(Node_DoWhile node, Scope scope) {
 		throw new Error_Unimplemented();
 	}
 	
 	//do-times
-	public static IValue execute(Node_DoTimes node, Scope scope) {
+	public static IWorker execute(Node_DoTimes node, Scope scope) {
 		throw new Error_Unimplemented();
 	}
 	
 	//enum
-	public static IValue execute(Node_Enum node, Scope scope) {
+	public static IWorker execute(Node_Enum node, Scope scope) {
 		throw new Error_Unimplemented();
 	}
 	
 	//extract-member
-	public static IValue execute(Node_ExtractMember node, Scope scope) {
-		IValue source = execute(node.source, scope);
+	public static IWorker execute(Node_ExtractMember node, Scope scope) {
+		IWorker source = execute(node.source, scope);
 		Identifier memberName = node.memberName.value;
 		return source.extractMember(memberName);
 	}
 	
 	//for-key
-	public static IValue execute(Node_ForKey node, Scope scope) {
+	public static IWorker execute(Node_ForKey node, Scope scope) {
 		throw new Error_Unimplemented();
 	}
 	
 	//for-manual
-	public static IValue execute(Node_ForManual node, Scope scope) {
+	public static IWorker execute(Node_ForManual node, Scope scope) {
 		throw new Error_Unimplemented();
 	}
 	
 	//for-pair
-	public static IValue execute(Node_ForPair node, Scope scope) {
+	public static IWorker execute(Node_ForPair node, Scope scope) {
 		throw new Error_Unimplemented();
 	}
 	
 	//for-range
-	public static IValue execute(Node_ForRange node, Scope scope) {
-		IValue start = execute(node.start, scope);
+	public static IWorker execute(Node_ForRange node, Scope scope) {
+		IWorker start = execute(node.start, scope);
 		long current = Bridge.unwrapInteger(start);
-		IValue limit = execute(node.limit, scope);
+		IWorker limit = execute(node.limit, scope);
 		while( current < Bridge.unwrapInteger(limit) ) {
 			Scope innerScope = new Scope(scope);
 			innerScope.declareAssign(
@@ -226,98 +212,94 @@ static class Executor {
 			execute(node.action, innerScope);
 			current++;
 		}
-		return new NullValue();
+		return new Null();
 	}
 	
 	//for-value
-	public static IValue execute(Node_ForValue node, Scope scope) {
+	public static IWorker execute(Node_ForValue node, Scope scope) {
 		throw new Error_Unimplemented();
 	}
 	
 	//function
-	public static IValue execute(Node_Function node, Scope scope) {
-		//evaluate parameters
-		IList<Parameter> evaledParams = new List<Parameter>();
-		foreach( Node_Parameter paramNode in node.parameters ) {
-			evaledParams.Add( Evaluator.evaluate(paramNode, scope) );
-		}
-		
+	public static IWorker execute(Node_Function node, Scope scope) {
+		IList<ParameterImpl> parameters = new List<ParameterImpl>();
+		foreach( Node_ParameterImpl parameter in node.parameterImpls )
+			parameters.Add(Evaluator.evaluate(parameter, scope));
+
 		NullableType returnType = ( node.returnInfo == null ?
 			null :
 			Evaluator.evaluate(node.returnInfo, scope) );
 		
-		IFunction function = new Client_Function(
-			evaledParams, returnType, node.body,
-			scope.createClosure(Depends.depends(node)) );
-		
-		return FunctionWrapper.wrap(function);
+		return Client_Function.wrap(
+			new Function_Client(
+				parameters, returnType, node.body, scope));
 	}
 	
 	//function-interface
-	public static IValue execute(Node_FunctionInterface node, Scope scope) {
+	public static IWorker execute(Node_FunctionInterface node, Scope scope) {
 		throw new Error_Unimplemented();
 	}
 	
 	//generator
-	public static IValue execute(Node_Generator node, Scope scope) {
+	public static IWorker execute(Node_Generator node, Scope scope) {
 		throw new Error_Unimplemented();
 	}
 	
 	//generic-function
-	public static IValue execute(Node_GenericFunction node, Scope scope) {
+	public static IWorker execute(Node_GenericFunction node, Scope scope) {
 		throw new Error_Unimplemented();
 	}
 	
 	//identifier
-	public static IValue execute(Node_Identifier node, Scope scope) {
+	public static IWorker execute(Node_Identifier node, Scope scope) {
 		return scope.evaluateIdentifier(node.value);
 	}
 	
 	//ignore
-	public static IValue execute(Node_Ignore node, Scope scope) {
+	public static IWorker execute(Node_Ignore node, Scope scope) {
 		throw new Error_Unimplemented();
 	}
 	
 	//implements
-	public static IValue execute(Node_Implements node, Scope scope) {
+	public static IWorker execute(Node_Implements node, Scope scope) {
 		throw new Error_Unimplemented();
 	}
 	
 	//instantiate-generic
-	public static IValue execute(Node_InstantiateGeneric node, Scope scope) {
+	public static IWorker execute(Node_InstantiateGeneric node, Scope scope) {
 		throw new Error_Unimplemented();
 	}
 	
 	//interface
-	public static IValue execute(Node_Interface node, Scope scope) {
+	public static IWorker execute(Node_Interface node, Scope scope) {
 		return Bridge.wrapInterface( Evaluator.evaluate(node, scope) );
 	}
 	
 	//integer
-	public static IValue execute(Node_Integer node, Scope scope) {
+	public static IWorker execute(Node_Integer node, Scope scope) {
 		return Bridge.wrapInteger(node.value);
 	}
 	
 	//labeled
-	public static IValue execute(Node_Labeled node, Scope scope) {
+	public static IWorker execute(Node_Labeled node, Scope scope) {
 		throw new Error_Unimplemented();
 	}
 	
 	//loop
-	public static IValue execute(Node_Loop node, Scope scope) {
+	public static IWorker execute(Node_Loop node, Scope scope) {
 		for(;;)
 			execute(node.block, scope);
-		return new NullValue();
+		return new Null();
 	}
 	
 	//nand
-	public static IValue execute(Node_Nand node, Scope scope) {
-		IValue first = execute(node.first, scope);
+	public static IWorker execute(Node_Nand node, Scope scope) {
+		IWorker first = execute(node.first, scope);
 		//xxx downcast
 		if( Bridge.unwrapBoolean(first) == false )
 			return Bridge.wrapBoolean(true);
 		
-		IValue second = execute(node.second, scope);
+		IWorker second = execute(node.second, scope);
 		//xxx downcast
 		if( Bridge.unwrapBoolean(second) == false )
 			return Bridge.wrapBoolean(true);
@@ -326,18 +308,18 @@ static class Executor {
 	}
 	
 	//namespaced-value-identikey
-	public static IValue execute(Node_NamespacedValueIdentikey node, Scope scope) {
+	public static IWorker execute(Node_NamespacedValueIdentikey node, Scope scope) {
 		throw new Error_Unimplemented();
 	}
 	
 	//nor
-	public static IValue execute(Node_Nor node, Scope scope) {
-		IValue first = execute(node.first, scope);
+	public static IWorker execute(Node_Nor node, Scope scope) {
+		IWorker first = execute(node.first, scope);
 		//xxx downcast
 		if( Bridge.unwrapBoolean(first) == true )
 			return Bridge.wrapBoolean(false);
 		
-		IValue second = execute(node.second, scope);
+		IWorker second = execute(node.second, scope);
 		//xxx downcast
 		if( Bridge.unwrapBoolean(second) == true )
 			return Bridge.wrapBoolean(false);
@@ -345,14 +327,24 @@ static class Executor {
 		return Bridge.wrapBoolean(true);
 	}
 	
+	//object
+	public static IWorker execute(Node_Object node, Scope scope) {
+		DesalObject obj = new DesalObject();
+		IList<IWorker> subroots = new List<IWorker>();
+		foreach( Node_Worker workerNode in node.workers )
+			subroots.Add( Evaluator.evaluate(workerNode, scope, obj) );
+		obj.rootWorker = G.combineWorkers(subroots);
+		return obj.rootWorker;
+	}
+	
 	//or
-	public static IValue execute(Node_Or node, Scope scope) {
-		IValue first = execute(node.first, scope);
+	public static IWorker execute(Node_Or node, Scope scope) {
+		IWorker first = execute(node.first, scope);
 		//xxx downcast
 		if( Bridge.unwrapBoolean(first) == true )
 			return Bridge.wrapBoolean(true);
 		
-		IValue second = execute(node.second, scope);
+		IWorker second = execute(node.second, scope);
 		//xxx downcast
 		if( Bridge.unwrapBoolean(second) == true )
 			return Bridge.wrapBoolean(true);
@@ -361,98 +353,97 @@ static class Executor {
 	}
 	
 	//possibility
-	public static IValue execute(Node_Possibility node, Scope scope) {
-		IValue testVal = execute(node.test, scope);
+	public static IWorker execute(Node_Possibility node, Scope scope) {
+		IWorker testVal = execute(node.test, scope);
 
-		if( testVal.activeInterface != Bridge.Bool )
+		if( testVal.face != Bridge.faceBool )
 			throw new ClientException("test must be a Bool");
 		
 		return ( Bridge.unwrapBoolean(testVal) ?
 			execute(node.result, scope) :
-			new NullValue() );
+			new Null() );
 	}
 	
 	//rational
-	public static IValue execute(Node_Rational node, Scope scope) {
+	public static IWorker execute(Node_Rational node, Scope scope) {
 		return Bridge.wrapRational(node.value);
 	}
 	
 	//return
-	public static IValue execute(Node_Return node, Scope scope) {
+	public static IWorker execute(Node_Return node, Scope scope) {
 		throw new Error_Unimplemented();
 	}
 	
 	//select
-	public static IValue execute(Node_Select node, Scope scope) {
+	public static IWorker execute(Node_Select node, Scope scope) {
 		throw new Error_Unimplemented();
 	}
 	
 	//set-property
-	public static IValue execute(Node_SetProperty node, Scope scope) {
-		IValue val = execute(node.value, scope);
+	public static IWorker execute(Node_SetProperty node, Scope scope) {
+		IWorker val = execute(node.value, scope);
 		execute(node.source, scope).setProperty(
 			node.propertyName.value, val );
 		return val;
 	}
 	
 	//string
-	public static IValue execute(Node_String node, Scope scope) {
+	public static IWorker execute(Node_String node, Scope scope) {
 		return Bridge.wrapString(node.value);
 	}
 	
 	//throw
-	public static IValue execute(Node_Throw node, Scope scope) {
+	public static IWorker execute(Node_Throw node, Scope scope) {
 		throw new Error_Unimplemented();
 	}
 	
 	//try-catch
-	public static IValue execute(Node_TryCatch node, Scope scope) {
+	public static IWorker execute(Node_TryCatch node, Scope scope) {
 		throw new Error_Unimplemented();
 	}
 	
 	//while
-	public static IValue execute(Node_While node, Scope scope) {
+	public static IWorker execute(Node_While node, Scope scope) {
 		while( Bridge.unwrapBoolean(execute(node.test, scope)) )
 			execute(node.block, scope);
-		return new NullValue();
+		return new Null();
 	}
 	
 	//xnor
-	public static IValue execute(Node_Xnor node, Scope scope) {
-		IValue first = execute(node.first, scope);
-		IValue second = execute(node.second, scope);
+	public static IWorker execute(Node_Xnor node, Scope scope) {
+		IWorker first = execute(node.first, scope);
+		IWorker second = execute(node.second, scope);
 
 		return Bridge.wrapBoolean(
 			Bridge.unwrapBoolean(first) == Bridge.unwrapBoolean(second) );
 	}
 	
 	//xor
-	public static IValue execute(Node_Xor node, Scope scope) {
-		IValue first = execute(node.first, scope);
-		IValue second = execute(node.second, scope);
+	public static IWorker execute(Node_Xor node, Scope scope) {
+		IWorker first = execute(node.first, scope);
+		IWorker second = execute(node.second, scope);
 		
 		return Bridge.wrapBoolean(
 			Bridge.unwrapBoolean(first) != Bridge.unwrapBoolean(second) );
 	}
 	
 	//yield
-	public static IValue execute(Node_Yield node, Scope scope) {
+	public static IWorker execute(Node_Yield node, Scope scope) {
 		throw new Error_Unimplemented();
 	}
 	
 	//any expression node
-	public static IValue execute(INode_Expression node, Scope scope) {
-		Type classType = typeof(Executor);
-		Type nodeType = ((Object)node).GetType();
-		Reflection.MethodInfo meth = classType.GetMethod(
-			"execute",
-			new Type[]{ nodeType, typeof(Scope) });
-		if( meth == null ||
-		meth.GetParameters()[0].ParameterType == typeof(INode_Expression) )
-			throw new Exception(
-				String.Format("can't execute node of type {0}", node.typeName));
+	public static IWorker execute(INode_Expression node, Scope scope) {
+		Reflection.MethodInfo meth = typeof(Executor)
+			.GetMethod("execute", new Type[]{node.GetType(), typeof(Scope)});
+		
+		if( meth.GetParameters()[0].ParameterType == typeof(INode_Expression) )
+			throw new Exception(String.Format(
+				"can't execute node of type '{0}'",
+				node.GetType()));
+		
 		try {
-			return (IValue)meth.Invoke(null, new object[]{ node, scope });
+			return (IWorker)meth.Invoke(null, new object[]{node, scope});
 		}
 		catch(Reflection.TargetInvocationException e) {
 			if( e.InnerException is ClientException )

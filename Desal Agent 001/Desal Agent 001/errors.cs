@@ -8,7 +8,7 @@ using System;
 using System.Collections.Generic;
 
 class ClientException : ApplicationException {
-	public IValue e;
+	public IWorker e;
 	public Stack<string> stackTrace;
 	
 	public ClientException(string message)
@@ -18,7 +18,7 @@ class ClientException : ApplicationException {
 		stackTrace = new Stack<string>();
 	}
 	
-	public ClientException(IValue e) {
+	public ClientException(IWorker e) {
 		this.e = e;
 		stackTrace = new Stack<string>();
 	}
@@ -30,7 +30,7 @@ class ClientException : ApplicationException {
 	public string clientMessage {
 		get {
 			string message = "";
-			if( e.activeInterface == Bridge.String ) {
+			if( e.face == Bridge.faceString ) {
 				message += Bridge.unwrapString(e) + "\n\n";
 			}
 			message += "Stack trace:\n";

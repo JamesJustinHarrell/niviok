@@ -1,18 +1,29 @@
 //makes a Desal function 
 
+/*
 using System.Collections.Generic;
 
 
 static class FunctionWrapper {
-	public static IValue wrap(IFunction function) {
-		FW_InterfaceImplementation faceImpl = new FW_InterfaceImplementation(function);
-		FW_Value val = new FW_Value(faceImpl);
-		return val;
+	public static IWorker wrap(IFunction function) {
+		IInterface face = function.face;
+		DesalObject obj = new DesalObject();
+		NativeWorkerBuilder builder = new NativeWorkerBuilder(obj);
+		builder.addCallee(function);
+		return builder.compile(face);
 	}
+	
+	IObject owner {get;}
+	IList<IWorker> children {get;}
+	IInterface face {get;}
+	IWorker breed(IInterface face);
+	IWorker call(IList<Argument> arguments);
+	IWorker extractMember(Identifier name);
+	void setProperty(Identifier propName, IWorker worker);
 }
 
 
-class FW_Value : IValue {
+class FW_Value : IWorker {
 	FW_InterfaceImplementation _interfaceImpl;
 
 	public FW_Value(FW_InterfaceImplementation faceImpl) {
@@ -23,19 +34,19 @@ class FW_Value : IValue {
 		get { throw new Error_Unimplemented(); }
 	}
 
-	public IValue cast(IInterface aInterface) {
+	public IWorker cast(IInterface aInterface) {
 		throw new Error_Unimplemented();
 	}
 	
-	public IValue call(Arguments arguments) {
-		return _interfaceImpl.evaluateCall(arguments);
+	public IWorker call(IList<Argument> arguments) {
+		return _interfaceImpl.evaluateCall(IList<Argument>);
 	}
 	
-	public IValue extractMember(Identifier name) {
+	public IWorker extractMember(Identifier name) {
 		throw new Error_Unimplemented();
 	}
 
-	public void setProperty(Identifier propName, IValue aValue) {
+	public void setProperty(Identifier propName, IWorker aValue) {
 		throw new Error_Unimplemented();
 	}
 }
@@ -47,7 +58,7 @@ class FW_InterfaceImplementation {
 		_func = func;
 	}
 	
-	public IValue evaluateCall(Arguments args) {
+	public IWorker evaluateCall(IList<Argument> args) {
 		return _func.call(args);
 	}
 }
@@ -74,18 +85,18 @@ class FW_InterfaceImplementation {
 			null );
 
 		//instantiation of class
-		return class_.instantiate( new IValue[]{} );
+		return class_.instantiate( new IWorker[]{} );
 	}
 }
 
 /* xxx remove
 
-	public static IValue wrap(IFunction function) {
+	public static IWorker wrap(IFunction function) {
 		if( function is FunctionFromObjRef )
 			return ((FunctionFromObjRef)function).unwrap();
 		else
 		/*
-			return new IValue(
+			return new IWorker(
 				new FunctionWrapper(function),
 				Objects.getFunctionInterface(function) );
 			* /
@@ -123,11 +134,11 @@ class FW_InterfaceImplementation {
 		return false;
 	}
 	
-	public IValue readProperty(IInterface interface_, Identifier ident) {
+	public IWorker readProperty(IInterface interface_, Identifier ident) {
 		throw new Error_Unimplemented();
 	}
 	
-	public void writeProperty(IInterface interface_, Identifier ident, IValue objRef) {
+	public void writeProperty(IInterface interface_, Identifier ident, IWorker objRef) {
 		throw new Error_Unimplemented();
 	}
 };

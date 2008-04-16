@@ -134,7 +134,7 @@ class DesexpParser : DesexpParserAuto {
 		Sexp first = sexp.list.First.Value;
 		sexp.list.RemoveFirst();
 	
-		//create list of arguments
+		//create list of IList<Argument>
 		LinkedList<Sexp> argsList = new LinkedList<Sexp>();
 		foreach( Sexp argPart in sexp.list ) {
 			LinkedList<Sexp> arg = new LinkedList<Sexp>();

@@ -18,9 +18,9 @@ class DesibleParser : DesibleParserAuto {
 
 	public static IInterface createNativeInterface(Bridge bridge, XmlElement element) {
 		DesibleParser parser = new DesibleParser(bridge, element.OwnerDocument);
-		return Evaluator.evaluate(
-			parser.parse<Node_Interface>(element),
-			new Scope(bridge) );
+		Node_Interface node = parser.parse<Node_Interface>(element);
+		parser.warnAboutUnhandled(element, true);
+		return Evaluator.evaluate(node,	new Scope(bridge));
 	}
 
 	public static Node_Bundle parseDocument(
@@ -60,6 +60,7 @@ class DesibleParser : DesibleParserAuto {
 		
 		//----- super/family
 		//These don't declare a tag name.
+		//xxx generate these automatically
 
 		addParser<INode_Expression>(delegate(XmlElement element) {
 			return parseSuper<INode_Expression>(element, "expression");
@@ -71,6 +72,10 @@ class DesibleParser : DesibleParserAuto {
 		
 		addParser<INode_ScopeAlteration>(delegate(XmlElement element) {
 			return parseSuper<INode_ScopeAlteration>(element, "scope-alteration");
+		});
+		
+		addParser<INode_InterfaceMember>(delegate(XmlElement element) {
+			return parseSuper<INode_InterfaceMember>(element, "interface-member");
 		});
 		
 		
@@ -120,6 +125,12 @@ class DesibleParser : DesibleParserAuto {
 		//----- tree
 
 		addTreeParsers();
+		
+		//xxx need better way to do this
+		_tagToType.Remove("bundle");
+		_tagToType.Remove("plane");
+		_parseFuncs.Remove(typeof(Node_Bundle));
+		_parseFuncs.Remove(typeof(Node_Plane));
 	
 		addParser<Node_Bundle>("bundle", delegate(XmlElement element) {
 			IList<Node_Plane> planes = parseMult<Node_Plane>(element, "inline-plane", null);

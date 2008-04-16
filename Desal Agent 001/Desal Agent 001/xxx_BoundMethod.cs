@@ -5,10 +5,10 @@ e.g. something.doSomething evaluates to a BoundMethod
 XXX This approach is completetly wrong.
 I need to build an interface implementation and an object,
 and then combine them to form a value.
-Idealy, there would only be one implementation of the IValue interface.
-*/
+Idealy, there would only be one implementation of the IWorker interface.
+* /
 
-class BoundMethod<T> : IValue {
+class BoundMethod<T> : IWorker {
 	T _state;
 	IInterfaceImplementation<T> _faceimpl;
 	Identifier _name;
@@ -29,24 +29,26 @@ class BoundMethod<T> : IValue {
 		need to combine all interfaces at:
 		_faceimpl.@interface.methods[_name]
 		And maybe the interfaces of methods from inheritees, depending on how it gets speced out. 
-		*/
+		* /
 	
 		get { throw new Error_Unimplemented(); }
 	}
 	
-	public IValue cast(IInterface aInterface) {
+	public IWorker cast(IInterface aInterface) {
 		throw new Error_Unimplemented();
 	}
 	
-	public IValue call(Arguments arguments) {
-		return _faceimpl.callMethod(_state, _name, arguments);
+	public IWorker call(IList<Argument> arguments) {
+		return _faceimpl.callMethod(_state, _name, IList<Argument>);
 	}
 		
-	public IValue extractMember(Identifier name) {
+	public IWorker extractMember(Identifier name) {
 		throw new Error_Unimplemented();
 	}
 	
-	public void setProperty(Identifier propName, IValue aValue) {
+	public void setProperty(Identifier propName, IWorker aValue) {
 		throw new Error_Unimplemented();
 	}
 }
+
+*/

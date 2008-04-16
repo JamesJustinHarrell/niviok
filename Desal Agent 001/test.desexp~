@@ -1,14 +1,14 @@
-#comment test
+#test comment test
 
-/* comment test */
+/* test comment test */
 
-(expose (std))
+(expose (std)) #doesn't do anything yet (members of std namespace currently just added to global scope)
 
 (declare-first header
 	(function (- false)) false
 	(function
 		(
-			(in (- false) title false -))
+			(in (- false) title -))
 		-
 		(block () (
 			(println "")
@@ -19,8 +19,8 @@
 	(function (- false)) false
 	(function
 		(
-			(in (- false) title false -)
-			(in (- false) func false -))
+			(in (- false) title -)
+			(in (- false) func -))
 		-
 		(block () (
 			(header ((extract-member "calling " concat) title))
@@ -39,6 +39,38 @@
 			(headerize "testAlwaysProducers" testAlwaysProducers)
 		))))
 
+(declare-first Test (constant (Interface false)) false
+	(interface () (
+		(property number false (Int false))
+		(property text true (String false))
+		)))
+
+(declare-first createObject
+	(function (- false)) false
+	(function () -
+		(block () (
+			(declare-assign mText (typed (String false)) false "initial text")
+			
+			(object (
+				(Test () (
+					(
+						(property_getter number -)
+						(function()- 123)
+					)
+					(
+						(property_getter text -)
+						(function()- mText)
+					)
+					(
+						(property_setter text -)
+						(function(
+							(in (String false) newval false -)
+						)- (assign mText false newval))
+					)
+				))
+			))
+		))))
+
 (declare-first doStuff
 	(function (- false)) false
 	(function () -
@@ -55,6 +87,14 @@
 			(declare-assign 🿰🿱 (constant (- false)) false
 				"astral characters in identifiers")
 			(println 🿰🿱)
+
+			(declare-assign obj (constant (Test false)) false
+				(createObject))
+			
+			(println (extract-member obj number))
+			(println (extract-member obj text))
+			(set-property obj text "alpha beta gamma")
+			(println (extract-member obj text))
 		))))
 
 (declare-first testNonProducers
@@ -69,7 +109,7 @@
 	(function () -
 		(block () (
 			(header "assign, block, call")
-			(declare-empty foo (constant (- false)) false)
+			(declare-empty foo (constant (- false)))
 			(assign foo false (block () (123)))
 			(println foo)
 			
@@ -83,6 +123,10 @@
 						(false 000)
 						(true 111))
 					222))
+			
+			(header "possibility")
+			(println (possibility true 123))
+			(println (possibility false 123))
 		))))
 
 (declare-first testAlwaysProducers
@@ -157,7 +201,6 @@
 /*
 constructs needed to make this less verbose:
 declfunc pseudo-node
-call syntax
 extract member syntax
 
 That will reduce the header function to this:
@@ -165,5 +208,5 @@ That will reduce the header function to this:
 	((in (- false) title false -))
 	(block () (
 		(println "")
-		(println (title.add " :")))))
+		(println (title.concat " :")))))
 */

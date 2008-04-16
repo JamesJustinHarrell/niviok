@@ -15,10 +15,10 @@ partial class Bridge {
 				</interface>
 				
 				<interface xml:id='int'>
-					<method>
+					<method label='member'>
 						<identifier label='name'>add</identifier>
 						<function-interface label='interface'>
-							<parameter>
+							<parameter-info>
 								<identifier label='name'>value</identifier>
 								<nullable-type>
 									<boolean label='nullable'>false</boolean>
@@ -26,8 +26,8 @@ partial class Bridge {
 								</nullable-type>
 								<boolean label='has-default-value'>false</boolean>
 								<direction>in</direction>
-							</parameter>
-							<nullable-type label='return-type'>
+							</parameter-info>
+							<nullable-type label='return-info'>
 								<boolean label='nullable'>false</boolean>
 								<identifier label='interface'>Int</identifier>
 							</nullable-type>
@@ -39,17 +39,17 @@ partial class Bridge {
 				</interface>
 				
 				<interface xml:id='string'>
-					<property>
+					<property label='member'>
 						<identifier label='name'>length</identifier>
 						<nullable-type>
 							<boolean label='nullable'>false</boolean>
 						</nullable-type>
-						<access>get</access>
+						<boolean label='writable'>false</boolean>
 					</property>
-					<method>
+					<method label='member'>
 						<identifier label='name'>concat</identifier>
 						<function-interface label='interface'>
-							<parameter>
+							<parameter-info>
 								<identifier label='name'>value</identifier>
 								<nullable-type>
 									<boolean label='nullable'>false</boolean>
@@ -57,8 +57,8 @@ partial class Bridge {
 								</nullable-type>
 								<boolean label='has-default-value'>false</boolean>
 								<direction>in</direction>
-							</parameter>
-							<nullable-type label='return-type'>
+							</parameter-info>
+							<nullable-type label='return-info'>
 								<boolean label='nullable'>false</boolean>
 								<identifier label='interface'>String</identifier>
 							</nullable-type>
@@ -70,179 +70,25 @@ partial class Bridge {
 			</wrapper>
 		");
 		
+		Bridge bridge = new Bridge();
 		XmlNamespaceManager nsMan = new XmlNamespaceManager(doc.NameTable);
 
 		//note: for unknown reasons, all XPath expressions that specify a tag name fail
 		//e.g. "./*" succeeds, but "./wrapper" fails
 
 		//xxx bridge parameter should not be null
-		_objectFace = DesibleParser.createNativeInterface( null,
+		faceObject = DesibleParser.createNativeInterface( bridge,
 			(XmlElement)doc.SelectSingleNode("//*[@xml:id='object']", nsMan));
-		_boolFace = DesibleParser.createNativeInterface( null,
+		faceBool = DesibleParser.createNativeInterface( bridge,
 			(XmlElement)doc.SelectSingleNode("//*[@xml:id='bool']", nsMan));
-		_intFace = DesibleParser.createNativeInterface( null,
+		faceInt = DesibleParser.createNativeInterface( bridge,
 			(XmlElement)doc.SelectSingleNode("//*[@xml:id='int']", nsMan));
-		_ratFace = DesibleParser.createNativeInterface( null,
+		faceRat = DesibleParser.createNativeInterface( bridge,
 			(XmlElement)doc.SelectSingleNode("//*[@xml:id='rat']", nsMan));
-		_stringFace = DesibleParser.createNativeInterface( null,
+		faceString = DesibleParser.createNativeInterface( bridge,
 			(XmlElement)doc.SelectSingleNode("//*[@xml:id='string']", nsMan));
-		_interfaceFace = DesibleParser.createNativeInterface( null,
+		faceInterface = DesibleParser.createNativeInterface( bridge,
 			(XmlElement)doc.SelectSingleNode("//*[@xml:id='interface']", nsMan));
-		
-		
-		InterfaceImplementationBuilder<Client_String> stringBuilder =
-			new InterfaceImplementationBuilder<Client_String>();
 
-		stringBuilder.addPropertyGetter(
-			new Identifier("length"),
-			delegate(Client_String o) { return wrapInteger(o.length); } );
-
-		stringBuilder.addMethod(
-			new Identifier("concat"),
-			FunctionInterface.getFuncFace(
-				new Parameter[]{
-					new Parameter(
-						new NullableType(String, false),
-						new Identifier("value") )
-				},
-				new NullableType(String, false) ),
-			delegate(Client_String o, Scope args) {
-				return wrapCodePoints(
-					o.concat(
-						unwrapCodePoints(
-							args.evaluateIdentifier(
-								new Identifier("value"))) ));
-			});
-		
-		stringBuilder.addVoidMethod(
-			new Identifier("concat!"),
-			FunctionInterface.getFuncFace(
-				new Parameter[]{
-					new Parameter(
-						new NullableType(String, false),
-						new Identifier("value") )
-				},
-				null),
-			delegate(Client_String o, Scope args) {
-				o.concat(
-					unwrapCodePoints(
-						args.evaluateIdentifier(
-							new Identifier("value"))) );
-			});
-
-		stringBuilder.addMethod(
-			new Identifier("substring"),
-			FunctionInterface.getFuncFace(
-				new Parameter[]{
-					new Parameter(
-						new NullableType(Int, false),
-						new Identifier("start") )
-				},
-				new NullableType( String, false ) ),
-			delegate(Client_String o, Scope args) {
-				return wrapCodePoints(
-						o.substring(
-							unwrapInteger(
-								args.evaluateLocalIdentifier(
-									new Identifier("start"))) ));
-			});
-
-		stringBuilder.addMethod(
-			new Identifier("substring"),
-			FunctionInterface.getFuncFace(
-				new Parameter[]{
-					new Parameter(
-						new NullableType(Int, false),
-						new Identifier("start") ),
-					new Parameter(
-						new NullableType(Int, false),
-						new Identifier("limit") )
-				},
-				new NullableType( String, false ) ),
-			delegate(Client_String o, Scope args) {
-				return wrapCodePoints(
-						o.substring(
-							unwrapInteger(
-								args.evaluateLocalIdentifier(
-									new Identifier("start"))),
-							unwrapInteger(
-								args.evaluateLocalIdentifier(
-									new Identifier("limit"))) ));
-			});
-		
-		_stringImpl = stringBuilder.compile(String);
-		
-		InterfaceImplementationBuilder<Client_Integer> intBuilder =
-			new InterfaceImplementationBuilder<Client_Integer>();
-		
-		intBuilder.addMethod(
-			new Identifier("add"),
-			FunctionInterface.getFuncFace(
-				new Parameter[]{
-					new Parameter(
-						new NullableType(Int, false),
-						new Identifier("value") )
-				},
-				new NullableType( Int, false ) ),
-			delegate(Client_Integer o, Scope args) {
-				return wrapInteger(
-						o.add(
-							unwrapInteger(
-								args.evaluateLocalIdentifier(
-									new Identifier("value"))) ));
-			} );
-			
-		_intImpl = intBuilder.compile(Int);
-		
-		InterfaceImplementationBuilder<Client_Rational> ratBuilder =
-			new InterfaceImplementationBuilder<Client_Rational>();
-			
-		_ratImpl = ratBuilder.compile(Rat);
-		
-		InterfaceImplementationBuilder<Client_Boolean> boolBuilder =
-			new InterfaceImplementationBuilder<Client_Boolean>();
-		
-		boolBuilder.addMethod(
-			new Identifier("equals?"),
-			FunctionInterface.getFuncFace(
-				new Parameter[]{
-					new Parameter(
-						new NullableType(Bool, false),
-						new Identifier("value") )
-				},
-				new NullableType( Bool, false ) ),
-			delegate(Client_Boolean o, Scope args) {
-				return wrapBoolean(
-					o.equals(
-						unwrapBoolean(
-							args.evaluateLocalIdentifier(
-								new Identifier("value"))) ));
-			} );
-		
-		_boolImpl = boolBuilder.compile(Bool);
-
-
-		InterfaceImplementationBuilder<Client_Interface> faceBuilder =
-			new InterfaceImplementationBuilder<Client_Interface>();
-		
-		faceBuilder.addMethod(
-			new Identifier("equals?"),
-			FunctionInterface.getFuncFace(
-				new Parameter[]{
-					new Parameter(
-						new NullableType(Interface, false),
-						new Identifier("value") )
-				},
-				new NullableType( Interface, false ) ),
-			delegate(Client_Interface o, Scope args) {
-				return wrapBoolean(
-					o.equals(
-						unwrapInterface(
-							args.evaluateLocalIdentifier(
-								new Identifier("value"))) ));
-			} );
-		
-		_interfaceImpl = faceBuilder.compile(Interface);
-		
 	} //end of static Bridge()
 } //end of partial class Bridge

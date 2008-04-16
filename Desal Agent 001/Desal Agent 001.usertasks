@@ -1,2 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<ArrayOfUserTask xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" />
+<ArrayOfUserTask xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <UserTask>
+    <Priority>High</Priority>
+    <Completed>true</Completed>
+    <Description>xxx</Description>
+  </UserTask>
+  <UserTask>
+    <Priority>Normal</Priority>
+    <Completed>false</Completed>
+    <Description>foo</Description>
+  </UserTask>
+</ArrayOfUserTask>

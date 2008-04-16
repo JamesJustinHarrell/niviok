@@ -30,9 +30,9 @@ static class xxx_Objects {
 		new IInterface[]{},
 		new PropertyInfo[]{},
 		new MethodInfo[]{} );
-	*/
 	
-	public static IFunctionInterface getFunctionInterface(IFunction function) {
+	
+	public static IInterface getFunctionInterface(IFunction function) {
 		return FunctionInterface.getFuncFace( function.parameters, function.returnType );
-	}
+	}*/
 }

@@ -9,16 +9,19 @@ using System.Collections.Generic;
 
 class Interface : IInterface {
 	IList<IInterface> _inheritees;
+	IList<CalleeInfo> _callees;
 	IDictionary<Identifier, PropertyInfo> _properties;
 	IDictionary<Identifier, IList<MethodInfo> > _methods;
-	IValue _value;
-	
-	public Interface(IList<PropertyInfo> properties, IList<MethodInfo> methods)
-		: this( new List<IInterface>(), properties, methods ) {}
-	
+	IWorker _value;
+
 	public Interface(
-	IList<IInterface> inheritees, IList<PropertyInfo> properties, IList<MethodInfo> methods) {
+	IList<IInterface> inheritees,
+	IList<CalleeInfo> callees,
+	IList<PropertyInfo> properties,
+	IList<MethodInfo> methods ) {
 		_inheritees = inheritees;
+		
+		_callees = callees;
 		
 		_properties = new Dictionary<Identifier, PropertyInfo>();
 		foreach( PropertyInfo info in properties )
@@ -36,6 +39,10 @@ class Interface : IInterface {
 		get { return _inheritees; }
 	}
 	
+	public IList<CalleeInfo> callees {
+		get { return _callees; }
+	}
+	
 	public IDictionary<Identifier, PropertyInfo> properties {
 		get { return _properties; }
 	}
@@ -44,7 +51,7 @@ class Interface : IInterface {
 		get { return _methods; }
 	}
 	
-	public IValue value {
+	public IWorker value {
 		get {
 			if( _value == null )
 				_value = Bridge.wrapInterface(this);

@@ -4,20 +4,20 @@ using System.Collections.Generic;
 user code cannot implement FuncInterface
 
 class FunctionInterfaceFromObjRef : IFunctionInterface {
-	public static IFunctionInterface wrap(IValue objRef) {
+	public static IFunctionInterface wrap(IWorker objRef) {
 		if( objRef.object_ is FunctionInterfaceWrapper )
 			return (objRef.object_ as FunctionInterfaceWrapper).unwrap();
 		else
 			return new FunctionInterfaceFromObjRef(objRef);
 	}
 	
-	IValue _objRef;
+	IWorker _objRef;
 
-	FunctionInterfaceFromObjRef(IValue objRef) {
+	FunctionInterfaceFromObjRef(IWorker objRef) {
 		_objRef = objRef;
 	}
 
-	public IValue unwrap() {
+	public IWorker unwrap() {
 		return _objRef;
 	}
 

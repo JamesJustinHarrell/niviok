@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 
+//xxx would it be better to generate some of this automatically?
+
 //any Desal node
 interface INode {
 	//e.g. foo-bar-baz
@@ -21,3 +23,6 @@ interface INode_Declaration : INode_Expression {
 	Node_Identifier name {get;}
 	Node_IdentikeyType identikeyType {get;}
 }
+
+interface INode_InterfaceMember : INode {}
+

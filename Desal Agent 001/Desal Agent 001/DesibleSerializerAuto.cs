@@ -23,15 +23,6 @@ abstract class DesibleSerializerAuto : DesibleSerializerBase {
 		return elem;
 	}
 
-	protected XmlElement serialize(Node_ClassProperty node) {
-		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
-		append<Node_Identifier>(elem, node.@identifier, null);
-		append<Node_IdentikeyType>(elem, node.@identikeyType, null);
-		append<Node_Function>(elem, node.@getter, "getter");
-		append<Node_Function>(elem, node.@setter, "setter");
-		return elem;
-	}
-
 	protected XmlElement serialize(Node_Using node) {
 		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
 		append<Node_Identifier>(elem, node.@targets, "target");
@@ -43,13 +34,6 @@ abstract class DesibleSerializerAuto : DesibleSerializerBase {
 		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
 		append<Node_NullableType>(elem, node.@nullableType, null);
 		append<INode_Expression>(elem, node.@body, "body");
-		return elem;
-	}
-
-	protected XmlElement serialize(Node_NamedFunction node) {
-		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
-		append<Node_Identifier>(elem, node.@name, "name");
-		append<Node_Function>(elem, node.@function, "function");
 		return elem;
 	}
 
@@ -93,18 +77,6 @@ abstract class DesibleSerializerAuto : DesibleSerializerBase {
 		return elem;
 	}
 
-	protected XmlElement serialize(Node_InterfaceImplementation node) {
-		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
-		append<Node_InterfaceImplementation>(elem, node.@childImplemenatations, "child-implemenatation");
-		append<INode_Expression>(elem, node.@interface, "interface");
-		append<Node_Function>(elem, node.@callees, "callee");
-		append<Node_NamedFunction>(elem, node.@getters, "getter");
-		append<Node_NamedFunction>(elem, node.@setters, "setter");
-		append<Node_NamedFunction>(elem, node.@methods, "method");
-		append<Node_Boolean>(elem, node.@default, "default");
-		return elem;
-	}
-
 	protected XmlElement serialize(Node_Yield node) {
 		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
 		append<INode_Expression>(elem, node.@value, "value");
@@ -118,10 +90,31 @@ abstract class DesibleSerializerAuto : DesibleSerializerBase {
 		return elem;
 	}
 
+	protected XmlElement serialize(Node_Continue node) {
+		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
+		append<Node_Identifier>(elem, node.@label, "label");
+		return elem;
+	}
+
 	protected XmlElement serialize(Node_EnumEntry node) {
 		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
 		append<Node_Identifier>(elem, node.@name, "name");
 		append<INode_Expression>(elem, node.@value, "value");
+		return elem;
+	}
+
+	protected XmlElement serialize(Node_Breeder node) {
+		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
+		append<INode_Expression>(elem, node.@interface, "interface");
+		return elem;
+	}
+
+	protected XmlElement serialize(Node_ParameterInfo node) {
+		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
+		append<Node_Direction>(elem, node.@direction, null);
+		append<Node_NullableType>(elem, node.@nullableType, null);
+		append<Node_Identifier>(elem, node.@name, "name");
+		append<Node_Boolean>(elem, node.@hasDefaultValue, "has-default-value");
 		return elem;
 	}
 
@@ -159,10 +152,18 @@ abstract class DesibleSerializerAuto : DesibleSerializerBase {
 		return elem;
 	}
 
-	protected XmlElement serialize(Node_Xor node) {
+	protected XmlElement serialize(Node_MemberImplementation node) {
 		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
-		append<INode_Expression>(elem, node.@first, "first");
-		append<INode_Expression>(elem, node.@second, "second");
+		append<Node_MemberIdentification>(elem, node.@memberIdentification, null);
+		append<INode_Expression>(elem, node.@function, "function");
+		return elem;
+	}
+
+	protected XmlElement serialize(Node_MemberIdentification node) {
+		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
+		append<Node_MemberType>(elem, node.@memberType, null);
+		append<Node_Identifier>(elem, node.@name, "name");
+		append<INode_Expression>(elem, node.@interface, "interface");
 		return elem;
 	}
 
@@ -220,12 +221,10 @@ abstract class DesibleSerializerAuto : DesibleSerializerBase {
 		return elem;
 	}
 
-	protected XmlElement serialize(Node_ForKey node) {
+	protected XmlElement serialize(Node_Interface node) {
 		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
-		append<INode_Expression>(elem, node.@container, "container");
-		append<INode_Expression>(elem, node.@keyInterface, "key-interface");
-		append<Node_Identifier>(elem, node.@name, "name");
-		append<Node_Block>(elem, node.@action, "action");
+		append<INode_Expression>(elem, node.@inheritees, "inheritee");
+		append<INode_InterfaceMember>(elem, node.@members, "member");
 		return elem;
 	}
 
@@ -239,12 +238,6 @@ abstract class DesibleSerializerAuto : DesibleSerializerBase {
 		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
 		append<Node_IdentikeyCategory>(elem, node.@identikeyCategory, null);
 		append<Node_NullableType>(elem, node.@nullableType, null);
-		return elem;
-	}
-
-	protected XmlElement serialize(Node_Convertor node) {
-		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
-		append<INode_Expression>(elem, node.@interface, "interface");
 		return elem;
 	}
 
@@ -293,10 +286,21 @@ abstract class DesibleSerializerAuto : DesibleSerializerBase {
 		return elem;
 	}
 
-	protected XmlElement serialize(Node_Interface node) {
+	protected XmlElement serialize(Node_ForKey node) {
 		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
-		append<Node_Property>(elem, node.@propertys, null);
-		append<Node_Method>(elem, node.@methods, null);
+		append<INode_Expression>(elem, node.@container, "container");
+		append<INode_Expression>(elem, node.@keyInterface, "key-interface");
+		append<Node_Identifier>(elem, node.@name, "name");
+		append<Node_Block>(elem, node.@action, "action");
+		return elem;
+	}
+
+	protected XmlElement serialize(Node_Comprehension node) {
+		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
+		append<INode_Expression>(elem, node.@sourceCollection, "source-collection");
+		append<Node_Identifier>(elem, node.@elementName, "element-name");
+		append<INode_Expression>(elem, node.@test, "test");
+		append<INode_Expression>(elem, node.@output, "output");
 		return elem;
 	}
 
@@ -312,6 +316,15 @@ abstract class DesibleSerializerAuto : DesibleSerializerBase {
 		append<INode_Expression>(elem, node.@value, "value");
 		append<Node_Case>(elem, node.@cases, null);
 		append<INode_Expression>(elem, node.@else, "else");
+		return elem;
+	}
+
+	protected XmlElement serialize(Node_ParameterImpl node) {
+		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
+		append<Node_Direction>(elem, node.@direction, null);
+		append<Node_NullableType>(elem, node.@nullableType, null);
+		append<Node_Identifier>(elem, node.@name, "name");
+		append<INode_Expression>(elem, node.@defaultValue, "default-value");
 		return elem;
 	}
 
@@ -338,7 +351,7 @@ abstract class DesibleSerializerAuto : DesibleSerializerBase {
 
 	protected XmlElement serialize(Node_Function node) {
 		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
-		append<Node_Parameter>(elem, node.@parameters, null);
+		append<Node_ParameterImpl>(elem, node.@parameterImpls, null);
 		append<Node_NullableType>(elem, node.@returnInfo, "return-info");
 		append<INode_Expression>(elem, node.@body, "body");
 		return elem;
@@ -354,6 +367,14 @@ abstract class DesibleSerializerAuto : DesibleSerializerBase {
 	protected XmlElement serialize(Node_Expose node) {
 		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
 		append<Node_Identifier>(elem, node.@identifiers, null);
+		return elem;
+	}
+
+	protected XmlElement serialize(Node_Worker node) {
+		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
+		append<INode_Expression>(elem, node.@face, "face");
+		append<Node_Worker>(elem, node.@childs, "child");
+		append<Node_MemberImplementation>(elem, node.@memberImplementations, null);
 		return elem;
 	}
 
@@ -413,14 +434,14 @@ abstract class DesibleSerializerAuto : DesibleSerializerBase {
 	protected XmlElement serialize(Node_Property node) {
 		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
 		append<Node_Identifier>(elem, node.@name, "name");
+		append<Node_Boolean>(elem, node.@writable, "writable");
 		append<Node_NullableType>(elem, node.@nullableType, null);
-		append<Node_Access>(elem, node.@access, null);
 		return elem;
 	}
 
 	protected XmlElement serialize(Node_Callee node) {
 		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
-		append<Node_Parameter>(elem, node.@parameters, null);
+		append<Node_ParameterInfo>(elem, node.@parameterInfos, null);
 		append<Node_NullableType>(elem, node.@returnInfo, "return-info");
 		return elem;
 	}
@@ -435,13 +456,6 @@ abstract class DesibleSerializerAuto : DesibleSerializerBase {
 		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
 		append<INode_Expression>(elem, node.@first, "first");
 		append<INode_Expression>(elem, node.@second, "second");
-		return elem;
-	}
-
-	protected XmlElement serialize(Node_DeclareConstEmpty node) {
-		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
-		append<Node_Identifier>(elem, node.@name, "name");
-		append<Node_IdentikeyType>(elem, node.@identikeyType, null);
 		return elem;
 	}
 
@@ -476,6 +490,19 @@ abstract class DesibleSerializerAuto : DesibleSerializerBase {
 		return elem;
 	}
 
+	protected XmlElement serialize(Node_Null node) {
+		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
+		append<INode_Expression>(elem, node.@interface, "interface");
+		return elem;
+	}
+
+	protected XmlElement serialize(Node_GenericInterface node) {
+		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
+		append<Node_GenericParameter>(elem, node.@parameters, "parameter");
+		append<Node_Interface>(elem, node.@interface, null);
+		return elem;
+	}
+
 	protected XmlElement serialize(Node_ExceptionHandler node) {
 		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
 		append<Node_Boolean>(elem, node.@catch, "catch");
@@ -488,18 +515,8 @@ abstract class DesibleSerializerAuto : DesibleSerializerBase {
 	protected XmlElement serialize(Node_FunctionInterface node) {
 		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
 		append<INode_Expression>(elem, node.@templateArgumentCount, "template-argument-count");
-		append<Node_Parameter>(elem, node.@parameters, null);
+		append<Node_ParameterInfo>(elem, node.@parameterInfos, null);
 		append<Node_NullableType>(elem, node.@returnInfo, "return-info");
-		return elem;
-	}
-
-	protected XmlElement serialize(Node_Parameter node) {
-		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
-		append<Node_Direction>(elem, node.@direction, null);
-		append<Node_NullableType>(elem, node.@nullableType, null);
-		append<Node_Identifier>(elem, node.@name, "name");
-		append<Node_Boolean>(elem, node.@hasDefaultValue, "has-default-value");
-		append<INode_Expression>(elem, node.@defaultValue, "default-value");
 		return elem;
 	}
 
@@ -507,6 +524,34 @@ abstract class DesibleSerializerAuto : DesibleSerializerBase {
 		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
 		append<Node_Identifier>(elem, node.@namespaces, "namespace");
 		append<Node_Identifier>(elem, node.@identikeyName, "identikey-name");
+		return elem;
+	}
+
+	protected XmlElement serialize(Node_Object node) {
+		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
+		append<Node_Worker>(elem, node.@workers, null);
+		return elem;
+	}
+
+	protected XmlElement serialize(Node_Bundle node) {
+		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
+		append<Node_Import>(elem, node.@imports, null);
+		append<INode_ScopeAlteration>(elem, node.@alts, "alt");
+		append<Node_Plane>(elem, node.@planes, null);
+		return elem;
+	}
+
+	protected XmlElement serialize(Node_Plane node) {
+		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
+		append<INode_ScopeAlteration>(elem, node.@alts, "alt");
+		append<Node_DeclareFirst>(elem, node.@declareFirsts, null);
+		return elem;
+	}
+
+	protected XmlElement serialize(Node_Xor node) {
+		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
+		append<INode_Expression>(elem, node.@first, "first");
+		append<INode_Expression>(elem, node.@second, "second");
 		return elem;
 	}
 

@@ -35,16 +35,16 @@
 				</parameter>
 				<block label='body'>
 					<call label='member'>
-						<identifier label='value'>println</identifier>
+						<identifier label='receiver'>println</identifier>
 						<argument>
 							<string label='value'/>
 						</argument>
 					</call>
 					<call label='member'>
-						<identifier label='value'>println</identifier>
+						<identifier label='receiver'>println</identifier>
 						<argument>
 							<call label='value'>
-								<extract-member label='value'>
+								<extract-member label='receiver'>
 									<identifier label='source'>title</identifier>
 									<identifier label='member-name'>concat</identifier>
 								</extract-member>
@@ -94,10 +94,10 @@
 				</parameter>
 				<block label='body'>
 					<call label='member'>
-						<identifier label='value'>header</identifier>
+						<identifier label='receiver'>header</identifier>
 						<argument>
 							<call label='value'>
-								<extract-member label='value'>
+								<extract-member label='receiver'>
 									<string label='source'>calling </string>
 									<identifier label='member-name'>concat</identifier>
 								</extract-member>
@@ -108,19 +108,19 @@
 						</argument>
 					</call>
 					<call label='member'>
-						<identifier label='value'>function</identifier>
+						<identifier label='receiver'>function</identifier>
 					</call>
 					<call label='member'>
-						<identifier label='value'>println</identifier>
+						<identifier label='receiver'>println</identifier>
 						<argument>
 							<string label='value'/>
 						</argument>
 					</call>
 					<call label='member'>
-						<identifier label='value'>println</identifier>
+						<identifier label='receiver'>println</identifier>
 						<argument>
 							<call label='value'>
-								<extract-member label='value'>
+								<extract-member label='receiver'>
 									<string label='source'>done with </string>
 									<identifier label='member-name'>concat</identifier>
 								</extract-member>
@@ -158,7 +158,7 @@
 					
 					<!-- doStuff -->
 					<call label='member'>
-						<identifier label='value'>headerize</identifier>
+						<identifier label='receiver'>headerize</identifier>
 						<argument>
 							<string label='value'>doStuff</string>
 						</argument>
@@ -170,7 +170,7 @@
 					
 					<!-- testNonProducers -->
 					<call label='member'>
-						<identifier label='value'>headerize</identifier>
+						<identifier label='receiver'>headerize</identifier>
 						<argument>
 							<string label='value'>testNonProducers</string>
 						</argument>
@@ -181,7 +181,7 @@
 					
 					<!-- testSometimesProducers -->
 					<call label='member'>
-						<identifier label='value'>headerize</identifier>
+						<identifier label='receiver'>headerize</identifier>
 						<argument>
 							<string label='value'>testSometimesProducers</string>
 						</argument>
@@ -192,7 +192,7 @@
 					
 					<!-- testAlwaysProducers -->
 					<call label='member'>
-						<identifier label='value'>headerize</identifier>
+						<identifier label='receiver'>headerize</identifier>
 						<argument>
 							<string label='value'>testAlwaysProducers</string>
 						</argument>
@@ -245,7 +245,7 @@
 						<identifier label='test'>true</identifier>
 						<block label='result'>
 							<call label='member'>
-								<identifier label='value'>println</identifier>
+								<identifier label='receiver'>println</identifier>
 								<argument>
 									<string label='value'>this is a test</string>
 								</argument>
@@ -263,7 +263,7 @@
 						</identikey-type>
 						<boolean label='breed'>false</boolean>
 						<call label='value'>
-							<extract-member label='value'>
+							<extract-member label='receiver'>
 								<string label='source'>&#x1FFF0; Hello,</string>
 								<identifier label='member-name'>concat</identifier>
 							</extract-member>
@@ -273,13 +273,13 @@
 						</call>
 					</declare-assign>
 					<call label='member'>
-						<identifier label='value'>println</identifier>
+						<identifier label='receiver'>println</identifier>
 						<argument>
 							<identifier label='value'>str</identifier>
 						</argument>
 					</call>
 					<call label='member'>
-						<identifier label='value'>println</identifier>
+						<identifier label='receiver'>println</identifier>
 						<argument>
 							<extract-member label='value'>
 								<identifier label='source'>str</identifier>
@@ -293,10 +293,10 @@
 						<integer label='limit'>20</integer>
 						<boolean label='inclusive'>false</boolean>
 						<call label='action'>
-							<identifier label='value'>println</identifier>
+							<identifier label='receiver'>println</identifier>
 							<argument>
 								<call label='value'>
-									<extract-member label='value'>
+									<extract-member label='receiver'>
 										<identifier label='source'>x</identifier>
 										<identifier label='member-name'>add</identifier>
 									</extract-member>
@@ -319,7 +319,7 @@
 						<string label='value'>astral characters in identifiers</string>
 					</declare-assign>
 					<call label='member'>
-						<identifier label='value'>println</identifier>
+						<identifier label='receiver'>println</identifier>
 						<argument>
 							<identifier label='value'>&#x1FFF0;&#x1FFF1;</identifier>
 						</argument>
@@ -404,13 +404,13 @@
 					
 					<!-- testBooleanLogic() -->
 					<call label='member'>
-						<identifier label='value'>header</identifier>
+						<identifier label='receiver'>header</identifier>
 						<argument>
 							<string label='value'>testBooleanLogic()</string>
 						</argument>
 					</call>
 					<call label='member'>
-						<identifier label='value'>testBooleanLogic</identifier>
+						<identifier label='receiver'>testBooleanLogic</identifier>
 					</call>
 					
 					<!-- array - -> xxx generic interface implementations needed
@@ -437,16 +437,16 @@
 					
 					<!-- function -->
 					<call label='member'>
-						<identifier label='value'>header</identifier>
+						<identifier label='receiver'>header</identifier>
 						<argument>
 							<string label='value'>function</string>
 						</argument>
 					</call>
 					<call label='member'>
-						<identifier label='value'>println</identifier>
+						<identifier label='receiver'>println</identifier>
 						<argument>
 							<call label='value'>
-								<function label='value'>
+								<function label='receiver'>
 									<string label='body'>some stuff</string>
 								</function>
 							</call>
@@ -462,13 +462,13 @@
 
 					<!-- identifier -->
 					<call label='member'>
-						<identifier label='value'>header</identifier>
+						<identifier label='receiver'>header</identifier>
 						<argument>
 							<string label='value'>identifier</string>
 						</argument>
 					</call>
 					<call label='member'>
-						<identifier label='value'>println</identifier>
+						<identifier label='receiver'>println</identifier>
 						<argument>
 							<identifier label='value'>true</identifier>
 						</argument>
@@ -481,13 +481,13 @@
 					
 					<!-- integer -->
 					<call label='member'>
-						<identifier label='value'>header</identifier>
+						<identifier label='receiver'>header</identifier>
 						<argument>
 							<string label='value'>integer</string>
 						</argument>
 					</call>
 					<call label='member'>
-						<identifier label='value'>println</identifier>
+						<identifier label='receiver'>println</identifier>
 						<argument>
 							<integer label='value'>9000</integer>
 						</argument>
@@ -498,13 +498,13 @@
 					
 					<!-- rational -->
 					<call label='member'>
-						<identifier label='value'>header</identifier>
+						<identifier label='receiver'>header</identifier>
 						<argument>
 							<string label='value'>rational</string>
 						</argument>
 					</call>
 					<call label='member'>
-						<identifier label='value'>println</identifier>
+						<identifier label='receiver'>println</identifier>
 						<argument>
 							<rational label='value'>123.456</rational>
 						</argument>
@@ -514,13 +514,13 @@
 					
 					<!-- string -->
 					<call label='member'>
-						<identifier label='value'>header</identifier>
+						<identifier label='receiver'>header</identifier>
 						<argument>
 							<string label='value'>string</string>
 						</argument>
 					</call>
 					<call label='member'>
-						<identifier label='value'>println</identifier>
+						<identifier label='receiver'>println</identifier>
 						<argument>
 							<string label='value'>This is some text.</string>
 						</argument>
@@ -600,13 +600,13 @@
 					
 					<!-- and -->
 					<call label='member'>
-						<identifier label='value'>header</identifier>
+						<identifier label='receiver'>header</identifier>
 						<argument>
 							<string label='value'>and</string>
 						</argument>
 					</call>
 					<call label='member'>
-						<identifier label='value'>println</identifier>
+						<identifier label='receiver'>println</identifier>
 						<argument>
 							<and label='value'>
 								<identifier label='first'>f</identifier>
@@ -615,7 +615,7 @@
 						</argument>
 					</call>
 					<call label='member'>
-						<identifier label='value'>println</identifier>
+						<identifier label='receiver'>println</identifier>
 						<argument>
 							<and label='value'>
 								<identifier label='first'>t</identifier>
@@ -626,13 +626,13 @@
 					
 					<!-- nand -->
 					<call label='member'>
-						<identifier label='value'>header</identifier>
+						<identifier label='receiver'>header</identifier>
 						<argument>
 							<string label='value'>nand</string>
 						</argument>
 					</call>
 					<call label='member'>
-						<identifier label='value'>println</identifier>
+						<identifier label='receiver'>println</identifier>
 						<argument>
 							<nand label='value'>
 								<identifier label='first'>f</identifier>
@@ -641,7 +641,7 @@
 						</argument>
 					</call>
 					<call label='member'>
-						<identifier label='value'>println</identifier>
+						<identifier label='receiver'>println</identifier>
 						<argument>
 							<nand label='value'>
 								<identifier label='first'>t</identifier>
@@ -652,13 +652,13 @@
 					
 					<!-- or -->
 					<call label='member'>
-						<identifier label='value'>header</identifier>
+						<identifier label='receiver'>header</identifier>
 						<argument>
 							<string label='value'>or</string>
 						</argument>
 					</call>
 					<call label='member'>
-						<identifier label='value'>println</identifier>
+						<identifier label='receiver'>println</identifier>
 						<argument>
 							<or label='value'>
 								<identifier label='first'>f</identifier>
@@ -667,7 +667,7 @@
 						</argument>
 					</call>
 					<call label='member'>
-						<identifier label='value'>println</identifier>
+						<identifier label='receiver'>println</identifier>
 						<argument>
 							<or label='value'>
 								<identifier label='first'>f</identifier>
@@ -678,13 +678,13 @@
 					
 					<!-- nor -->
 					<call label='member'>
-						<identifier label='value'>header</identifier>
+						<identifier label='receiver'>header</identifier>
 						<argument>
 							<string label='value'>nor</string>
 						</argument>
 					</call>
 					<call label='member'>
-						<identifier label='value'>println</identifier>
+						<identifier label='receiver'>println</identifier>
 						<argument>
 							<nor label='value'>
 								<identifier label='first'>f</identifier>
@@ -693,7 +693,7 @@
 						</argument>
 					</call>
 					<call label='member'>
-						<identifier label='value'>println</identifier>
+						<identifier label='receiver'>println</identifier>
 						<argument>
 							<nor label='value'>
 								<identifier label='first'>f</identifier>
@@ -704,13 +704,13 @@
 					
 					<!-- xor -->
 					<call label='member'>
-						<identifier label='value'>header</identifier>
+						<identifier label='receiver'>header</identifier>
 						<argument>
 							<string label='value'>xor</string>
 						</argument>
 					</call>
 					<call label='member'>
-						<identifier label='value'>println</identifier>
+						<identifier label='receiver'>println</identifier>
 						<argument>
 							<xor label='value'>
 								<identifier label='first'>t</identifier>
@@ -719,7 +719,7 @@
 						</argument>
 					</call>
 					<call label='member'>
-						<identifier label='value'>println</identifier>
+						<identifier label='receiver'>println</identifier>
 						<argument>
 							<xor label='value'>
 								<identifier label='first'>t</identifier>
@@ -730,13 +730,13 @@
 					
 					<!-- xnor -->
 					<call label='member'>
-						<identifier label='value'>header</identifier>
+						<identifier label='receiver'>header</identifier>
 						<argument>
 							<string label='value'>xnor</string>
 						</argument>
 					</call>
 					<call label='member'>
-						<identifier label='value'>println</identifier>
+						<identifier label='receiver'>println</identifier>
 						<argument>
 							<xnor label='value'>
 								<identifier label='first'>t</identifier>
@@ -745,7 +745,7 @@
 						</argument>
 					</call>
 					<call label='member'>
-						<identifier label='value'>println</identifier>
+						<identifier label='receiver'>println</identifier>
 						<argument>
 							<xnor label='value'>
 								<identifier label='first'>t</identifier>

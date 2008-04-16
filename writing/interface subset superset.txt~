@@ -1,0 +1,54 @@
+Interfaces in Desal come in two forms: superset interfaces and subset interfaces.
+
+Superset interfaces are like interfaces found in other languages. The members associated with a superset interface are either defined directly by the interface or inherited from other interfaces.
+
+If superset interface A inherits interfaces B and C, then:
+an A is a B
+an A is a C
+a B may be an A, but that is not necessarily true
+a C may be an A, but that is not necessarily true
+
+The members associated with a subset interface all come from other interfaces. Every member associated with the interface must be present in of those subsetted interfaces.
+
+If subset interface A subsets interfaces B and C, then:
+a B is an A
+a C is an A
+an A may be a B, but that is not necessarily true
+an A may be a C, but that is not necessarily true
+
+However, it should be noted that interfaces are not sets. (XXX come up with better name?)
+
+interface A
+	inherit B
+	inherit C
+	prop ro String myNewStuff //overrides member of same name in B and C, or just defines new member
+
+interface A
+	subsetof B
+	subsetof C
+	prop ro String theirOldStuff //must be in B and C -- should work the same and have the same purpose
+
+//contains no members -- can be used somewhat like a tagged union a.k.a. algebraic data type
+interface A
+	subsetof B
+	subsetof C
+
+
+Note: An interface cannot use both subsetof and inherit.
+Note: Not declaring subsetof's or inherit's is an implicit inheritance of the Object interface.
+Note: Need to do much more thinking and writing about this, like inheriting subset interfaces.
+
+Interface is a subset interface of SupersetInterface and SubsetInterface.
+
+interface Interface
+	subsetof SupersetInterface
+
+interface SupersetInterface
+	Collection<Interface> inheritees
+	Collection<Member> ownMembers
+
+interface SubsetInterface
+	Collection<Interface> sources
+	Collection<Member> takenMembers
+
+

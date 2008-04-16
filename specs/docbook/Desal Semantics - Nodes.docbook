@@ -1,15 +1,16 @@
 <chapter xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="node-types">
 	<title>Node types</title>
 
-	<para>This chapter describes the various types of nodes.</para>
+	<para>This chapter describes the various types of nodes. A node type is either a family, tree, or terminal node type. A family node type is a collection of node types. A tree node is a node that is composed of other nodes. Tree nodes do not directly encode any data themselves. The nodes a tree node type contains is specified by the tree node's layout. When the a layout specifies the type of a child node is that of a family node type, the type of the child that takes that place must be in the collection of that family node type. A terminal node encodes data directly and does not contain other nodes.</para>
 	
-	<section xml:id="base-node-types">
-		<title>Base nodes</title>
+	<section xml:id="terminal-node-types">
+		<title>Terminal nodes</title>
 		
 		<para>These node types do not contain child nodes, and are thus the only nodes that must encode information themselves (as opposed to containing child nodes which together provide information).</para>
 		
+		<para role="xxx">Need to automate the creation of this list.</para>
+		
 		<simplelist>
-			<member linkend="node.access">access</member>
 			<member linkend="node.boolean">boolean</member>
 			<member linkend="node.direction">direciton</member>
 			<member linkend="node.identifier">identifier</member>
@@ -18,6 +19,40 @@
 			<member linkend="node.rational">rational</member>
 			<member linkend="node.string">string</member>
 		</simplelist>
+	</section>
+	
+	<section xml:id="family-node-types">
+		<title>Family node types</title>
+		
+		<section xml:id="node.expression">
+			<title>expression</title>
+			
+			<para>Any node type specified in sections "Non-producing expressions", "Sometimes producing expressions", or "Always producing expressions", but not specified in the section of another node, is an expression node. Expression nodes can be executed, and may produce values.</para>
+		</section>
+		
+		<section xml:id="node.scope-alteration">
+			<title>scope-alteration</title>
+			
+			<para>This family node type includes these types:</para>
+			
+			<simplelist role="family-contents">
+				<member>using</member>
+				<member>expose</member>
+			</simplelist>
+		</section>
+		
+		<section xml:id="node.interface-member">
+			<title>interface-member</title>
+			
+			<para>This family node type includes these types:</para>
+			
+			<simplelist role="family-contents">
+				<member>breeder</member>
+				<member>callee</member>
+				<member>property</member>
+				<member>method</member>
+			</simplelist>
+		</section>
 	</section>
 	
 	<section xml:id="tree-node-layout-key">
@@ -198,6 +233,43 @@ library: "XmlLib"
 alias: Xml
 			</programlisting>
 		</section>
+
+		<section xml:id="node.worker">
+			<title>worker</title>
+			
+			<simplelist role="layout">
+				<member>expression face</member>
+				<member>* worker child</member>
+				<member>* member-implementation</member>
+			</simplelist>
+			
+			<para>Note: May actually correspond to multiple workers, since some of the member-implementation nodes may implement members of inherited interfaces.</para>
+		</section>
+		
+		<section xml:id="node.member-implementation">
+			<title>member-implementation</title>
+			
+			<simplelist role="layout">
+				<member>member-identification</member>
+				<member>expression function</member>
+			</simplelist>
+		</section>
+		
+		<section xml:id="node.member-identification">
+			<title>member-identification</title>
+			
+			<simplelist role="layout">
+				<member>member-type</member>
+				<member>? identifier name</member>
+				<member>? expression interface</member>
+			</simplelist>
+		</section>
+		
+		<section xml:id="node.member-type">
+			<title>member-type</title>
+			
+			<para>Specifies one of: breeder, callee, property setter, property getter, method.</para>
+		</section>
 		
 		<section xml:id="node.nullable-type">
 			<title>nullable-type</title>
@@ -210,22 +282,28 @@ alias: Xml
 			</simplelist>
 		</section>
 
-		<section xml:id="node.parameter">
-			<title>parameter</title>
-			
-			<para>A function parameter.</para>
+		<section xml:id="node.parameter-info">
+			<title>parameter-info</title>
 			
 			<simplelist role="layout">
 				<member>direction</member>
-				<member>nullable-type</member>
+				<member>? nullable-type</member>
 				<member>identifier name</member>
 				<member>boolean has default value</member>
+			</simplelist>
+		</section>
+
+		<section xml:id="node.parameter-impl">
+			<title>parameter-impl</title>
+			
+			<simplelist role="layout">
+				<member>direction</member>
+				<member>? nullable-type</member>
+				<member>identifier name</member>
 				<member>? expression default value</member>
 			</simplelist>
 			
-			<para role="xxx">Should this node be split into e.g. parameter-info and parameter-impl? See next paragraph.</para>
-			
-			<para>When this node is a child of a function-interface or callee node, [default value] must not be present. (Meaning it can only be present when the child of a function node.) When a [default value] is given because the node is a child of a function node, [default value] is executed for every call to the function. It is not executed when the function node is executed.</para>
+			<para>When a [default value] is given, [default value] is executed for every call to the function. It is not executed when the function node is executed.</para>
 		</section>
 				
 		<section xml:id="node.plane">
@@ -241,12 +319,6 @@ alias: Xml
 			<para>This node has scope, but only private identifiers are bound to it. Public and exported identifiers are bound to the scope of the bundle node.</para>
 			
 			<para>Planes aren't expressions because their declare-first nodes might rely on declare-first nodes in other planes, so all the declare-first nodes in a single plane can't just be executed all together.</para>
-		</section>
-		
-		<section xml:id="node.scope-alteration">
-			<title>scope-alteration</title>
-				
-			<para>This is a supertype, like expression. This type includes <link linkend="node.using">using</link> and <link linkend="node.expose">expose</link>.</para>
 		</section>
 		
 		<section xml:id="node.using">
@@ -538,7 +610,7 @@ while container.hasMore?
 		<section xml:id="node.continue">
 			<title>continue</title>
 			
-			<simplelist>
+			<simplelist role="layout">
 				<member>? identifier label</member>
 			</simplelist>
 		</section>
@@ -595,6 +667,10 @@ func setupCell(Int searchID) {
 			<title>null</title>
 			
 			<para>Produces an untyped null.</para>
+			
+			<simplelist role="layout">
+				<member>? expression interface</member>
+			</simplelist>
 			
 			<para>(XXX move) An untyped null can be cast to any interface, implicitly or explicitly, to form a typed null. A typed null can be downcast.</para>
 			
@@ -1467,6 +1543,16 @@ for number in numbers
 			</programlisting>
 		</section>
 		
+		<section xml:id="node.object">
+			<title>object</title>
+			
+			<simplelist role="layout">
+				<member>+ worker</member>
+			</simplelist>
+		</section>
+		
+		<![CDATA[ xxxxxx
+
 		<section xml:id="node.class">
 			<title>class</title>
 			
@@ -1496,7 +1582,7 @@ for number in numbers
 				<member>* declaration instance declaration</member>
 				
 				<!-- private and public -->
-				<member>* interface-implementation</member>
+				<member>* worker</member>
 			</simplelist>
 			
 			<para>XXX The static callees and static properties may not always be visible in the class node's scope. (An example of being visible is assigning the value produced by the class node to an identifier.) Should some identifier (e.g. "thisClass") be introduced that evaluates to the class's value? (e.g. thisClass.property = foo) Or should a general means of accessing the enclosing expression node's value be introduced? (e.g. thisValue.property = foo)</para>
@@ -1515,7 +1601,7 @@ for number in numbers
 					</tr>
 					<tr>
 						<th>static - only 1</th>
-						<td>callees, getters/setters, methods, interface-implementations</td>
+						<td>callees, getters/setters, methods, workers</td>
 						<td>static constructor, instance constructors, static declarations, instance methods</td>
 					</tr>
 					<tr>
@@ -1548,7 +1634,7 @@ for number in numbers
 					<simplelist>
 						<member>public
 							<simplelist>
-								<member>defined by: interface-implementations (or really, by the interface)</member>
+								<member>defined by: workers (or really, by the interface)</member>
 								<member>in scope: (none)</member>
 							</simplelist>
 						</member>
@@ -1564,7 +1650,7 @@ for number in numbers
 			
 			<para>Note: Instance scopes are children of the static scope.</para>
 			
-			<para role="process">Must have at least one interface-implementation. Including the interface-implementation nodes that are inherited by this class's child interface-implementation nodes, one and only one of the interface-implementation nodes must be specified as default.</para>
+			<para role="process">Must have at least one worker. Including the worker nodes that are inherited by this class's child worker nodes, one and only one of the worker nodes must be specified as default.</para>
 			
 			<orderedlist role="exec">
 				<listitem>Create scope, STATIC_SCOPE.</listitem>
@@ -1627,20 +1713,6 @@ for number in numbers
 				
 				<para>Identifiers created by this node are always const. [identikey-type] must be value or function. The class's static constructor is allowed to assign values to static identifiers created by this node. If anthing tries to assign a value to an identikey create by this node, and the identikey is already bound to something, throw an error. The class's instance constructors are allowed to assign values to instance identifiers created by this node. An error results if identikeys produced by declare-const-empty nodes are dereferenced before being bound to anything.</para>
 			</section>
-	
-			<section xml:id="node.interface-implementation">
-				<title>interface-implementation</title>
-				
-				<simplelist role="layout">
-					<member>* interface-implementation child implemenatation</member>
-					<member>expression interface</member>
-					<member>* function callee</member>
-					<member>* named-function getter</member>
-					<member>* named-function setter</member>
-					<member>* named-function method</member>
-					<member>boolean default</member>
-				</simplelist>
-			</section>
 			
 			<section xml:id="node.named-function">
 				<title>named-function</title>
@@ -1696,30 +1768,26 @@ interface of Foo {
 (Foo as Interface) == (Bar + Foo.Bar2) //true
 			</programlisting>
 		</section>
+		
+		]]>
 
 		<section xml:id="node.comprehension">
 			<title>comprehension</title>
 			
-			<para>Used to build collections or generators. A slightly more general form of array/list comprehensions as found in other programming languages. Similar in nature to set-builder notation in mathematics.</para>
+			<para role="xxx">Merge with generator node?</para>
+			
+			<para>Creates a generator. Similar to set-builder notation in mathematics.</para>
 			
 			<simplelist role="layout">
-				<member>comprehension-type</member>
-				<member>? expression destination collection</member>
 				<member>expression source collection</member>
 				<member>identifier element name</member>
 				<member>? expression test</member>
 				<member>? expression output</member>
 			</simplelist>
-			
-			<para role="process">[comprehension-type] must be set to "provided" if [destination-collection] is present.</para>
-			
-			<section xml:id="node.comprehension-type">
-				<title>comprehension-type</title>
-				
-				<para>Specifies one of: array, chain, generator, provided</para>
-			</section>
 
 			<programlisting>
+[(output) for (element name) in (source collection) if (test)]
+
 decl foo = [2*x for x in L if x^2 > 3]
 container: L
 element name: x
@@ -1741,6 +1809,12 @@ output: (implicit: x)
 for o in [2*x for x in L if x^2 > 3] {
 	println o
 }
+
+//convert to Array
+Array&lt;Int>([2*x for x in L if x^2 > 3])
+
+//insert into existing collection
+collection.insert([2*x for x in L if x^2 > 3])
 			</programlisting>
 		</section>
 		
@@ -1905,7 +1979,7 @@ alpha.doStuff()
 			<title>function</title>
 			
 			<simplelist role="layout">
-				<member>* parameter</member>
+				<member>* parameter-impl</member>
 				<member>? nullable-type return info</member>
 				<member>expression body</member>
 			</simplelist>
@@ -1947,7 +2021,7 @@ println( {a|a*a} 2 )
 			
 			<simplelist role="layout">
 				<member>? expression template-argument-count</member>
-				<member>* parameter</member>
+				<member>* parameter-info</member>
 				<member>? nullable-type return info</member>
 			</simplelist>
 			
@@ -2040,6 +2114,8 @@ prints: '2 3 4 '
 			</programlisting>
 		</section>
 		
+		<![CDATA[ xxx
+				  
 		<section xml:id="node.generic-class">
 			<title>generic-class</title>
 			
@@ -2050,6 +2126,8 @@ prints: '2 3 4 '
 			
 			<para>Evaluates to a value with an active interface that inherits from GenericClass and one or more function interfaces. When called, the value returns the value returned from evaluating the class node.</para>
 		</section>
+		
+		]]>
 		
 		<section xml:id="node.generic-function">
 			<title>generic-function</title>
@@ -2187,8 +2265,10 @@ println( 789 )
 			
 			<simplelist role="layout">
 				<member>* expression inheritee</member>
-				<member>* statused-member</member>
+				<member>* interface-member member</member>
 			</simplelist>
+			
+			<!-- xxx
 			
 			<section xml:id="node.statused-member">
 				<title>statused-member</title>
@@ -2205,14 +2285,10 @@ println( 789 )
 				<para>Base node. Specifies "new", "normal", or "deprecated".</para>
 			</section>
 			
-			<section xml:id="node.interface-member">
-				<title>interface-member</title>
-				
-				<para>Supertype. Includes convertor, callee, property, and method.</para>
-			</section>
+			-->
 			
-			<section xml:id="node.convertor">
-				<title>convertor</title>
+			<section xml:id="node.breeder">
+				<title>breeder</title>
 				
 				<simplelist role="layout">
 					<member>? expression interface</member>
@@ -2225,7 +2301,7 @@ println( 789 )
 				<title>callee</title>
 				
 				<simplelist role="layout">
-					<member>* parameter</member>
+					<member>* parameter-info</member>
 					<member>? nullable-type return info</member>
 				</simplelist>
 				
@@ -2237,8 +2313,8 @@ println( 789 )
 				
 				<simplelist role="layout">
 					<member>identifier name</member>
+					<member>boolean writable</member>
 					<member>nullable-type</member>
-					<member>access</member>
 				</simplelist>
 			</section>
 			
@@ -2249,12 +2325,6 @@ println( 789 )
 					<member>identifier name</member>
 					<member>expression interface</member>
 				</simplelist>
-			</section>
-			
-			<section xml:id="node.access">
-				<title>access</title>
-				
-				<para>Access nodes must specify one of three access levels: only reading, only writing, or both reading and writing.</para>
 			</section>
 		</section>
 		

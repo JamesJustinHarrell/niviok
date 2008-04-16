@@ -8,17 +8,41 @@ that are similar to the nodes, but contain the values produced
 from executing these nodes, instead of child expression nodes.
 */
 static class Evaluator {
+	//argument
+	public static Argument evaluate(Node_Argument node, Scope scope) {
+		return new Argument(
+			node.parameterName == null ? null : node.parameterName.value,
+			Executor.execute(node.value, scope));
+	}
+	
+	//callee
+	public static CalleeInfo evaluate(Node_Callee node, Scope scope) {
+		IList<ParameterInfo> parameters = new List<ParameterInfo>();
+		foreach( Node_ParameterInfo child in node.parameterInfos )
+			parameters.Add(evaluate(child, scope));
+		return new CalleeInfo(
+			parameters,
+			evaluate(node.returnInfo, scope));
+	}
+	
 	//interface
 	public static IInterface evaluate(Node_Interface node, Scope scope) {
+		IList<IInterface> inheritees = new List<IInterface>();
+		IList<CalleeInfo> callees = new List<CalleeInfo>();
 		IList<PropertyInfo> props = new List<PropertyInfo>();
-		foreach( Node_Property prop in node.propertys ) {
-			props.Add(Evaluator.evaluate(prop, scope));
-		}
 		IList<MethodInfo> meths = new List<MethodInfo>();
-		foreach( Node_Method meth in node.methods ) {
-			meths.Add(Evaluator.evaluate(meth, scope));
+		foreach( Node_Interface inherNode in node.inheritees )
+			inheritees.Add(evaluate(inherNode, scope));
+		foreach( INode_InterfaceMember member in node.members ) {
+			if( member is Node_Callee )
+				callees.Add(evaluate(member as Node_Callee, scope));
+			if( member is Node_Property )
+				props.Add(evaluate(member as Node_Property, scope));
+			if( member is Node_Method )
+				meths.Add(evaluate(member as Node_Method, scope));
 		}
-		return new Interface( props, meths );
+		return new Interface(
+			inheritees, callees, props, meths );
 	}
 	
 	//method
@@ -36,15 +60,24 @@ static class Evaluator {
 		return new NullableType(iface, node.nullable.value);
 	}
 
-	//parameter
-	public static Parameter evaluate(Node_Parameter node, Scope scope) {
-		return new Parameter(
+	//parameter-impl
+	public static ParameterImpl evaluate(Node_ParameterImpl node, Scope scope) {
+		return new ParameterImpl(
+			node.direction.value,
 			evaluate(node.nullableType, scope),
 			node.name.value,
-		    node.hasDefaultValue.value,
 		    ( node.defaultValue == null ?
 		    	null :
 		    	Executor.execute(node.defaultValue, scope) ));
+	}
+
+	//parameter-info
+	public static ParameterInfo evaluate(Node_ParameterInfo node, Scope scope) {
+		return new ParameterInfo(
+			node.direction.value,
+			evaluate(node.nullableType, scope),
+			node.name.value,
+		    node.hasDefaultValue.value);
 	}
 	
 	//property
@@ -52,6 +85,29 @@ static class Evaluator {
 		return new PropertyInfo(
 			node.name.value,
 			evaluate(node.nullableType, scope),
-			node.access.value );
+			Access.GET /* xxx hardcoded */ );
+	}
+	
+	//worker
+	public static IWorker evaluate(Node_Worker node, Scope scope, IObject owner) {
+		IList<IWorker> children = new List<IWorker>();
+		foreach( Node_Worker child in node.childs )
+			children.Add(evaluate(child, scope, owner));
+	
+		WorkerBuilder builder = new WorkerBuilder(
+			Bridge.unwrapInterface(
+				Executor.execute(node.face, scope)),
+			owner, children );
+		foreach( Node_MemberImplementation nmi in node.memberImplementations ) {
+			Node_MemberIdentification id = nmi.memberIdentification;
+			if( id.memberType.value == MemberType.PROPERTY_GETTER )
+				builder.addPropertyGetter(
+					id.name.value, Executor.execute(nmi.function, scope));
+			if( id.memberType.value == MemberType.PROPERTY_SETTER )
+				builder.addPropertySetter(
+					id.name.value,
+					Executor.execute(nmi.function, scope));
+		}
+		return builder.compile();
 	}
 }

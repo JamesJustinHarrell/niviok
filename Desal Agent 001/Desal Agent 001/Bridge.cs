@@ -8,151 +8,69 @@ This class defines static objects that are shared across Bundles.
 Be careful to not let one Bundle visibly affect the objects that appear to other Bundles.
 */
 
+using System;
 using System.Xml;
 using System.Collections.Generic;
 
 partial class Bridge {
-	static IInterface _objectFace;
-	static IInterface _boolFace;
-	static IInterface _intFace;
-	static IInterface _ratFace;
-	static IInterface _stringFace;
-	static IInterface _interfaceFace;
-	
-	static IInterfaceImplementation<Client_Boolean> _boolImpl;
-	static IInterfaceImplementation<Client_Integer> _intImpl;
-	static IInterfaceImplementation<Client_Rational> _ratImpl;
-	static IInterfaceImplementation<Client_String> _stringImpl;
-	static IInterfaceImplementation<Client_Interface> _interfaceImpl;
+	public static IInterface faceObject;
+	public static IInterface faceBool;
+	public static IInterface faceInt;
+	public static IInterface faceRat;
+	public static IInterface faceString;
+	public static IInterface faceInterface;
 
-	public static IInterface Object {
-		get { return _objectFace; }
+	public static IWorker wrapBoolean(bool val) {
+		return Client_Boolean.wrap(val);
+	}
+	
+	public static bool unwrapBoolean(IWorker worker) {
+		return (bool)worker.owner.native;
 	}
 
-	public static IInterface Bool {
-		get { return _boolFace; }
-	}
-	
-	public static IInterface Int {
-		get { return _intFace; }
-	}
-	
-	public static IInterface Rat {
-		get { return _ratFace; }
-	}
-	
-	public static IInterface String {
-		get { return _stringFace; }
-	}
-	
-	public static IInterface Interface {
-		get { return _interfaceFace; }
-	}
-	
-	public static void checkNull(IList<object> objects) {
-		for( int i = 0; i < objects.Count; i++ ) {
-			if( objects[i] == null )
-				throw new System.ApplicationException(
-					System.String.Format("index {0} is null", i));
-		}
+	public static IFunction unwrapFunction(IWorker worker) {
+		return (IFunction)worker.owner.native;
 	}
 
-	public static IValue wrapBoolean(bool val) {
-		return new Value<Client_Boolean>(
-			new Object<Client_Boolean>( new Client_Boolean(val) ),
-			_boolImpl );
+	public static IWorker wrapInteger(long val) {
+		return Client_Integer.wrap(val);
 	}
 	
-	public static bool unwrapBoolean(IValue val) {
-		if( val is Value<Client_Boolean> == false ) {
-			/* xxx enable
-			val = val.evaluateMethod( new Identifier("toBuiltin"), null );
-			if( val is Value<Client_Boolean> == false )
-				throw new ClientException( createToBuiltinFailure() );
-			*/
-			throw new Error_Unimplemented();
-		}
-		return ((Value<Client_Boolean>)val).state.value;
-	}
-	
-	public static bool isBuiltinBoolean(IValue val) {
-		return (val is Value<Client_Boolean>);
+	public static long unwrapInteger(IWorker worker) {
+		return (long)worker.owner.native;
 	}
 
-	public static IValue wrapInteger(long val) {
-		return new Value<Client_Integer>(
-			new Object<Client_Integer>( new Client_Integer(val) ),
-			_intImpl );
+	public static IWorker wrapRational(double val) {
+		return Client_Rational.wrap(val);
 	}
 	
-	public static long unwrapInteger(IValue val) {
-		if( val is Value<Client_Integer> )
-			return ((Value<Client_Integer>)val).state.value;
-		throw new Error_Unimplemented("only builtin integers currently supported");
-	}
-	
-	public static bool isBuiltinInteger(IValue val) {
-		return (val is Value<Client_Integer>);
+	public static double unwrapRational(IWorker worker) {
+		return (double)worker.owner.native;
 	}
 
-	public static IValue wrapRational(double val) {
-		return new Value<Client_Rational>(
-			new Object<Client_Rational>( new Client_Rational(val) ),
-			_ratImpl );
+	public static IWorker wrapInterface(IInterface face) {
+		return Client_Interface.wrap(face);
 	}
 	
-	public static double unwrapRational(IValue val) {
-		if( val is Value<Client_Rational> )
-			return ((Value<Client_Rational>)val).state.value;
-		throw new Error_Unimplemented("only builtin integers currently supported");
-	}
-	
-	public static bool isBuiltinRational(IValue val) {
-		return (val is Value<Client_Rational>);
-	}
-	
-	public static IValue wrapInterface(IInterface face) {
-		return new Value<Client_Interface>(
-			new Object<Client_Interface>( new Client_Interface(face) ),
-			_interfaceImpl );
-	}
-	
-	public static IInterface unwrapInterface(IValue value) {		
-		if( value is Value<Client_Interface> )
-			return ((Value<Client_Interface>)value).state.value;
-		return InterfaceFromValue.wrap(value);
+	public static IInterface unwrapInterface(IWorker worker) {
+		return (IInterface)worker.owner.native;
 	}
 
-	public static IValue wrapCodePoints(IList<uint> codePoints) {
-		return new Value<Client_String>(
-			new Object<Client_String>( new Client_String(codePoints) ),
-			_stringImpl );
+	public static IWorker wrapCodePoints(IList<uint> codePoints) {
+		return Client_String.wrap(codePoints);
 	}
 
-	public static IList<uint> unwrapCodePoints(IValue val) {
-		if( val is Value<Client_String> == false) {
-			/* xxx enable
-			val = val.evaluateMethod( new Identifier("toBuiltin"), null );
-			if( val is Value<Client_String> == false )
-				throw new ClientException( createToBuiltinFailure() );
-			*/
-			throw new Error_Unimplemented("only builtin strings supported for now");
-		}
-		
-		return ((Value<Client_String>)val).state.codePoints;
+	public static IList<uint> unwrapCodePoints(IWorker worker) {
+		return (IList<uint>)worker.owner.native;
 	}
 
-	public static IValue wrapString(string val) {
+	public static IWorker wrapString(string val) {
 		return wrapCodePoints( StringUtil.codePointsFromString(val) );
 	}
 	
-	public static string unwrapString(IValue val) {		
+	public static string unwrapString(IWorker val) {
 		return StringUtil.stringFromCodePoints(
 			unwrapCodePoints(val) );
-	}
-	
-	public static bool isBuiltinString(IValue val) {
-		return (val is Value<Client_String>);
 	}
 	
 	public System.IO.TextWriter stdout {

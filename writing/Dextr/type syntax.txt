@@ -1,0 +1,14 @@
+In Dextr, the question mark is used to denote nullable types. However, I want to allow question marks in identifiers. This means there must be a space between an identifier specifying an interface and the trailing question mark, which could cause bad problems when the space isn't present.
+
+But, if I just restrict identifiers so that question marks can't begin the identifier, I can move the question marks denoting nullability to the front of identifiers. That would make the space not required, and would be easier to read and easier to write correctly.
+
+declfunc doStuff( Int ? a )
+	println(a)
+
+declfunc doStuff( ?Int a )
+	println(a)
+
+decl Int ? a = getNumberMaybe()
+
+decl ?Int a = getNumberMaybe()
+

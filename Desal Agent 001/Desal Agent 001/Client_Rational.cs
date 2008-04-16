@@ -1,6 +1,15 @@
 //xxx use bignum
 
 class Client_Rational {
+	public static IWorker wrap(double value) {
+		Client_Rational o = new Client_Rational(value);
+		IObject obj = new DesalObject(value);
+		WorkerBuilder builder = new WorkerBuilder(
+			Bridge.faceRat, obj, new IWorker[]{} );
+		
+		return builder.compile();
+	}
+
 	double _value;
 
 	public Client_Rational(double value) {

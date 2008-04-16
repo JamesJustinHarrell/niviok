@@ -1,6 +1,6 @@
 /*xxx
 class Node_Class : INode_Expression {
-	public IValue execute(Scope scope) {
+	public IWorker execute(Scope scope) {
 		Scope staticScope = new Scope(scope);
 			
 		//Add instance constructors as free functions to STATIC_SCOPE.
@@ -69,7 +69,7 @@ class ClassState {
 	public ClassInterfaceImplementation defaultInterfaceImplementation;
 }
 
-class ClassValue : IValue {
+class ClassValue : IWorker {
 	ClassState _state;
 	ClassInterfaceImplementation _interfaceImpl;
 
@@ -88,25 +88,25 @@ class ClassValue : IValue {
 	public long objectID {
 		get { throw new Error_Unimplemented(); }
 	}
-	public IValue cast(IInterface aInterface) {
+	public IWorker cast(IInterface aInterface) {
 		throw new Error_Unimplemented();
 	}
-	public void executeCall(Arguments arguments) {
+	public void executeCall(IList<Argument> arguments) {
 		throw new Error_Unimplemented();
 	}
-	public IValue evaluateCall(Arguments arguments) {
-		return _interfaceImpl.evaluateCall(_state, arguments);
+	public IWorker evaluateCall(IList<Argument> arguments) {
+		return _interfaceImpl.evaluateCall(_state, IList<Argument>);
 	}
-	public IValue getProperty(Identifier name) {
+	public IWorker getProperty(Identifier name) {
 		throw new Error_Unimplemented();
 	}
-	public void setProperty(Identifier propName, IValue aValue) {
+	public void setProperty(Identifier propName, IWorker aValue) {
 		throw new Error_Unimplemented();
 	}
-	public void executeMethod(Identifier name, Arguments arguments) {
+	public void executeMethod(Identifier name, IList<Argument> arguments) {
 		throw new Error_Unimplemented();
 	}
-	public IValue evaluateMethod(Identifier name, Arguments arguments) {
+	public IWorker evaluateMethod(Identifier name, IList<Argument> arguments) {
 		throw new Error_Unimplemented();
 	}
 }
@@ -120,7 +120,7 @@ class ClassInterfaceImplementation {
 		_callee = callee;
 	}
 	
-	public IValue evaluateCall(ClassState state, Arguments args) {
+	public IWorker evaluateCall(ClassState state, IList<Argument> args) {
 		Scope instanceScope = new Scope(state.staticScope);
 		foreach( INode_Declaration decl in state.instanceDeclares ) {
 			decl.execute(instanceScope);
@@ -140,10 +140,10 @@ class InstanceConstructor {
 		_func = func;
 	}
 	
-	public IValue instantiate(Arguments arguments) {
+	public IWorker instantiate(IList<Argument> arguments) {
 		Scope instanceScope = new Scope(staticScope);
 		//xxx execute declarations in instanceScope
-		func.evaluate(instanceScope).executeCall(arguments);
+		func.evaluate(instanceScope).executeCall(IList<Argument>);
 		return Client_Value(
 			Client_Object(instanceScope),
 			thisClass );

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 /*
@@ -16,13 +17,13 @@ class Identikey {
 	the active interface of this value will be the sum
 	of the active interfaces of the functions bound to this identikey
 	*/
-	IValue _value;
+	IWorker _value;
 	
-	public Identikey( IValue val ) {
+	public Identikey( IWorker val ) {
 		_value = val;
 	}
 	
-	public IValue val {
+	public IWorker val {
 		get { return _value; }
 		set { _value = value; }
 	}
@@ -57,8 +58,14 @@ class Scope {
 		return scope;
 	}
 
-	public void assign(Identifier ident, IValue val) {
-		_identikeys[ident].val = val;
+	public void assign(Identifier ident, IWorker val) {
+		if( _identikeys.ContainsKey(ident) )
+			_identikeys[ident].val = val;
+		else if( _parent != null )
+			_parent.assign(ident, val);
+		else
+			throw new Exception(String.Format(
+				"no identikey with name '{0}'", ident));
 	}
 
 	public void declareEmpty(Identifier ident) {
@@ -66,7 +73,7 @@ class Scope {
 	}
 
 	public void declareAssign(
-	Identifier ident, IValue val ) {
+	Identifier ident, IWorker val ) {
 		_identikeys.Add( ident, new Identikey(val) );
 	}
 	
@@ -77,7 +84,7 @@ class Scope {
 	
 	//xxx need to do checking to make sure this is being assigned to a declare-first node
 	//also need to ensure and check lots of other stuff
-	public void declareFirst(Identifier ident, IValue val) {
+	public void declareFirst(Identifier ident, IWorker val) {
 		if( ! _identikeys.ContainsKey(ident) )
 			System.Console.WriteLine(
 				"WARNING: scope does not contain declare-first identikey named {0}",
@@ -85,7 +92,7 @@ class Scope {
 		_identikeys[ident].val = val;
 	}
 
-	public IValue evaluateIdentifier(Identifier ident) {
+	public IWorker evaluateIdentifier(Identifier ident) {
 		if( _identikeys.ContainsKey(ident) )
 			return _identikeys[ident].val;
 		if( _parent != null )
@@ -93,7 +100,7 @@ class Scope {
 		throw new ClientException( "identifier '" + ident.ToString() + "' is undefined" );
 	}
 	
-	public IValue evaluateLocalIdentifier(Identifier ident) {
+	public IWorker evaluateLocalIdentifier(Identifier ident) {
 		if( _identikeys.ContainsKey(ident) )
 			return _identikeys[ident].val;
 		throw new ClientException( "identifier '" + ident.ToString() + "' is undefined" );

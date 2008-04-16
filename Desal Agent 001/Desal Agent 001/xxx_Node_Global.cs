@@ -23,8 +23,8 @@ class old_Node_Global : INode {
 			statement.execute(_scope);
 		}
 	
-		IValue val = _scope.evaluateIdentifier( new Identifier("main") );
-		val.executeCall( new Arguments(new IValue[]{}, new Dictionary<Identifier, IValue>()) );
+		IWorker val = _scope.evaluateIdentifier( new Identifier("main") );
+		val.executeCall( new IList<Argument>(new IWorker[]{}, new Dictionary<Identifier, IWorker>()) );
 		
 		//xxx if main returns something, evaluateCall and return the result
 		return 0;

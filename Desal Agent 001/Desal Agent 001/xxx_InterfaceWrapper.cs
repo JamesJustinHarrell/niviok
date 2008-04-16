@@ -1,6 +1,6 @@
 /* * /
 static class InterfaceWrapper {
-	public static IValue wrap(IInterface aInterface) {
+	public static IWorker wrap(IInterface aInterface) {
 		//interface implementation info
 		InterfaceImplementationInfo info =
 			new InterfaceImplementationInfo(Objects.Interface);
@@ -17,16 +17,16 @@ static class InterfaceWrapper {
 			null );
 
 		//instantiation of class
-		return class_.instantiate( new IValue[]{} );
+		return class_.instantiate( new IWorker[]{} );
 	}
 }
 
 /* xxx remove
-	public static IValue wrap(IInterface interface_) {
+	public static IWorker wrap(IInterface interface_) {
 		if( interface_ is InterfaceFromObjRef )
 			return ((InterfaceFromObjRef)interface_).unwrap();
 		else
-			return new IValue(
+			return new IWorker(
 				Objects.Interface, //xxx send correct interface
 				new InterfaceWrapper(interface_) );
 	}
@@ -50,11 +50,11 @@ static class InterfaceWrapper {
 		return true;
 	}
 	
-	public IValue readProperty(IInterface interface_, Identifier ident) {
+	public IWorker readProperty(IInterface interface_, Identifier ident) {
 		throw new Error_Unimplemented();
 	}
 	
-	public void writeProperty(IInterface interface_, Identifier ident, IValue objRef) {
+	public void writeProperty(IInterface interface_, Identifier ident, IWorker objRef) {
 		throw new Error_Unimplemented();
 	}
 }

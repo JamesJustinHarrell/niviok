@@ -6,7 +6,7 @@ using System.Xml;
 class DesalAgent001 {
 	
 	//entry point
-	//arguments have the form: -key=value
+	//IList<Argument> have the form: -key=value
 	static int Main(string[] arguments) {
 		Debug.Listeners.Add(
 			new TextWriterTraceListener(
@@ -143,37 +143,34 @@ class DesalAgent001 {
 		Scope scope = new Scope(bridge);
 		
 		//func println(dyn value)
-		IList<Parameter> printParameters = new Parameter[] {
-			new Parameter(NullableType.dyn, new Identifier("text"))
+		IList<ParameterImpl> printParameters = new ParameterImpl[] {
+			new ParameterImpl(
+				Direction.IN, NullableType.dyn,
+				new Identifier("text"), null)
 		};
-		//xxx use better binding stuff
-		IFunction printFunction = new NativeFunction(
-			bridge, printFunctionNative, printParameters, null, scope );
-		IValue printFunctor =
-			FunctionWrapper.wrap(printFunction);
+		IWorker printFunctor = Client_Function.wrap(new Function_Native(
+			printParameters, null, printFunctionNative, scope));
+		
 		scope.declareAssign(
-			new Identifier("println"),
-			printFunctor );
+			new Identifier("println"), printFunctor);
 				
-		//true
 		scope.declareAssign(
-			new Identifier("true"),
-			Bridge.wrapBoolean(true) );
+			new Identifier("true"), Bridge.wrapBoolean(true));
 		
-		//false
 		scope.declareAssign(
-			new Identifier("false"),
-			Bridge.wrapBoolean(false) );
+			new Identifier("false"), Bridge.wrapBoolean(false));
 		
-		//Bool
 		scope.declareAssign(
-			new Identifier("Bool"),
-			Bridge.wrapInterface(Bridge.Bool) );
+			new Identifier("Bool"),	Bridge.wrapInterface(Bridge.faceBool));
 		
-		//Object
 		scope.declareAssign(
-			new Identifier("Object"),
-			Bridge.wrapInterface(Bridge.Object) );
+			new Identifier("Int"), Bridge.wrapInterface(Bridge.faceInt));
+		
+		scope.declareAssign(
+			new Identifier("Object"), Bridge.wrapInterface(Bridge.faceObject));
+
+		scope.declareAssign(
+			new Identifier("String"), Bridge.wrapInterface(Bridge.faceString));
 
 		return scope;
 	}
@@ -181,8 +178,9 @@ class DesalAgent001 {
 	/* Dextr interface notation:
 	func println( Stringable text )
 	note: typing is not yet implemented */
-	void printFunctionNative(Bridge bridge, Scope args) {
-		IValue arg = args.evaluateLocalIdentifier( new Identifier("text") );
+	IWorker printFunctionNative(Scope args) {
+		Bridge bridge = args.bridge;
+		IWorker arg = args.evaluateLocalIdentifier( new Identifier("text") );
 		
 		/* xxx
 		should use String convertee of argument
@@ -192,20 +190,22 @@ class DesalAgent001 {
 		Haven't yet implemented convertors.
 		*/
 		
-		if( arg.activeInterface == Bridge.String )
+		if( arg.face == Bridge.faceString )
 			bridge.output( Bridge.unwrapString(arg) );
-		else if( arg.activeInterface == Bridge.Int )
+		else if( arg.face == Bridge.faceInt )
 			bridge.output( Bridge.unwrapInteger(arg).ToString() );
-		else if( arg.activeInterface == Bridge.Bool )
+		else if( arg.face == Bridge.faceBool )
 			bridge.output( Bridge.unwrapBoolean(arg).ToString() );
-		else if( arg.activeInterface == Bridge.Rat )
+		else if( arg.face == Bridge.faceRat )
 			bridge.output( Bridge.unwrapRational(arg).ToString() );
-		else if( arg.activeInterface == Bridge.Object )
+		else if( arg.face == Bridge.faceObject )
 			bridge.output( "object" );
-		else if( arg is NullValue )
+		else if( arg is Null )
 			bridge.output( "null" );
 		else
 			throw new ClientException("unknown type cannot be converted to string");
+		
+		return new Null();
 	}
 	
 	void printNode(int level, INode node) {

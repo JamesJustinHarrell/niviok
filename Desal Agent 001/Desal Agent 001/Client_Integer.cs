@@ -1,4 +1,33 @@
 class Client_Integer {
+	public static IWorker wrap(long value) {
+		Client_Integer o = new Client_Integer(value);
+		IObject obj = new DesalObject(value);
+		WorkerBuilder builder = new WorkerBuilder(
+			Bridge.faceInt, obj, new IWorker[]{});
+
+		builder.addMethod(
+			new Identifier("add"),
+			new Function_Native(
+				new ParameterImpl[]{
+					new ParameterImpl(
+						Direction.IN,
+						new NullableType(Bridge.faceInt, false),
+						new Identifier("value"),
+						null )
+				},
+				new NullableType(Bridge.faceInt, false),
+				delegate(Scope args) {
+					return Bridge.wrapInteger(
+							o.add(
+								Bridge.unwrapInteger(
+									args.evaluateLocalIdentifier(
+										new Identifier("value"))) ));
+				},
+				null ));
+			
+		return builder.compile();
+	}
+
 	//xxx replace with BigInt
 	long _value;
 	

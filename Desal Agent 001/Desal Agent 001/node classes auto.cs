@@ -76,54 +76,6 @@ class Node_SetProperty : INode_Expression {
 	}
 }
 
-class Node_ClassProperty : INode {
-	Node_Identifier m_identifier;
-	Node_IdentikeyType m_identikeyType;
-	Node_Function m_getter;
-	Node_Function m_setter;
-	
-	public Node_ClassProperty(
-	Node_Identifier @identifier,
-	Node_IdentikeyType @identikeyType,
-	Node_Function @getter,
-	Node_Function @setter ) {
-		m_identifier = @identifier;
-		m_identikeyType = @identikeyType;
-		m_getter = @getter;
-		m_setter = @setter;
-	}
-	
-	public Node_Identifier @identifier {
-		get { return m_identifier; }
-	}
-
-	public Node_IdentikeyType @identikeyType {
-		get { return m_identikeyType; }
-	}
-
-	public Node_Function @getter {
-		get { return m_getter; }
-	}
-
-	public Node_Function @setter {
-		get { return m_setter; }
-	}
-
-	public string typeName {
-		get { return "class-property"; }
-	}
-	
-	public ICollection<INode> childNodes {
-		get {
-			return G.collect<INode>(
-				m_identifier,
-				m_identikeyType,
-				m_getter,
-				m_setter );
-		}
-	}
-}
-
 class Node_Using : INode_ScopeAlteration {
 	IList<Node_Identifier> m_targets;
 	Node_Identifier m_name;
@@ -184,38 +136,6 @@ class Node_Generator : INode_Expression {
 			return G.collect<INode>(
 				m_nullableType,
 				m_body );
-		}
-	}
-}
-
-class Node_NamedFunction : INode {
-	Node_Identifier m_name;
-	Node_Function m_function;
-	
-	public Node_NamedFunction(
-	Node_Identifier @name,
-	Node_Function @function ) {
-		m_name = @name;
-		m_function = @function;
-	}
-	
-	public Node_Identifier @name {
-		get { return m_name; }
-	}
-
-	public Node_Function @function {
-		get { return m_function; }
-	}
-
-	public string typeName {
-		get { return "named-function"; }
-	}
-	
-	public ICollection<INode> childNodes {
-		get {
-			return G.collect<INode>(
-				m_name,
-				m_function );
 		}
 	}
 }
@@ -396,78 +316,6 @@ class Node_Nor : INode_Expression {
 	}
 }
 
-class Node_InterfaceImplementation : INode {
-	IList<Node_InterfaceImplementation> m_childImplemenatations;
-	INode_Expression m_interface;
-	IList<Node_Function> m_callees;
-	IList<Node_NamedFunction> m_getters;
-	IList<Node_NamedFunction> m_setters;
-	IList<Node_NamedFunction> m_methods;
-	Node_Boolean m_default;
-	
-	public Node_InterfaceImplementation(
-	IList<Node_InterfaceImplementation> @childImplemenatations,
-	INode_Expression @interface,
-	IList<Node_Function> @callees,
-	IList<Node_NamedFunction> @getters,
-	IList<Node_NamedFunction> @setters,
-	IList<Node_NamedFunction> @methods,
-	Node_Boolean @default ) {
-		m_childImplemenatations = @childImplemenatations;
-		m_interface = @interface;
-		m_callees = @callees;
-		m_getters = @getters;
-		m_setters = @setters;
-		m_methods = @methods;
-		m_default = @default;
-	}
-	
-	public IList<Node_InterfaceImplementation> @childImplemenatations {
-		get { return m_childImplemenatations; }
-	}
-
-	public INode_Expression @interface {
-		get { return m_interface; }
-	}
-
-	public IList<Node_Function> @callees {
-		get { return m_callees; }
-	}
-
-	public IList<Node_NamedFunction> @getters {
-		get { return m_getters; }
-	}
-
-	public IList<Node_NamedFunction> @setters {
-		get { return m_setters; }
-	}
-
-	public IList<Node_NamedFunction> @methods {
-		get { return m_methods; }
-	}
-
-	public Node_Boolean @default {
-		get { return m_default; }
-	}
-
-	public string typeName {
-		get { return "interface-implementation"; }
-	}
-	
-	public ICollection<INode> childNodes {
-		get {
-			return G.collect<INode>(
-				m_childImplemenatations,
-				m_interface,
-				m_callees,
-				m_getters,
-				m_setters,
-				m_methods,
-				m_default );
-		}
-	}
-}
-
 class Node_Yield : INode_Expression {
 	INode_Expression m_value;
 	
@@ -524,6 +372,30 @@ class Node_Ignore : INode_Expression {
 	}
 }
 
+class Node_Continue : INode_Expression {
+	Node_Identifier m_label;
+	
+	public Node_Continue(
+	Node_Identifier @label ) {
+		m_label = @label;
+	}
+	
+	public Node_Identifier @label {
+		get { return m_label; }
+	}
+
+	public string typeName {
+		get { return "continue"; }
+	}
+	
+	public ICollection<INode> childNodes {
+		get {
+			return G.collect<INode>(
+				m_label );
+		}
+	}
+}
+
 class Node_EnumEntry : INode {
 	Node_Identifier m_name;
 	INode_Expression m_value;
@@ -552,6 +424,78 @@ class Node_EnumEntry : INode {
 			return G.collect<INode>(
 				m_name,
 				m_value );
+		}
+	}
+}
+
+class Node_Breeder : INode_InterfaceMember {
+	INode_Expression m_interface;
+	
+	public Node_Breeder(
+	INode_Expression @interface ) {
+		m_interface = @interface;
+	}
+	
+	public INode_Expression @interface {
+		get { return m_interface; }
+	}
+
+	public string typeName {
+		get { return "breeder"; }
+	}
+	
+	public ICollection<INode> childNodes {
+		get {
+			return G.collect<INode>(
+				m_interface );
+		}
+	}
+}
+
+class Node_ParameterInfo : INode {
+	Node_Direction m_direction;
+	Node_NullableType m_nullableType;
+	Node_Identifier m_name;
+	Node_Boolean m_hasDefaultValue;
+	
+	public Node_ParameterInfo(
+	Node_Direction @direction,
+	Node_NullableType @nullableType,
+	Node_Identifier @name,
+	Node_Boolean @hasDefaultValue ) {
+		m_direction = @direction;
+		m_nullableType = @nullableType;
+		m_name = @name;
+		m_hasDefaultValue = @hasDefaultValue;
+	}
+	
+	public Node_Direction @direction {
+		get { return m_direction; }
+	}
+
+	public Node_NullableType @nullableType {
+		get { return m_nullableType; }
+	}
+
+	public Node_Identifier @name {
+		get { return m_name; }
+	}
+
+	public Node_Boolean @hasDefaultValue {
+		get { return m_hasDefaultValue; }
+	}
+
+	public string typeName {
+		get { return "parameter-info"; }
+	}
+	
+	public ICollection<INode> childNodes {
+		get {
+			return G.collect<INode>(
+				m_direction,
+				m_nullableType,
+				m_name,
+				m_hasDefaultValue );
 		}
 	}
 }
@@ -732,34 +676,74 @@ class Node_ForPair : INode_Expression {
 	}
 }
 
-class Node_Xor : INode_Expression {
-	INode_Expression m_first;
-	INode_Expression m_second;
+class Node_MemberImplementation : INode {
+	Node_MemberIdentification m_memberIdentification;
+	INode_Expression m_function;
 	
-	public Node_Xor(
-	INode_Expression @first,
-	INode_Expression @second ) {
-		m_first = @first;
-		m_second = @second;
+	public Node_MemberImplementation(
+	Node_MemberIdentification @memberIdentification,
+	INode_Expression @function ) {
+		m_memberIdentification = @memberIdentification;
+		m_function = @function;
 	}
 	
-	public INode_Expression @first {
-		get { return m_first; }
+	public Node_MemberIdentification @memberIdentification {
+		get { return m_memberIdentification; }
 	}
 
-	public INode_Expression @second {
-		get { return m_second; }
+	public INode_Expression @function {
+		get { return m_function; }
 	}
 
 	public string typeName {
-		get { return "xor"; }
+		get { return "member-implementation"; }
 	}
 	
 	public ICollection<INode> childNodes {
 		get {
 			return G.collect<INode>(
-				m_first,
-				m_second );
+				m_memberIdentification,
+				m_function );
+		}
+	}
+}
+
+class Node_MemberIdentification : INode {
+	Node_MemberType m_memberType;
+	Node_Identifier m_name;
+	INode_Expression m_interface;
+	
+	public Node_MemberIdentification(
+	Node_MemberType @memberType,
+	Node_Identifier @name,
+	INode_Expression @interface ) {
+		m_memberType = @memberType;
+		m_name = @name;
+		m_interface = @interface;
+	}
+	
+	public Node_MemberType @memberType {
+		get { return m_memberType; }
+	}
+
+	public Node_Identifier @name {
+		get { return m_name; }
+	}
+
+	public INode_Expression @interface {
+		get { return m_interface; }
+	}
+
+	public string typeName {
+		get { return "member-identification"; }
+	}
+	
+	public ICollection<INode> childNodes {
+		get {
+			return G.collect<INode>(
+				m_memberType,
+				m_name,
+				m_interface );
 		}
 	}
 }
@@ -860,7 +844,7 @@ class Node_Nand : INode_Expression {
 	}
 }
 
-class Node_Import : INode_ScopeAlteration {
+class Node_Import : INode {
 	Node_String m_library;
 	Node_Identifier m_alias;
 	
@@ -892,7 +876,7 @@ class Node_Import : INode_ScopeAlteration {
 	}
 }
 
-class Node_Method : INode {
+class Node_Method : INode_InterfaceMember {
 	Node_Identifier m_name;
 	INode_Expression m_interface;
 	
@@ -1028,50 +1012,34 @@ class Node_Possibility : INode_Expression {
 	}
 }
 
-class Node_ForKey : INode_Expression {
-	INode_Expression m_container;
-	INode_Expression m_keyInterface;
-	Node_Identifier m_name;
-	Node_Block m_action;
+class Node_Interface : INode_Expression {
+	IList<INode_Expression> m_inheritees;
+	IList<INode_InterfaceMember> m_members;
 	
-	public Node_ForKey(
-	INode_Expression @container,
-	INode_Expression @keyInterface,
-	Node_Identifier @name,
-	Node_Block @action ) {
-		m_container = @container;
-		m_keyInterface = @keyInterface;
-		m_name = @name;
-		m_action = @action;
+	public Node_Interface(
+	IList<INode_Expression> @inheritees,
+	IList<INode_InterfaceMember> @members ) {
+		m_inheritees = @inheritees;
+		m_members = @members;
 	}
 	
-	public INode_Expression @container {
-		get { return m_container; }
+	public IList<INode_Expression> @inheritees {
+		get { return m_inheritees; }
 	}
 
-	public INode_Expression @keyInterface {
-		get { return m_keyInterface; }
-	}
-
-	public Node_Identifier @name {
-		get { return m_name; }
-	}
-
-	public Node_Block @action {
-		get { return m_action; }
+	public IList<INode_InterfaceMember> @members {
+		get { return m_members; }
 	}
 
 	public string typeName {
-		get { return "for-key"; }
+		get { return "interface"; }
 	}
 	
 	public ICollection<INode> childNodes {
 		get {
 			return G.collect<INode>(
-				m_container,
-				m_keyInterface,
-				m_name,
-				m_action );
+				m_inheritees,
+				m_members );
 		}
 	}
 }
@@ -1128,30 +1096,6 @@ class Node_IdentikeyType : INode {
 			return G.collect<INode>(
 				m_identikeyCategory,
 				m_nullableType );
-		}
-	}
-}
-
-class Node_Convertor : INode {
-	INode_Expression m_interface;
-	
-	public Node_Convertor(
-	INode_Expression @interface ) {
-		m_interface = @interface;
-	}
-	
-	public INode_Expression @interface {
-		get { return m_interface; }
-	}
-
-	public string typeName {
-		get { return "convertor"; }
-	}
-	
-	public ICollection<INode> childNodes {
-		get {
-			return G.collect<INode>(
-				m_interface );
 		}
 	}
 }
@@ -1372,34 +1316,98 @@ class Node_DeclareAssign : INode_Expression {
 	}
 }
 
-class Node_Interface : INode_Expression {
-	IList<Node_Property> m_propertys;
-	IList<Node_Method> m_methods;
+class Node_ForKey : INode_Expression {
+	INode_Expression m_container;
+	INode_Expression m_keyInterface;
+	Node_Identifier m_name;
+	Node_Block m_action;
 	
-	public Node_Interface(
-	IList<Node_Property> @propertys,
-	IList<Node_Method> @methods ) {
-		m_propertys = @propertys;
-		m_methods = @methods;
+	public Node_ForKey(
+	INode_Expression @container,
+	INode_Expression @keyInterface,
+	Node_Identifier @name,
+	Node_Block @action ) {
+		m_container = @container;
+		m_keyInterface = @keyInterface;
+		m_name = @name;
+		m_action = @action;
 	}
 	
-	public IList<Node_Property> @propertys {
-		get { return m_propertys; }
+	public INode_Expression @container {
+		get { return m_container; }
 	}
 
-	public IList<Node_Method> @methods {
-		get { return m_methods; }
+	public INode_Expression @keyInterface {
+		get { return m_keyInterface; }
+	}
+
+	public Node_Identifier @name {
+		get { return m_name; }
+	}
+
+	public Node_Block @action {
+		get { return m_action; }
 	}
 
 	public string typeName {
-		get { return "interface"; }
+		get { return "for-key"; }
 	}
 	
 	public ICollection<INode> childNodes {
 		get {
 			return G.collect<INode>(
-				m_propertys,
-				m_methods );
+				m_container,
+				m_keyInterface,
+				m_name,
+				m_action );
+		}
+	}
+}
+
+class Node_Comprehension : INode_Expression {
+	INode_Expression m_sourceCollection;
+	Node_Identifier m_elementName;
+	INode_Expression m_test;
+	INode_Expression m_output;
+	
+	public Node_Comprehension(
+	INode_Expression @sourceCollection,
+	Node_Identifier @elementName,
+	INode_Expression @test,
+	INode_Expression @output ) {
+		m_sourceCollection = @sourceCollection;
+		m_elementName = @elementName;
+		m_test = @test;
+		m_output = @output;
+	}
+	
+	public INode_Expression @sourceCollection {
+		get { return m_sourceCollection; }
+	}
+
+	public Node_Identifier @elementName {
+		get { return m_elementName; }
+	}
+
+	public INode_Expression @test {
+		get { return m_test; }
+	}
+
+	public INode_Expression @output {
+		get { return m_output; }
+	}
+
+	public string typeName {
+		get { return "comprehension"; }
+	}
+	
+	public ICollection<INode> childNodes {
+		get {
+			return G.collect<INode>(
+				m_sourceCollection,
+				m_elementName,
+				m_test,
+				m_output );
 		}
 	}
 }
@@ -1472,6 +1480,54 @@ class Node_Select : INode_Expression {
 				m_value,
 				m_cases,
 				m_else );
+		}
+	}
+}
+
+class Node_ParameterImpl : INode {
+	Node_Direction m_direction;
+	Node_NullableType m_nullableType;
+	Node_Identifier m_name;
+	INode_Expression m_defaultValue;
+	
+	public Node_ParameterImpl(
+	Node_Direction @direction,
+	Node_NullableType @nullableType,
+	Node_Identifier @name,
+	INode_Expression @defaultValue ) {
+		m_direction = @direction;
+		m_nullableType = @nullableType;
+		m_name = @name;
+		m_defaultValue = @defaultValue;
+	}
+	
+	public Node_Direction @direction {
+		get { return m_direction; }
+	}
+
+	public Node_NullableType @nullableType {
+		get { return m_nullableType; }
+	}
+
+	public Node_Identifier @name {
+		get { return m_name; }
+	}
+
+	public INode_Expression @defaultValue {
+		get { return m_defaultValue; }
+	}
+
+	public string typeName {
+		get { return "parameter-impl"; }
+	}
+	
+	public ICollection<INode> childNodes {
+		get {
+			return G.collect<INode>(
+				m_direction,
+				m_nullableType,
+				m_name,
+				m_defaultValue );
 		}
 	}
 }
@@ -1573,21 +1629,21 @@ class Node_Call : INode_Expression {
 }
 
 class Node_Function : INode_Expression {
-	IList<Node_Parameter> m_parameters;
+	IList<Node_ParameterImpl> m_parameterImpls;
 	Node_NullableType m_returnInfo;
 	INode_Expression m_body;
 	
 	public Node_Function(
-	IList<Node_Parameter> @parameters,
+	IList<Node_ParameterImpl> @parameterImpls,
 	Node_NullableType @returnInfo,
 	INode_Expression @body ) {
-		m_parameters = @parameters;
+		m_parameterImpls = @parameterImpls;
 		m_returnInfo = @returnInfo;
 		m_body = @body;
 	}
 	
-	public IList<Node_Parameter> @parameters {
-		get { return m_parameters; }
+	public IList<Node_ParameterImpl> @parameterImpls {
+		get { return m_parameterImpls; }
 	}
 
 	public Node_NullableType @returnInfo {
@@ -1605,7 +1661,7 @@ class Node_Function : INode_Expression {
 	public ICollection<INode> childNodes {
 		get {
 			return G.collect<INode>(
-				m_parameters,
+				m_parameterImpls,
 				m_returnInfo,
 				m_body );
 		}
@@ -1664,6 +1720,46 @@ class Node_Expose : INode_ScopeAlteration {
 		get {
 			return G.collect<INode>(
 				m_identifiers );
+		}
+	}
+}
+
+class Node_Worker : INode {
+	INode_Expression m_face;
+	IList<Node_Worker> m_childs;
+	IList<Node_MemberImplementation> m_memberImplementations;
+	
+	public Node_Worker(
+	INode_Expression @face,
+	IList<Node_Worker> @childs,
+	IList<Node_MemberImplementation> @memberImplementations ) {
+		m_face = @face;
+		m_childs = @childs;
+		m_memberImplementations = @memberImplementations;
+	}
+	
+	public INode_Expression @face {
+		get { return m_face; }
+	}
+
+	public IList<Node_Worker> @childs {
+		get { return m_childs; }
+	}
+
+	public IList<Node_MemberImplementation> @memberImplementations {
+		get { return m_memberImplementations; }
+	}
+
+	public string typeName {
+		get { return "worker"; }
+	}
+	
+	public ICollection<INode> childNodes {
+		get {
+			return G.collect<INode>(
+				m_face,
+				m_childs,
+				m_memberImplementations );
 		}
 	}
 }
@@ -1924,30 +2020,30 @@ class Node_ForValue : INode_Expression {
 	}
 }
 
-class Node_Property : INode {
+class Node_Property : INode_InterfaceMember {
 	Node_Identifier m_name;
+	Node_Boolean m_writable;
 	Node_NullableType m_nullableType;
-	Node_Access m_access;
 	
 	public Node_Property(
 	Node_Identifier @name,
-	Node_NullableType @nullableType,
-	Node_Access @access ) {
+	Node_Boolean @writable,
+	Node_NullableType @nullableType ) {
 		m_name = @name;
+		m_writable = @writable;
 		m_nullableType = @nullableType;
-		m_access = @access;
 	}
 	
 	public Node_Identifier @name {
 		get { return m_name; }
 	}
 
-	public Node_NullableType @nullableType {
-		get { return m_nullableType; }
+	public Node_Boolean @writable {
+		get { return m_writable; }
 	}
 
-	public Node_Access @access {
-		get { return m_access; }
+	public Node_NullableType @nullableType {
+		get { return m_nullableType; }
 	}
 
 	public string typeName {
@@ -1958,25 +2054,25 @@ class Node_Property : INode {
 		get {
 			return G.collect<INode>(
 				m_name,
-				m_nullableType,
-				m_access );
+				m_writable,
+				m_nullableType );
 		}
 	}
 }
 
-class Node_Callee : INode {
-	IList<Node_Parameter> m_parameters;
+class Node_Callee : INode_InterfaceMember {
+	IList<Node_ParameterInfo> m_parameterInfos;
 	Node_NullableType m_returnInfo;
 	
 	public Node_Callee(
-	IList<Node_Parameter> @parameters,
+	IList<Node_ParameterInfo> @parameterInfos,
 	Node_NullableType @returnInfo ) {
-		m_parameters = @parameters;
+		m_parameterInfos = @parameterInfos;
 		m_returnInfo = @returnInfo;
 	}
 	
-	public IList<Node_Parameter> @parameters {
-		get { return m_parameters; }
+	public IList<Node_ParameterInfo> @parameterInfos {
+		get { return m_parameterInfos; }
 	}
 
 	public Node_NullableType @returnInfo {
@@ -1990,7 +2086,7 @@ class Node_Callee : INode {
 	public ICollection<INode> childNodes {
 		get {
 			return G.collect<INode>(
-				m_parameters,
+				m_parameterInfos,
 				m_returnInfo );
 		}
 	}
@@ -2048,38 +2144,6 @@ class Node_And : INode_Expression {
 			return G.collect<INode>(
 				m_first,
 				m_second );
-		}
-	}
-}
-
-class Node_DeclareConstEmpty : INode {
-	Node_Identifier m_name;
-	Node_IdentikeyType m_identikeyType;
-	
-	public Node_DeclareConstEmpty(
-	Node_Identifier @name,
-	Node_IdentikeyType @identikeyType ) {
-		m_name = @name;
-		m_identikeyType = @identikeyType;
-	}
-	
-	public Node_Identifier @name {
-		get { return m_name; }
-	}
-
-	public Node_IdentikeyType @identikeyType {
-		get { return m_identikeyType; }
-	}
-
-	public string typeName {
-		get { return "declare-const-empty"; }
-	}
-	
-	public ICollection<INode> childNodes {
-		get {
-			return G.collect<INode>(
-				m_name,
-				m_identikeyType );
 		}
 	}
 }
@@ -2236,6 +2300,62 @@ class Node_DoTimes : INode_Expression {
 	}
 }
 
+class Node_Null : INode_Expression {
+	INode_Expression m_interface;
+	
+	public Node_Null(
+	INode_Expression @interface ) {
+		m_interface = @interface;
+	}
+	
+	public INode_Expression @interface {
+		get { return m_interface; }
+	}
+
+	public string typeName {
+		get { return "null"; }
+	}
+	
+	public ICollection<INode> childNodes {
+		get {
+			return G.collect<INode>(
+				m_interface );
+		}
+	}
+}
+
+class Node_GenericInterface : INode_Expression {
+	IList<Node_GenericParameter> m_parameters;
+	Node_Interface m_interface;
+	
+	public Node_GenericInterface(
+	IList<Node_GenericParameter> @parameters,
+	Node_Interface @interface ) {
+		m_parameters = @parameters;
+		m_interface = @interface;
+	}
+	
+	public IList<Node_GenericParameter> @parameters {
+		get { return m_parameters; }
+	}
+
+	public Node_Interface @interface {
+		get { return m_interface; }
+	}
+
+	public string typeName {
+		get { return "generic-interface"; }
+	}
+	
+	public ICollection<INode> childNodes {
+		get {
+			return G.collect<INode>(
+				m_parameters,
+				m_interface );
+		}
+	}
+}
+
 class Node_ExceptionHandler : INode {
 	Node_Boolean m_catch;
 	INode_Expression m_interface;
@@ -2286,15 +2406,15 @@ class Node_ExceptionHandler : INode {
 
 class Node_FunctionInterface : INode_Expression {
 	INode_Expression m_templateArgumentCount;
-	IList<Node_Parameter> m_parameters;
+	IList<Node_ParameterInfo> m_parameterInfos;
 	Node_NullableType m_returnInfo;
 	
 	public Node_FunctionInterface(
 	INode_Expression @templateArgumentCount,
-	IList<Node_Parameter> @parameters,
+	IList<Node_ParameterInfo> @parameterInfos,
 	Node_NullableType @returnInfo ) {
 		m_templateArgumentCount = @templateArgumentCount;
-		m_parameters = @parameters;
+		m_parameterInfos = @parameterInfos;
 		m_returnInfo = @returnInfo;
 	}
 	
@@ -2302,8 +2422,8 @@ class Node_FunctionInterface : INode_Expression {
 		get { return m_templateArgumentCount; }
 	}
 
-	public IList<Node_Parameter> @parameters {
-		get { return m_parameters; }
+	public IList<Node_ParameterInfo> @parameterInfos {
+		get { return m_parameterInfos; }
 	}
 
 	public Node_NullableType @returnInfo {
@@ -2318,64 +2438,8 @@ class Node_FunctionInterface : INode_Expression {
 		get {
 			return G.collect<INode>(
 				m_templateArgumentCount,
-				m_parameters,
+				m_parameterInfos,
 				m_returnInfo );
-		}
-	}
-}
-
-class Node_Parameter : INode {
-	Node_Direction m_direction;
-	Node_NullableType m_nullableType;
-	Node_Identifier m_name;
-	Node_Boolean m_hasDefaultValue;
-	INode_Expression m_defaultValue;
-	
-	public Node_Parameter(
-	Node_Direction @direction,
-	Node_NullableType @nullableType,
-	Node_Identifier @name,
-	Node_Boolean @hasDefaultValue,
-	INode_Expression @defaultValue ) {
-		m_direction = @direction;
-		m_nullableType = @nullableType;
-		m_name = @name;
-		m_hasDefaultValue = @hasDefaultValue;
-		m_defaultValue = @defaultValue;
-	}
-	
-	public Node_Direction @direction {
-		get { return m_direction; }
-	}
-
-	public Node_NullableType @nullableType {
-		get { return m_nullableType; }
-	}
-
-	public Node_Identifier @name {
-		get { return m_name; }
-	}
-
-	public Node_Boolean @hasDefaultValue {
-		get { return m_hasDefaultValue; }
-	}
-
-	public INode_Expression @defaultValue {
-		get { return m_defaultValue; }
-	}
-
-	public string typeName {
-		get { return "parameter"; }
-	}
-	
-	public ICollection<INode> childNodes {
-		get {
-			return G.collect<INode>(
-				m_direction,
-				m_nullableType,
-				m_name,
-				m_hasDefaultValue,
-				m_defaultValue );
 		}
 	}
 }
@@ -2408,6 +2472,30 @@ class Node_NamespacedValueIdentikey : INode_Expression {
 			return G.collect<INode>(
 				m_namespaces,
 				m_identikeyName );
+		}
+	}
+}
+
+class Node_Object : INode_Expression {
+	IList<Node_Worker> m_workers;
+	
+	public Node_Object(
+	IList<Node_Worker> @workers ) {
+		m_workers = @workers;
+	}
+	
+	public IList<Node_Worker> @workers {
+		get { return m_workers; }
+	}
+
+	public string typeName {
+		get { return "object"; }
+	}
+	
+	public ICollection<INode> childNodes {
+		get {
+			return G.collect<INode>(
+				m_workers );
 		}
 	}
 }
@@ -2480,6 +2568,38 @@ class Node_Plane : INode {
 			return G.collect<INode>(
 				m_alts,
 				m_declareFirsts );
+		}
+	}
+}
+
+class Node_Xor : INode_Expression {
+	INode_Expression m_first;
+	INode_Expression m_second;
+	
+	public Node_Xor(
+	INode_Expression @first,
+	INode_Expression @second ) {
+		m_first = @first;
+		m_second = @second;
+	}
+	
+	public INode_Expression @first {
+		get { return m_first; }
+	}
+
+	public INode_Expression @second {
+		get { return m_second; }
+	}
+
+	public string typeName {
+		get { return "xor"; }
+	}
+	
+	public ICollection<INode> childNodes {
+		get {
+			return G.collect<INode>(
+				m_first,
+				m_second );
 		}
 	}
 }

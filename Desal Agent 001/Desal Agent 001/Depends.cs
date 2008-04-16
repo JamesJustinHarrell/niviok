@@ -76,9 +76,9 @@ static class Depends {
 	//function
 	public static HashSet<Identifier> depends(Node_Function node) {
 		HashSet<Identifier> idents = depends(node.body);
-		foreach( Node_Parameter param in node.parameters )
+		foreach( Node_ParameterImpl param in node.parameterImpls )
 			idents.Remove( param.name.value );
-		foreach( Node_Parameter param in node.parameters )
+		foreach( Node_ParameterImpl param in node.parameterImpls )
 			idents.UnionWith( depends(param) );
 		if( node.returnInfo != null )
 			idents.UnionWith( depends(node.returnInfo) );
@@ -97,9 +97,14 @@ static class Depends {
 		return depends(node.@interface);
 	}
 	
-	//parameter
-	public static HashSet<Identifier> depends(Node_Parameter node) {
+	//parameter-impl
+	public static HashSet<Identifier> depends(Node_ParameterImpl node) {
 		return collectDepends(node.defaultValue, node.nullableType);
+	}
+	
+	//parameter-info
+	public static HashSet<Identifier> depends(Node_ParameterInfo node) {
+		return depends(node.nullableType);
 	}
 	
 	//plane

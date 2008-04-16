@@ -1,8 +1,8 @@
 //temporary solution untill proper bindings can be created
-
+/*
 using System.Collections.Generic;
 
-class NativeValue<T> : IValue {
+class NativeValue<T> : IWorker {
 	T _obj;
 	IInterfaceImplementation<T> _impl;
 	
@@ -17,22 +17,22 @@ class NativeValue<T> : IValue {
 	public long objectID {
 		get { throw new Error_Unimplemented(); }
 	}
-	public IValue cast(IInterface aInterface) {
+	public IWorker cast(IInterface aInterface) {
 		throw new Error_Unimplemented();
 	}
-	public IValue call(Arguments arguments) {
+	public IWorker call(IList<Argument> arguments) {
 		throw new Error_Unimplemented();
 	}
-	public IValue getProperty(Identifier name) {
+	public IWorker getProperty(Identifier name) {
 		throw new Error_Unimplemented();
 	}
-	public void setProperty(Identifier propName, IValue aValue) {
+	public void setProperty(Identifier propName, IWorker aValue) {
 		throw new Error_Unimplemented();
 	}
-	public IValue callMethod(Identifier name, Arguments arguments) {
-		return _impl.callMethod(_obj, name, arguments);
+	public IWorker callMethod(Identifier name, IList<Argument> arguments) {
+		return _impl.callMethod(_obj, name, IList<Argument>);
 	}
-	public IValue extractMember(Identifier name) {
+	public IWorker extractMember(Identifier name) {
 		IInterface face = _impl.@interface;
 		if( face.properties.ContainsKey(name) )
 			return _impl.getProperty(_obj, this, name);
@@ -46,3 +46,4 @@ class NativeValue<T> : IValue {
 		get { return _obj; }
 	}
 }
+*/

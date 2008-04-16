@@ -13,13 +13,13 @@ class FunctionFromObjRef : IFunction {
 			return new FunctionFromObjRef(objRef);
 	}
 
-	IValue _objRef;
+	IWorker _objRef;
 
-	FunctionFromObjRef(IValue objRef) {
+	FunctionFromObjRef(IWorker objRef) {
 		_objRef = objRef;
 	}
 	
-	public IValue unwrap() {
+	public IWorker unwrap() {
 		return _objRef;
 	}
 	
@@ -31,11 +31,11 @@ class FunctionFromObjRef : IFunction {
 		get { throw new Error_Unimplemented(); }
 	}
 	
-	public void executeCall(IList<IValue> arguments) {
+	public void executeCall(IList<IWorker> IList<Argument>) {
 		throw new Error_Unimplemented();
 	}
 	
-	public IValue evaluateCall(IList<IValue> arguments) {
+	public IWorker evaluateCall(IList<IWorker> IList<Argument>) {
 		throw new Error_Unimplemented();
 	}
 }

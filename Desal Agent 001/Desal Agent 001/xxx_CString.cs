@@ -21,11 +21,11 @@ class NativeString : IObject {
 		return ( interface_ == Objects.Object || interface_ == Objects.String );
 	}
 	
-	public IValue readProperty(IInterface interface_, Identifier ident) {
+	public IWorker readProperty(IInterface interface_, Identifier ident) {
 		throw new Error_Unimplemented();
 	}
 	
-	public void writeProperty(IInterface interface_, Identifier ident, IValue objRef) {
+	public void writeProperty(IInterface interface_, Identifier ident, IWorker objRef) {
 		throw new Error_Unimplemented();
 	}
 	

@@ -1,3 +1,4 @@
+/*
 class Object<T> : IObject<T> {
 	T _state;
 	
@@ -17,3 +18,4 @@ class Object<T> : IObject<T> {
 		get { return _state; }
 	}
 }
+*/

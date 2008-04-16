@@ -42,7 +42,7 @@ class InterfaceImplementation<T> {
 	}
 	* /
 	
-	public void executeCall(Object obj, IList<IValue> args) {
+	public void executeCall(Object obj, IList<IWorker> args) {
 		if( _callees.Count == 0 )
 			throw new System.Exception("interface implementations has no callees");
 		//xxx
@@ -53,7 +53,7 @@ class InterfaceImplementation<T> {
 		}
 	}
 	
-	public IValue evaluateCall(Object obj, IList<IValue> args) {
+	public IWorker evaluateCall(Object obj, IList<IWorker> args) {
 		if( _callees.Count == 0 )
 			throw new System.Exception("interface implementation has no callees");
 		//xxx
@@ -65,23 +65,23 @@ class InterfaceImplementation<T> {
 		throw new System.Exception("shouldn't happen");
 	}
 	
-	public IValue getProperty(
+	public IWorker getProperty(
 	Object obj, Identifier name) {
 		throw new Error_Unimplemented();
 	}
 	
 	public void setProperty(
-	Object obj, Identifier name, IValue val) {
+	Object obj, Identifier name, IWorker val) {
 		throw new Error_Unimplemented();
 	}
 	
 	public void executeMethod(
-	Object obj, Identifier name, IList<IValue> args) {
+	Object obj, Identifier name, IList<IWorker> args) {
 		throw new Error_Unimplemented();
 	}
 	
-	public IValue evaluateMethod(
-	Object obj, Identifier name, IList<IValue> args) {
+	public IWorker evaluateMethod(
+	Object obj, Identifier name, IList<IWorker> args) {
 		throw new Error_Unimplemented();
 	}
 }

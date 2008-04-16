@@ -55,4 +55,51 @@ static class G {
 				return true;
 		return false;
 	}
+	
+	public static IWorker combineWorkers(IList<IWorker> workers) {
+		//xxxx merge instead of just returning first
+		foreach( IWorker worker in workers )
+			return worker;
+		throw new Exception();
+	}
+	
+	//create the scope to be used by a function body
+	//assumes the IList<Argument> have been matched to an appropriate function
+	public static Scope setupArguments(
+	IList<ParameterImpl> parameters, IList<Argument> arguments, Scope outerScope) {
+		Scope innerScope = new Scope(outerScope);
+		
+		/* xxx
+		Should reserve identikeys with Scope::reserveDeclareFirst()
+		and then assign the arguments with Scope::declareFirst().
+		Then finalize the scope before using.
+		That will ensure no arguments have names not specified by
+		the parameters, and that no parameters go without values.
+		*/
+		
+		for( int i = 0; i < arguments.Count; i++ ) {
+			innerScope.declareAssign(
+				parameters[i].name,
+				arguments[i].value );
+		}
+
+		return innerScope;
+	}
+	
+	public static IWorker cast(IWorker source, IInterface face) {
+		if( source.face == face )
+			return source;
+		foreach( IWorker child in source.children )
+			if( inheritsOrIs(child.face, face) )
+				return cast(child, face);
+		if( inheritsOrIs(source.owner.rootWorker.face, face) )
+			return cast(source.owner.rootWorker, face);
+		throw new ClientException("the object does not implement this interface");
+	}
+	
+	public static IWorker cast(IWorker source, NullableType type) {
+		if( source is Null && type.nullable == false )
+			throw new ClientException("attempted to cast null to non-nullable type");
+		return cast(source, type.face);
+	}
 }

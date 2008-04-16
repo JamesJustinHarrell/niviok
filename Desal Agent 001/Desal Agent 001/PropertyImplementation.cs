@@ -1,6 +1,6 @@
 class PropertyImplementation {
-	public delegate IValue ReadFunc();
-	public delegate void WriteFunc(IValue objRef);
+	public delegate IWorker ReadFunc();
+	public delegate void WriteFunc(IWorker objRef);
 	public ReadFunc read;
 	public WriteFunc write;
 };

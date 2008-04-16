@@ -1,0 +1,79 @@
+--object literal with fields
+
+object
+	{ fields, e.g. declfirst a = b }
+	{ faceimpls }
+
+--becomes
+
+block
+	{ fields, e.g. declfirst a = b }
+	object
+		{ faceimpls }
+
+
+
+
+
+--class (nothing static)
+
+class
+	{ instance fields, e.g. declfirst a }
+	{ construct(...) }
+	{ faceimpls }
+
+--becomes
+
+block
+	func __createObject(fieldA, fieldB, ...)
+		{ intance fields, e.g. declfirst a = fieldA }
+		
+		object
+			{ faceimpls }
+
+	object
+		impl Interface <-> A+B+...
+		
+		call()
+			__createObject(123, "foo", ...)
+	
+		call(argA, argB, ...)
+			__createObject(argA, argB, ...)
+	
+
+
+
+--class with static fields and static interface implementations
+
+class
+	{ static fields, e.g. declfirst alpha = beta, func doStuff = {...} }
+	{ static faceimpls }
+	{ instance fields, e.g. declfirst a }
+	{ construct(...) }
+	{ faceimpls }
+	
+--becomes
+
+block
+	{ static fields, e.g. declfirst alpha = beta, func doStuff = {...} }
+
+	func __createObject(fieldA, fieldB, ...)
+		{ intance fields, e.g. declfirst a = fieldA }
+		
+		object
+			<faceimpls>
+
+	object
+		{ static faceimpls }
+		
+		impl Interface <-> A+B+...
+		
+		call()
+			__createObject(123, "foo", ...)
+	
+		call(argA, argB, ...)
+			__createObject(argA, argB, ...)
+	
+
+
+	

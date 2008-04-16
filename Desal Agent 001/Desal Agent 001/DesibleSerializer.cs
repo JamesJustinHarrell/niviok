@@ -83,18 +83,17 @@ class DesibleSerializer : DesibleSerializerAuto {
 	
 	//node
 	XmlElement serialize(INode node) {
-		Type classType = typeof(DesibleSerializer);
-		Type nodeType = ((Object)node).GetType();
-		Reflection.MethodInfo meth = classType.GetMethod(
-			"serialize",
-			Reflection.BindingFlags.NonPublic | Reflection.BindingFlags.Instance,
-			null,
-			new Type[]{nodeType},
-			null );
+		Reflection.MethodInfo meth = typeof(DesibleSerializer)
+			.GetMethod(
+				"serialize",
+				Reflection.BindingFlags.NonPublic | Reflection.BindingFlags.Instance,
+				null,
+				new Type[]{node.GetType()},
+				null );
 
 		if(	meth.GetParameters()[0].ParameterType == typeof(INode) )
-			throw new Exception(
-				String.Format("can't serialize node of type {0}", node.typeName));
+			throw new Exception(String.Format(
+				"can't serialize node of type {0}", node.typeName));
 		
 		try {
 			return (XmlElement)meth.Invoke(this, new object[]{node});

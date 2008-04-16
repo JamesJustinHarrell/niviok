@@ -1,46 +1,24 @@
-//DEPRECATED because IFunction is deprecated
-//function defined by client code
-//produced through the evaluation of a function node
+//wrapping of IFunction (whether native or client) to
+//create an IObject object and appropriate IWorker objects
 
+using System;
 using System.Collections.Generic;
 
-class Client_Function : IFunction {
-	IList<Parameter> _parameters;
-	NullableType _returnType;
-	INode_Expression _body;
-	Scope _scope;
-	
-	public Client_Function(
-	IList<Parameter> parameters, NullableType returnType,
-	INode_Expression body, Scope scope) {
-		_body = body;
-		_parameters = parameters;
-		_returnType = returnType;
-		_scope = scope;
-	}
-	
-	//xxx replace with get interface
-	public IList<Parameter> parameters {
-		get { return _parameters; }
-	}
-	public NullableType returnType {
-		get { return _returnType; }
-	}
-	
-	public IValue call(Arguments arguments) {	
-		//bind arguments to parameter identifiers
-		Scope functionScope = arguments.setup( _parameters, _scope );
+class Client_Function {
+	public static IWorker wrap(IFunction func) {
+		Client_Function o = new Client_Function(func);
+		IObject obj = new DesalObject(func);
+		WorkerBuilder builder = new WorkerBuilder(
+			func.face, obj, new IWorker[]{} );
 		
-		//xxx try {
-			return Executor.execute(_body, functionScope);
-		/* xxx
-		}
-		catch(ReturnStatement statement) {
-			return statement.returnValue;
-		}
-		catch(BreakStatement statement) {
-			throw new ClientException("can't break here");
-		}
-		*/
+		builder.addCallee(func);
+		
+		return builder.compile();
+	}
+
+	IFunction _func;
+	
+	Client_Function(IFunction func) {
+		_func = func;
 	}
 }

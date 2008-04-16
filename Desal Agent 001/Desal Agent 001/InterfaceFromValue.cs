@@ -30,33 +30,24 @@ The object reference should keep track of which implementation is active.
 using System.Collections.Generic;
 
 class InterfaceFromValue : IInterface {
-	public static IInterface wrap(IValue val) {
-		/* xxx
-		if( val.object_ is InterfaceWrapper )
-			return ((InterfaceWrapper)val.object_).unwrap();
-		else
-		*/
-			return new InterfaceFromValue(val);
+	public static IInterface wrap(IWorker val) {
+		return new InterfaceFromValue(val);
 	}
 	
-	IValue _value;
+	IWorker _value;
 	
-	InterfaceFromValue(IValue val) {
+	InterfaceFromValue(IWorker val) {
 		_value = val;
 	}
 
 	public IList<IInterface> inheritees {
 		get { throw new Error_Unimplemented(); }
 	}
-	/* xxx
-	public IList<Parameter> callee {
+	
+	public IList<CalleeInfo> callees {
 		get { throw new Error_Unimplemented(); }
 	}
 	
-	public IInterface returnType {
-		get { throw new Error_Unimplemented(); }
-	}
-	*/
 	public IDictionary<Identifier, PropertyInfo> properties {
 		get { throw new Error_Unimplemented(); }
 	}
@@ -65,7 +56,7 @@ class InterfaceFromValue : IInterface {
 		get { throw new Error_Unimplemented(); }
 	}
 	
-	public IValue value {
+	public IWorker value {
 		get { return _value; }
 	}
 }

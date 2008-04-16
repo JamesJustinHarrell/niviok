@@ -30,10 +30,10 @@ class Client_Class : IClass {
 * /
 	}
 	
-	public IValue instantiate(IList<IValue> arguments) {
+	public IWorker instantiate(IList<IWorker> IList<Argument>) {
 	/* xxx
 		Client_Object obj = new Client_Object(_members, this);
-		//xxx call appropriate constructor with object and arguments
+		//xxx call appropriate constructor with object and IList<Argument>
 		return new Client_Value(obj, _defaultImp);
 	* /
 	}
