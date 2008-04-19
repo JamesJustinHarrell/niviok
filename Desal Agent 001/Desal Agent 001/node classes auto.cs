@@ -1272,16 +1272,19 @@ class Node_DeclareAssign : INode_Expression {
 	Node_Identifier m_name;
 	Node_IdentikeyType m_identikeyType;
 	Node_Boolean m_breed;
+	Node_Boolean m_inferInterface;
 	INode_Expression m_value;
 	
 	public Node_DeclareAssign(
 	Node_Identifier @name,
 	Node_IdentikeyType @identikeyType,
 	Node_Boolean @breed,
+	Node_Boolean @inferInterface,
 	INode_Expression @value ) {
 		m_name = @name;
 		m_identikeyType = @identikeyType;
 		m_breed = @breed;
+		m_inferInterface = @inferInterface;
 		m_value = @value;
 	}
 	
@@ -1295,6 +1298,10 @@ class Node_DeclareAssign : INode_Expression {
 
 	public Node_Boolean @breed {
 		get { return m_breed; }
+	}
+
+	public Node_Boolean @inferInterface {
+		get { return m_inferInterface; }
 	}
 
 	public INode_Expression @value {
@@ -1311,6 +1318,7 @@ class Node_DeclareAssign : INode_Expression {
 				m_name,
 				m_identikeyType,
 				m_breed,
+				m_inferInterface,
 				m_value );
 		}
 	}

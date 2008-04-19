@@ -1,3 +1,6 @@
+//implements the Int interface
+//xxx should support abitrary precision
+
 class Client_Integer {
 	public static IWorker wrap(long value) {
 		Client_Integer o = new Client_Integer(value);
@@ -28,15 +31,10 @@ class Client_Integer {
 		return builder.compile();
 	}
 
-	//xxx replace with BigInt
 	long _value;
 	
 	public Client_Integer(long value) {
 		_value = value;
-	}
-	
-	public long value {
-		get { return _value; }
 	}
 	
 	//comparison
@@ -106,13 +104,4 @@ class Client_Integer {
 	public void floorDivide1(long value) {
 		_value /= value;
 	}
-
-	//convert
-	public long toBuiltin() {
-		return _value;
-	}
-	public string toString() {
-		return _value.ToString();
-	}
-	//xxx func toString(IntNotationMethod) String
 }

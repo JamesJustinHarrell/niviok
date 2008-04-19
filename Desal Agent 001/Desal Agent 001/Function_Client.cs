@@ -30,7 +30,7 @@ class Function_Client : IFunction {
 						p.defaultValue != null));
 			}
 			return FunctionInterface.getFuncFace(
-				new CalleeInfo(paramInfos, _returnType));
+				new Callee(paramInfos, _returnType));
 		}
 	}
 	

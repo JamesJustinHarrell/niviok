@@ -125,7 +125,7 @@ class SableccFixup {
 
 		//tab
 		if( c is Sablecc.node.TTab )
-			throw new System.Exception("tab found after non-tab character");
+			throw new ParseError("tab found after non-tab character");
 		
 		//line comment or space
 		else if(
@@ -158,14 +158,14 @@ class SableccFixup {
 		else if( current() is Sablecc.node.TNewline )
 			consumeNewline();
 		else
-			throw new Exception(
+			throw new ParseError(
 				"token not allowed on non code line: " +
 				tokenInfo(current()) );
 	}
 	
 	void consumeNewline() {
 		if( ! (current() is Sablecc.node.TNewline) )
-			throw new Exception("expected newline token");
+			throw new ParseError("expected newline token");
 		if( ! (_outTokens.Last.Value is Sablecc.node.TNewline) )
 			addToken(current());
 		while( current() is Sablecc.node.TNewline )

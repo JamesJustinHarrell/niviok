@@ -1,5 +1,5 @@
-//determines the identikey dependencies of nodes, i.e.
-//the names of identikeys in the outer scope referenced by this node
+//determines the identikey dependencies of nodes
+//i.e. the names of identikeys in the outer scope referenced by this node
 //the set returned should never be null (though may be empty set)
 
 using System;

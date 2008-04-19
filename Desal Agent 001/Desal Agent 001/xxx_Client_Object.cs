@@ -25,7 +25,7 @@ class Client_Object : IObject<Scope> {
 	}
 	
 	public long ID {
-		get { throw new Error_Unimplemented(); }
+		get { throw new NotImplementedException(); }
 	}
 	
 	public Class associatedClass {

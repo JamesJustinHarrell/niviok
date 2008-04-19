@@ -30,9 +30,8 @@
     <File name="./xxx_Node_Global.cs" subtype="Code" buildaction="Compile" />
     <File name="./xxx_Value.cs" subtype="Code" buildaction="Compile" />
     <File name="./xxx_Objects.cs" subtype="Code" buildaction="Compile" />
-    <File name="./PropertyImplementation.cs" subtype="Code" buildaction="Compile" />
     <File name="./Scope.cs" subtype="Code" buildaction="Compile" />
-    <File name="./PropertyInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Property.cs" subtype="Code" buildaction="Compile" />
     <File name="./xxx_InterfaceWrapper.cs" subtype="Code" buildaction="Compile" />
     <File name="./InterfaceFromValue.cs" subtype="Code" buildaction="Compile" />
     <File name="./xxx_FunctionFromObjRef.cs" subtype="Code" buildaction="Compile" />
@@ -57,9 +56,7 @@
     <File name="./xxx_Object.cs" subtype="Code" buildaction="Compile" />
     <File name="./Client_Rational.cs" subtype="Code" buildaction="Compile" />
     <File name="./Client_Interface.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Bridge_static_constructor.cs" subtype="Code" buildaction="Compile" />
     <File name="./NullableType.cs" subtype="Code" buildaction="Compile" />
-    <File name="./IdentikeyCategory.cs" subtype="Code" buildaction="Compile" />
     <File name="./Dextr_Custom_ParserManager.cs" subtype="Code" buildaction="Compile" />
     <File name="./Dextr_Custom_Tokenizer.cs" subtype="Code" buildaction="Compile" />
     <File name="./xxx_BoundMethod.cs" subtype="Code" buildaction="Compile" />
@@ -70,7 +67,6 @@
     <File name="./Executor.cs" subtype="Code" buildaction="Compile" />
     <File name="./Depends.cs" subtype="Code" buildaction="Compile" />
     <File name="./TerminalNode.cs" subtype="Code" buildaction="Compile" />
-    <File name="./Direction.cs" subtype="Code" buildaction="Compile" />
     <File name="./Evaluator.cs" subtype="Code" buildaction="Compile" />
     <File name="./DesibleSerializer.cs" subtype="Code" buildaction="Compile" />
     <File name="./DesibleSerializerAuto.cs" subtype="Code" buildaction="Compile" />
@@ -92,10 +88,15 @@
     <File name="./WorkerBuilder.cs" subtype="Code" buildaction="Compile" />
     <File name="./Worker.cs" subtype="Code" buildaction="Compile" />
     <File name="./WorkerBase.cs" subtype="Code" buildaction="Compile" />
-    <File name="./MethodInfo.cs" subtype="Code" buildaction="Compile" />
-    <File name="./CalleeInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Method.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Callee.cs" subtype="Code" buildaction="Compile" />
     <File name="./Function_Client.cs" subtype="Code" buildaction="Compile" />
     <File name="./ParameterInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="../interfaces.desible" subtype="Code" buildaction="FileCopy" />
+    <File name="./StringUtil.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Identikey.cs" subtype="Code" buildaction="Compile" />
+    <File name="./FutureWorker.cs" subtype="Code" buildaction="Compile" />
+    <File name="./Breeder.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

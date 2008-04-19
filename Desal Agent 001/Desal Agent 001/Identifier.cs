@@ -7,10 +7,7 @@ class Identifier {
 	}
 
 	public override bool Equals(object o) {
-		return (
-			o != null &&
-			o is Identifier &&
-			((Identifier)o)._str.Equals(_str) );
+		return this.ToString() == o.ToString();
 	}
 	
 	public override int GetHashCode() {

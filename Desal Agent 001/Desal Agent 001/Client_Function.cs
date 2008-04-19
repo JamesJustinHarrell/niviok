@@ -9,7 +9,7 @@ class Client_Function {
 		Client_Function o = new Client_Function(func);
 		IObject obj = new DesalObject(func);
 		WorkerBuilder builder = new WorkerBuilder(
-			func.face, obj, new IWorker[]{} );
+			Bridge.wrapInterface(func.face), obj, new IWorker[]{} );
 		
 		builder.addCallee(func);
 		

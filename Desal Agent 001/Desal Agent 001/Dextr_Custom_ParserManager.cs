@@ -5,7 +5,8 @@ namespace Dextr.Custom {
 
 class SableccAdapter : Sablecc.analysis.AnalysisAdapter {
 	public override void DefaultCase(Sablecc.node.Node node) {
-		System.Console.WriteLine(node);
+		//xxx should be using Bridge
+		Console.WriteLine(node);
     }
 }
 
@@ -36,7 +37,7 @@ class ParserManager {
 			
 			if( token.type == Custom.TokenType.STRING )
 				bridge.print(
-					System.String.Format("\"{0}\"", token.value));
+					String.Format("\"{0}\"", token.value));
 			else
 				bridge.print(token.value);
 
@@ -49,13 +50,13 @@ class ParserManager {
 	static void displayTokenInfo(Bridge bridge, IList<Custom.Token> tokens) {
 		foreach( Custom.Token token in tokens ) {
 			bridge.print(
-				System.String.Format(
+				String.Format(
 					"{0}({1}) '{2}' on line {3}, col {4}",
 					token.type, (int)token.type, token.value,
 					token.lineNumber, token.startColumn ));
 			if( token.endColumn != token.startColumn )
 				bridge.print(
-					System.String.Format(
+					String.Format(
 						"-{0}", token.endColumn ));
 			bridge.println();
 		}
@@ -87,8 +88,8 @@ class ParserManager {
 			return parseWithSablecc(bridge, filePath);
 		}
 		else
-			throw new System.Exception(
-				System.String.Format("unknown Dextr parser: {0}", parserName));
+			throw new UserError(
+				String.Format("unknown Dextr parser: {0}", parserName));
 	}
 }
 

@@ -1,25 +1,58 @@
-/*
-ClientStaticError - e.g. invalid syntax
-ClientException - e.g. client code executes a throw statement
-Error_* - errors in implementation
-*/
+//all thrown and caught exceptions should ApplicationException or one of these types
 
 using System;
 using System.Collections.Generic;
 
-class ClientException : ApplicationException {
-	public IWorker e;
+//errors caused by the user, but not in client code
+//e.g. invalid program arguments
+class UserError : Exception {
+	public UserError()
+		:base() {}
+	public UserError(string message)
+		:base(message) {}
+	public UserError(string message, Exception innerException)
+		:base(message, innerException) {}
+}
+
+class ParseError : Exception {
+	public ParseError()
+		:base() {}
+	public ParseError(string message)
+		:base(message) {}
+	public ParseError(string message, Exception innerException)
+		:base(message, innerException) {}
+}
+
+//exceptions in client code
+class ClientException : Exception {
+	public IWorker thrown; //the value of the throw node
 	public Stack<string> stackTrace;
 	
 	public ClientException(string message)
 	:base(message)
 	{
-		this.e = Bridge.wrapString(message);
+		try {
+			//this will fail if the client exception
+			//arose from the Bridge static constructor
+			this.thrown = Bridge.wrapString(message);
+		}
+		catch(Exception e) {
+			Console.Error.WriteLine(message);
+			throw new ApplicationException(
+				"unable to create ClientException before Bridge has been setup");
+		}
 		stackTrace = new Stack<string>();
 	}
 	
-	public ClientException(IWorker e) {
-		this.e = e;
+	public ClientException(string message, Exception innerException)
+	:base(message, innerException)
+	{
+		this.thrown = Bridge.wrapString(message);
+		stackTrace = new Stack<string>();
+	}
+	
+	public ClientException(IWorker thrown) {
+		this.thrown = thrown;
 		stackTrace = new Stack<string>();
 	}
 	
@@ -30,8 +63,9 @@ class ClientException : ApplicationException {
 	public string clientMessage {
 		get {
 			string message = "";
-			if( e.face == Bridge.faceString ) {
-				message += Bridge.unwrapString(e) + "\n\n";
+			//xxx use String breeder
+			if( thrown.face == Bridge.faceString ) {
+				message += Bridge.unwrapString(thrown) + "\n\n";
 			}
 			message += "Stack trace:\n";
 			foreach( string s in stackTrace ) {
@@ -42,17 +76,4 @@ class ClientException : ApplicationException {
 			return message;
 		}
 	}
-}
-
-class Error_ArgumentCount : ApplicationException {
-	public Error_ArgumentCount(int number) : base(number.ToString()) {}
-	public Error_ArgumentCount(string message) : base(message) {}
-}
-
-class Error_ArgumentInterface : ApplicationException {
-}
-
-class Error_Unimplemented : ApplicationException {
-	public Error_Unimplemented() {}
-	public Error_Unimplemented(string message) : base(message) {}
 }

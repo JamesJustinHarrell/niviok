@@ -49,6 +49,7 @@ def runTest(args) :
 	args = [
 		"mono",
 		"--debug",
+#		"--trace=program",
 		os.path.join(agentBase, "Desal Agent 001/bin/Debug/Desal Agent 001.exe")
 	] + args
 	

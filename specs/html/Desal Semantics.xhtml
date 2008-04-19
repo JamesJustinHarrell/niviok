@@ -16,7 +16,7 @@
 	</script></head><body>
 	
 	<h1>Desal Semantics 1.0</h1>
-	<h2>Edition 1 Draft 2008-04-16</h2>
+	<h2>Edition 1 Draft 2008-04-18</h2>
 	
 	
 		<p>Copyright © 
@@ -912,7 +912,7 @@ decl Array&lt;Int&gt; numbers = generateNumbers()</code>
 		<div id="node.identikey-category">
 			<h3>10.4.6. identikey-category</h3>
 			
-			<p>specifies one of: namespace, dynamic, typed, constant, function</p>
+			<p>specifies one of: namespace, variable, constant, function</p>
 			
 			<p>See the <a href="#identikeys">section on identikeys</a>.</p>
 		</div>
@@ -1312,15 +1312,20 @@ while container.hasMore?
 				<li><a href="#node.identikey-type">identikey-type</a> </li>
 			</ul>
 			
-			<p class="process">The identikey-category of the identikey-type must not specify &quot;namespace&quot;, &quot;function&quot;, or &quot;constant&quot;. The identikey-category of the identikey-type must not specify &quot;typed&quot; if the nullable-type of the identikey-type does not specify an interface. The nullable-type of the identikey-type must not specifiy nullable as false.</p>
+			<p class="process">The identikey-category of the identikey-type must specify &quot;variable&quot;. The nullable-type of the identikey-type must not specifiy nullable as false.</p>
 			
 			<p>Creates an identikey in the parent scope with the specified type. After this node executes, the produced identikey does not yet point to any values.</p>
 
 			<code xml:space="preserve">decl foo
-foo = 123
-println(foo)
-foo = 456
-println(foo)</code>
+decl ? foo
+decl Int foo
+decl Int ? foo</code>
+			
+			<code xml:space="preserve">decl bar
+bar = 123
+println(bar)
+bar = 456
+println(bar)</code>
 		</div>
 		
 		<div id="node.labeled">
@@ -1662,12 +1667,20 @@ bar3()</code>
 				<li><a href="#node.identifier">identifier</a> name</li>
 				<li><a href="#node.identikey-type">identikey-type</a> </li>
 				<li><a href="#node.boolean">boolean</a> breed</li>
+				<li><a href="#node.boolean">boolean</a> infer interface</li>
 				<li>expression value</li>
 			</ul>
 			
-			<p class="process">The identikey-category of the identikey-type node must not specify &quot;namespace&quot; or &quot;function&quot;.</p>
+			<p class="process">The identikey-category of the identikey-type node must specify &quot;variable&quot; or &quot;constant&quot;. If the category is &quot;constant&quot;, [infer interface] must be false. If [infer interface] is true, the interface of the [nullable-type] of the [identikey-type] is set to be the same as the active interface of [value].</p>
 			
 			<p>Creates an identikey in the parent scope with the specified type, then assigns the specified value to it.</p>
+			
+			<code xml:space="preserve">decl foo = 123
+decl ? foo = 123
+decl auto foo = 123
+decl auto ? foo = 123
+decl Int foo = 123
+decl Int ? foo = 123</code>
 		</div>
 		
 		<div id="node.declare-first">

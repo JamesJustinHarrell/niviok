@@ -1,15 +1,8 @@
-class Node_Access : TerminalNode<Access, Node_Access>, INode {
-	public Node_Access(Access value) :base(value) {}
-	public Node_Access(string str) :base(G.parseEnum<Access>(str)) {}
-
-	public string typeName {
-		get { return "access"; }
-	}
-}
+using System;
 
 class Node_Boolean : TerminalNode<bool, Node_Boolean>, INode {
 	public Node_Boolean(bool value) :base(value) {}
-	public Node_Boolean(string str) :base(System.Boolean.Parse(str)) {}
+	public Node_Boolean(string str) :base(Boolean.Parse(str)) {}
 	
 	public string typeName {
 		get { return "boolean"; }
@@ -46,7 +39,7 @@ class Node_IdentikeyCategory : TerminalNode<IdentikeyCategory, Node_IdentikeyCat
 //xxx use BigInt
 class Node_Integer : TerminalNode<long, Node_Integer>, INode_Expression {
 	public Node_Integer(long value) :base(value) {}
-	public Node_Integer(string str) :base(System.Int64.Parse(str)) {}
+	public Node_Integer(string str) :base(Int64.Parse(str)) {}
 
 	public string typeName {
 		get { return "integer"; }
@@ -65,7 +58,7 @@ class Node_MemberType : TerminalNode<MemberType, Node_MemberType>, INode {
 //xxx use BigNum library
 class Node_Rational : TerminalNode<double, Node_Rational>, INode_Expression {
 	public Node_Rational(double value) :base(value) {}
-	public Node_Rational(string str) :base(System.Double.Parse(str)) {}
+	public Node_Rational(string str) :base(Double.Parse(str)) {}
 	
 	public string typeName {
 		get { return "rational"; }

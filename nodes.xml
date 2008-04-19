@@ -634,6 +634,11 @@
 		</entry>
 		<entry>
 			<count>1</count>
+			<typename>boolean</typename>
+			<label>infer interface</label>
+		</entry>
+		<entry>
+			<count>1</count>
 			<typename>expression</typename>
 			<label>value</label>
 		</entry>

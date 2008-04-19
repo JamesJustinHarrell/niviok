@@ -1,3 +1,5 @@
+//corresponds to Desal "parameter-impl" nodes
+
 /* xxx
 the default value expression is supposed
 to be evaluated for every call to the function

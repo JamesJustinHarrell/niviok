@@ -49,7 +49,7 @@
 	(function (- false)) false
 	(function () -
 		(block () (
-			(declare-assign mText (typed (String false)) false "initial text")
+			(declare-assign mText (variable (String false)) false false "initial text")
 			
 			(object (
 				(Test () (
@@ -78,17 +78,17 @@
 			(possibility
 				true
 				(println "this is a test"))
-			(declare-assign str (constant (String false)) false
+			(declare-assign str (constant (String false)) false false
 				((extract-member "🿰 Hello," concat) " World 🿱"))
 			(println str)
 			(println (extract-member str length))
 			(for-range x 1 20 false -
 				(println ((extract-member x add) 10000)))
-			(declare-assign 🿰🿱 (constant (- false)) false
+			(declare-assign 🿰🿱 (constant (- false)) false false
 				"astral characters in identifiers")
 			(println 🿰🿱)
 
-			(declare-assign obj (constant (Test false)) false
+			(declare-assign obj (constant (Test false)) false false
 				(createObject))
 			
 			(println (extract-member obj number))
@@ -163,10 +163,10 @@
 			then values that should not shortcut
 			*/
 			(declare-assign t
-				(constant (- false)) false
+				(constant (- false)) false false
 				true)
 			(declare-assign f
-				(constant (- false)) false
+				(constant (- false)) false false
 				false)
 		
 			(header "and")

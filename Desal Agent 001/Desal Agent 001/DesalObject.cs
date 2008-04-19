@@ -1,10 +1,16 @@
-//named DesalObject instead of Object to avoid conflicts with C#
+//a Desal object
+//named DesalObject instead of Object to avoid naming conflicts
 
 using System;
 
 class DesalObject : IObject {
+	//workers reference their owner object, creating a cycle
+	//so this will be null when a DesalObject is created
 	IWorker _rootWorker;
-	object _native;
+	
+	//the native value which this object is wrapping
+	//for client-implemented objects, it's null
+	object _native; 
 	
 	public DesalObject(){}
 	
@@ -15,12 +21,12 @@ class DesalObject : IObject {
 	public IWorker rootWorker {
 		get {
 			if( _rootWorker == null )
-				throw new Exception("object was never setup");
+				throw new ApplicationException("object was never setup");
 			return _rootWorker;
 		}
 		set {
 			if( _rootWorker != null )
-				throw new Exception("object was already setup");
+				throw new ApplicationException("object was already setup");
 			_rootWorker = value;
 		}
 	}

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 
 abstract class WorkerBase {
-	protected IInterface _face;
+	protected IWorker _face;
 	protected IObject _owner;
 	protected IList<IWorker> _children;
 	protected IDictionary<IInterface, IFunction> _callees;

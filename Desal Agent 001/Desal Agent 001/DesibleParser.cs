@@ -16,13 +16,6 @@ class DesibleParser : DesibleParserAuto {
 
 	const string desible1NS = "urn:desible1";
 
-	public static IInterface createNativeInterface(Bridge bridge, XmlElement element) {
-		DesibleParser parser = new DesibleParser(bridge, element.OwnerDocument);
-		Node_Interface node = parser.parse<Node_Interface>(element);
-		parser.warnAboutUnhandled(element, true);
-		return Evaluator.evaluate(node,	new Scope(bridge));
-	}
-
 	public static Node_Bundle parseDocument(
 	Bridge bridge, string path, bool warnUnhandled, bool warnAllNS) {
 		XmlDocument document = new XmlDocument();
@@ -49,7 +42,7 @@ class DesibleParser : DesibleParserAuto {
 	IDictionary<string, Type> _tagToType;
 	IDictionary<Type, ParseFunc> _parseFuncs;
 	
-	DesibleParser(Bridge bridge, XmlDocument document) {
+	public DesibleParser(Bridge bridge, XmlDocument document) {
 		_bridge = bridge;
 		_nsManager = new XmlNamespaceManager(document.NameTable);
 		_nsManager.AddNamespace("desible1", desible1NS);
@@ -80,11 +73,6 @@ class DesibleParser : DesibleParserAuto {
 		
 		
 		//----- base
-		
-		addParser<Node_Access>("access", delegate(XmlElement element) {
-			return new Node_Access(
-				G.parseEnum<Access>(element.InnerText));
-		});
 				
 		addParser<Node_Boolean>("boolean", delegate(XmlElement element) {
 			return new Node_Boolean(
@@ -150,7 +138,7 @@ class DesibleParser : DesibleParserAuto {
 					parseMult<Node_DeclareFirst>(element, "declare-first", null));
 			}
 			else {
-				throw new Exception("only inline-plane planes are supported for now");
+				throw new NotImplementedException("only inline-plane planes are supported for now");
 			}
 		});
 		_tagToType.Add("inline-plane", typeof(Node_Plane));
@@ -174,13 +162,13 @@ class DesibleParser : DesibleParserAuto {
 	
 	void checkElement(XmlElement element, string expectedTagName) {
 		if( element.LocalName != expectedTagName ) {
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"expected tag name '{0}' but found '{1}'",
 					expectedTagName, element.LocalName));
 		}
 		if( element.NamespaceURI != desible1NS ) {
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"attempted to handle an element in namespace '{0}",
 					element.NamespaceURI));
@@ -199,7 +187,7 @@ class DesibleParser : DesibleParserAuto {
 					warnAboutUnhandled(child, warnAllNS);
 		}
 		else {
-			_bridge.warning(
+			_bridge.printlnWarning(
 				String.Format(
 					"unhandled element with tag name '{0}' in namespace '{1}'\n{2}",
 					element.LocalName, element.NamespaceURI, element.OuterXml ) );
@@ -210,7 +198,7 @@ class DesibleParser : DesibleParserAuto {
 		Type type = typeof(T);
 		
 		if( ! _parseFuncs.ContainsKey(type) ) {
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"no parser defined for type '{0}'",
 					type.FullName));
@@ -236,7 +224,7 @@ class DesibleParser : DesibleParserAuto {
 	XmlElement selectFirst(XmlElement element, string tagName, string label) {
 		XmlElement child = trySelectFirst(element, tagName, label);
 		if( child == null ) {
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"'{0}' element did not contain '{1}' element with '{2}' label",
 					element.LocalName, tagName, label ));
@@ -285,14 +273,14 @@ class DesibleParser : DesibleParserAuto {
 			return (T)parser(element);
 		}
 		else {
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"element with tag name '{0}' and label '{1}' is not an {2}",
 					tagName, element.GetAttribute("label"), typeName ));
 		}
 	}
 	
-	T parse<T>(XmlElement element) {
+	public T parse<T>(XmlElement element) {
 		return (T)_parseFuncs[typeof(T)](element);
 	}
 }

@@ -83,31 +83,31 @@ class ClassValue : IWorker {
 	}
 
 	public IInterface activeInterface {
-		get { throw new Error_Unimplemented(); }
+		get { throw new NotImplementedException(); }
 	}
 	public long objectID {
-		get { throw new Error_Unimplemented(); }
+		get { throw new NotImplementedException(); }
 	}
 	public IWorker cast(IInterface aInterface) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 	public void executeCall(IList<Argument> arguments) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 	public IWorker evaluateCall(IList<Argument> arguments) {
 		return _interfaceImpl.evaluateCall(_state, IList<Argument>);
 	}
 	public IWorker getProperty(Identifier name) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 	public void setProperty(Identifier propName, IWorker aValue) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 	public void executeMethod(Identifier name, IList<Argument> arguments) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 	public IWorker evaluateMethod(Identifier name, IList<Argument> arguments) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 }
 

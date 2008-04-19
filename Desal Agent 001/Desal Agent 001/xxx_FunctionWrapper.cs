@@ -31,11 +31,11 @@ class FW_Value : IWorker {
 	}
 
 	public IInterface activeInterface {
-		get { throw new Error_Unimplemented(); }
+		get { throw new NotImplementedException(); }
 	}
 
 	public IWorker cast(IInterface aInterface) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 	
 	public IWorker call(IList<Argument> arguments) {
@@ -43,11 +43,11 @@ class FW_Value : IWorker {
 	}
 	
 	public IWorker extractMember(Identifier name) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 
 	public void setProperty(Identifier propName, IWorker aValue) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 }
 
@@ -100,7 +100,7 @@ class FW_InterfaceImplementation {
 				new FunctionWrapper(function),
 				Objects.getFunctionInterface(function) );
 			* /
-			throw new Error_Unimplemented();
+			throw new NotImplementedException();
 	}
 
 	IFunction _function;
@@ -114,7 +114,7 @@ class FW_InterfaceImplementation {
 	
 	
 	public Class class_ {
-		get { throw new Error_Unimplemented(); }
+		get { throw new NotImplementedException(); }
 	}
 	
 	public IFunction unwrap() {
@@ -122,7 +122,7 @@ class FW_InterfaceImplementation {
 	}
 	
 	public long ID {
-		get { throw new Error_Unimplemented(); }
+		get { throw new NotImplementedException(); }
 	}
 	
 	public bool implements(IInterface interface_) {
@@ -135,11 +135,11 @@ class FW_InterfaceImplementation {
 	}
 	
 	public IWorker readProperty(IInterface interface_, Identifier ident) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 	
 	public void writeProperty(IInterface interface_, Identifier ident, IWorker objRef) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 };
 */

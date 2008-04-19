@@ -1,0 +1,20 @@
+Rationale for removing "share"/"own" attributes of object fields:
+
+Members can be implemented using closures. The "share"/"own" distinction would provide a false sense that a copying breeder could be automatically created for such an object, which would lead to bugs. In languages where members can't form closures, a "share"/"own" distinction would probably be a great benefit, but in Desal it just doesn't fit in.
+
+
+Example:
+A copying breeder is created automatically for the object, but that breeder doesn't actually work because the object isn't implemented using fields.
+
+function getThing(a, b, c) Thing
+	object
+		impl Thing
+			func incrementA()
+				a++
+				a
+			func feedB()
+				b.feed()
+			prop ro c <-> c
+
+decl Thing t1 = getThing(getA(), getB(), getC())
+decl Thing t2 = copy(t1) //no fields -- t2 uses the exact same state as t1!

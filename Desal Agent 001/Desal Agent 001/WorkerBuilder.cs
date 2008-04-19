@@ -1,9 +1,14 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 
 class WorkerBuilder : WorkerBase {
 	public delegate IWorker PropGetFunc();
 
-	public WorkerBuilder(IInterface face, IObject owner, IList<IWorker> children) {
+	public WorkerBuilder(IWorker face, IObject owner, IList<IWorker> children) {
+		Debug.Assert(face != null, "@face null in WorkerBuilder constructor");
+		Debug.Assert(owner != null, "@owner null in WorkerBuilder constructor");
+		Debug.Assert(children != null, "@children null in WorkerBuilder constructor");
+	
 		_face = face;
 		_owner = owner;
 		_children = children;
@@ -43,7 +48,7 @@ class WorkerBuilder : WorkerBase {
 			_children.Add(builder.compile());
 		}
 		
-		return new Worker(this, _face);
+		return new Worker(this);
 	}
 	
 	
@@ -54,7 +59,7 @@ class WorkerBuilder : WorkerBase {
 			ident,
 			new Function_Native(
 				new ParameterImpl[]{},
-				new NullableType(null, true),
+				NullableType.dyn_nullable,
 				delegate(Scope scope) {
 					return func();
 				},

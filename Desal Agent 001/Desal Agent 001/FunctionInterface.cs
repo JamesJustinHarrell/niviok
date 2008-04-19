@@ -2,13 +2,13 @@ using System;
 using System.Collections.Generic;
 
 class FunctionInterface : IInterface {
-	static IDictionary<CalleeInfo, WeakReference> _funcFaces;
+	static IDictionary<Callee, WeakReference> _funcFaces;
 	
 	static FunctionInterface() {
-		_funcFaces = new Dictionary<CalleeInfo, WeakReference>();
+		_funcFaces = new Dictionary<Callee, WeakReference>();
 	}
 	
-	public static IInterface getFuncFace(CalleeInfo info) {			
+	public static IInterface getFuncFace(Callee info) {			
 		if( _funcFaces.ContainsKey(info) ) {
 			WeakReference wr = _funcFaces[info];
 			IInterface face = (IInterface)wr.Target;
@@ -18,29 +18,33 @@ class FunctionInterface : IInterface {
 		}
 		
 		IInterface rv = new FunctionInterface(info);
-		_funcFaces.Add(info, new System.WeakReference(rv));
+		_funcFaces.Add(info, new WeakReference(rv));
 		return rv;
 	}
 	
-	CalleeInfo _info;
+	Callee _info;
 
-	FunctionInterface(CalleeInfo info) {
+	FunctionInterface(Callee info) {
 		_info = info;
 	}
 	
-	public IList<IInterface> inheritees {
-		get { return new IInterface[]{ Bridge.faceObject }; }
+	public IList<IWorker> inheritees {
+		get { return new IWorker[]{ Bridge.faceObject }; }
 	}
 	
-	public IList<CalleeInfo> callees {
-		get { return new CalleeInfo[]{ _info }; }
+	public IList<Callee> callees {
+		get { return new Callee[]{ _info }; }
+	}
+	
+	public IList<Breeder> breeders {
+		get { return new Breeder[]{}; }
 	}
 
-	public IDictionary<Identifier, PropertyInfo> properties {
-		get { throw new Error_Unimplemented(); }
+	public IDictionary<Identifier, Property> properties {
+		get { throw new NotImplementedException(); }
 	}
 
-	public IDictionary<Identifier, IList<MethodInfo>> methods {
-		get { throw new Error_Unimplemented(); }
+	public IDictionary<Identifier, IList<Method>> methods {
+		get { return new Dictionary<Identifier, IList<Method>>(); }
 	}
 }

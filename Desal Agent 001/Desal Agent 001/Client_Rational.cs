@@ -1,4 +1,5 @@
-//xxx use bignum
+//implements the Rat interface
+//xxx should support arbitrary precision
 
 class Client_Rational {
 	public static IWorker wrap(double value) {
@@ -14,10 +15,6 @@ class Client_Rational {
 
 	public Client_Rational(double value) {
 		_value = value;
-	}
-	
-	public double value {
-		get { return _value; }
 	}
 
 	//comparison

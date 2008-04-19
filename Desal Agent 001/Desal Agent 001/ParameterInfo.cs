@@ -1,3 +1,5 @@
+//corresponds to Desal "parameter-info" nodes
+
 class ParameterInfo {
 	Direction _direction;
 	NullableType _nullableType;

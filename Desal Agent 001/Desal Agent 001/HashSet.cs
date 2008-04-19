@@ -1,5 +1,5 @@
 //.NET 3.5 defines a HashSet collection
-//This is intended to be a subset of that.
+//This is intended to be a compatible subset of that.
 //Hopefully the official HashSet will be a drop-in replacement for this class.
 
 using System.Collections;

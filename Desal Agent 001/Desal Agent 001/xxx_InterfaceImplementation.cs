@@ -67,22 +67,22 @@ class InterfaceImplementation<T> {
 	
 	public IWorker getProperty(
 	Object obj, Identifier name) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 	
 	public void setProperty(
 	Object obj, Identifier name, IWorker val) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 	
 	public void executeMethod(
 	Object obj, Identifier name, IList<IWorker> args) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 	
 	public IWorker evaluateMethod(
 	Object obj, Identifier name, IList<IWorker> args) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 }
 

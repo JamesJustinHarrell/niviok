@@ -2,12 +2,17 @@ using System;
 using System.Collections.Generic;
 
 class Null : IWorker {
-	IInterface _face;
+	IWorker _face;
 	
 	public Null() {}
 	
-	public Null(IInterface face) {
+	public Null(IWorker face) {
 		_face = face;
+	}
+	
+	//xxx remove?
+	public Null(IInterface face) {
+		_face = Bridge.wrapInterface(face);
 	}
 	
 	//xxx throw or return null?
@@ -20,7 +25,7 @@ class Null : IWorker {
 		get { return null; }
 	}
 	
-	public IInterface face {
+	public IWorker face {
 		get { return _face; }
 	}
 	

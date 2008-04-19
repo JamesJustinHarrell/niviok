@@ -5,7 +5,7 @@ static class InterfaceWrapper {
 		InterfaceImplementationInfo info =
 			new InterfaceImplementationInfo(Objects.Interface);
 		//xxx
-		System.Console.WriteLine("WARNING: InterfaceWrapper: properties and methods unimplemented"); 
+		Console.WriteLine("WARNING: InterfaceWrapper: properties and methods unimplemented"); 
 		
 		//xxx create internal interface implementation that exposes the IInterface C# object
 		
@@ -42,20 +42,20 @@ static class InterfaceWrapper {
 	}
 
 	public long ID {
-		get { throw new Error_Unimplemented(); }
+		get { throw new NotImplementedException(); }
 	}
 	
 	public bool implements(IInterface interface_) {
-		System.Console.WriteLine("WARNING: InterfaceWrapper.implements is unimplemented");
+		Console.WriteLine("WARNING: InterfaceWrapper.implements is unimplemented");
 		return true;
 	}
 	
 	public IWorker readProperty(IInterface interface_, Identifier ident) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 	
 	public void writeProperty(IInterface interface_, Identifier ident, IWorker objRef) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 }
 */

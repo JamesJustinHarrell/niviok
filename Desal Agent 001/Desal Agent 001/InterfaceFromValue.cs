@@ -27,6 +27,7 @@ but each object reference refers to a different implementation of the Interface 
 The object reference should keep track of which implementation is active.
 */
 
+using System;
 using System.Collections.Generic;
 
 class InterfaceFromValue : IInterface {
@@ -40,20 +41,24 @@ class InterfaceFromValue : IInterface {
 		_value = val;
 	}
 
-	public IList<IInterface> inheritees {
-		get { throw new Error_Unimplemented(); }
+	public IList<IWorker> inheritees {
+		get { throw new NotImplementedException(); }
 	}
 	
-	public IList<CalleeInfo> callees {
-		get { throw new Error_Unimplemented(); }
+	public IList<Callee> callees {
+		get { throw new NotImplementedException(); }
 	}
 	
-	public IDictionary<Identifier, PropertyInfo> properties {
-		get { throw new Error_Unimplemented(); }
+	public IList<Breeder> breeders {
+		get { throw new NotImplementedException(); }
 	}
 	
-	public IDictionary<Identifier, IList<MethodInfo>> methods {
-		get { throw new Error_Unimplemented(); }
+	public IDictionary<Identifier, Property> properties {
+		get { throw new NotImplementedException(); }
+	}
+	
+	public IDictionary<Identifier, IList<Method>> methods {
+		get { throw new NotImplementedException(); }
 	}
 	
 	public IWorker value {

@@ -72,7 +72,7 @@ abstract class DesibleSerializerAuto : DesibleSerializerBase {
 """
 
 desibleSerializerTemplate = """
-	protected XmlElement serialize(%(csType)s node) {
+	protected virtual XmlElement serialize(%(csType)s node) {
 		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
 		%(children)s
 		return elem;
@@ -97,7 +97,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 desexpParserTemplate = """
 	protected %(csType)s parse%(csName)s(Sexp sexp) {
 		if( sexp.list.Count != %(childCount)s )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have %(childCount)s children",
 					sexp.line, sexp.column));
@@ -111,8 +111,8 @@ desexpTerminalParserTemplate = """
 		try {
 			return new %(csType)s(sexp.atom);
 		}
-		catch(Exception e) {
-			throw new Exception(
+		catch(ParseError e) {
+			throw new ParseError(
 				String.Format(
 					"node of type %(csName)s at [{0}:{1}] cannot be of value '{2}'",
 					sexp.line, sexp.column, sexp.atom),
@@ -126,7 +126,7 @@ desexpExpressionParserTemplate = """
 		if( sexp.type != SexpType.LIST )
 			return parseTerminalExpression(sexp);
 		if( sexp.list.Count == 0 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"the list at [{0}:{1}] cannot be empty",
 					sexp.line, sexp.column));
@@ -147,17 +147,17 @@ desexpExpressionParserTemplate = """
 desexpSuperParserTemplate = """
 	protected %(csType)s parse%(csName)s(Sexp sexp) {
 		if( sexp.type != SexpType.LIST )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"%(csName)s S-Expression at [{0}:{1}] must be a list",
 					sexp.line, sexp.column));
 		if( sexp.list.Count == 0 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"the list at [{0}:{1}] cannot be empty",
 					sexp.line, sexp.column));
 		if( sexp.list.First.Value.type != SexpType.WORD )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"S-Expression at [{0}:{1}] must begin with a word",
 					sexp.line, sexp.column));
@@ -166,7 +166,7 @@ desexpSuperParserTemplate = """
 		switch(specType) {
 			%(cases)s
 			default:
-				throw new Exception(
+				throw new ParseError(
 					String.Format(
 						"unknown type of %(csName)s '{0}' at [{1}:{2}]",
 						specType, sexp.line, sexp.column));

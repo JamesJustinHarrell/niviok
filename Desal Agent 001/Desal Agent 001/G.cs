@@ -18,7 +18,7 @@ static class G {
 				foreach( T t in (o as ICollection) )
 					rv.Add(t);
 			else
-				throw new System.Exception("unknown object type for: " + o.ToString());
+				throw new ArgumentException("unknown object type for: " + o.ToString());
 		}
 		return rv;
 	}
@@ -31,6 +31,7 @@ static class G {
 		return (T)Enum.Parse(typeof(T), text, true);
 	}
 
+	//xxx should use bridge for output
 	public static void printSableccToken( Dextr.Sablecc.node.Token token ) {
 		if( token is Dextr.Sablecc.node.TIndentOpen )
 			Console.Write("INDENTPOPEN");
@@ -60,7 +61,7 @@ static class G {
 		//xxxx merge instead of just returning first
 		foreach( IWorker worker in workers )
 			return worker;
-		throw new Exception();
+		throw new NotImplementedException();
 	}
 	
 	//create the scope to be used by a function body
@@ -75,11 +76,15 @@ static class G {
 		Then finalize the scope before using.
 		That will ensure no arguments have names not specified by
 		the parameters, and that no parameters go without values.
+		
+		But wait, arguments are variables, not constants.
 		*/
 		
 		for( int i = 0; i < arguments.Count; i++ ) {
 			innerScope.declareAssign(
 				parameters[i].name,
+				IdentikeyCategory.VARIABLE,
+				parameters[i].nullableType,
 				arguments[i].value );
 		}
 
@@ -87,12 +92,12 @@ static class G {
 	}
 	
 	public static IWorker cast(IWorker source, IInterface face) {
-		if( source.face == face )
+		if( Bridge.unwrapInterface(source.face) == face )
 			return source;
 		foreach( IWorker child in source.children )
-			if( inheritsOrIs(child.face, face) )
+			if( inheritsOrIs(Bridge.unwrapInterface(child.face), face) )
 				return cast(child, face);
-		if( inheritsOrIs(source.owner.rootWorker.face, face) )
+		if( inheritsOrIs(Bridge.unwrapInterface(source.owner.rootWorker.face), face) )
 			return cast(source.owner.rootWorker, face);
 		throw new ClientException("the object does not implement this interface");
 	}
@@ -100,6 +105,6 @@ static class G {
 	public static IWorker cast(IWorker source, NullableType type) {
 		if( source is Null && type.nullable == false )
 			throw new ClientException("attempted to cast null to non-nullable type");
-		return cast(source, type.face);
+		return cast(source, Bridge.unwrapInterface(type.face));
 	}
 }

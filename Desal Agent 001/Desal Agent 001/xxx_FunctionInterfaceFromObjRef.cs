@@ -22,11 +22,11 @@ class FunctionInterfaceFromObjRef : IFunctionInterface {
 	}
 
 	public IList<Parameter> parameters {
-		get { throw new Error_Unimplemented(); }
+		get { throw new NotImplementedException(); }
 	}
 	
 	public IInterface returnType {
-		get { throw new Error_Unimplemented(); }
+		get { throw new NotImplementedException(); }
 	}
 }
 */

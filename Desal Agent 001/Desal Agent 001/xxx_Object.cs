@@ -7,11 +7,11 @@ class Object<T> : IObject<T> {
 	}
 
 	public long ID {
-		get { throw new Error_Unimplemented(); }
+		get { throw new NotImplementedException(); }
 	}
 	
 	public bool sameClass(IInterfaceImplementation<T> faceimpl) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 	
 	public T state {

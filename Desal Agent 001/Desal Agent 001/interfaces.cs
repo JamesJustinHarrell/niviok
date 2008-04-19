@@ -6,11 +6,11 @@ interface IFunction {
 }
 
 interface IInterface {
-	IList<IInterface> inheritees {get;}
-	//xxx IList<BreederInfo> breeders {get;}
-	IList<CalleeInfo> callees {get;}
-	IDictionary<Identifier, PropertyInfo> properties {get;}
-	IDictionary<Identifier, IList<MethodInfo>> methods {get;}
+	IList<IWorker> inheritees {get;}
+	IList<Breeder> breeders {get;}
+	IList<Callee> callees {get;}
+	IDictionary<Identifier, Property> properties {get;}
+	IDictionary<Identifier, IList<Method>> methods {get;}
 }
 
 interface IObject {
@@ -22,7 +22,7 @@ interface IObject {
 interface IWorker {
 	IObject owner {get;}
 	IList<IWorker> children {get;}
-	IInterface face {get;}
+	IWorker face {get;}
 	IWorker breed(IInterface face);
 	IWorker call(IList<Argument> arguments);
 	IWorker extractMember(Identifier name);

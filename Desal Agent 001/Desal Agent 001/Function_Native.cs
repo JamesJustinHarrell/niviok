@@ -40,7 +40,7 @@ class Function_Native : IFunction {
 						p.defaultValue != null ));
 			}
 			return FunctionInterface.getFuncFace(
-				new CalleeInfo(pinfos, _returnType));
+				new Callee(pinfos, _returnType));
 		}
 	}
 

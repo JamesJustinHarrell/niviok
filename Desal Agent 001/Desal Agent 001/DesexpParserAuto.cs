@@ -11,7 +11,7 @@ namespace Desexp {
 abstract class DesexpParserAuto : DesexpParserBase {
 	protected Node_Chain parseChain(Sexp sexp) {
 		if( sexp.list.Count != 2 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 2 children",
 					sexp.line, sexp.column));
@@ -22,7 +22,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_SetProperty parseSetProperty(Sexp sexp) {
 		if( sexp.list.Count != 3 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 3 children",
 					sexp.line, sexp.column));
@@ -34,7 +34,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_Using parseUsing(Sexp sexp) {
 		if( sexp.list.Count != 2 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 2 children",
 					sexp.line, sexp.column));
@@ -45,7 +45,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_Generator parseGenerator(Sexp sexp) {
 		if( sexp.list.Count != 2 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 2 children",
 					sexp.line, sexp.column));
@@ -56,7 +56,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_GenericFunction parseGenericFunction(Sexp sexp) {
 		if( sexp.list.Count != 2 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 2 children",
 					sexp.line, sexp.column));
@@ -67,7 +67,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_Xnor parseXnor(Sexp sexp) {
 		if( sexp.list.Count != 2 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 2 children",
 					sexp.line, sexp.column));
@@ -78,7 +78,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_Return parseReturn(Sexp sexp) {
 		if( sexp.list.Count != 1 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 1 children",
 					sexp.line, sexp.column));
@@ -90,8 +90,8 @@ abstract class DesexpParserAuto : DesexpParserBase {
 		try {
 			return new Node_String(sexp.atom);
 		}
-		catch(Exception e) {
-			throw new Exception(
+		catch(ParseError e) {
+			throw new ParseError(
 				String.Format(
 					"node of type String at [{0}:{1}] cannot be of value '{2}'",
 					sexp.line, sexp.column, sexp.atom),
@@ -101,7 +101,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_DeclareEmpty parseDeclareEmpty(Sexp sexp) {
 		if( sexp.list.Count != 2 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 2 children",
 					sexp.line, sexp.column));
@@ -112,7 +112,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_Break parseBreak(Sexp sexp) {
 		if( sexp.list.Count != 1 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 1 children",
 					sexp.line, sexp.column));
@@ -124,8 +124,8 @@ abstract class DesexpParserAuto : DesexpParserBase {
 		try {
 			return new Node_Integer(sexp.atom);
 		}
-		catch(Exception e) {
-			throw new Exception(
+		catch(ParseError e) {
+			throw new ParseError(
 				String.Format(
 					"node of type Integer at [{0}:{1}] cannot be of value '{2}'",
 					sexp.line, sexp.column, sexp.atom),
@@ -135,7 +135,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_Nor parseNor(Sexp sexp) {
 		if( sexp.list.Count != 2 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 2 children",
 					sexp.line, sexp.column));
@@ -146,7 +146,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_Yield parseYield(Sexp sexp) {
 		if( sexp.list.Count != 1 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 1 children",
 					sexp.line, sexp.column));
@@ -156,7 +156,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_Ignore parseIgnore(Sexp sexp) {
 		if( sexp.list.Count != 2 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 2 children",
 					sexp.line, sexp.column));
@@ -167,7 +167,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_Continue parseContinue(Sexp sexp) {
 		if( sexp.list.Count != 1 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 1 children",
 					sexp.line, sexp.column));
@@ -177,7 +177,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_EnumEntry parseEnumEntry(Sexp sexp) {
 		if( sexp.list.Count != 2 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 2 children",
 					sexp.line, sexp.column));
@@ -188,7 +188,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_Breeder parseBreeder(Sexp sexp) {
 		if( sexp.list.Count != 1 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 1 children",
 					sexp.line, sexp.column));
@@ -200,8 +200,8 @@ abstract class DesexpParserAuto : DesexpParserBase {
 		try {
 			return new Node_Identifier(sexp.atom);
 		}
-		catch(Exception e) {
-			throw new Exception(
+		catch(ParseError e) {
+			throw new ParseError(
 				String.Format(
 					"node of type Identifier at [{0}:{1}] cannot be of value '{2}'",
 					sexp.line, sexp.column, sexp.atom),
@@ -211,7 +211,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_ParameterInfo parseParameterInfo(Sexp sexp) {
 		if( sexp.list.Count != 4 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 4 children",
 					sexp.line, sexp.column));
@@ -224,7 +224,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_DeclareFirst parseDeclareFirst(Sexp sexp) {
 		if( sexp.list.Count != 4 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 4 children",
 					sexp.line, sexp.column));
@@ -237,7 +237,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_InstantiateGeneric parseInstantiateGeneric(Sexp sexp) {
 		if( sexp.list.Count != 2 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 2 children",
 					sexp.line, sexp.column));
@@ -248,7 +248,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_DictionaryEntry parseDictionaryEntry(Sexp sexp) {
 		if( sexp.list.Count != 2 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 2 children",
 					sexp.line, sexp.column));
@@ -259,7 +259,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_ForPair parseForPair(Sexp sexp) {
 		if( sexp.list.Count != 6 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 6 children",
 					sexp.line, sexp.column));
@@ -274,7 +274,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_MemberImplementation parseMemberImplementation(Sexp sexp) {
 		if( sexp.list.Count != 2 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 2 children",
 					sexp.line, sexp.column));
@@ -285,7 +285,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_MemberIdentification parseMemberIdentification(Sexp sexp) {
 		if( sexp.list.Count != 3 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 3 children",
 					sexp.line, sexp.column));
@@ -297,7 +297,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_ForRange parseForRange(Sexp sexp) {
 		if( sexp.list.Count != 6 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 6 children",
 					sexp.line, sexp.column));
@@ -312,7 +312,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_Nand parseNand(Sexp sexp) {
 		if( sexp.list.Count != 2 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 2 children",
 					sexp.line, sexp.column));
@@ -325,8 +325,8 @@ abstract class DesexpParserAuto : DesexpParserBase {
 		try {
 			return new Node_Rational(sexp.atom);
 		}
-		catch(Exception e) {
-			throw new Exception(
+		catch(ParseError e) {
+			throw new ParseError(
 				String.Format(
 					"node of type Rational at [{0}:{1}] cannot be of value '{2}'",
 					sexp.line, sexp.column, sexp.atom),
@@ -336,7 +336,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_Import parseImport(Sexp sexp) {
 		if( sexp.list.Count != 2 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 2 children",
 					sexp.line, sexp.column));
@@ -347,7 +347,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_Method parseMethod(Sexp sexp) {
 		if( sexp.list.Count != 2 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 2 children",
 					sexp.line, sexp.column));
@@ -358,7 +358,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_Dictionary parseDictionary(Sexp sexp) {
 		if( sexp.list.Count != 3 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 3 children",
 					sexp.line, sexp.column));
@@ -370,7 +370,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_Enum parseEnum(Sexp sexp) {
 		if( sexp.list.Count != 2 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 2 children",
 					sexp.line, sexp.column));
@@ -381,7 +381,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_Possibility parsePossibility(Sexp sexp) {
 		if( sexp.list.Count != 2 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 2 children",
 					sexp.line, sexp.column));
@@ -392,7 +392,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_Interface parseInterface(Sexp sexp) {
 		if( sexp.list.Count != 2 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 2 children",
 					sexp.line, sexp.column));
@@ -403,7 +403,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_Throw parseThrow(Sexp sexp) {
 		if( sexp.list.Count != 1 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 1 children",
 					sexp.line, sexp.column));
@@ -413,17 +413,17 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected INode_InterfaceMember parseInterfaceMember(Sexp sexp) {
 		if( sexp.type != SexpType.LIST )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"InterfaceMember S-Expression at [{0}:{1}] must be a list",
 					sexp.line, sexp.column));
 		if( sexp.list.Count == 0 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"the list at [{0}:{1}] cannot be empty",
 					sexp.line, sexp.column));
 		if( sexp.list.First.Value.type != SexpType.WORD )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"S-Expression at [{0}:{1}] must begin with a word",
 					sexp.line, sexp.column));
@@ -439,7 +439,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 			case "method":
 				return parseMethod(sexp);
 			default:
-				throw new Exception(
+				throw new ParseError(
 					String.Format(
 						"unknown type of InterfaceMember '{0}' at [{1}:{2}]",
 						specType, sexp.line, sexp.column));
@@ -448,7 +448,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_IdentikeyType parseIdentikeyType(Sexp sexp) {
 		if( sexp.list.Count != 2 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 2 children",
 					sexp.line, sexp.column));
@@ -459,7 +459,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_Curry parseCurry(Sexp sexp) {
 		if( sexp.list.Count != 3 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 3 children",
 					sexp.line, sexp.column));
@@ -471,7 +471,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_Or parseOr(Sexp sexp) {
 		if( sexp.list.Count != 2 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 2 children",
 					sexp.line, sexp.column));
@@ -482,7 +482,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_Block parseBlock(Sexp sexp) {
 		if( sexp.list.Count != 2 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 2 children",
 					sexp.line, sexp.column));
@@ -493,7 +493,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_GenericParameter parseGenericParameter(Sexp sexp) {
 		if( sexp.list.Count != 2 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 2 children",
 					sexp.line, sexp.column));
@@ -504,7 +504,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_While parseWhile(Sexp sexp) {
 		if( sexp.list.Count != 2 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 2 children",
 					sexp.line, sexp.column));
@@ -514,21 +514,22 @@ abstract class DesexpParserAuto : DesexpParserBase {
 	}
 
 	protected Node_DeclareAssign parseDeclareAssign(Sexp sexp) {
-		if( sexp.list.Count != 4 )
-			throw new Exception(
+		if( sexp.list.Count != 5 )
+			throw new ParseError(
 				String.Format(
-					"node at [{0}:{1}] must have 4 children",
+					"node at [{0}:{1}] must have 5 children",
 					sexp.line, sexp.column));
 		return new Node_DeclareAssign(
    			parseOne<Node_Identifier>(parseIdentifier, sexp),
 			parseOne<Node_IdentikeyType>(parseIdentikeyType, sexp),
+			parseOne<Node_Boolean>(parseBoolean, sexp),
 			parseOne<Node_Boolean>(parseBoolean, sexp),
 			parseOne<INode_Expression>(parseExpression, sexp) );
 	}
 
 	protected Node_ForKey parseForKey(Sexp sexp) {
 		if( sexp.list.Count != 4 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 4 children",
 					sexp.line, sexp.column));
@@ -543,8 +544,8 @@ abstract class DesexpParserAuto : DesexpParserBase {
 		try {
 			return new Node_Boolean(sexp.atom);
 		}
-		catch(Exception e) {
-			throw new Exception(
+		catch(ParseError e) {
+			throw new ParseError(
 				String.Format(
 					"node of type Boolean at [{0}:{1}] cannot be of value '{2}'",
 					sexp.line, sexp.column, sexp.atom),
@@ -554,7 +555,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_Comprehension parseComprehension(Sexp sexp) {
 		if( sexp.list.Count != 4 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 4 children",
 					sexp.line, sexp.column));
@@ -567,7 +568,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_Array parseArray(Sexp sexp) {
 		if( sexp.list.Count != 2 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 2 children",
 					sexp.line, sexp.column));
@@ -578,7 +579,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_Select parseSelect(Sexp sexp) {
 		if( sexp.list.Count != 3 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 3 children",
 					sexp.line, sexp.column));
@@ -590,7 +591,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_ParameterImpl parseParameterImpl(Sexp sexp) {
 		if( sexp.list.Count != 4 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 4 children",
 					sexp.line, sexp.column));
@@ -603,7 +604,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_IgnoreMember parseIgnoreMember(Sexp sexp) {
 		if( sexp.list.Count != 2 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 2 children",
 					sexp.line, sexp.column));
@@ -614,7 +615,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_Breed parseBreed(Sexp sexp) {
 		if( sexp.list.Count != 2 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 2 children",
 					sexp.line, sexp.column));
@@ -625,7 +626,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_Call parseCall(Sexp sexp) {
 		if( sexp.list.Count != 2 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 2 children",
 					sexp.line, sexp.column));
@@ -636,7 +637,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_Function parseFunction(Sexp sexp) {
 		if( sexp.list.Count != 3 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 3 children",
 					sexp.line, sexp.column));
@@ -650,8 +651,8 @@ abstract class DesexpParserAuto : DesexpParserBase {
 		try {
 			return new Node_Direction(sexp.atom);
 		}
-		catch(Exception e) {
-			throw new Exception(
+		catch(ParseError e) {
+			throw new ParseError(
 				String.Format(
 					"node of type Direction at [{0}:{1}] cannot be of value '{2}'",
 					sexp.line, sexp.column, sexp.atom),
@@ -661,7 +662,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_Conditional parseConditional(Sexp sexp) {
 		if( sexp.list.Count != 2 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 2 children",
 					sexp.line, sexp.column));
@@ -672,7 +673,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_Expose parseExpose(Sexp sexp) {
 		if( sexp.list.Count != 1 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 1 children",
 					sexp.line, sexp.column));
@@ -682,7 +683,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_Worker parseWorker(Sexp sexp) {
 		if( sexp.list.Count != 3 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 3 children",
 					sexp.line, sexp.column));
@@ -694,7 +695,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_NullableType parseNullableType(Sexp sexp) {
 		if( sexp.list.Count != 2 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 2 children",
 					sexp.line, sexp.column));
@@ -705,7 +706,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_Case parseCase(Sexp sexp) {
 		if( sexp.list.Count != 2 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 2 children",
 					sexp.line, sexp.column));
@@ -716,7 +717,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_TryCatch parseTryCatch(Sexp sexp) {
 		if( sexp.list.Count != 4 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 4 children",
 					sexp.line, sexp.column));
@@ -729,7 +730,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_Caller parseCaller(Sexp sexp) {
 		if( sexp.list.Count != 2 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 2 children",
 					sexp.line, sexp.column));
@@ -740,7 +741,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_Cast parseCast(Sexp sexp) {
 		if( sexp.list.Count != 2 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 2 children",
 					sexp.line, sexp.column));
@@ -751,7 +752,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_Labeled parseLabeled(Sexp sexp) {
 		if( sexp.list.Count != 2 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 2 children",
 					sexp.line, sexp.column));
@@ -762,7 +763,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_ForValue parseForValue(Sexp sexp) {
 		if( sexp.list.Count != 4 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 4 children",
 					sexp.line, sexp.column));
@@ -775,7 +776,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_Property parseProperty(Sexp sexp) {
 		if( sexp.list.Count != 3 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 3 children",
 					sexp.line, sexp.column));
@@ -787,7 +788,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_Callee parseCallee(Sexp sexp) {
 		if( sexp.list.Count != 2 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 2 children",
 					sexp.line, sexp.column));
@@ -798,7 +799,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_Loop parseLoop(Sexp sexp) {
 		if( sexp.list.Count != 1 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 1 children",
 					sexp.line, sexp.column));
@@ -808,7 +809,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_And parseAnd(Sexp sexp) {
 		if( sexp.list.Count != 2 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 2 children",
 					sexp.line, sexp.column));
@@ -819,7 +820,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_Argument parseArgument(Sexp sexp) {
 		if( sexp.list.Count != 2 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 2 children",
 					sexp.line, sexp.column));
@@ -830,7 +831,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_ForManual parseForManual(Sexp sexp) {
 		if( sexp.list.Count != 4 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 4 children",
 					sexp.line, sexp.column));
@@ -843,7 +844,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_DoWhile parseDoWhile(Sexp sexp) {
 		if( sexp.list.Count != 2 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 2 children",
 					sexp.line, sexp.column));
@@ -854,7 +855,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_DoTimes parseDoTimes(Sexp sexp) {
 		if( sexp.list.Count != 3 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 3 children",
 					sexp.line, sexp.column));
@@ -866,7 +867,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_Null parseNull(Sexp sexp) {
 		if( sexp.list.Count != 1 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 1 children",
 					sexp.line, sexp.column));
@@ -878,8 +879,8 @@ abstract class DesexpParserAuto : DesexpParserBase {
 		try {
 			return new Node_MemberType(sexp.atom);
 		}
-		catch(Exception e) {
-			throw new Exception(
+		catch(ParseError e) {
+			throw new ParseError(
 				String.Format(
 					"node of type MemberType at [{0}:{1}] cannot be of value '{2}'",
 					sexp.line, sexp.column, sexp.atom),
@@ -889,17 +890,17 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected INode_ScopeAlteration parseScopeAlteration(Sexp sexp) {
 		if( sexp.type != SexpType.LIST )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"ScopeAlteration S-Expression at [{0}:{1}] must be a list",
 					sexp.line, sexp.column));
 		if( sexp.list.Count == 0 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"the list at [{0}:{1}] cannot be empty",
 					sexp.line, sexp.column));
 		if( sexp.list.First.Value.type != SexpType.WORD )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"S-Expression at [{0}:{1}] must begin with a word",
 					sexp.line, sexp.column));
@@ -911,7 +912,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 			case "expose":
 				return parseExpose(sexp);
 			default:
-				throw new Exception(
+				throw new ParseError(
 					String.Format(
 						"unknown type of ScopeAlteration '{0}' at [{1}:{2}]",
 						specType, sexp.line, sexp.column));
@@ -920,7 +921,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_GenericInterface parseGenericInterface(Sexp sexp) {
 		if( sexp.list.Count != 2 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 2 children",
 					sexp.line, sexp.column));
@@ -931,7 +932,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_ExceptionHandler parseExceptionHandler(Sexp sexp) {
 		if( sexp.list.Count != 4 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 4 children",
 					sexp.line, sexp.column));
@@ -946,8 +947,8 @@ abstract class DesexpParserAuto : DesexpParserBase {
 		try {
 			return new Node_IdentikeyCategory(sexp.atom);
 		}
-		catch(Exception e) {
-			throw new Exception(
+		catch(ParseError e) {
+			throw new ParseError(
 				String.Format(
 					"node of type IdentikeyCategory at [{0}:{1}] cannot be of value '{2}'",
 					sexp.line, sexp.column, sexp.atom),
@@ -957,7 +958,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_FunctionInterface parseFunctionInterface(Sexp sexp) {
 		if( sexp.list.Count != 3 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 3 children",
 					sexp.line, sexp.column));
@@ -969,7 +970,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_NamespacedValueIdentikey parseNamespacedValueIdentikey(Sexp sexp) {
 		if( sexp.list.Count != 2 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 2 children",
 					sexp.line, sexp.column));
@@ -980,7 +981,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_Object parseObject(Sexp sexp) {
 		if( sexp.list.Count != 1 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 1 children",
 					sexp.line, sexp.column));
@@ -990,7 +991,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_Bundle parseBundle(Sexp sexp) {
 		if( sexp.list.Count != 3 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 3 children",
 					sexp.line, sexp.column));
@@ -1002,7 +1003,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_Plane parsePlane(Sexp sexp) {
 		if( sexp.list.Count != 2 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 2 children",
 					sexp.line, sexp.column));
@@ -1013,7 +1014,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_Xor parseXor(Sexp sexp) {
 		if( sexp.list.Count != 2 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 2 children",
 					sexp.line, sexp.column));
@@ -1024,7 +1025,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_ExtractMember parseExtractMember(Sexp sexp) {
 		if( sexp.list.Count != 2 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 2 children",
 					sexp.line, sexp.column));
@@ -1035,7 +1036,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_Implements parseImplements(Sexp sexp) {
 		if( sexp.list.Count != 2 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 2 children",
 					sexp.line, sexp.column));
@@ -1048,7 +1049,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 		if( sexp.type != SexpType.LIST )
 			return parseTerminalExpression(sexp);
 		if( sexp.list.Count == 0 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"the list at [{0}:{1}] cannot be empty",
 					sexp.line, sexp.column));
@@ -1184,7 +1185,7 @@ abstract class DesexpParserAuto : DesexpParserBase {
 
 	protected Node_Assign parseAssign(Sexp sexp) {
 		if( sexp.list.Count != 3 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"node at [{0}:{1}] must have 3 children",
 					sexp.line, sexp.column));

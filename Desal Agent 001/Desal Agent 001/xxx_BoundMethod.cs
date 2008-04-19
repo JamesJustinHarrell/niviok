@@ -19,8 +19,8 @@ class BoundMethod<T> : IWorker {
 		_name = name;
 		
 		if( typeof(T) == typeof(Node_String) ) {
-			System.Console.WriteLine("NOTICE:");
-			System.Console.WriteLine(name);
+			Console.WriteLine("NOTICE:");
+			Console.WriteLine(name);
 		}
 	}
 	
@@ -31,11 +31,11 @@ class BoundMethod<T> : IWorker {
 		And maybe the interfaces of methods from inheritees, depending on how it gets speced out. 
 		* /
 	
-		get { throw new Error_Unimplemented(); }
+		get { throw new NotImplementedException(); }
 	}
 	
 	public IWorker cast(IInterface aInterface) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 	
 	public IWorker call(IList<Argument> arguments) {
@@ -43,11 +43,11 @@ class BoundMethod<T> : IWorker {
 	}
 		
 	public IWorker extractMember(Identifier name) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 	
 	public void setProperty(Identifier propName, IWorker aValue) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 }
 

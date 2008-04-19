@@ -40,7 +40,7 @@ argsTable = {
 	],
 	"desexp" : [
 		"-path=%s" % os.path.join(agentBase, "test.desexp"),
-		"-print-tree=true",
+#		"-print-tree=true",
 		"-representation=desexp",
 	]
 }
@@ -49,6 +49,7 @@ def runTest(args) :
 	args = [
 		"mono",
 		"--debug",
+		"--trace=program",
 		os.path.join(agentBase, "Desal Agent 001/bin/Debug/Desal Agent 001.exe")
 	] + args
 	

@@ -1,3 +1,5 @@
+//implements the Interface interface
+
 class Client_Interface {
 	public static IWorker wrap(IInterface face) {
 		Client_Interface o = new Client_Interface(face);
@@ -34,12 +36,8 @@ class Client_Interface {
 		_face = face;
 	}
 	
-	public IInterface value {
-		get { return _face; }
-	}
-	
-	public bool equals( IInterface face) {
-		//xxx also could be same if same members and same interface ID
+	public bool equals(IInterface face) {
+		//xxx there are other situations where this should true
 		return _face == face;
 	}
 }

@@ -21,7 +21,7 @@ static partial class Executor {
 
 	//array
 	public static IWorker execute(Node_Array node, Scope scope) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 
 	//assign
@@ -35,34 +35,52 @@ static partial class Executor {
 	public static IWorker execute(Node_Block node, Scope scope) {
 		Scope innerScope = new Scope(scope);
 		
-		//reserve identikeys, so the closures will include
-		//the identikeys from other declare-first nodes
+		//reserve identikeys
 		foreach( INode_Expression member in node.members )
-			if( member is Node_DeclareFirst )
-				scope.reserveDeclareFirst( (member as Node_DeclareFirst).name.value );
+			if( member is Node_DeclareFirst ) {
+				Node_DeclareFirst df = (Node_DeclareFirst)member;
+				scope.reserveDeclareFirst(
+					df.name.value,
+					df.identikeyType.identikeyCategory.value,
+					null);
+			}
+
+		//set nullable-type of identikeys
+		foreach( INode_Expression member in node.members )
+			if( member is Node_DeclareFirst ) {
+				Node_DeclareFirst df = (Node_DeclareFirst)member;
+				scope.setType(
+					df.name.value,
+					Evaluator.evaluate(df.identikeyType.nullableType, scope));
+			}
 
 		IWorker rv = new Null();
 		foreach( INode_Expression expr in node.members ) {
 			rv = execute(expr, innerScope);
 		}
+
 		return rv;
 	}
 
 	//break
 	public static IWorker execute(Node_Break node, Scope scope) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 
 	//breed
 	public static IWorker execute(Node_Breed node, Scope scope) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 	
 	//bundle
 	public static IWorker execute(Node_Bundle node, Scope scope) {
 		foreach( Node_Plane plane in node.planes ) {
-			foreach( Node_DeclareFirst decl in plane.declareFirsts )
-				scope.reserveDeclareFirst( decl.name.value );
+			foreach( Node_DeclareFirst decl in plane.declareFirsts ) {
+				scope.reserveDeclareFirst(
+					decl.name.value,
+					decl.identikeyType.identikeyCategory.value,
+					Evaluator.evaluate(decl.identikeyType.nullableType, scope));
+			}
 		}
 		
 		foreach( Node_Plane plane in node.planes ) {
@@ -108,7 +126,7 @@ static partial class Executor {
 	
 	//caller
 	public static IWorker execute(Node_Caller node, Scope scope) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 	
 	//cast
@@ -120,7 +138,7 @@ static partial class Executor {
 	
 	//chain
 	public static IWorker execute(Node_Chain node, Scope scope) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 
 	//conditional
@@ -130,52 +148,65 @@ static partial class Executor {
 				return execute(p.result, scope);
 		if( node.@else != null )
 			return execute(node.@else, scope);
-		return new Null(null);				
+		return new Null();			
 	}
 	
 	//curry
 	public static IWorker execute(Node_Curry node, Scope scope) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 	
 	//declare-assign
 	public static IWorker execute(Node_DeclareAssign node, Scope scope) {
 		IWorker val = execute(node.value, scope);
-		scope.declareAssign(node.name.value, val);
+		scope.declareAssign(
+			node.name.value,
+			node.identikeyType.identikeyCategory.value,
+			Evaluator.evaluate(node.identikeyType.nullableType, scope),
+			val);
 		return val;
 	}
 
 	//declare-empty
 	public static IWorker execute(Node_DeclareEmpty node, Scope scope) {
-		scope.declareEmpty(node.name.value);
-		return new Null();
+		scope.declareEmpty(
+			node.name.value,
+			node.identikeyType.identikeyCategory.value,
+			Evaluator.evaluate(node.identikeyType.nullableType, scope));
+		return scope.evaluateIdentifier(node.name.value);
 	}
 
+	//xxx all declare-first assginments should happen beforehand, separately
+	//xxx then normal execution only returns the value that has already been assigned
 	//declare-first
 	public static IWorker execute(Node_DeclareFirst node, Scope scope) {
 		IWorker val = execute(node.value, scope);
-		scope.declareFirst(node.name.value, val);
+		scope.declareFirst(
+			node.name.value,
+			node.identikeyType.identikeyCategory.value,
+			Evaluator.evaluate(node.identikeyType.nullableType, scope),
+			val);
 		return val;
 	}
 	
 	//dictionary
 	public static IWorker execute(Node_Dictionary node, Scope scope) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 	
 	//do-while
 	public static IWorker execute(Node_DoWhile node, Scope scope) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 	
 	//do-times
 	public static IWorker execute(Node_DoTimes node, Scope scope) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 	
 	//enum
 	public static IWorker execute(Node_Enum node, Scope scope) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 	
 	//extract-member
@@ -187,17 +218,17 @@ static partial class Executor {
 	
 	//for-key
 	public static IWorker execute(Node_ForKey node, Scope scope) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 	
 	//for-manual
 	public static IWorker execute(Node_ForManual node, Scope scope) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 	
 	//for-pair
 	public static IWorker execute(Node_ForPair node, Scope scope) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 	
 	//for-range
@@ -208,7 +239,10 @@ static partial class Executor {
 		while( current < Bridge.unwrapInteger(limit) ) {
 			Scope innerScope = new Scope(scope);
 			innerScope.declareAssign(
-				node.name.value, Bridge.wrapInteger(current) );
+				node.name.value,
+				IdentikeyCategory.VARIABLE,
+				new NullableType(Bridge.faceInt, false),
+				Bridge.wrapInteger(current));
 			execute(node.action, innerScope);
 			current++;
 		}
@@ -217,7 +251,7 @@ static partial class Executor {
 	
 	//for-value
 	public static IWorker execute(Node_ForValue node, Scope scope) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 	
 	//function
@@ -237,17 +271,24 @@ static partial class Executor {
 	
 	//function-interface
 	public static IWorker execute(Node_FunctionInterface node, Scope scope) {
-		throw new Error_Unimplemented();
+		IList<ParameterInfo> parameters = new List<ParameterInfo>();
+		foreach( Node_ParameterInfo pinfo in node.parameterInfos )
+			parameters.Add(Evaluator.evaluate(pinfo, scope));
+		return Client_Interface.wrap(
+			FunctionInterface.getFuncFace(
+				new Callee(
+					parameters,
+					Evaluator.evaluate(node.returnInfo, scope))));
 	}
 	
 	//generator
 	public static IWorker execute(Node_Generator node, Scope scope) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 	
 	//generic-function
 	public static IWorker execute(Node_GenericFunction node, Scope scope) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 	
 	//identifier
@@ -257,22 +298,22 @@ static partial class Executor {
 	
 	//ignore
 	public static IWorker execute(Node_Ignore node, Scope scope) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 	
 	//implements
 	public static IWorker execute(Node_Implements node, Scope scope) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 	
 	//instantiate-generic
 	public static IWorker execute(Node_InstantiateGeneric node, Scope scope) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 	
 	//interface
 	public static IWorker execute(Node_Interface node, Scope scope) {
-		return Bridge.wrapInterface( Evaluator.evaluate(node, scope) );
+		return Bridge.wrapInterface(Evaluator.evaluate(node, scope));
 	}
 	
 	//integer
@@ -282,7 +323,7 @@ static partial class Executor {
 	
 	//labeled
 	public static IWorker execute(Node_Labeled node, Scope scope) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 	
 	//loop
@@ -309,7 +350,7 @@ static partial class Executor {
 	
 	//namespaced-value-identikey
 	public static IWorker execute(Node_NamespacedValueIdentikey node, Scope scope) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 	
 	//nor
@@ -371,12 +412,12 @@ static partial class Executor {
 	
 	//return
 	public static IWorker execute(Node_Return node, Scope scope) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 	
 	//select
 	public static IWorker execute(Node_Select node, Scope scope) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 	
 	//set-property
@@ -394,12 +435,12 @@ static partial class Executor {
 	
 	//throw
 	public static IWorker execute(Node_Throw node, Scope scope) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 	
 	//try-catch
 	public static IWorker execute(Node_TryCatch node, Scope scope) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 	
 	//while
@@ -429,7 +470,7 @@ static partial class Executor {
 	
 	//yield
 	public static IWorker execute(Node_Yield node, Scope scope) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 	
 	//any expression node
@@ -438,7 +479,7 @@ static partial class Executor {
 			.GetMethod("execute", new Type[]{node.GetType(), typeof(Scope)});
 		
 		if( meth.GetParameters()[0].ParameterType == typeof(INode_Expression) )
-			throw new Exception(String.Format(
+			throw new ApplicationException(String.Format(
 				"can't execute node of type '{0}'",
 				node.GetType()));
 		

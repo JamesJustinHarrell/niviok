@@ -1,0 +1,46 @@
+Parallel to supertype interfaces, subtype interfaces, and union interfaces, are concept interfaces. These are similar to C++'s "concept" feature or Haskell's type classes.
+
+A concept declares members that must be implemented, like a supertype interface. However, the means by which a worker/object is determined to implement an interface is different. That is, any worker/object that implements members with the same name and type as the concept interface is determined to implement that interface. Also, any interface that includes all members declared by a concept interface is said to inherit that concept interface.
+
+So workers/objects cannot actually declare that they implement a particular concept interface, although a worker node can declare it wants to implement a concept interface in order to get the agent to ensure that it does.
+
+Perhaps there could also be an auto-concept identikey type that automatically creates a concept interface depending on how the identikey is used. This would be similar to (but much weaker than) Haskell's typing system.
+
+Example:
+
+interface Alpha
+	func addCaps(String) //e.g. cap & arg & cap
+	prop String cap
+
+interface Beta
+	func appendSuffix(String) //e.g. arg & suffix
+	prop String suffix
+
+interface Gamma
+	func addCaps(String) //e.g. aBc -> aBcAC
+	func addLower(String) //e.g. aBc -> aBcb
+	func toCaps(String) //e.g. -> aBc -> ABC
+	func toLower(String) //e.g. -> aBc -> abc
+
+concept Decorator
+	func addCaps(String)
+	func appendSuffix(String)
+
+decl foo = object
+	impl Alpha
+		...
+	impl Beta
+		...
+
+decl bar = object
+	impl Beta
+		...
+	impl Gamma
+		...
+
+function testDecorator(Decorator d, String base)
+	println( d.addCaps(base) )
+	println( d.appendSuffix(base) )
+
+testDecorator(foo)
+testDecorator(bar)

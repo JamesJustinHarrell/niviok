@@ -1,0 +1,151 @@
+<block xmlns='urn:desible1'>
+	<!-- Note: The nullable-type children of identikey-type nodes cannot reference Interface, because it wont' have been declared yet. -->
+	<!-- Note: Desal Agent 001 must be recompiled to get this file copied next to the binary. Just modifying this file won't produce changes in Desal Agent 001. -->
+	
+	<!-- Bool -->
+	<declare-first label='member'>
+		<identifier label='name'>Bool</identifier>
+		<identikey-type>
+			<identikey-category>constant</identikey-category>
+			<nullable-type>
+				<identifier label='interface'>Interface</identifier>
+				<boolean label='nullable'>false</boolean>
+			</nullable-type>
+		</identikey-type>
+		<boolean label='breed'>false</boolean>
+		<interface label='value'>
+			<method label='member'>
+				<identifier label='name'>equals?</identifier>
+				<function-interface label='interface'>
+					<parameter-info>
+						<direction>in</direction>
+						<nullable-type>
+							<identifier label='interface'>Bool</identifier>
+							<boolean label='nullable'>false</boolean>
+						</nullable-type>
+						<identifier label='name'>value</identifier>
+						<boolean label='has-default-value'>false</boolean>
+					</parameter-info>
+					<nullable-type label='return-info'>
+						<identifier label='interface'>Bool</identifier>
+						<boolean label='nullable'>false</boolean>
+					</nullable-type>
+				</function-interface>
+			</method>
+		</interface>
+	</declare-first>
+
+	<!-- Int -->
+	<declare-first label='member'>
+		<identifier label='name'>Int</identifier>
+		<identikey-type>
+			<identikey-category>constant</identikey-category>
+			<nullable-type>
+				<boolean label='nullable'>false</boolean>
+			</nullable-type>
+		</identikey-type>
+		<boolean label='breed'>false</boolean>
+		<interface label='value'>
+			<method label='member'>
+				<identifier label='name'>add</identifier>
+				<function-interface label='interface'>
+					<parameter-info>
+						<identifier label='name'>value</identifier>
+						<nullable-type>
+							<boolean label='nullable'>false</boolean>
+							<identifier label='interface'>Int</identifier>
+						</nullable-type>
+						<boolean label='has-default-value'>false</boolean>
+						<direction>in</direction>
+					</parameter-info>
+					<nullable-type label='return-info'>
+						<boolean label='nullable'>false</boolean>
+						<identifier label='interface'>Int</identifier>
+					</nullable-type>
+				</function-interface>
+			</method>
+		</interface>
+	</declare-first>
+	
+	<!-- Interface -->
+	<declare-first label='member'>
+		<identifier label='name'>Interface</identifier>
+		<identikey-type>
+			<identikey-category>constant</identikey-category>
+			<nullable-type>
+				<boolean label='nullable'>false</boolean>
+			</nullable-type>
+		</identikey-type>
+		<boolean label='breed'>false</boolean>
+		<interface label='value'>
+			<!-- -->
+		</interface>
+	</declare-first>
+
+	<!-- Object -->
+	<declare-first label='member'>
+		<identifier label='name'>Object</identifier>
+		<identikey-type>
+			<identikey-category>constant</identikey-category>
+			<nullable-type>
+				<boolean label='nullable'>false</boolean>
+			</nullable-type>
+		</identikey-type>
+		<boolean label='breed'>false</boolean>
+		<interface label='value'>
+		</interface>
+	</declare-first>
+
+	<!-- Rat -->
+	<declare-first label='member'>
+		<identifier label='name'>Rat</identifier>
+		<identikey-type>
+			<identikey-category>constant</identikey-category>
+			<nullable-type>
+				<boolean label='nullable'>false</boolean>
+			</nullable-type>
+		</identikey-type>
+		<boolean label='breed'>false</boolean>
+		<interface label='value'>
+		</interface>
+	</declare-first>
+	
+	<!-- String -->
+	<declare-first label='member'>
+		<identifier label='name'>String</identifier>
+		<identikey-type>
+			<identikey-category>constant</identikey-category>
+			<nullable-type>
+				<boolean label='nullable'>false</boolean>
+			</nullable-type>
+		</identikey-type>
+		<boolean label='breed'>false</boolean>
+		<interface label='value'>
+			<property label='member'>
+				<identifier label='name'>length</identifier>
+				<nullable-type>
+					<boolean label='nullable'>false</boolean>
+				</nullable-type>
+				<boolean label='writable'>false</boolean>
+			</property>
+			<method label='member'>
+				<identifier label='name'>concat</identifier>
+				<function-interface label='interface'>
+					<parameter-info>
+						<identifier label='name'>value</identifier>
+						<nullable-type>
+							<boolean label='nullable'>false</boolean>
+							<identifier label='interface'>String</identifier>
+						</nullable-type>
+						<boolean label='has-default-value'>false</boolean>
+						<direction>in</direction>
+					</parameter-info>
+					<nullable-type label='return-info'>
+						<boolean label='nullable'>false</boolean>
+						<identifier label='interface'>String</identifier>
+					</nullable-type>
+				</function-interface>
+			</method>
+		</interface>
+	</declare-first>
+</block>

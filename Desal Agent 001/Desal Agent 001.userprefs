@@ -4,7 +4,7 @@
     <ViewMemento id="ProjectPad">
       <Node expanded="True">
         <Node name="Desal Agent 001" expanded="True">
-          <Node name="References" expanded="True" selected="True" />
+          <Node name="Bridge.cs" selected="True" />
         </Node>
       </Node>
     </ViewMemento>

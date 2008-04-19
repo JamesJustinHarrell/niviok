@@ -244,6 +244,7 @@ abstract class DesibleParserAuto : DesibleParserBase {
 				parseOne<Node_Identifier>(element, "*", "name"),
 				parseOne<Node_IdentikeyType>(element, "identikey-type", null),
 				parseOne<Node_Boolean>(element, "*", "breed"),
+				parseOne<Node_Boolean>(element, "*", "infer-interface"),
 				parseOne<INode_Expression>(element, "*", "value") );
 		});
 

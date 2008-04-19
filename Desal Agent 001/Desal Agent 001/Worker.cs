@@ -1,51 +1,51 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
-class Worker : WorkerBase, IWorker {
-	IInterface _face;
-	
+class Worker : WorkerBase, IWorker {	
 	//check members to make sure this is a valid implementation
 	void checkImplementation() {
-		/*
-		
+		IInterface bareFace = Bridge.unwrapInterface(_face);
+	
 		//check methods
-		foreach( IList<MethodInfo> methList in _face.methods.Values )
-			foreach( MethodInfo meth in methList )
-				if( ! (
+		foreach( IList<Method> methList in bareFace.methods.Values )
+			foreach( Method meth in methList ) {
+				Debug.Assert(meth.name != null);
+				Debug.Assert(meth.face != null);
+				if(!(
 					_methods.ContainsKey(meth.name) &&
-					_methods[meth.name].ContainsKey(meth.iface) ) )
+					_methods[meth.name].ContainsKey(meth.face) ))
 				{
-					throw new System.Exception(
+					throw new ApplicationException(
 						"method with name '" + meth.name + "' not implemented");
 				}
+			}
 		
 		//ensure FaceImpl doesn't implement anything not defined in Face
-		foreach( Identifier ident in _voidMethods.Keys ) {
-			foreach( IFunctionInterface faceImpl in _voidMethods[ident].Keys ) {
+		foreach( Identifier ident in _methods.Keys ) {
+			foreach(IInterface faceImpl in _methods[ident].Keys) {
 				bool found = false;
-				foreach( MethodInfo meth in _face.methods ) {
-					if( meth.name == ident && meth.iface == faceImpl ) {
-						found = true;
-						break;
-					}
+				foreach( Identifier ident2 in bareFace.methods.Keys ) {
+					foreach( Method meth in bareFace.methods[ident2] )
+						if( meth.name == ident && meth.face == faceImpl ) {
+							found = true;
+							break;
+						}
 				}
 				if( ! found )
-					throw new System.Exception(
-						"implemented method '" + ident.str + "' not defined");
+					throw new ApplicationException(
+						"implemented method '" + ident + "' not defined");
 			}
 		}
-		
-		*/
 	}
 
 /*xxx
-	//xxx does this belong here?
+	//xxx
 	bool isMatch(IInterface face, IList<Argument> args) {
-		//xxx vararg
-		if( args.count != face.parameters.Count ) {
+		IList<ParameterInfo> parameters = face.callees[0].parameters;
+		if( parameters.Count != args.Count )
 			return false;
-		}
-		//xxx types
+		//xxx consider varargs and types
 		return true;
 	}
 
@@ -59,17 +59,16 @@ class Worker : WorkerBase, IWorker {
 			}
 		}
 		if( matches.Count == 0 )
-			throw new System.Exception("no matches found");
+			throw new ApplicationException("no matches found");
 		if( matches.Count > 1 )
-			throw new System.Exception("multiple matches");
+			throw new ApplicationException("multiple matches");
 		return matches[0];
 	}
 */
-	public Worker( WorkerBase members, IInterface face )
+	public Worker(WorkerBase members)
 	: base(members)
 	{
-		_face = face;
-		checkImplementation();
+		//xxxx checkImplementation();
 	}
 
 	public IObject owner {
@@ -80,19 +79,19 @@ class Worker : WorkerBase, IWorker {
 		get { return _children; }
 	}
 
-	public IInterface face {
+	public IWorker face {
 		get { return _face; }
 	}
 	
 	public IWorker breed(IInterface face) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 	
 	public IWorker call(IList<Argument> arguments) {
 		//xxx use arguments to determine which callee to call
 		foreach( IFunction func in _callees.Values )
 			return func.call(arguments);
-		throw new Exception("attempted to call worker with no callees");
+		throw new ClientException("attempted to call worker with no callees");
 	}
 	
 	public IWorker extractMember(Identifier name) {
@@ -103,7 +102,7 @@ class Worker : WorkerBase, IWorker {
 			foreach( IFunction func in _methods[name].Values )
 				return Client_Function.wrap(func);
 		}
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 	
 	public void setProperty(Identifier propName, IWorker worker) {

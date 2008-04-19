@@ -66,7 +66,6 @@ class Sexp {
 
 abstract class DesexpParserBase {
 	protected delegate T ParseFunc<T>(Sexp sexp);
-	protected abstract Node_String parseString(Sexp sexp);
 	protected abstract INode_Expression parseTerminalExpression(Sexp sexp);
 	protected abstract INode_Expression parseExpressionDefault(Sexp sexp);
 	protected abstract T parseOne<T>( ParseFunc<T> func, Sexp parent );
@@ -93,7 +92,7 @@ class DesexpParser : DesexpParserAuto {
 			return parseString(sexp);
 		if( sexp.type == SexpType.WORD )
 			return parseIdentifier(sexp);
-		throw new Exception(String.Format(
+		throw new ParseError(String.Format(
 			"unknown type of terminal S-Expression: '{0}'", sexp));
 	}
 	
@@ -175,12 +174,12 @@ class DesexpParser : DesexpParserAuto {
 	//parse first child of @parent and remove
 	protected override T parseOpt<T>( ParseFunc<T> func, Sexp parent ) {
 		if( parent.type != SexpType.LIST )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"S-Expression at [{0}:{1}] must be a list",
 					parent.line, parent.column));
 		if( parent.list.Count == 0 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"S-Expression at [{0}:{1}] is missing children",
 					parent.line, parent.column));
@@ -194,17 +193,17 @@ class DesexpParser : DesexpParserAuto {
 	//parse children of first child of @parent and remove first child
 	protected override IList<T> parseMult0<T>( ParseFunc<T> func, Sexp sexp ) {
 		if( sexp.type != SexpType.LIST )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"S-Expression at [{0}:{1}] must be a list",
 					sexp.line, sexp.column));
 		if( sexp.list.Count == 0 )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"S-Expression at [{0}:{1}] doesn't have enough children",
 					sexp.line, sexp.column));
 		if( sexp.list.First.Value.type != SexpType.LIST )
-			throw new Exception(
+			throw new ParseError(
 				String.Format(
 					"list's first child at [{0}:{1}] must be list",
 					sexp.list.First.Value.line, sexp.list.First.Value.column));
@@ -221,7 +220,10 @@ class DesexpParser : DesexpParserAuto {
 	protected override IList<T> parseMult1<T>( ParseFunc<T> func, Sexp sexp ) {
 		IList<T> rv = parseMult0(func, sexp);
 		if( rv.Count == 0 )
-			throw new System.Exception("list must contain at least 1 child");
+			throw new ParseError(
+				String.Format(
+					"list at [{0}:{1}] must contain at least 1 child",
+					sexp.line, sexp.column));
 		return rv;
 	}
 }

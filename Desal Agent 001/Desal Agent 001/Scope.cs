@@ -1,38 +1,10 @@
 using System;
 using System.Collections.Generic;
 
-/*
-Note: The spec defines something like this:
-	class Identikey { Identifier, List<Value> }
-	class Scope { Collection<Identikey> }
-But this agent does this:
-	class Identikey { List<Value> }
-	class Scope { Dictionary<Identifier, Identikey> }
-The effect should be the same, but internally it's slightly different.
-*/
-
-class Identikey {
-	/*
-	if this is a function identikey,
-	the active interface of this value will be the sum
-	of the active interfaces of the functions bound to this identikey
-	*/
-	IWorker _value;
-	
-	public Identikey( IWorker val ) {
-		_value = val;
-	}
-	
-	public IWorker val {
-		get { return _value; }
-		set { _value = value; }
-	}
-}
-
 class Scope {
 	IDictionary<Identifier, Identikey> _identikeys;
-	Bridge _bridge;
-	Scope _parent;
+	Bridge _bridge; //null if _parent is not null
+	Scope _parent; //null if _bridge is not null
 	
 	public Scope(Bridge bridge) {
 		_identikeys = new Dictionary<Identifier, Identikey>();
@@ -44,7 +16,11 @@ class Scope {
 		_parent = parentScope;
 	}
 	
-	//create copy that only includes identikeys specifiedy by @idents
+	public Bridge bridge {
+		get { return ( _bridge != null ? _bridge : _parent.bridge ); }
+	}
+	
+	//create copy that only includes identikeys specifiedy by @wantedIdents
 	public Scope createClosure(ICollection<Identifier> wantedIdents) {
 		Scope scope = new Scope(_bridge);
 		Scope currentOld = this;
@@ -58,69 +34,114 @@ class Scope {
 		return scope;
 	}
 
+	//used by Desal "assign" nodes
 	public void assign(Identifier ident, IWorker val) {
 		if( _identikeys.ContainsKey(ident) )
-			_identikeys[ident].val = val;
+			_identikeys[ident].value = val;
 		else if( _parent != null )
 			_parent.assign(ident, val);
 		else
-			throw new Exception(String.Format(
+			throw new ClientException(String.Format(
 				"no identikey with name '{0}'", ident));
 	}
 
-	public void declareEmpty(Identifier ident) {
-		_identikeys.Add( ident, new Identikey(null) );
+	//used by Desal "declare-empty" nodes
+	public void declareEmpty(
+	Identifier ident, IdentikeyCategory category, NullableType type) {
+		_identikeys.Add(
+			ident,
+			new Identikey(
+				category,
+				type,
+				new Null(type.face)));
 	}
 
+	//used by Desal "declare-assign" nodes
 	public void declareAssign(
-	Identifier ident, IWorker val ) {
-		_identikeys.Add( ident, new Identikey(val) );
+	Identifier ident, IdentikeyCategory category, NullableType type, IWorker val) {
+		_identikeys.Add(
+			ident,
+			new Identikey(
+				category,
+				type,
+				val));
 	}
 	
-	//all declare-first identikeys in a node must be declared
-	public void reserveDeclareFirst(Identifier ident) {
-		_identikeys.Add( ident, new Identikey(null) );
+	//value expressions in Desal "declare-first" nodes
+	//may reference each other, so all identikeys must be created
+	//before any of the value expressions are executed
+	public void reserveDeclareFirst(
+	Identifier ident, IdentikeyCategory category, NullableType type) {
+		if( category == IdentikeyCategory.CONSTANT ) {
+			if( _identikeys.ContainsKey(ident) )
+				throw new ClientException(
+					String.Format(
+						"identikey with name '{0}' declared multiple " +
+						"times in same scope",
+						ident));
+		
+			_identikeys.Add(
+				ident,
+				new Identikey(
+					category,
+					type,
+					null));
+		}
+		else if( category == IdentikeyCategory.FUNCTION ) {
+			if( _identikeys.ContainsKey(ident) ) {
+				if( _identikeys[ident].category != IdentikeyCategory.FUNCTION )
+					throw new ClientException(
+						String.Format(
+							"identifier '{0}' declared as function identikey " +
+							"and as constant identikey",
+							ident));
+			}
+			else {
+				_identikeys.Add(
+					ident,
+					new Identikey(
+						category,
+						null,
+						null));
+			}
+		}
+		else {
+			throw new ClientException(
+				"declare-first nodes must declare constant or function identikeys");
+		}
 	}
 	
-	//xxx need to do checking to make sure this is being assigned to a declare-first node
-	//also need to ensure and check lots of other stuff
-	public void declareFirst(Identifier ident, IWorker val) {
+	public void setType(Identifier ident, NullableType type) {
+		_identikeys[ident].type = type;
+	}
+	
+	//used by Desal "declare-first" nodes
+	public void declareFirst(
+	Identifier ident, IdentikeyCategory category, NullableType type, IWorker val) {
 		if( ! _identikeys.ContainsKey(ident) )
-			System.Console.WriteLine(
-				"WARNING: scope does not contain declare-first identikey named {0}",
-				ident.ToString() );
-		_identikeys[ident].val = val;
+			bridge.printlnWarning(
+				String.Format(
+					"scope does not contain declare-first identikey named '{0}'",
+					ident ));
+		_identikeys[ident].value = val;
 	}
 
 	public IWorker evaluateIdentifier(Identifier ident) {
-		if( _identikeys.ContainsKey(ident) )
-			return _identikeys[ident].val;
+		if( _identikeys.ContainsKey(ident) ) {
+			Identikey key = _identikeys[ident];
+			if( key.value == null )
+				return new FutureWorker(key);
+			return key.value;
+		}
 		if( _parent != null )
 			return _parent.evaluateIdentifier(ident);
-		throw new ClientException( "identifier '" + ident.ToString() + "' is undefined" );
+		throw new ClientException("identifier '" + ident + "' is undefined");
 	}
 	
+	//xxx remove?
 	public IWorker evaluateLocalIdentifier(Identifier ident) {
 		if( _identikeys.ContainsKey(ident) )
-			return _identikeys[ident].val;
-		throw new ClientException( "identifier '" + ident.ToString() + "' is undefined" );
-	}
-	
-	/* xxx not used yet
-	public void reserve(Identifier ident, IdentifierCategory cat) {
-		//reserve an identifier for a namespace or alias
-		throw new Error_Unimplemented();
-	}
-	
-	//xxx should this use bridge?
-	public void printIdentifiers() {
-		foreach( Identifier ident in _binds.Keys ) {
-			System.Console.WriteLine("'" + ident.str + "'");
-		}
-	}
-	*/
-	
-	public Bridge bridge {
-		get { return ( _bridge != null ? _bridge : _parent.bridge ); }
+			return _identikeys[ident].value;
+		throw new ClientException("identifier '" + ident + "' is undefined");
 	}
 }

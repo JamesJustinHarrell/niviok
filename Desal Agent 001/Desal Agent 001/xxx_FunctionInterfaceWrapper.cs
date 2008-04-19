@@ -25,7 +25,7 @@ class FunctionInterfaceWrapper : IObject {
 	}
 	
 	public long ID {
-		get { throw new Error_Unimplemented(); }
+		get { throw new NotImplementedException(); }
 	}
 	
 	public bool implements(IInterface interface_) {
@@ -33,11 +33,11 @@ class FunctionInterfaceWrapper : IObject {
 	}
 	
 	public IWorker readProperty(IInterface interface_, Identifier ident) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 	
 	public void writeProperty(IInterface interface_, Identifier ident, IWorker objRef) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 }
 */

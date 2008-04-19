@@ -24,19 +24,19 @@ class FunctionFromObjRef : IFunction {
 	}
 	
 	public IList<Parameter> parameters {
-		get { throw new Error_Unimplemented(); }
+		get { throw new NotImplementedException(); }
 	}
 	
 	public IInterface returnType {
-		get { throw new Error_Unimplemented(); }
+		get { throw new NotImplementedException(); }
 	}
 	
 	public void executeCall(IList<IWorker> IList<Argument>) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 	
 	public IWorker evaluateCall(IList<IWorker> IList<Argument>) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 }
 

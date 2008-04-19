@@ -51,14 +51,14 @@ class DesibleSerializer : DesibleSerializerAuto {
 	#pragma warning disable 0169
 
 	//bundle
-	XmlElement serialize(Node_Bundle node) {
+	protected override XmlElement serialize(Node_Bundle node) {
 		XmlElement elem = _doc.CreateElement("bundle", desible1NS);
 		append<Node_Plane>(elem, node.planes, null);
 		return elem;
 	}
 	
 	//plane
-	XmlElement serialize(Node_Plane node) {
+	protected override XmlElement serialize(Node_Plane node) {
 		XmlElement elem = _doc.CreateElement("inline-plane", desible1NS);
 		append<Node_DeclareFirst>(elem, node.declareFirsts, null);
 		return elem;
@@ -70,7 +70,6 @@ class DesibleSerializer : DesibleSerializerAuto {
 		elem.AppendChild( _doc.CreateTextNode(node.ToString()) );
 		return elem;
 	}
-	XmlElement serialize(Node_Access node) { return serializeTerminal(node); }
 	XmlElement serialize(Node_Boolean node) { return serializeTerminal(node); }
 	XmlElement serialize(Node_Direction node) { return serializeTerminal(node); }
 	XmlElement serialize(Node_Identifier node) { return serializeTerminal(node); }
@@ -92,7 +91,7 @@ class DesibleSerializer : DesibleSerializerAuto {
 				null );
 
 		if(	meth.GetParameters()[0].ParameterType == typeof(INode) )
-			throw new Exception(String.Format(
+			throw new ApplicationException(String.Format(
 				"can't serialize node of type {0}", node.typeName));
 		
 		try {

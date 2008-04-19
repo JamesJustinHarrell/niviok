@@ -100,17 +100,17 @@ class Tokenizer {
 
 	bool isIllegal(char c) {
 		string chars = "\0";
-		return System.Array.IndexOf(chars.ToCharArray(), c) > -1;
+		return Array.IndexOf(chars.ToCharArray(), c) > -1;
 	}
 	
 	bool isNumerical(char c) {
 		string chars = "0123456789";
-		return System.Array.IndexOf(chars.ToCharArray(), c) > -1;
+		return Array.IndexOf(chars.ToCharArray(), c) > -1;
 	}
 
 	bool isReserved(char c) {
 		string chars = ",.=+-*/`~@%^&|\\(){}[]<>";
-		return System.Array.IndexOf(chars.ToCharArray(), c) > -1;
+		return Array.IndexOf(chars.ToCharArray(), c) > -1;
 	}
 	
 	//the current character
@@ -136,8 +136,8 @@ class Tokenizer {
 	
 	void checkedAdvance(char c) {
 		if( current() != c )
-			throw new System.Exception(
-				System.String.Format("current character was not '{0}'", c));
+			throw new ParseError(
+				String.Format("current character was not '{0}'", c));
 		advance();
 	}
 
@@ -196,8 +196,8 @@ class Tokenizer {
 		else if( current() == '/' && peek() == '*' )
 			consumeSlashStarComment();
 		else
-			throw new System.Exception(
-				System.String.Format(
+			throw new ParseError(
+				String.Format(
 					"unexpected character on noncode line: {0}",
 					current() ) );
 	}
@@ -210,7 +210,7 @@ class Tokenizer {
 		else if( c == '\n' )
 			consumeNewline();
 		else if( c == '\t' )
-			throw new System.Exception("tab found after non-tab character");
+			throw new ParseError("tab found after non-tab character");
 		else if( c == '"' || c == '\'' )
 			consumeString();
 		else if( c == '#' )
@@ -224,7 +224,8 @@ class Tokenizer {
 		else if( isReserved(c) )
 			consumeReserved();
 		else {
-			System.Console.WriteLine("unknown character: '{0}'", c);
+			//xxx use bridge to output
+			Console.WriteLine("unknown character: '{0}'", c);
 			index = content.Length;
 			return;
 		}
@@ -359,7 +360,7 @@ class Tokenizer {
 					if( mode == Mode.DONE )
 						break;
 					else
-						throw new System.Exception("ran past end of text");
+						throw new ParseError("ran past end of text");
 				}
 			
 				if( mode == Mode.BEGIN_LINE )
@@ -369,12 +370,15 @@ class Tokenizer {
 				else if( mode == Mode.CONTINUE_CODE_LINE )
 					continueCodeLine();
 				else
-					throw new System.Exception("unknown mode");
+					throw new ParseError("unknown mode");
 			}
 		}
-		catch(System.Exception e) {
-			throw new System.Exception(
-				System.String.Format("Line {0} Column {1}", lineNumber, currentColumn),
+		catch(ParseError e) {
+			throw new ParseError(
+				String.Format(
+					"Line {0} Column {1}",
+					lineNumber,
+					currentColumn),
 				e);
 		}
 	}

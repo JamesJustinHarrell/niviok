@@ -195,7 +195,7 @@ decl Array&lt;Int> numbers = generateNumbers()
 		<section xml:id="node.identikey-category">
 			<title>identikey-category</title>
 			
-			<para>specifies one of: namespace, dynamic, typed, constant, function</para>
+			<para>specifies one of: namespace, variable, constant, function</para>
 			
 			<para>See the <link linkend="identikeys">section on identikeys</link>.</para>
 		</section>
@@ -280,6 +280,8 @@ alias: Xml
 				<member>? expression interface</member>
 				<member>boolean nullable</member>
 			</simplelist>
+			
+			<para>If [interface] produces null, an error results.</para>
 		</section>
 
 		<section xml:id="node.parameter-info">
@@ -623,16 +625,23 @@ while container.hasMore?
 				<member>identikey-type</member>
 			</simplelist>
 			
-			<para role="process">The identikey-category of the identikey-type must not specify "namespace", "function", or "constant". The identikey-category of the identikey-type must not specify "typed" if the nullable-type of the identikey-type does not specify an interface. The nullable-type of the identikey-type must not specifiy nullable as false.</para>
+			<para role="process">The identikey-category of the identikey-type must specify "variable". The nullable-type of the identikey-type must not specifiy nullable as false.</para>
 			
 			<para>Creates an identikey in the parent scope with the specified type. After this node executes, the produced identikey does not yet point to any values.</para>
 
 			<programlisting>
 decl foo
-foo = 123
-println(foo)
-foo = 456
-println(foo)
+decl ? foo
+decl Int foo
+decl Int ? foo
+			</programlisting>
+			
+			<programlisting>
+decl bar
+bar = 123
+println(bar)
+bar = 456
+println(bar)
 			</programlisting>
 		</section>
 		
@@ -995,12 +1004,22 @@ bar3()
 				<member>identifier name</member>
 				<member>identikey-type</member>
 				<member>boolean breed</member>
+				<member>boolean infer interface</member>
 				<member>expression value</member>
 			</simplelist>
 			
-			<para role="process">The identikey-category of the identikey-type node must not specify "namespace" or "function".</para>
+			<para role="process">The identikey-category of the identikey-type node must specify "variable" or "constant". If the category is "constant", [infer interface] must be false. If [infer interface] is true, the interface of the [nullable-type] of the [identikey-type] is set to be the same as the active interface of [value].</para>
 			
 			<para>Creates an identikey in the parent scope with the specified type, then assigns the specified value to it.</para>
+			
+			<programlisting>
+decl foo = 123
+decl ? foo = 123
+decl auto foo = 123
+decl auto ? foo = 123
+decl Int foo = 123
+decl Int ? foo = 123
+			</programlisting>
 		</section>
 		
 		<section xml:id="node.declare-first">

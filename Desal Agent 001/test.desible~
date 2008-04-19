@@ -25,14 +25,14 @@
 			</identikey-type>
 			<boolean label='breed'>false</boolean>
 			<function label='value'>
-				<parameter>
+				<parameter-impl>
 					<nullable-type>
 						<boolean label='nullable'>false</boolean>
 					</nullable-type>
 					<identifier label='name'>title</identifier>
 					<boolean label='has-default-value'>false</boolean>
 					<direction>in</direction>
-				</parameter>
+				</parameter-impl>
 				<block label='body'>
 					<call label='member'>
 						<identifier label='receiver'>println</identifier>
@@ -76,22 +76,22 @@
 			</identikey-type>
 			<boolean label='breed'>false</boolean>
 			<function label='value'>
-				<parameter>
+				<parameter-impl>
 					<nullable-type>
 						<boolean label='nullable'>false</boolean>
 					</nullable-type>
 					<identifier label='name'>title</identifier>
 					<boolean label='has-default-value'>false</boolean>
 					<direction>in</direction>
-				</parameter>
-				<parameter>
+				</parameter-impl>
+				<parameter-impl>
 					<nullable-type>
 						<boolean label='nullable'>false</boolean>
 					</nullable-type>
 					<identifier label='name'>function</identifier>
 					<boolean label='has-default-value'>false</boolean>
 					<direction>in</direction>
-				</parameter>
+				</parameter-impl>
 				<block label='body'>
 					<call label='member'>
 						<identifier label='receiver'>header</identifier>
@@ -255,13 +255,14 @@
 					<declare-assign label='member'>
 						<identifier label='name'>str</identifier>
 						<identikey-type>
-							<identikey-category>typed</identikey-category>
+							<identikey-category>variable</identikey-category>
 							<nullable-type>
 								<identifier label='interface'>String</identifier>
 								<boolean label='nullable'>false</boolean>
 							</nullable-type>
 						</identikey-type>
 						<boolean label='breed'>false</boolean>
+						<boolean label='infer-interface'>false</boolean>
 						<call label='value'>
 							<extract-member label='receiver'>
 								<string label='source'>&#x1FFF0; Hello,</string>
@@ -310,12 +311,13 @@
 					<declare-assign label='member'>
 						<identifier label='name'>&#x1FFF0;&#x1FFF1;</identifier>
 						<identikey-type>
-							<identikey-category>dynamic</identikey-category>
+							<identikey-category>variable</identikey-category>
 							<nullable-type>
 								<boolean label='nullable'>false</boolean>
 							</nullable-type>
 						</identikey-type>
 						<boolean label='breed'>false</boolean>
+						<boolean label='infer-interface'>false</boolean>
 						<string label='value'>astral characters in identifiers</string>
 					</declare-assign>
 					<call label='member'>
@@ -575,26 +577,28 @@
 					<!-- decl t = true -->
 					<declare-assign label='member'>
 						<identikey-type>
-							<identikey-category>typed</identikey-category>
+							<identikey-category>variable</identikey-category>
 							<nullable-type>
 								<boolean label='nullable'>false</boolean>
 							</nullable-type>
 						</identikey-type>
 						<identifier label='name'>t</identifier>
 						<boolean label='breed'>false</boolean>
+						<boolean label='infer-interface'>false</boolean>
 						<identifier label='value'>true</identifier>
 					</declare-assign>
 					
 					<!-- decl f = false -->
 					<declare-assign label='member'>
 						<identikey-type>
-							<identikey-category>typed</identikey-category>
+							<identikey-category>variable</identikey-category>
 							<nullable-type>
 								<boolean label='nullable'>false</boolean>
 							</nullable-type>
 						</identikey-type>
 						<identifier label='name'>f</identifier>
 						<boolean label='breed'>false</boolean>
+						<boolean label='infer-interface'>false</boolean>
 						<identifier label='value'>false</identifier>
 					</declare-assign>
 					

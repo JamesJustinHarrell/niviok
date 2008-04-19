@@ -1,3 +1,5 @@
+//implements the Bool interface
+
 class Client_Boolean {
 	//xxx automate wrapping
 	public static IWorker wrap(bool value) {
@@ -33,10 +35,6 @@ class Client_Boolean {
 	
 	Client_Boolean(bool value) {
 		_value = value;
-	}
-	
-	public bool value {
-		get { return _value; }
 	}
 	
 	bool equals(bool value) {

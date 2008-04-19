@@ -4,26 +4,32 @@ declare-* nodes:
 	declare-assign
 
 identikey categories:
+	namespace
+	variable
+	constant
+	functions
 
 namespace
 	always constant
 	bound to a namespace, instead of a value like other nodes
 	has it's own creation nodes (e.g. import, using)
 
-dynamic
-	value and type can change
-	examples
-		decl foo = 123
-		decl ? foo = 123
-
-typed
-	value can change, but type cannot
+variable
+	value can change
+	identikey is typed, so that all values assigned must be of that type
+		by that type can be dyn
 	does not do function merging
 	if type is automatically determined, cannot be created with declare-empty
 	examples
-		decl auto foo = 123
+		decl foo
+		decl ? foo
+		decl Int foo
+		decl Int ? foo
+		decl foo = 123 //nullable type required by identikey is dyn
+		decl ? foo = 123
+		decl auto foo = 123 //nullable type required by identikey determined from value
 		decl auto ? foo = 123
-		decl Int foo = 123
+		decl Int foo = 123 //nullable type required by identikey is explicitly stated
 		decl Int ? foo = 123
 
 constant
@@ -51,5 +57,5 @@ function
 		declfirst func func()Int foo = getSomeFunction()
 
 
-The nullable-type associated with an identikey can be used to downcast the value before assigning, but otherwise should have no effect on program execution.
+The nullable-type associated with a constant or function identikey can be used to downcast the value before assigning, but otherwise should have no effect on program execution.
 

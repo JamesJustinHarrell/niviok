@@ -1,3 +1,5 @@
+//corresponds to Desal "argument" nodes
+
 class Argument {
 	Identifier _name;
 	IWorker _value;

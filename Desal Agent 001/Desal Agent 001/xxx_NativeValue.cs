@@ -12,22 +12,22 @@ class NativeValue<T> : IWorker {
 	}
 
 	public IInterface activeInterface {
-		get { throw new Error_Unimplemented(); }
+		get { throw new NotImplementedException(); }
 	}
 	public long objectID {
-		get { throw new Error_Unimplemented(); }
+		get { throw new NotImplementedException(); }
 	}
 	public IWorker cast(IInterface aInterface) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 	public IWorker call(IList<Argument> arguments) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 	public IWorker getProperty(Identifier name) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 	public void setProperty(Identifier propName, IWorker aValue) {
-		throw new Error_Unimplemented();
+		throw new NotImplementedException();
 	}
 	public IWorker callMethod(Identifier name, IList<Argument> arguments) {
 		return _impl.callMethod(_obj, name, IList<Argument>);
@@ -39,7 +39,7 @@ class NativeValue<T> : IWorker {
 		if( face.methods.ContainsKey(name) )
 			return new BoundMethod<T>(_obj, _impl, name);
 		throw new ClientException(
-			System.String.Format("no member with name: '{0}'", name.ToString()));
+			String.Format("no member with name: '{0}'", name.ToString()));
 	}
 	
 	public T obj {
