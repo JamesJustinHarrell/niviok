@@ -1,0 +1,146 @@
+compound
+	decl Node node = getNode()
+	
+	decl Foo = interface[
+		get Node node
+	]
+	
+	decl bar = object[
+		privimpl Foo [
+			node <-> outer:node
+		]
+	]
+	
+	decl Foo foo = privcast[ bar, Foo ]
+
+New nodes "private-worker" and "private-cast". Any code can cast an object to a function that was implemented privately, but it must know the interface to do so, and interfaces implemented with a private-worker node do not show up in the interface implementation tree.
+
+Problem: Already known interfaces cannot be implemented privately. Instead, must create a new interface and privately implement that. There's also the chance the private interface could leak out, allowing nonprivileged code to access the private information of the object.
+
+---
+
+compound
+	decl Node node = getNode()
+
+	decl privface Foo = interface[
+		get Node node
+	]
+	
+	decl bar = object[
+		impl Alpha [...]
+		impl Beta [...]
+		privimpl Foo [
+			node <-> outer:node
+		]
+	]
+	
+	Node nodeAgain = privateextract[ bar, Foo ].node
+
+A new identikey-category, "private interface", is created. The identikey cannot be evaluated. (Once an interface is associated with a privface identikey, that interface cannot be obtained from that identikey.) The identikey can only be used to refer to the interface inside a private-worker node or a private-extract node, which are similar worker and extract nodes, but only work on privface identikeys instead of expressions.
+
+private-worker ::=
+	identifier privface <- must refer to a privface identikey
+	* member-implementation
+
+private-extract ::=
+	identifier privface <- must refer to a privface identikey
+	identifier member name
+
+An interface implemented by a private-worker node would not show up in the interface implementation tree of the owner object.
+
+Problem: Very special and weird behavior of scopes.
+
+Possible problem: Might not want child nodes to be able to access this.
+
+
+---
+
+That requires every private interface be bound to a private-interface identikey. (Although it would be easy to combine the interfaces and bind/impl that. Plus I could restrict private-impls to one per object.) An alternative would be a private key that can be applied to multiple interfaces.
+
+compound
+	decl Interface Foo = ...
+	decl Node node = getNode()
+
+	decl privkey myKey
+	
+	decl bar = object[
+		impl Alpha [...]
+		impl Beta [...]
+		privimpl myKey Foo [
+			node <-> outer:node
+		]
+	]
+	
+	Node nodeAgain = privatecast[ bar, myKey, Foo ].node
+	Node nodeYetAgain = (bar as Foo using myKey).node
+
+declare-private-key ::=
+	identifier name
+
+private-cast ::=
+	expression object
+	identifier private key
+	expression interface
+
+private-worker ::=
+	identifier privkey
+	worker
+
+---
+
+same as above, but only allows one private interface impl
+
+compound
+	decl Interface Foo = ...
+	decl Node node = getNode()
+
+	decl privkey myKey
+	
+	decl bar = object[
+		impl Alpha [...]
+		impl Beta [...]
+		privimpl myKey Foo [
+			node <-> outer:node
+		]
+	]
+	
+	Node nodeAgain = (bar privcast myKey).node
+
+declare-private-key ::=
+	identifier name
+
+private-cast ::=
+	expression object
+	identifier private key
+
+private-worker ::=
+	identifier privkey
+	worker
+
+---
+
+Some of these new nodes could instead be functions.
+
+compound
+	decl Interface Foo = ...
+	decl Node node = getNode()
+
+	decl myKey = createPrivateKey()
+	
+	decl bar = object[
+		impl Alpha [...]
+		impl Beta [...]
+		privimpl myKey Foo [
+			node <-> outer:node
+		]
+	]
+	
+	Node nodeAgain = privateCast(bar, myKey, Foo).node
+
+private-worker ::=
+	expression key
+	worker
+
+This is probably the simplest solution so far. Without any help from the langauge, storing and retrieving private data in objects would be very complex. The other solutions that add language support are quite complex. This solution would add very little to the language, yet still make storing and retrieving private data in objects quite simple.
+
+

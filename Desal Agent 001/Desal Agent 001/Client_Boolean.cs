@@ -26,7 +26,7 @@ class Client_Boolean {
 								args.evaluateLocalIdentifier(
 									new Identifier("value"))) ));
 				},
-				null ));
+				Bridge.universalScope ));
 		
 		return builder.compile();
 	}

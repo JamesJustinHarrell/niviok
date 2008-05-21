@@ -4,6 +4,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 static class G {
 	static ICollection<T> collect__<T>( ICollection args ) {	
@@ -68,6 +69,7 @@ static class G {
 	//assumes the IList<Argument> have been matched to an appropriate function
 	public static Scope setupArguments(
 	IList<ParameterImpl> parameters, IList<Argument> arguments, Scope outerScope) {
+		Debug.Assert(outerScope != null);
 		Scope innerScope = new Scope(outerScope);
 		
 		/* xxx

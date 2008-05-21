@@ -1,0 +1,19 @@
+func printNames(Collection<String> names)
+	for String name in names
+		println(name)
+
+func printNames2(Collection<String> names)
+	for Iterator<String> iter in yieldIterators(names)
+		println(iter.current)
+
+func replaceNames(Collection<String> names, String searchName, String newName)
+	for Iterator<String> iter in yieldIterators(names)
+		if iter.current == searchName
+			names.replace(iter, newName)
+
+//or if built-in support (could just be syntactic)
+func replaceNames2(Collection<String> names, String searchName, String newName)
+	for Iterator<String> iter from names
+		if iter.current == searchName
+			names.replace(iter, newName)
+

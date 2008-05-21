@@ -29,9 +29,10 @@ Perl, Ruby (jewels)
 Python (monty python, animal)
 Eiffel (building)
 Java (food)
-ECMAScript, JavaScript (descriptive)
-PHP, C, C++, C#, D (letters)
-
+ECMAScript, JavaScript, Groovy (descriptive)
+C, C++, C#, D (letters)
+PHP (initialism)
+Kite, Subtext (things)
 
 4 chars is too short (perl, ruby, java)
 10 chars is too long (ecmascript)
@@ -41,28 +42,23 @@ PHP, C, C++, C#, D (letters)
 
 double characters suck (smaLLtalk, grOOvy, eiFFel)
 
-requirements:
+guidelines:
 	6-8 characters
 	2 syllables
 	no repeated characters
 
-possibilities: (number in parens is Google hits)
+representations should not have names that are similar to the name of the semantics
 
-Kunflai (0)
-Estaroba (1)
-Menalga (4)
-Niviok (5)
-Bontro (2K)
-Tranko (15K)
-Eskucha (15K)
-Chaleta (31K)
-Kubiki (44K)
-Treste (58K)
-Desal (151K)
-Cometi (186K)
-Estahora (189)
-Megusta (308K)
-Onima (1,240K)
-Mechanika (5,560M)
-Veste (11,100K)
-
+things that need names:
+	semantics (previously Desam)
+		Niviok
+	text representation favoring terseness (previously Dextr)
+		Fujin (from Final Fantasy VIII, whose sentences often consist of a single word)
+	text representation favoring clarity (previously Desexp)
+		Ivan (EE-von, from Digimon Savers, who keeps saying out loud what he's thinking)
+	XML representation (previously Desible)
+		Desible
+	visual representation (previously Desual)
+		Mitsuka (for Mitsuka Yoshimine from DearS, who is very sexy and showy)
+	proof-of-concept implementation (previously Desal Implementation 001 and Desal Agent 001)
+		Acrid (because it's written in C#, and "acrid" can be a synonym for sharp)

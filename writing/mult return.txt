@@ -1,0 +1,10 @@
+Need to figure out the best way for functions to return multiple values. Are "out" and "inout" parameters good enough?
+
+func doStuff = {Int a, Int b | a * b && a + b}
+
+decl ?Int multed
+decl ?Int added
+
+doStuff(123, 456) :results =>
+	multed = :1
+	added = :2

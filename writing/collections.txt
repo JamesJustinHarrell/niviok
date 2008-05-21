@@ -1,0 +1,29 @@
+Collections I want available in Desal.
+Set, Bag, Dict, and MultDict should come in mutable and immutable forms.
+
+Sequence (immutable sequence)
+
+Deck (deque, sequence)
+	can insert/remove at beginning and end
+
+Chain (linked list, sequence)
+	can insert/remove at any position using iterators
+
+Set
+
+Bag (multiset)
+
+Dict (dictionary, associative array)
+
+MultDict (multi-dictionary)
+
+
+
+in native namespace:
+	Array
+	decl Array<Int> foo1 = Array.empty<Int>(size=500)
+	decl Array<Int> foo2 = Array.convert<Int>(collection=numbers)
+	decl Array<Int> foo3 = Array<Int>(1, 2, 3, 789, 90000)
+	foo[12] = 45
+	foo[78] = 910
+	println(foo[12])

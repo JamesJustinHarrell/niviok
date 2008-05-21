@@ -1,0 +1,20 @@
+Some people think a string is nothing more than a sequence of characters. But these people are wrong.
+
+In Unicode, there are many rules about what characters can appear where. For example, a combining character cannot appear at the beginning of a string, because it would have nothing to combine with.
+
+(Also, a surrogate should not appear anywhere in a string (expect internally and non-visibly as a surrogate pair), but a character type could take care of that.)
+
+If a Unicode string is reversed as if it were just a sequence of characters, you would change which characters the combining characters combine with.
+
+However, could a string be defined as a sequence of "minimum Unicode string"? A minimum Unicode string could be, for example, a single meaningful character, or a meaningful character followed by combining characters. A minimum Unicode string could also ensure that certain characters which may be allowed to standalone, like null or surrogates, is not included.
+
+If that would be enough to comply with Unicode, then a string could be defined as something like:
+
+declare Interface String = Sequence<MinimumString>
+
+for MinimumString ms in getSomeString()
+	println(ms)
+
+If String were defined this way, a String could be easily reversed without problem.
+
+An idea that probably differs from Unicode terminology would by to call a String a sequence of Character, and a Character a sequence of CodePoint. (Multiple code points, e.g. a standalone followed by combining characters, come together to form a single character.) See if Unicode already has terms for these things, and if so, use those terms.

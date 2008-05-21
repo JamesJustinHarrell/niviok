@@ -32,7 +32,7 @@ class Client_String {
 								args.evaluateIdentifier(
 									new Identifier("value"))) ));
 				},
-				null ));
+				Bridge.universalScope ));
 			
 		builder.addMethod(
 			new Identifier("concat!"),
@@ -52,7 +52,7 @@ class Client_String {
 								new Identifier("value"))) );
 					return Bridge.wrapCodePoints(o._codePoints);
 				},
-				null ));
+				Bridge.universalScope ));
 
 		builder.addMethod(
 			new Identifier("substring"),
@@ -72,7 +72,7 @@ class Client_String {
 									args.evaluateLocalIdentifier(
 										new Identifier("start"))) ));
 				},
-				null ));
+				Bridge.universalScope ));
 
 		builder.addMethod(
 			new Identifier("substring"),
@@ -100,7 +100,7 @@ class Client_String {
 									args.evaluateLocalIdentifier(
 										new Identifier("limit"))) ));
 				},
-				null ));
+				Bridge.universalScope ));
 		
 		return builder.compile();
 	}

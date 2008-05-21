@@ -1,0 +1,105 @@
+Problem:
+* you have a gigantic library namespace, with many descendant namespaces
+* the descendant namespaces are implemented in different modules
+* allow flexibility in importing
+
+Magic:Alpha:Foo
+Magic:Alpha:Bar
+
+module
+	root-namespace-identification "http://www.magiclibrary.com/1.X"
+	default-root-namespace-name Magic
+	module-namespace Alpha:Foo
+
+	import things [ "name" "things" ]
+	enclosure
+		expose std
+		visible func doFooStuff {...}
+
+module
+	root-namespace-identification "http://www.magiclibrary.com/1.X"
+	default-root-namespace-name Magic
+	module-namespace Alpha:Bar
+
+	import things [ "name" "things" ]
+	enclosure
+		expose std
+		visible func doBarStuff {...}
+
+Five ways to import a module: default, bind, under, as, expose
+
+#default
+#ignore root-namespace-identification
+#use default-root-namespace-name
+#use module-namespace
+module
+	import default [ "relative path" "libmagicfoo.so" ]
+	import default [ "relative path" "libmagicbar.so" ]
+	enclosure
+		expose std
+		visible func main {
+			Magic:Alpha:Foo:doFooStuff()
+			Magic:Alpha:Bar:doBarStuff()
+		}
+
+#bind
+#use root-namespace-identification
+#ignore default-root-namespace-name
+#use module-namespace
+module
+	root-namespace-bind "http://www.magiclibrary.com/1.X" as M
+	import bind [ "relative path" "libmagicfoo.so" ]
+	import bind [ "relative path" "libmagicbar.so" ]
+	enclosure
+		expose std
+		visible func main {
+			M:Alpha:Foo:doFooStuff()
+			M:Alpha:Bar:doBarStuff()
+		}
+
+#under
+#ignore root-namespace-identification
+#ignore default-root-namespace-name
+#use module-namespace
+module
+	import under X [ "relative path" "libmagicfoo.so" ]
+	import under Y [ "relative path" "libmagicbar.so" ]
+	enclosure
+		expose std
+		visible func main {
+			X:Alpha:Foo:doFooStuff()
+			Y:Alpha:Bar:doBarStuff()
+		}
+
+#as
+#ignore root-namespace-identification
+#ignore default-root-namespace-name
+#ignore module-namespace
+module
+	import as F:F [ "relative path" "libmagicfoo.so" ]
+	import as B:B [ "relative path" "libmagicbar.so" ]
+	enclosure
+		expose std
+		visible func main {
+			F:F:doFooStuff()
+			B:B:doBarStuff()
+		}
+
+#expose
+#ignore root-namespace-identification
+#ignore default-root-namespace-name
+#ignore module-namespace
+module
+	import expose [ "relative path" "libmagicfoo.so" ]
+	import expose [ "relative path" "libmagicbar.so" ]
+	enclosure
+		expose std
+		visible func main {
+			doFooStuff()
+			doBarStuff()
+		}
+
+To do:
+* make sure this works well with singleton and tiny modules
+* make sure this works well when only some of the 3 information items is given
+* try to simplify

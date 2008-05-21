@@ -13,13 +13,13 @@ static class Evaluator {
 	public static Argument evaluate(Node_Argument node, Scope scope) {
 		return new Argument(
 			node.parameterName == null ? null : node.parameterName.value,
-			Executor.execute(node.value, scope));
+			Executor.executeAny(node.value, scope));
 	}
 	
 	//breeder
 	public static Breeder evaluate(Node_Breeder node, Scope scope) {
 		return new Breeder(
-			Executor.execute(node.@interface, scope));
+			Executor.executeAny(node.@interface, scope));
 	}
 	
 	//callee
@@ -41,7 +41,7 @@ static class Evaluator {
 		IList<Method> meths = new List<Method>();
 
 		foreach( INode_Expression inherNode in node.inheritees )
-			inheritees.Add(Executor.execute(inherNode, scope));
+			inheritees.Add(Executor.executeAny(inherNode, scope));
 
 		foreach( INode_InterfaceMember member in node.members ) {
 			if( member is Node_Callee )
@@ -62,14 +62,14 @@ static class Evaluator {
 	public static Method evaluate(Node_Method node, Scope scope) {
 		return new Method(
 			node.name.value,
-			Bridge.unwrapInterface(Executor.execute(node.@interface, scope)) );
+			Bridge.unwrapInterface(Executor.executeAny(node.@interface, scope)) );
 	}
 	
 	//nullable-type
 	public static NullableType evaluate(Node_NullableType node, Scope scope) {
 		IWorker face = ( node.@interface == null ?
 			null :
-			Executor.execute(node.@interface, scope) );
+			Executor.executeAny(node.@interface, scope) );
 		return new NullableType(face, node.nullable.value);
 	}
 
@@ -77,11 +77,11 @@ static class Evaluator {
 	public static ParameterImpl evaluate(Node_ParameterImpl node, Scope scope) {
 		return new ParameterImpl(
 			node.direction.value,
-			evaluate(node.nullableType, scope),
+			node.nullableType == null ? null : evaluate(node.nullableType, scope),
 			node.name.value,
 		    ( node.defaultValue == null ?
 		    	null :
-		    	Executor.execute(node.defaultValue, scope) ));
+		    	Executor.executeAny(node.defaultValue, scope) ));
 	}
 
 	//parameter-info
@@ -108,18 +108,18 @@ static class Evaluator {
 			children.Add(evaluate(child, scope, owner));
 	
 		WorkerBuilder builder = new WorkerBuilder(
-			Executor.execute(node.face, scope),
+			Executor.executeAny(node.face, scope),
 			owner,
 			children );
 		foreach( Node_MemberImplementation nmi in node.memberImplementations ) {
 			Node_MemberIdentification id = nmi.memberIdentification;
 			if( id.memberType.value == MemberType.PROPERTY_GETTER )
 				builder.addPropertyGetter(
-					id.name.value, Executor.execute(nmi.function, scope));
+					id.name.value, Executor.executeAny(nmi.function, scope));
 			if( id.memberType.value == MemberType.PROPERTY_SETTER )
 				builder.addPropertySetter(
 					id.name.value,
-					Executor.execute(nmi.function, scope));
+					Executor.executeAny(nmi.function, scope));
 		}
 		return builder.compile();
 	}

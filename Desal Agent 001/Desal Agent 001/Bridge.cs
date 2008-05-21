@@ -9,44 +9,44 @@ Be careful to not let one Bundle visibly affect the objects that appear to other
 */
 
 using System;
-using System.Reflection;
+using Reflection = System.Reflection;
 using System.Collections.Generic;
 using System.Xml;
 using System.Diagnostics;
 
 class Bridge {
-	static Scope _universalScope;
 	static IWorker _faceBool;
 	static IWorker _faceInt;
 	static IWorker _faceInterface;
 	static IWorker _faceObject;
 	static IWorker _faceRat;
 	static IWorker _faceString;
+	static IWorker _faceGenerator;
+	static Scope _universalScope;
 
 	//to fake inner functions in the static constructor
 	delegate IInterface InnerFunc(string name);
 
 	static Bridge() {		
-		XmlDocument doc = new XmlDocument();
-		string assemblyPath = Assembly.GetCallingAssembly().Location;
+		string assemblyPath = Reflection.Assembly.GetCallingAssembly().Location;
 		string assemblyDirectory = assemblyPath.Substring(
 			0, assemblyPath.LastIndexOf("/"));
-		doc.Load(assemblyDirectory + "/interfaces.desible");
+		string stdLibPath = assemblyDirectory + "/std.desexp";
 		
 		Bridge bridge = new Bridge();
 		_universalScope = new Scope(bridge);
-		DesibleParser dp = new DesibleParser(bridge, doc);
-		Node_Block block = dp.parse<Node_Block>(doc.DocumentElement);
+		Node_Bundle bundle = Desexp.DesexpParser.parseFile(bridge, stdLibPath);
+		Node_Plane plane = bundle.planes[0];
 		
 		//reserve identikeys
-		foreach( Node_DeclareFirst df in block.members )
+		foreach( Node_DeclareFirst df in plane.declareFirsts )
 			_universalScope.reserveDeclareFirst(
 				df.name.value,
 				df.identikeyType.identikeyCategory.value,
 				null);
 		
 		//set nullable-type of identikeys
-		foreach( Node_DeclareFirst df in block.members )
+		foreach( Node_DeclareFirst df in plane.declareFirsts )
 			_universalScope.setType(
 				df.name.value,
 				Evaluator.evaluate(df.identikeyType.nullableType, _universalScope));
@@ -58,11 +58,73 @@ class Bridge {
 		_faceObject = _universalScope.evaluateIdentifier(new Identifier("Object"));
 		_faceRat = _universalScope.evaluateIdentifier(new Identifier("Rat"));
 		_faceString = _universalScope.evaluateIdentifier(new Identifier("String"));
+		_faceGenerator = _universalScope.evaluateIdentifier(new Identifier("Generator"));
 
 		//assign to identikeys
-		foreach( Node_DeclareFirst df in block.members ) {
+		foreach( Node_DeclareFirst df in plane.declareFirsts ) {
 			Executor.execute(df, _universalScope);
 		}
+		
+		//add func println(dyn value)
+		IList<ParameterImpl> printParameters = new ParameterImpl[] {
+			new ParameterImpl(
+				Direction.IN, NullableType.dyn,
+				new Identifier("text"), null)
+		};
+		IFunction printFunction = new Function_Native(
+			printParameters, null, printFunctionNative, _universalScope);
+		IWorker wrappedPrintFunction = Client_Function.wrap(printFunction);
+		
+		_universalScope.declareAssign(
+			new Identifier("println"),
+			IdentikeyCategory.CONSTANT,
+			new NullableType(printFunction.face, false),
+			wrappedPrintFunction);
+			
+		_universalScope.declareAssign(
+			new Identifier("true"),
+			IdentikeyCategory.CONSTANT,
+			new NullableType(Bridge.faceBool, false),
+			Bridge.wrapBoolean(true));
+		
+		_universalScope.declareAssign(
+			new Identifier("false"),
+			IdentikeyCategory.CONSTANT,
+			new NullableType(Bridge.faceBool, false),
+			Bridge.wrapBoolean(false));
+	}
+	
+	//func println( Stringable text )
+	static IWorker printFunctionNative(Scope args) {	
+		Bridge bridge = args.bridge;
+		IWorker arg = args.evaluateLocalIdentifier( new Identifier("text") );
+		
+		/* xxx
+		should use String breeder of argument
+		bridge.println(
+			Bridge.unwrapString(
+				arg.breed(Bridge.faceString) ))
+		But I haven't yet implemented breeders.
+		*/
+		
+		if( arg is Null )
+			bridge.println( "null" );
+		else if( arg.face == Bridge.faceString )
+			bridge.println( Bridge.unwrapString(arg) );
+		else if( arg.face == Bridge.faceInt )
+			bridge.println( Bridge.unwrapInteger(arg).ToString() );
+		else if( arg.face == Bridge.faceBool )
+			bridge.println( Bridge.unwrapBoolean(arg).ToString() );
+		else if( arg.face == Bridge.faceRat )
+			bridge.println( Bridge.unwrapRational(arg).ToString() );
+		else if( arg.face == Bridge.faceObject )
+			bridge.println( "object" );
+		else
+			throw new NotImplementedException(
+				"unknown type cannot be converted to string " +
+				"because breeders aren't implemented yet");
+		
+		return new Null();
 	}
 
 	public static IWorker faceBool {
@@ -82,6 +144,13 @@ class Bridge {
 	}
 	public static IWorker faceString {
 		get { return _faceString; }
+	}
+	public static IWorker faceGenerator {
+		get { return _faceGenerator; }
+	}
+
+	public static Scope universalScope {
+		get { return _universalScope; }
 	}
 
 	public static IWorker wrapBoolean(bool val) {

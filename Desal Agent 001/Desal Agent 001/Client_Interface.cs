@@ -25,7 +25,7 @@ class Client_Interface {
 								args.evaluateLocalIdentifier(
 									new Identifier("value"))) ));
 				},
-				null ));
+				Bridge.universalScope ));
 		
 		return builder.compile();
 	}

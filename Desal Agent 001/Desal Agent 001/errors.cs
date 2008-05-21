@@ -23,7 +23,29 @@ class ParseError : Exception {
 		:base(message, innerException) {}
 }
 
+//break node
+class ClientBreak : Exception {}
+
+//continue node
+class ClientContinue : Exception {}
+
+//return node
+class ClientReturn : Exception {
+	IWorker _worker;
+
+	public ClientReturn() {}
+	
+	public ClientReturn(IWorker worker) {
+		_worker = worker;
+	}
+	
+	public IWorker worker {
+		get { return _worker; }
+	}
+}
+
 //exceptions in client code
+//may be thrown by throw nodes, but not necesarrily
 class ClientException : Exception {
 	public IWorker thrown; //the value of the throw node
 	public Stack<string> stackTrace;
@@ -77,3 +99,7 @@ class ClientException : Exception {
 		}
 	}
 }
+
+//xxx how the hell am I supposed to implement this?
+class ClientYield : Exception {}
+

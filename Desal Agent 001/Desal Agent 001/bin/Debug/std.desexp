@@ -1,0 +1,74 @@
+/*
+The std library.
+Note: Desal Agent 001 must be recompiled to get this file copied next to the binary. Just modifying this file won't produce changes in Desal Agent 001.
+*/
+
+(declare-first Bool (constant (Interface false)) false
+	(interface () (
+		(method equals?
+			(interface () (
+				(callee
+					((in (Bool false) value false))
+					(Bool false))))))))
+
+(declare-first Int (constant (Interface false)) false
+	(interface () (
+		(method add
+			(interface () (
+				(callee
+					((in (Int false) value false))
+					(Int false))))))))
+
+(declare-first Interface (constant (Interface false)) false
+	(interface () ()))
+
+(declare-first Object (constant (Interface false)) false
+	(interface () ()))
+
+(declare-first Rat (constant (Interface false)) false
+	(interface () ()))
+
+(declare-first String (constant (Interface false)) false
+	(interface () (
+		(property length false (Int false))
+		(method concat
+			(interface () (
+				(callee
+					((in (String false) value false))
+					(String false))))))))
+
+(declare-first Generator (constant (Interface false)) false
+	(interface () (
+		(method yield
+			(interface () (
+				(callee
+					()
+					(- false))))))))
+
+/*
+	func range(start, finish, inclusive)
+		generator
+			var i = start
+			while i < finish
+				yield i
+				i = i + 1
+	xxx inclusive is currently ignored
+*/
+(declare-first range (function (- false)) false
+	(function
+		(
+			(in - start -)
+			(in - limit -)
+			(in - inclusive -)
+		)
+		-
+		(generator (- false)
+			(compound () (
+				(declare-assign i (variable (Int false)) false false
+					start)
+				(conditional-loop
+					((extract-member i lessThan?) limit)
+					(compound () (
+						(yield i)
+						(assign i false
+							((extract-member i add) 1))))))))))

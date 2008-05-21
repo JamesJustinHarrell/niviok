@@ -102,7 +102,7 @@ class Worker : WorkerBase, IWorker {
 			foreach( IFunction func in _methods[name].Values )
 				return Client_Function.wrap(func);
 		}
-		throw new NotImplementedException();
+		throw new NotImplementedException("although it may be an argument error");
 	}
 	
 	public void setProperty(Identifier propName, IWorker worker) {

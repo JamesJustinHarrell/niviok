@@ -26,7 +26,27 @@ class Client_Integer {
 									args.evaluateLocalIdentifier(
 										new Identifier("value"))) ));
 				},
-				null ));
+				Bridge.universalScope ));
+
+		builder.addMethod(
+			new Identifier("lessThan?"),
+			new Function_Native(
+				new ParameterImpl[]{
+					new ParameterImpl(
+						Direction.IN,
+						new NullableType(Bridge.faceInt, false),
+						new Identifier("value"),
+						null )
+				},
+				new NullableType(Bridge.faceBool, false),
+				delegate(Scope args) {
+					return Bridge.wrapBoolean(
+							o.lessThan(
+								Bridge.unwrapInteger(
+									args.evaluateLocalIdentifier(
+										new Identifier("value"))) ));
+				},
+				Bridge.universalScope ));
 			
 		return builder.compile();
 	}

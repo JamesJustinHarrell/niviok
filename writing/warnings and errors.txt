@@ -1,0 +1,23 @@
+
+--- call will throw
+
+warning :
+	this call will throw an exception
+
+of course this can be overriden for functions meant to always through
+	func throwError(reason, location)
+		pragma ignore-on-call 12345
+		throw Error(reason & " at " & location)
+	func foo()
+		throwError("something happened", "bizaro world") //no warning
+
+01 func getNumber() Int { 0 }
+02
+03 func printThreeDivNumber(Int n)
+04     println(3/n)
+05
+06 func doStuff()
+07     printThreeDivNumber(getNumber())
+08
+
+Warning on line 07: this particular call to printThreeDivNumber will throw

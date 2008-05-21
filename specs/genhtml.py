@@ -19,8 +19,12 @@ xhtmlNS = "http://www.w3.org/1999/xhtml"
 domImpl = dom.getDOMImplementation()
 relaxngSchema = libxml2.relaxNGNewParserCtxt(os.path.join(docbookDir,"docbook.rng")).relaxNGParse()
 
+import sys
+sys.path.append(os.path.join(specsDir, ".."))
+from lib import *
+
 fileBases = (
-	'Desal Semantics',
+	'Niviok 1.0 Specification',
 	'Desal XML Representation',
 	'Desal Text Representation'
 )
@@ -80,8 +84,7 @@ def transferAttributes(source, destination) :
 		
 		if name == "xml:id" :
 			destination.setAttribute("id", value)
-			#required for getElementById to work
-			#note that the W3C version has a second parameter
+			#tell python that "id" attribute is of type ID
 			destination.setIdAttribute("id")
 		elif name == "role" :
 			if value not in knownRoles :
@@ -95,7 +98,7 @@ def transferAttributes(source, destination) :
 				destination.appendChild(link)
 				rv = link
 			link.setAttribute("href", '#' + value)
-		elif name == "xmlns" or name == "version":
+		elif name in ["xmlns", "version"] :
 			pass
 		else :
 			warn("unrecognized attribute %s" % name)
@@ -118,14 +121,16 @@ def setupLayoutMember(member) :
 		typeName = tokens[1]
 		textAfter = tokens[2:]
 	typeName = typeName.lower()
-	if typeName == 'expression' :
-		member.appendChild( doc.createTextNode(typeName) )
-	else :
-		link = doc.createElement('link')
-		link.setAttribute('linkend', 'node.' + typeName)
-		link.appendChild(doc.createTextNode(typeName))
-		member.appendChild(link)
+	link = doc.createElement('link')
+	link.setAttribute('linkend', 'node.' + typeName)
+	link.appendChild(doc.createTextNode(typeName))
+	member.appendChild(link)
 	member.appendChild( doc.createTextNode(' ' + ' '.join(textAfter)) )
+
+#@member is a <member/> element
+def setupFamilyMember(member) :
+	if not member.hasAttribute("linkend") :
+		setupLayoutMember(member)
 
 #warns if entire text is indented
 def checkPreText(text) :
@@ -139,14 +144,16 @@ def checkPreText(text) :
 def copyElement(docbookElement, htmlElement) :
 	tagName = docbookElement.tagName
 	
-	if 'screen' == tagName or 'programlisting' == tagName :
+	if tagName in ['screen', 'programlisting'] :
 		textNode = docbookElement.firstChild
 		checkPreText(textNode.data)
 		textNode.data = textNode.data.strip()
 	elif 'member' == tagName :
 		role = docbookElement.parentNode.getAttribute('role')
-		if 'layout' == role or 'family-members' == role :
+		if role == 'layout' :
 			setupLayoutMember(docbookElement)
+		elif role == 'family-members' :
+			setupFamilyMember(docbookElement)
 	
 	if tagName in tagMap :
 		if tagMap[tagName] == None :
@@ -394,9 +401,13 @@ def normalize(node) :
 		raise Exception("unexpected node type: %s" % type)
 
 #converts @@foo to <link linkend="node.foo">foo</link>
+#replaces $$$foo$$$
 def setupMarkup(markup) :
 	markup = re.sub(r"@@([a-z\-]+)", r'<link linkend="node.\1">\1</link>', markup)
 	markup = markup.replace("$$$CURRENTDATE$$$", datetime.date.today().isoformat())
+	if markup.count("$$$") :
+		for f in re.findall(r"(\$\$\$.*\$\$\$)", markup) :
+			warn("couldn't replace " + f)
 	return markup
 
 #valid Docbook document at @path and generate DOM
@@ -412,6 +423,35 @@ def getDocbookDom(path) :
 		raise Exception("docbook not labeled as version 5.0")
 	return docbookDom
 
+def setupDocbookDoc(dbDoc) :
+	def definesNode(elem) :
+		return elem.getAttribute("xml:id").find("node.") == 0
+	
+	def isFamily(node) :
+		return hasAncestorElement(
+			node, lambda x: x.getAttribute("xml:id") == "family-node-types" )
+	
+	def isTree(elem) :
+		for child in childElements(elem) :
+			if child.getAttribute("role") == "layout" :
+				return True
+		return False
+	
+	def getTitle(elem) :
+		return textValue(elem.getElementsByTagName("title")[0])
+	
+	try :
+		sectElem = getElementsByAttribute(dbDoc, "xml:id", "terminal-node-types")[0]
+	except :
+		return
+		
+	listElem = sectElem.getElementsByTagName("simplelist")[0]
+	for elem in descendantElements(dbDoc) :
+		if definesNode(elem) and not isFamily(elem) and not isTree(elem) :
+			memberElem = appendNewElement(listElem, "member", None)
+			appendText(memberElem, getTitle(elem))
+			memberElem.setAttribute("linkend", elem.getAttribute("xml:id"))
+
 #output an XHTML and HTML document from the specified Docbook document
 def createHtmlFile(fileBase) :
 	print fileBase + ":"
@@ -421,6 +461,7 @@ def createHtmlFile(fileBase) :
 	htmlOutputPath = os.path.join(outputDir, "%s.html" % fileBase)
 	
 	docbookDocument = getDocbookDom(inputPath)
+	setupDocbookDoc(docbookDocument)
 	htmlDocument = createHtmlDocument(docbookDocument)
 	#note: python's DOM refuses to output a DTD (or @xmlns without being told)
 	writeXmlDocument(htmlDocument, xhtmlOutputPath)

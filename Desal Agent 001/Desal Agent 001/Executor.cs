@@ -1,17 +1,17 @@
 using System;
 using System.Collections.Generic;
-using Reflection = System.Reflection;
+using System.Threading; //for yield node
 
 //executes expression nodes, as defined by the Desal Semantics specification
 static partial class Executor {
 	//and
 	public static IWorker execute(Node_And node, Scope scope) {
-		IWorker first = execute(node.first, scope);
+		IWorker first = executeAny(node.first, scope);
 		//xxx downcast
 		if( Bridge.unwrapBoolean(first) == false )
 			return Bridge.wrapBoolean(false);
 		
-		IWorker second = execute(node.second, scope);
+		IWorker second = executeAny(node.second, scope);
 		//xxx downcast
 		if( Bridge.unwrapBoolean(second) == false )
 			return Bridge.wrapBoolean(false);
@@ -19,47 +19,11 @@ static partial class Executor {
 		return Bridge.wrapBoolean(true);
 	}
 
-	//array
-	public static IWorker execute(Node_Array node, Scope scope) {
-		throw new NotImplementedException();
-	}
-
 	//assign
 	public static IWorker execute(Node_Assign node, Scope scope) {
-		IWorker val = execute(node.value, scope);
+		IWorker val = executeAny(node.value, scope);
 		scope.assign( node.name.value, val );
 		return val;
-	}
-
-	//block
-	public static IWorker execute(Node_Block node, Scope scope) {
-		Scope innerScope = new Scope(scope);
-		
-		//reserve identikeys
-		foreach( INode_Expression member in node.members )
-			if( member is Node_DeclareFirst ) {
-				Node_DeclareFirst df = (Node_DeclareFirst)member;
-				scope.reserveDeclareFirst(
-					df.name.value,
-					df.identikeyType.identikeyCategory.value,
-					null);
-			}
-
-		//set nullable-type of identikeys
-		foreach( INode_Expression member in node.members )
-			if( member is Node_DeclareFirst ) {
-				Node_DeclareFirst df = (Node_DeclareFirst)member;
-				scope.setType(
-					df.name.value,
-					Evaluator.evaluate(df.identikeyType.nullableType, scope));
-			}
-
-		IWorker rv = new Null();
-		foreach( INode_Expression expr in node.members ) {
-			rv = execute(expr, innerScope);
-		}
-
-		return rv;
 	}
 
 	//break
@@ -72,41 +36,73 @@ static partial class Executor {
 		throw new NotImplementedException();
 	}
 	
-	//bundle
-	public static IWorker execute(Node_Bundle node, Scope scope) {
+	//bundle as standalone
+	public static IWorker execute(Node_Bundle node, Bridge bridge) {
+		Scope globalScope = new Scope(bridge);
+		globalScope.declareNamespace(new Identifier("std"), Bridge.universalScope);
+		
+		//xxx import nodes
+		
+		//expose nodes (xxx support using nodes)
+		foreach( INode_ScopeAlteration alt in node.alts ) {
+			if( alt is Node_Expose ) {
+				IList<Identifier> idents = new List<Identifier>();
+				foreach( Node_Identifier ident in (alt as Node_Expose).identifiers )
+					idents.Add(ident.value);
+				globalScope.expose(idents);
+			}
+		}
+
+		//reserve decl-first identikeys
 		foreach( Node_Plane plane in node.planes ) {
 			foreach( Node_DeclareFirst decl in plane.declareFirsts ) {
-				scope.reserveDeclareFirst(
+				globalScope.reserveDeclareFirst(
 					decl.name.value,
 					decl.identikeyType.identikeyCategory.value,
-					Evaluator.evaluate(decl.identikeyType.nullableType, scope));
+					null);
 			}
 		}
 		
+		//set nullable-type of identikeys
 		foreach( Node_Plane plane in node.planes ) {
-			foreach( Node_DeclareFirst decl in plane.declareFirsts )
-				Executor.execute(decl, scope);
-		}
-		
-		IWorker rv;
-		try {
-			IWorker val = scope.evaluateIdentifier( new Identifier("main") );
-			rv = val.call(new Argument[]{});
-		}
-		catch(ClientException e) {
-			e.pushFunc("main (called while executing Node_Bundle)");
-			throw e;
+			foreach( Node_DeclareFirst decl in plane.declareFirsts ) {
+				globalScope.setType(
+					decl.name.value,
+					Evaluator.evaluate(
+						decl.identikeyType.nullableType,
+						globalScope));
+			}
 		}
 
-		if( rv is Null )
+		//assign decl-first identikeys
+		foreach( Node_Plane plane in node.planes ) {
+			foreach( Node_DeclareFirst decl in plane.declareFirsts )
+				Executor.execute(decl, globalScope);
+		}
+
+		//call main
+		IWorker rv;
+		try {
+			Node_Call call = new Node_Call(
+				new Node_Identifier(new Identifier("main")),
+				new Node_Argument[]{});
+			rv = execute(call, globalScope);
+		}
+		catch(ClientReturn e) {
+			throw new ClientException("unhandled return", e);
+		}
+
+		if( rv == null )
 			return Bridge.wrapInteger(0);
-		else
+		else {
+			//xxx ensure rv is an integer
 			return rv;
+		}
 	}
 
 	//call
 	public static IWorker execute(Node_Call node, Scope scope) {
-		IWorker func = execute(node.receiver, scope);
+		IWorker func = executeAny(node.receiver, scope);
 		
 		IList<Argument> args = new List<Argument>();
 		foreach( Node_Argument argument in node.arguments )
@@ -132,23 +128,64 @@ static partial class Executor {
 	//cast
 	public static IWorker execute(Node_Cast node, Scope scope) {
 		return G.cast(
-			execute(node.source, scope),
+			executeAny(node.source, scope),
 			Evaluator.evaluate(node.nullableType, scope));
 	}
-	
-	//chain
-	public static IWorker execute(Node_Chain node, Scope scope) {
-		throw new NotImplementedException();
+
+	//compound
+	public static IWorker execute(Node_Compound node, Scope scope) {
+		Scope innerScope = new Scope(scope);
+		
+		//reserve identikeys
+		foreach( INode_Expression member in node.members )
+			if( member is Node_DeclareFirst ) {
+				Node_DeclareFirst df = (Node_DeclareFirst)member;
+				innerScope.reserveDeclareFirst(
+					df.name.value,
+					df.identikeyType.identikeyCategory.value,
+					null);
+			}
+
+		//set nullable-type of identikeys
+		foreach( INode_Expression member in node.members )
+			if( member is Node_DeclareFirst ) {
+				Node_DeclareFirst df = (Node_DeclareFirst)member;
+				innerScope.setType(
+					df.name.value,
+					Evaluator.evaluate(df.identikeyType.nullableType, innerScope));
+			}
+
+		IWorker rv = new Null();
+		foreach( INode_Expression expr in node.members ) {
+			rv = executeAny(expr, innerScope);
+		}
+
+		return rv;
 	}
 
 	//conditional
 	public static IWorker execute(Node_Conditional node, Scope scope) {
-		foreach( Node_Possibility p in node.possibilitys )
-			if( Bridge.unwrapBoolean(execute(p.test, scope)) )
-				return execute(p.result, scope);
-		if( node.@else != null )
-			return execute(node.@else, scope);
-		return new Null();			
+		IWorker testVal = executeAny(node.test, scope);
+
+		if( testVal.face != Bridge.faceBool )
+			throw new ClientException("test must be a Bool");
+		
+		return (
+			Bridge.unwrapBoolean(testVal) ? executeAny(node.result, scope) :
+			node.@else != null ? executeAny(node.@else, scope) :
+			new Null() );
+	}
+	
+	//conditional-loop
+	public static IWorker execute(Node_ConditionalLoop node, Scope scope) {
+		while( Bridge.unwrapBoolean(executeAny(node.test, scope)) )
+			executeAny(node.body, scope);
+		return new Null();
+	}
+	
+	//continue
+	public static IWorker execute(Node_Continue node, Scope scope) {
+		throw new NotImplementedException();
 	}
 	
 	//curry
@@ -158,7 +195,7 @@ static partial class Executor {
 	
 	//declare-assign
 	public static IWorker execute(Node_DeclareAssign node, Scope scope) {
-		IWorker val = execute(node.value, scope);
+		IWorker val = executeAny(node.value, scope);
 		scope.declareAssign(
 			node.name.value,
 			node.identikeyType.identikeyCategory.value,
@@ -180,7 +217,7 @@ static partial class Executor {
 	//xxx then normal execution only returns the value that has already been assigned
 	//declare-first
 	public static IWorker execute(Node_DeclareFirst node, Scope scope) {
-		IWorker val = execute(node.value, scope);
+		IWorker val = executeAny(node.value, scope);
 		scope.declareFirst(
 			node.name.value,
 			node.identikeyType.identikeyCategory.value,
@@ -194,64 +231,56 @@ static partial class Executor {
 		throw new NotImplementedException();
 	}
 	
-	//do-while
-	public static IWorker execute(Node_DoWhile node, Scope scope) {
-		throw new NotImplementedException();
-	}
-	
-	//do-times
-	public static IWorker execute(Node_DoTimes node, Scope scope) {
-		throw new NotImplementedException();
-	}
-	
 	//enum
 	public static IWorker execute(Node_Enum node, Scope scope) {
 		throw new NotImplementedException();
 	}
 	
-	//extract-member
-	public static IWorker execute(Node_ExtractMember node, Scope scope) {
-		IWorker source = execute(node.source, scope);
-		Identifier memberName = node.memberName.value;
-		return source.extractMember(memberName);
-	}
-	
-	//for-key
-	public static IWorker execute(Node_ForKey node, Scope scope) {
-		throw new NotImplementedException();
-	}
-	
-	//for-manual
-	public static IWorker execute(Node_ForManual node, Scope scope) {
-		throw new NotImplementedException();
-	}
-	
-	//for-pair
-	public static IWorker execute(Node_ForPair node, Scope scope) {
-		throw new NotImplementedException();
-	}
-	
-	//for-range
-	public static IWorker execute(Node_ForRange node, Scope scope) {
-		IWorker start = execute(node.start, scope);
-		long current = Bridge.unwrapInteger(start);
-		IWorker limit = execute(node.limit, scope);
-		while( current < Bridge.unwrapInteger(limit) ) {
+	//enumerator-loop
+	public static IWorker execute(Node_EnumeratorLoop node, Scope scope) {
+		int rCount = node.receivers.Count;
+		if( rCount > 1 )
+			throw new NotImplementedException();
+
+		IWorker producer = executeAny(node.container, scope);
+		
+		while( node.test == null || Bridge.unwrapBoolean(executeAny(node.test, scope)) ) {
 			Scope innerScope = new Scope(scope);
-			innerScope.declareAssign(
-				node.name.value,
-				IdentikeyCategory.VARIABLE,
-				new NullableType(Bridge.faceInt, false),
-				Bridge.wrapInteger(current));
-			execute(node.action, innerScope);
-			current++;
+			IWorker yielded;
+			try {
+				yielded = producer
+					.extractMember(new Identifier("yield"))
+					.call(new Argument[]{});
+			}
+			catch(ClientException e) {
+				//xxx use typing and interfaces instead of values
+				if( e.thrown.face == Bridge.faceString &&
+				Bridge.unwrapString(e.thrown) == "generator exhausted" )
+					return new Null();
+				else
+					throw;
+			}
+			if( rCount == 1 ) {
+				IEnumerator<Node_Receiver> en = node.receivers.GetEnumerator();
+				en.MoveNext();
+				Node_Receiver nr = en.Current;
+				innerScope.declareAssign(
+					nr.name.value,
+					IdentikeyCategory.CONSTANT,
+					NullableType.dyn_nullable,
+					yielded);
+			}
+			executeAny(node.body, innerScope);
 		}
+		
 		return new Null();
 	}
 	
-	//for-value
-	public static IWorker execute(Node_ForValue node, Scope scope) {
-		throw new NotImplementedException();
+	//extract-member
+	public static IWorker execute(Node_ExtractMember node, Scope scope) {
+		IWorker source = executeAny(node.source, scope);
+		Identifier memberName = node.memberName.value;
+		return source.extractMember(memberName);
 	}
 	
 	//function
@@ -283,11 +312,16 @@ static partial class Executor {
 	
 	//generator
 	public static IWorker execute(Node_Generator node, Scope scope) {
-		throw new NotImplementedException();
+		return Client_Generator.wrap(node.body, scope);
 	}
 	
 	//generic-function
 	public static IWorker execute(Node_GenericFunction node, Scope scope) {
+		throw new NotImplementedException();
+	}
+	
+	//generic-interface
+	public static IWorker execute(Node_GenericInterface node, Scope scope) {
 		throw new NotImplementedException();
 	}
 	
@@ -326,21 +360,14 @@ static partial class Executor {
 		throw new NotImplementedException();
 	}
 	
-	//loop
-	public static IWorker execute(Node_Loop node, Scope scope) {
-		for(;;)
-			execute(node.block, scope);
-		return new Null();
-	}
-	
 	//nand
 	public static IWorker execute(Node_Nand node, Scope scope) {
-		IWorker first = execute(node.first, scope);
+		IWorker first = executeAny(node.first, scope);
 		//xxx downcast
 		if( Bridge.unwrapBoolean(first) == false )
 			return Bridge.wrapBoolean(true);
 		
-		IWorker second = execute(node.second, scope);
+		IWorker second = executeAny(node.second, scope);
 		//xxx downcast
 		if( Bridge.unwrapBoolean(second) == false )
 			return Bridge.wrapBoolean(true);
@@ -355,17 +382,24 @@ static partial class Executor {
 	
 	//nor
 	public static IWorker execute(Node_Nor node, Scope scope) {
-		IWorker first = execute(node.first, scope);
+		IWorker first = executeAny(node.first, scope);
 		//xxx downcast
 		if( Bridge.unwrapBoolean(first) == true )
 			return Bridge.wrapBoolean(false);
 		
-		IWorker second = execute(node.second, scope);
+		IWorker second = executeAny(node.second, scope);
 		//xxx downcast
 		if( Bridge.unwrapBoolean(second) == true )
 			return Bridge.wrapBoolean(false);
 		
 		return Bridge.wrapBoolean(true);
+	}
+	
+	//null
+	public static IWorker execute(Node_Null node, Scope scope) {
+		if( node.@interface == null )
+			return new Null();
+		return new Null(executeAny(node.@interface, scope));
 	}
 	
 	//object
@@ -380,29 +414,17 @@ static partial class Executor {
 	
 	//or
 	public static IWorker execute(Node_Or node, Scope scope) {
-		IWorker first = execute(node.first, scope);
+		IWorker first = executeAny(node.first, scope);
 		//xxx downcast
 		if( Bridge.unwrapBoolean(first) == true )
 			return Bridge.wrapBoolean(true);
 		
-		IWorker second = execute(node.second, scope);
+		IWorker second = executeAny(node.second, scope);
 		//xxx downcast
 		if( Bridge.unwrapBoolean(second) == true )
 			return Bridge.wrapBoolean(true);
 		
 		return Bridge.wrapBoolean(false);
-	}
-	
-	//possibility
-	public static IWorker execute(Node_Possibility node, Scope scope) {
-		IWorker testVal = execute(node.test, scope);
-
-		if( testVal.face != Bridge.faceBool )
-			throw new ClientException("test must be a Bool");
-		
-		return ( Bridge.unwrapBoolean(testVal) ?
-			execute(node.result, scope) :
-			new Null() );
 	}
 	
 	//rational
@@ -412,7 +434,7 @@ static partial class Executor {
 	
 	//return
 	public static IWorker execute(Node_Return node, Scope scope) {
-		throw new NotImplementedException();
+		throw new ClientReturn(executeAny(node.value, scope));
 	}
 	
 	//select
@@ -422,8 +444,8 @@ static partial class Executor {
 	
 	//set-property
 	public static IWorker execute(Node_SetProperty node, Scope scope) {
-		IWorker val = execute(node.value, scope);
-		execute(node.source, scope).setProperty(
+		IWorker val = executeAny(node.value, scope);
+		executeAny(node.source, scope).setProperty(
 			node.propertyName.value, val );
 		return val;
 	}
@@ -443,17 +465,15 @@ static partial class Executor {
 		throw new NotImplementedException();
 	}
 	
-	//while
-	public static IWorker execute(Node_While node, Scope scope) {
-		while( Bridge.unwrapBoolean(execute(node.test, scope)) )
-			execute(node.block, scope);
-		return new Null();
+	//unconditional-loop
+	public static IWorker execute(Node_UnconditionalLoop node, Scope scope) {
+		throw new NotImplementedException();
 	}
 	
 	//xnor
 	public static IWorker execute(Node_Xnor node, Scope scope) {
-		IWorker first = execute(node.first, scope);
-		IWorker second = execute(node.second, scope);
+		IWorker first = executeAny(node.first, scope);
+		IWorker second = executeAny(node.second, scope);
 
 		return Bridge.wrapBoolean(
 			Bridge.unwrapBoolean(first) == Bridge.unwrapBoolean(second) );
@@ -461,35 +481,37 @@ static partial class Executor {
 	
 	//xor
 	public static IWorker execute(Node_Xor node, Scope scope) {
-		IWorker first = execute(node.first, scope);
-		IWorker second = execute(node.second, scope);
+		IWorker first = executeAny(node.first, scope);
+		IWorker second = executeAny(node.second, scope);
 		
 		return Bridge.wrapBoolean(
 			Bridge.unwrapBoolean(first) != Bridge.unwrapBoolean(second) );
 	}
 	
 	//yield
+	//highly coupled with Client_Generator
 	public static IWorker execute(Node_Yield node, Scope scope) {
-		throw new NotImplementedException();
-	}
-	
-	//any expression node
-	public static IWorker execute(INode_Expression node, Scope scope) {
-		Reflection.MethodInfo meth = typeof(Executor)
-			.GetMethod("execute", new Type[]{node.GetType(), typeof(Scope)});
+		IWorker yieldValue = executeAny(node.value, scope);
+		#if GEN_DEBUG
+		Console.WriteLine("fixin to yield " + Bridge.unwrapInteger(yieldValue));
+		Console.Out.Flush();
+		#endif
+		scope.yieldValue = yieldValue;
 		
-		if( meth.GetParameters()[0].ParameterType == typeof(INode_Expression) )
-			throw new ApplicationException(String.Format(
-				"can't execute node of type '{0}'",
-				node.GetType()));
+		//xxx for each call to Interrupt, Mono throws ThreadInterruptedException twice
+		//the while loop is a workaround which would otherwise not be required
+		while( scope.yieldValue != null ) {
+			try {
+				Thread.Sleep(Timeout.Infinite);
+			}
+			catch(ThreadInterruptedException e) {
+				#if GEN_DEBUG
+				Console.WriteLine("generator awoken");
+				Console.Out.Flush();
+				#endif
+			}
+		}
 		
-		try {
-			return (IWorker)meth.Invoke(null, new object[]{node, scope});
-		}
-		catch(Reflection.TargetInvocationException e) {
-			if( e.InnerException is ClientException )
-				throw e.InnerException;
-			throw e;
-		}
+		return new Null(); //note: in future, may add something like Python's "send" method
 	}
 }

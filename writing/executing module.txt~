@@ -1,0 +1,18 @@
+The global identifiers "main", "library_initialize", and "library_dispose" are each reserved for a single function that takes no arguments and returns nothing. When used, arguments and exit status should be received and sent through an API. The identikeys associated with these identifiers should not show up inside the module, so that a module cannot e.g. call its own main function.
+
+Executing the module just means importing the specified libraries and executing the limit-old child node. (Note that this was not previously the case.) The rest is done using the scope associated with the module node.
+
+Module acting as a library:
+* Execute the module node, but don't throw away the scope it created yet.
+* Let global be the scope associated with the module node.
+* If it exists, call the "library_initialize" function of global.
+* Expose global to external environments, except for the "main", "library_initialize", and "library_dispose" identikeys. External environments can now access (the other) members of global.
+* When all external environments are done using the library and the module is no longer wanted, call the "library_dispose" function if it exists, then throw away global.
+
+Module acting as a standalone program:
+* Execute the module node, but don't throw away the scope it created yet.
+* Let global be the scope associated with the module node.
+* Call the "main" function of global.
+* Throw away global.
+
+The "main" function should never be exposed to external environments. No members of standalone programs should ever be exposed to external environments. A global scope must never receive more than one call to main or initialize_library. (Meaning the global scope must be recreated if library_dispose or main has already been called.)

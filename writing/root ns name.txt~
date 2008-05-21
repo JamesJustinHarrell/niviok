@@ -1,0 +1,28 @@
+differences between normal namespaces and bundle/plane/assembly/package/global namespace:
+
+* normal namespaces are enclosed inside of other namespaces
+* bundle namespaces are not enclosed inside of other namespaces
+
+* normal namespaces have names
+* bundle namespaces do not have names
+
+* normal namespaces rely on the enclosing namespace/scope to give it the necessary identikeys/libraries
+* bundle namespaces declare which libraries they need
+
+
+rejected names:
+
+bundle, package
+	imply multiple items bound together
+	may be empty or only define a single thing
+module, component
+	imply they're part of something larger
+	may be a standalone program
+parcel
+	too strong associated with real-life stuff to be a good metaphor
+assembly
+	used by .NET
+	implies multiple things have been assembled together
+
+
+Decision was to use "module" as that is sorta used by D, Python, and Ruby.

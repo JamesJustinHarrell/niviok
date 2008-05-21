@@ -1,9 +1,11 @@
-<block xmlns='urn:desible1'>
+<bundle xmlns='urn:desible1'>
 	<!-- Note: The nullable-type children of identikey-type nodes cannot reference Interface, because it wont' have been declared yet. -->
 	<!-- Note: Desal Agent 001 must be recompiled to get this file copied next to the binary. Just modifying this file won't produce changes in Desal Agent 001. -->
 	
+	<inline-plane>
+	
 	<!-- Bool -->
-	<declare-first label='member'>
+	<declare-first>
 		<identifier label='name'>Bool</identifier>
 		<identikey-type>
 			<identikey-category>constant</identikey-category>
@@ -36,11 +38,12 @@
 	</declare-first>
 
 	<!-- Int -->
-	<declare-first label='member'>
+	<declare-first>
 		<identifier label='name'>Int</identifier>
 		<identikey-type>
 			<identikey-category>constant</identikey-category>
 			<nullable-type>
+				<identifier label='interface'>Interface</identifier>
 				<boolean label='nullable'>false</boolean>
 			</nullable-type>
 		</identikey-type>
@@ -52,15 +55,15 @@
 					<parameter-info>
 						<identifier label='name'>value</identifier>
 						<nullable-type>
-							<boolean label='nullable'>false</boolean>
 							<identifier label='interface'>Int</identifier>
+							<boolean label='nullable'>false</boolean>
 						</nullable-type>
 						<boolean label='has-default-value'>false</boolean>
 						<direction>in</direction>
 					</parameter-info>
 					<nullable-type label='return-info'>
-						<boolean label='nullable'>false</boolean>
 						<identifier label='interface'>Int</identifier>
+						<boolean label='nullable'>false</boolean>
 					</nullable-type>
 				</function-interface>
 			</method>
@@ -68,11 +71,12 @@
 	</declare-first>
 	
 	<!-- Interface -->
-	<declare-first label='member'>
+	<declare-first>
 		<identifier label='name'>Interface</identifier>
 		<identikey-type>
 			<identikey-category>constant</identikey-category>
 			<nullable-type>
+				<identifier label='interface'>Interface</identifier>
 				<boolean label='nullable'>false</boolean>
 			</nullable-type>
 		</identikey-type>
@@ -83,11 +87,12 @@
 	</declare-first>
 
 	<!-- Object -->
-	<declare-first label='member'>
+	<declare-first>
 		<identifier label='name'>Object</identifier>
 		<identikey-type>
 			<identikey-category>constant</identikey-category>
 			<nullable-type>
+				<identifier label='interface'>Interface</identifier>
 				<boolean label='nullable'>false</boolean>
 			</nullable-type>
 		</identikey-type>
@@ -97,11 +102,12 @@
 	</declare-first>
 
 	<!-- Rat -->
-	<declare-first label='member'>
+	<declare-first>
 		<identifier label='name'>Rat</identifier>
 		<identikey-type>
 			<identikey-category>constant</identikey-category>
 			<nullable-type>
+				<identifier label='interface'>Interface</identifier>
 				<boolean label='nullable'>false</boolean>
 			</nullable-type>
 		</identikey-type>
@@ -111,11 +117,12 @@
 	</declare-first>
 	
 	<!-- String -->
-	<declare-first label='member'>
+	<declare-first>
 		<identifier label='name'>String</identifier>
 		<identikey-type>
 			<identikey-category>constant</identikey-category>
 			<nullable-type>
+				<identifier label='interface'>Interface</identifier>
 				<boolean label='nullable'>false</boolean>
 			</nullable-type>
 		</identikey-type>
@@ -124,6 +131,7 @@
 			<property label='member'>
 				<identifier label='name'>length</identifier>
 				<nullable-type>
+					<identifier label='interface'>Int</identifier>
 					<boolean label='nullable'>false</boolean>
 				</nullable-type>
 				<boolean label='writable'>false</boolean>
@@ -134,18 +142,122 @@
 					<parameter-info>
 						<identifier label='name'>value</identifier>
 						<nullable-type>
-							<boolean label='nullable'>false</boolean>
 							<identifier label='interface'>String</identifier>
+							<boolean label='nullable'>false</boolean>
 						</nullable-type>
 						<boolean label='has-default-value'>false</boolean>
 						<direction>in</direction>
 					</parameter-info>
 					<nullable-type label='return-info'>
-						<boolean label='nullable'>false</boolean>
 						<identifier label='interface'>String</identifier>
+						<boolean label='nullable'>false</boolean>
 					</nullable-type>
 				</function-interface>
 			</method>
 		</interface>
 	</declare-first>
-</block>
+
+	<!-- Generator -->
+	<declare-first>
+		<identifier label='name'>Generator</identifier>
+		<identikey-type>
+			<identikey-category>constant</identikey-category>
+			<nullable-type>
+				<identifier label='interface'>Interface</identifier>
+				<boolean label='nullable'>false</boolean>
+			</nullable-type>
+		</identikey-type>
+		<boolean label='breed'>false</boolean>
+		<interface label='value'>
+			<method label='member'>
+				<identifier label='name'>yield</identifier>
+				<function-interface label='interface'>
+					<nullable-type label='return-info'>
+						<boolean label='nullable'>true</boolean>
+					</nullable-type>
+				</function-interface>
+			</method>
+		</interface>
+	</declare-first>
+	
+	<!--
+	func range(start, finish, inclusive)
+		generator
+			var i = start
+			while i < finish
+				yield i
+				i = i + 1
+	xxx inclusive is currently ignored
+	-->
+	<declare-first>
+		<identifier label='name'>range</identifier>
+		<identikey-type>
+			<identikey-category>function</identikey-category>
+			<nullable-type>
+				<boolean label='nullable'>false</boolean>
+			</nullable-type>
+		</identikey-type>
+		<boolean label='breed'>false</boolean>
+		<function label='value'>
+			<parameter-impl>
+				<direction>in</direction>
+				<identifier label='name'>start</identifier>
+			</parameter-impl>
+			<parameter-impl>
+				<direction>in</direction>
+				<identifier label='name'>limit</identifier>
+			</parameter-impl>
+			<parameter-impl>
+				<direction>in</direction>
+				<identifier label='name'>inclusive</identifier>
+			</parameter-impl>
+			<generator label='body'>
+				<compound label='body'>
+					<declare-assign label='member'>
+						<identifier label='name'>i</identifier>
+						<identikey-type>
+							<identikey-category>variable</identikey-category>
+							<nullable-type>
+								<identifier label='interface'>Int</identifier>
+							<boolean label='nullable'>false</boolean>
+						</nullable-type></identikey-type>
+						<boolean label='breed'>false</boolean>
+						<boolean label='infer-interface'>false</boolean>
+						<identifier label='value'>start</identifier>
+					</declare-assign>
+					<conditional-loop label='member'>
+						<call label='test'>
+							<extract-member label='receiver'>
+								<identifier label='source'>i</identifier>
+								<identifier label='member-name'>lessThan?</identifier>
+							</extract-member>
+							<argument>
+								<identifier label='value'>limit</identifier>
+							</argument>
+						</call>
+						<compound label='body'>
+							<yield label='member'>
+								<identifier label='value'>i</identifier>
+							</yield>
+							<assign label='member'>
+								<identifier label='name'>i</identifier>
+								<boolean label='breed'>false</boolean>
+								<call label='value'>
+									<extract-member label='receiver'>
+										<identifier>i</identifier>
+										<identifier label='member-name'>add</identifier>
+									</extract-member>
+									<argument>
+										<integer label='value'>1</integer>
+									</argument>
+								</call>
+							</assign>
+						</compound>
+					</conditional-loop>
+				</compound>
+			</generator>
+		</function>
+	</declare-first>
+
+	</inline-plane>
+</bundle>

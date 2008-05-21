@@ -1,0 +1,83 @@
+[H[2J
+calling doStuff :
+this is a test
+ð¿° Hello, World ð¿±
+22
+astral characters in identifiers
+123
+initial text
+alpha beta gamma
+printed by generator
+yielded from generator
+
+done with doStuff
+
+calling testNonProducers :
+456
+
+done with testNonProducers
+
+calling testSometimesProducers :
+
+assign, block, call :
+123
+
+cast :
+object
+
+conditional :
+111
+123
+null
+
+done with testSometimesProducers
+
+calling testAlwaysProducers :
+
+testBooleanLogic :
+
+and :
+False
+True
+
+nand :
+True
+False
+
+or :
+True
+False
+
+nor :
+False
+True
+
+xor :
+True
+False
+
+xnor :
+False
+True
+
+function :
+some stuff
+
+identifier :
+True
+
+integer :
+98765
+
+rational :
+123.456
+
+string :
+This is some text.
+
+done with testAlwaysProducers
+-----
+return code: 0
+stderr:
+-----
+

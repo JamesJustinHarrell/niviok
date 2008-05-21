@@ -1,0 +1,47 @@
+interface Generator<I>
+	prop ro Bool active?
+	func advance() I #throws GeneratorExhausted if no longer active
+	func tryAdvance(out I) Bool #returns false if no longer active
+
+#iterators should never be in an "invalid" state, like in some languages
+interface Iterator<I>
+	get ?Collection<I> owner
+	get ?Iterator<I> previous
+	get ?Iterator<I> next
+	get I value
+#the "owner" property should only be null when the collection the iterator is associated with:
+# * does not implement the Collection interface
+# * is not represented by an object (such as iterators for keys of a dictionary if the dictionary's iterate() method iterates over pairs)
+
+interface Collection<I>
+	get Bool empty?
+	get Int size
+	get ?Iterateor<I> iterator
+
+const Collection<Int> nums = getNumbers()
+var ?Iterator<Int> it = nums.iterator
+while it != null
+	println(it.value)
+	it =. next
+
+{it|
+	if it != null
+		println(it.value)
+		thisFunc(it.next)
+}(getNumbers().iterator)
+
+funcloop f { it = getNumbers().iterator |
+	if it != null
+		println(it.value)
+		f(it.next)
+}
+
+recursion it = getNumbers().iterator
+	if it != null
+		println(it.value)
+		recur(it.next)
+
+for num in getNumbers()
+	println(num)
+
+each(println, getNumbers())

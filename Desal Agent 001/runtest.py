@@ -14,33 +14,28 @@ agentBase = "/media/files/Desal/Desal Agent 001"
 argsTable = {
 	"desible" : [
 		"-path=%s" % os.path.join(agentBase, "test.desible"),
-		"-print-tree=true",
+		"-representation=desible",
 		"-desible-warn-unhandled=true",
 		"-desible-warn-allNS=true",
-		"-representation=desible",
 		"-test-desible-serializer=true"
 	],
 	"dextr-display" : [
 		"-path=%s" % os.path.join(agentBase, "test.dextr"),
-		"-print-tree=true",
 		"-representation=dextr",
 		"-dextr-parser=token-displayer"
 	],
 	"dextr-info" : [
 		"-path=%s" % os.path.join(agentBase, "test.dextr"),
-		"-print-tree=true",
 		"-representation=dextr",
 		"-dextr-parser=token-info-displayer"
 	],
 	"dextr-sablecc" : [
 		"-path=%s" % os.path.join(agentBase, "test.dextr"),
-		"-print-tree=true",
 		"-representation=dextr",
 		"-dextr-parser=SableCC"
 	],
 	"desexp" : [
 		"-path=%s" % os.path.join(agentBase, "test.desexp"),
-#		"-print-tree=true",
 		"-representation=desexp",
 	]
 }
@@ -50,7 +45,8 @@ def runTest(args) :
 		"mono",
 		"--debug",
 #		"--trace=program",
-		os.path.join(agentBase, "Desal Agent 001/bin/Debug/Desal Agent 001.exe")
+		os.path.join(agentBase, "Desal Agent 001/bin/Debug/Desal Agent 001.exe"),
+		"-print-tree=true",
 	] + args
 	
 	subprocess.call("clear")

@@ -1,0 +1,162 @@
+loops to keep:
+	loop ::=
+		expression action
+	for ::=
+		* ident-decl
+		expression source
+		? expression test
+	while ::=
+		expression test
+		expression action
+
+--- do-while
+
+do
+	stuff()
+while a < 2
+
+loop
+	stuff()
+	unless a lt 2 : break
+
+--- do-times
+
+do 5 times
+	stuff()
+
+do 5 times while a < 2
+	stuff()
+
+for doTimes(5)
+	stuff()
+
+for doTimes(5) while a < 2
+	stuff()
+
+--- for-key
+
+for key k in dict
+	stuff(k)
+
+for key Int k in dict
+	stuff(k)
+
+for k in keys(dict)
+	stuff(k)
+
+for Int k in keys<Int>(dict)
+	stuff(k)
+
+--- for-pair
+
+for pair k, v in dict
+	stuff(k, v)
+
+for pair Int k, v in dict
+	stuff(k, v)
+
+for pair Int k, String v in dict
+	stuff(k, v)
+
+for k, v in pairs(dict)
+	stuff(k, v)
+
+for Int k, v in pairs<Int, dyn>(dict)
+	stuff(k, v)
+
+for Int k, String v in pairs<Int, String>(dict)
+	stuff(k, v)
+
+--- for-manual (became a pseudo-node)
+
+manloop(decl Int i = 0; i lt container.length; i++)
+	println(container[i])
+
+compound
+	decl Int i = 0
+	while i lt container.length
+		compound
+			println(container[i])
+			i++
+
+--- for-range
+
+for x from 0 to 100 inclusive while a < 2
+	stuff()
+
+for x in range(0, 100, true) while a < 2
+	stuff()
+
+--- for-value (named changed to "for")
+--- loop (no change)
+--- while (no change)
+
+
+
+
+
+--- example: print tag names of child elements
+
+for child in parent.childNodes
+	if child.nodeType == Node.ELEMENT_NODE
+		println(child.tagName)
+
+each(println, comp[
+	x.tagName for x in parent.childNodes
+	where x.nodeType == Node.ELEMENT_NODE])
+
+
+func isElement = { Node x | x.nodeType == Node.ELEMENT_NODE }
+
+for x in filter(isElement, parent.childNodes)
+	println(x.tagName)
+
+for t in map(::tagName, filter(isElement, parent.childNodes))
+	println(t)
+
+each(println, map(::tagName, filter(isElement, parent.childNodes)))
+
+parent.childNodes | filter(isElement) | map(::tagName) | each(println)
+
+parent.childNodes | filter isElement | map ::tagName | each println
+
+
+func filterMapEach = { c, f, m, e | each(e, map(m, filter(f, c))) }
+
+filterMapEach(parent.childNodes, isElement, ::tagName, println)
+
+
+
+
+
+
+
+
+
+
+http://mlton.org/ForLoops
+had this example in Standard ML:
+
+for (0 to 10 when (fn x => x mod 3 <> 0) ** inList ["a", "b"] ** 2 downto 1 by real)
+    (fn x & y & z =>
+       print ("("^Int.toString x^", \""^y^"\", "^Real.toString z^")\n"))
+
+Something similar in Desal might look like:
+
+for x, y, z in together(
+	filter( {x | x % 3 == 0}, range(0,10) ),
+	inList(["a", "b"]),
+	map(cast<Rat>, range(2,1)))
+		println( "(" & (x to String) & ', "' & y '", ' & (z to String) ")" )
+
+
+
+Notice that in the ML example, "for" is just a function that takes yielded values from a generator and feeds them to a function. Desal could also do this with functions like each, map, and filter.
+
+for x in someGenerator()
+	println(x)
+
+each(println, someGenerator())
+
+each({x,y,z | ...}, together(...))
+

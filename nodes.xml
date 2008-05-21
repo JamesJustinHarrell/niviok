@@ -2,34 +2,28 @@
 	<family>
 		<typename>expression</typename>
 		<members>
-			<typename>do-while</typename>
-			<typename>do-times</typename>
-			<typename>for-key</typename>
-			<typename>for-pair</typename>
-			<typename>for-manual</typename>
-			<typename>for-range</typename>
-			<typename>for-value</typename>
-			<typename>loop</typename>
-			<typename>while</typename>
+			<typename>conditional-loop</typename>
+			<typename>enumerator-loop</typename>
+			<typename>unconditional-loop</typename>
 			<typename>break</typename>
 			<typename>continue</typename>
-			<typename>declare-empty</typename>
-			<typename>labeled</typename>
-			<typename>null</typename>
 			<typename>return</typename>
 			<typename>throw</typename>
 			<typename>yield</typename>
+			<typename>declare-empty</typename>
+			<typename>null</typename>
 			<typename>assign</typename>
-			<typename>block</typename>
 			<typename>call</typename>
 			<typename>cast</typename>
+			<typename>compound</typename>
 			<typename>conditional</typename>
 			<typename>curry</typename>
 			<typename>declare-assign</typename>
 			<typename>declare-first</typename>
+			<typename>identifier</typename>
 			<typename>ignore</typename>
+			<typename>labeled</typename>
 			<typename>namespaced-value-identikey</typename>
-			<typename>possibility</typename>
 			<typename>select</typename>
 			<typename>try-catch</typename>
 			<typename>and</typename>
@@ -38,13 +32,10 @@
 			<typename>nor</typename>
 			<typename>xor</typename>
 			<typename>xnor</typename>
-			<typename>array</typename>
 			<typename>breed</typename>
 			<typename>bundle</typename>
 			<typename>caller</typename>
-			<typename>chain</typename>
 			<typename>object</typename>
-			<typename>comprehension</typename>
 			<typename>dictionary</typename>
 			<typename>enum</typename>
 			<typename>extract-member</typename>
@@ -53,7 +44,6 @@
 			<typename>generator</typename>
 			<typename>generic-function</typename>
 			<typename>generic-interface</typename>
-			<typename>identifier</typename>
 			<typename>instantiate-generic</typename>
 			<typename>integer</typename>
 			<typename>interface</typename>
@@ -275,136 +265,28 @@
 		</entry>
 	</tree>
 	<tree>
-		<typename>do-while</typename>
-		<entry>
-			<count>1</count>
-			<typename>block</typename>
-			<label>action</label>
-		</entry>
+		<typename>conditional-loop</typename>
 		<entry>
 			<count>1</count>
 			<typename>expression</typename>
 			<label>test</label>
-		</entry>
-	</tree>
-	<tree>
-		<typename>do-times</typename>
-		<entry>
-			<count>1</count>
-			<typename>expression</typename>
-			<label>times</label>
-		</entry>
-		<entry>
-			<count>1</count>
-			<typename>block</typename>
-			<label>action</label>
 		</entry>
 		<entry>
 			<count>?</count>
 			<typename>expression</typename>
-			<label>test</label>
+			<label>body</label>
 		</entry>
 	</tree>
 	<tree>
-		<typename>for-key</typename>
+		<typename>enumerator-loop</typename>
 		<entry>
 			<count>1</count>
 			<typename>expression</typename>
 			<label>container</label>
-		</entry>
-		<entry>
-			<count>?</count>
-			<typename>expression</typename>
-			<label>key interface</label>
-		</entry>
-		<entry>
-			<count>1</count>
-			<typename>identifier</typename>
-			<label>name</label>
-		</entry>
-		<entry>
-			<count>1</count>
-			<typename>block</typename>
-			<label>action</label>
-		</entry>
-	</tree>
-	<tree>
-		<typename>for-pair</typename>
-		<entry>
-			<count>1</count>
-			<typename>expression</typename>
-			<label>container</label>
-		</entry>
-		<entry>
-			<count>?</count>
-			<typename>expression</typename>
-			<label>key interface</label>
-		</entry>
-		<entry>
-			<count>1</count>
-			<typename>identifier</typename>
-			<label>key name</label>
-		</entry>
-		<entry>
-			<count>?</count>
-			<typename>expression</typename>
-			<label>value interface</label>
-		</entry>
-		<entry>
-			<count>1</count>
-			<typename>identifier</typename>
-			<label>value name</label>
-		</entry>
-		<entry>
-			<count>1</count>
-			<typename>block</typename>
-			<label>action</label>
-		</entry>
-	</tree>
-	<tree>
-		<typename>for-manual</typename>
-		<entry>
-			<count>*</count>
-			<typename>expression</typename>
-			<label>initializer</label>
-		</entry>
-		<entry>
-			<count>?</count>
-			<typename>expression</typename>
-			<label>test</label>
 		</entry>
 		<entry>
 			<count>*</count>
-			<typename>expression</typename>
-			<label>post action</label>
-		</entry>
-		<entry>
-			<count>?</count>
-			<typename>block</typename>
-			<label>action</label>
-		</entry>
-	</tree>
-	<tree>
-		<typename>for-range</typename>
-		<entry>
-			<count>?</count>
-			<typename>identifier</typename>
-			<label>name</label>
-		</entry>
-		<entry>
-			<count>1</count>
-			<typename>expression</typename>
-			<label>start</label>
-		</entry>
-		<entry>
-			<count>1</count>
-			<typename>expression</typename>
-			<label>limit</label>
-		</entry>
-		<entry>
-			<count>1</count>
-			<typename>boolean</typename>
-			<label>inclusive</label>
+			<typename>receiver</typename>
 		</entry>
 		<entry>
 			<count>?</count>
@@ -414,49 +296,27 @@
 		<entry>
 			<count>1</count>
 			<typename>expression</typename>
-			<label>action</label>
+			<label>body</label>
 		</entry>
 	</tree>
 	<tree>
-		<typename>for-value</typename>
-		<entry>
-			<count>1</count>
-			<typename>expression</typename>
-			<label>container</label>
-		</entry>
+		<typename>receiver</typename>
 		<entry>
 			<count>?</count>
-			<typename>expression</typename>
-			<label>value interface</label>
+			<typename>nullable-type</typename>
 		</entry>
 		<entry>
 			<count>1</count>
 			<typename>identifier</typename>
 			<label>name</label>
 		</entry>
-		<entry>
-			<count>1</count>
-			<typename>block</typename>
-			<label>action</label>
-		</entry>
 	</tree>
 	<tree>
-		<typename>loop</typename>
-		<entry>
-			<count>1</count>
-			<typename>block</typename>
-		</entry>
-	</tree>
-	<tree>
-		<typename>while</typename>
+		<typename>unconditional-loop</typename>
 		<entry>
 			<count>1</count>
 			<typename>expression</typename>
-			<label>test</label>
-		</entry>
-		<entry>
-			<count>1</count>
-			<typename>block</typename>
+			<label>body</label>
 		</entry>
 	</tree>
 	<tree>
@@ -473,39 +333,6 @@
 			<count>?</count>
 			<typename>identifier</typename>
 			<label>label</label>
-		</entry>
-	</tree>
-	<tree>
-		<typename>declare-empty</typename>
-		<entry>
-			<count>1</count>
-			<typename>identifier</typename>
-			<label>name</label>
-		</entry>
-		<entry>
-			<count>1</count>
-			<typename>identikey-type</typename>
-		</entry>
-	</tree>
-	<tree>
-		<typename>labeled</typename>
-		<entry>
-			<count>1</count>
-			<typename>identifier</typename>
-			<label>label</label>
-		</entry>
-		<entry>
-			<count>1</count>
-			<typename>expression</typename>
-			<label>child</label>
-		</entry>
-	</tree>
-	<tree>
-		<typename>null</typename>
-		<entry>
-			<count>?</count>
-			<typename>expression</typename>
-			<label>interface</label>
 		</entry>
 	</tree>
 	<tree>
@@ -533,6 +360,26 @@
 		</entry>
 	</tree>
 	<tree>
+		<typename>declare-empty</typename>
+		<entry>
+			<count>1</count>
+			<typename>identifier</typename>
+			<label>name</label>
+		</entry>
+		<entry>
+			<count>1</count>
+			<typename>identikey-type</typename>
+		</entry>
+	</tree>
+	<tree>
+		<typename>null</typename>
+		<entry>
+			<count>?</count>
+			<typename>expression</typename>
+			<label>interface</label>
+		</entry>
+	</tree>
+	<tree>
 		<typename>assign</typename>
 		<entry>
 			<count>1</count>
@@ -548,19 +395,6 @@
 			<count>1</count>
 			<typename>expression</typename>
 			<label>value</label>
-		</entry>
-	</tree>
-	<tree>
-		<typename>block</typename>
-		<entry>
-			<count>*</count>
-			<typename>scope-alteration</typename>
-			<label>alt</label>
-		</entry>
-		<entry>
-			<count>*</count>
-			<typename>expression</typename>
-			<label>member</label>
 		</entry>
 	</tree>
 	<tree>
@@ -588,10 +422,29 @@
 		</entry>
 	</tree>
 	<tree>
+		<typename>compound</typename>
+		<entry>
+			<count>*</count>
+			<typename>scope-alteration</typename>
+			<label>alt</label>
+		</entry>
+		<entry>
+			<count>*</count>
+			<typename>expression</typename>
+			<label>member</label>
+		</entry>
+	</tree>
+	<tree>
 		<typename>conditional</typename>
 		<entry>
-			<count>+</count>
-			<typename>possibility</typename>
+			<count>1</count>
+			<typename>expression</typename>
+			<label>test</label>
+		</entry>
+		<entry>
+			<count>1</count>
+			<typename>expression</typename>
+			<label>result</label>
 		</entry>
 		<entry>
 			<count>?</count>
@@ -665,6 +518,9 @@
 			<label>value</label>
 		</entry>
 	</tree>
+	<terminal>
+		<typename>identifier</typename>
+	</terminal>
 	<tree>
 		<typename>ignore</typename>
 		<entry>
@@ -691,6 +547,19 @@
 		</entry>
 	</tree>
 	<tree>
+		<typename>labeled</typename>
+		<entry>
+			<count>1</count>
+			<typename>identifier</typename>
+			<label>label</label>
+		</entry>
+		<entry>
+			<count>1</count>
+			<typename>expression</typename>
+			<label>child</label>
+		</entry>
+	</tree>
+	<tree>
 		<typename>namespaced-value-identikey</typename>
 		<entry>
 			<count>+</count>
@@ -701,19 +570,6 @@
 			<count>1</count>
 			<typename>identifier</typename>
 			<label>identikey name</label>
-		</entry>
-	</tree>
-	<tree>
-		<typename>possibility</typename>
-		<entry>
-			<count>1</count>
-			<typename>expression</typename>
-			<label>test</label>
-		</entry>
-		<entry>
-			<count>1</count>
-			<typename>expression</typename>
-			<label>result</label>
 		</entry>
 	</tree>
 	<tree>
@@ -870,18 +726,6 @@
 		</entry>
 	</tree>
 	<tree>
-		<typename>array</typename>
-		<entry>
-			<count>1</count>
-			<typename>nullable-type</typename>
-		</entry>
-		<entry>
-			<count>*</count>
-			<typename>expression</typename>
-			<label>element</label>
-		</entry>
-	</tree>
-	<tree>
 		<typename>breed</typename>
 		<entry>
 			<count>1</count>
@@ -924,45 +768,10 @@
 		</entry>
 	</tree>
 	<tree>
-		<typename>chain</typename>
-		<entry>
-			<count>1</count>
-			<typename>nullable-type</typename>
-		</entry>
-		<entry>
-			<count>*</count>
-			<typename>expression</typename>
-			<label>element</label>
-		</entry>
-	</tree>
-	<tree>
 		<typename>object</typename>
 		<entry>
 			<count>+</count>
 			<typename>worker</typename>
-		</entry>
-	</tree>
-	<tree>
-		<typename>comprehension</typename>
-		<entry>
-			<count>1</count>
-			<typename>expression</typename>
-			<label>source collection</label>
-		</entry>
-		<entry>
-			<count>1</count>
-			<typename>identifier</typename>
-			<label>element name</label>
-		</entry>
-		<entry>
-			<count>?</count>
-			<typename>expression</typename>
-			<label>test</label>
-		</entry>
-		<entry>
-			<count>?</count>
-			<typename>expression</typename>
-			<label>output</label>
 		</entry>
 	</tree>
 	<tree>
@@ -1102,9 +911,6 @@
 			<typename>interface</typename>
 		</entry>
 	</tree>
-	<terminal>
-		<typename>identifier</typename>
-	</terminal>
 	<tree>
 		<typename>instantiate-generic</typename>
 		<entry>

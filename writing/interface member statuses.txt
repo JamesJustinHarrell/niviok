@@ -1,0 +1,19 @@
+Interface Member Statuses
+
+(Something like "new" and "old" attributes was defined somewhere, but I don't know where.)
+
+Members of interfaces could have something like an "age" status to make updating interfaces easier.
+
+status: new/optional
+	If the member is not explicitly implemented, it is automatically implicitly implemented in such a way that trying to use it just throws an Unimplemented error, and a warning is output.
+
+status: normal/required
+	An implementation of this interface must explicitly implement this member, unless the interface implementation explictily marks itself as being incomplete.
+	e.g. if there was an interface Foo:
+		object[ partial impl Foo [ ... ] ]
+
+status: old/deprecated
+	If the member is not explicitly implemented, it is automatically implicitly implemented in such a way that trying to use it just throws an Unimplemented error. When implementing or using the member (e.g. calling the method on an implementation), a warning is output.
+
+status: removed
+	Implementations of this interface may implement this member, although it produces a warning, but it won't show up in the interface, so the implementation can not be used. (e.g. if property foo of interface Bar is removed, barImpl.foo throws an error that Bar does not have such a member)

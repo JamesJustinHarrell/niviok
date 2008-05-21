@@ -16,4 +16,5 @@ def getTypename(elem) :
 doc = DOM.parse(inputPath)
 nodeTypenames = map(getTypename, childElements(doc.documentElement))
 nodeTypenames.sort()
+print "%s nodes:" % len(nodeTypenames)
 print "\n".join(nodeTypenames)

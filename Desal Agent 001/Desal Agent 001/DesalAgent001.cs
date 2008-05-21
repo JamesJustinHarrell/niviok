@@ -10,17 +10,21 @@ class DesalAgent001 {
 		//Debug.Assert and Trace.Assert don't output anything by default
 		Debug.Listeners.Add(new TextWriterTraceListener(Console.Error));
 	
+		//xxx XmlDocument::Load has threading issues
+		//this seems to prevent the bug from being triggered
+		System.Threading.Thread.Sleep(100);
+		
 		DesalAgent001 program = new DesalAgent001();
 		Bridge bridge = new Bridge();
 		try {
 			return program.run(programArgs, bridge);
 		}
 		catch(UserError e) {
-			bridge.printlnError("error in user input: " + e.Message);
+			bridge.printlnError("User input: " + e.Message);
 			return 1;
 		}
 		catch(ParseError e) {
-			bridge.printlnError("parse error: " + e.Message);
+			bridge.printlnError("Parsing: " + e.Message);
 			return 1;
 		}
 	}
@@ -47,7 +51,7 @@ class DesalAgent001 {
 			if( repr == "desexp" ) {
 				bundle = Desexp.DesexpParser.parseFile(bridge, path);
 			}
-			else if( repr == "desible" ) {		
+			else if( repr == "desible" ) {
 				bool warnUnhandled = bool.Parse(args["desible-warn-unhandled"]);
 				bool warnAllNS = bool.Parse(args["desible-warn-allNS"]);
 				bundle = DesibleParser.parseDocument(
@@ -68,7 +72,9 @@ class DesalAgent001 {
 			}
 		}
 		catch(Exception e) {
-			throw new UserError(
+			if( e is ParseError )
+				throw;
+			throw new ParseError(
 				String.Format(
 					"unable to parse {0} document at '{1}' because: {2}",
 					repr, path, e),
@@ -100,11 +106,13 @@ class DesalAgent001 {
 			}
 		}
 		
+		//xxx the desired behavior recently changed (and has not been implemented)
+		//see "executing module.txt" for details
 		if( bool.Parse(args["run"]) ) {
-			return (int)Bridge.unwrapInteger(
-				Executor.execute(
-					bundle,
-					createGlobalScope(bridge)));
+			//all exceptions in client code should be caught, and not bubble up here
+			IWorker result = Executor.execute(bundle, bridge);
+			//xxx execution of bundle should always produce a non-null Int worker
+			return ( result is Null ? 0 : (int)Bridge.unwrapInteger(result) );
 		}
 		
 		return 0;
@@ -143,103 +151,6 @@ class DesalAgent001 {
 			throw new UserError("Representation not specified.");
 		
 		return args;
-	}
-	
-	Scope createGlobalScope(Bridge bridge) {
-		Scope scope = new Scope(bridge);
-		
-		//func println(dyn value)
-		IList<ParameterImpl> printParameters = new ParameterImpl[] {
-			new ParameterImpl(
-				Direction.IN, NullableType.dyn,
-				new Identifier("text"), null)
-		};
-		IFunction printFunction = new Function_Native(
-			printParameters, null, printFunctionNative, scope);
-		IWorker wrappedPrintFunction = Client_Function.wrap(printFunction);
-		
-		scope.declareAssign(
-			new Identifier("println"),
-			IdentikeyCategory.CONSTANT,
-			new NullableType(printFunction.face, false),
-			wrappedPrintFunction);
-				
-		scope.declareAssign(
-			new Identifier("true"),
-			IdentikeyCategory.CONSTANT,
-			new NullableType(Bridge.faceBool, false),
-			Bridge.wrapBoolean(true));
-		
-		scope.declareAssign(
-			new Identifier("false"),
-			IdentikeyCategory.CONSTANT,
-			new NullableType(Bridge.faceBool, false),
-			Bridge.wrapBoolean(false));
-		
-		scope.declareAssign(
-			new Identifier("Bool"),
-			IdentikeyCategory.CONSTANT,
-			new NullableType(Bridge.faceInterface, false),
-			Bridge.faceBool);
-		
-		scope.declareAssign(
-			new Identifier("Int"),
-			IdentikeyCategory.CONSTANT,
-			new NullableType(Bridge.faceInterface, false),
-			Bridge.faceInt);
-		
-		scope.declareAssign(
-			new Identifier("Interface"),
-			IdentikeyCategory.CONSTANT,
-			new NullableType(Bridge.faceInterface, false),
-			Bridge.faceInterface);
-		
-		scope.declareAssign(
-			new Identifier("Object"),
-			IdentikeyCategory.CONSTANT,
-			new NullableType(Bridge.faceInterface, false),
-			Bridge.faceObject);
-
-		scope.declareAssign(
-			new Identifier("String"),
-			IdentikeyCategory.CONSTANT,
-			new NullableType(Bridge.faceInterface, false),
-			Bridge.faceString);
-
-		return scope;
-	}
-	
-	//func println( Stringable text )
-	IWorker printFunctionNative(Scope args) {
-		Bridge bridge = args.bridge;
-		IWorker arg = args.evaluateLocalIdentifier( new Identifier("text") );
-		
-		/* xxx
-		should use String breeder of argument
-		bridge.println(
-			Bridge.unwrapString(
-				arg.breed(Bridge.faceString) ))
-		But I haven't yet implemented breeders.
-		*/
-		
-		if( arg.face == Bridge.faceString )
-			bridge.println( Bridge.unwrapString(arg) );
-		else if( arg.face == Bridge.faceInt )
-			bridge.println( Bridge.unwrapInteger(arg).ToString() );
-		else if( arg.face == Bridge.faceBool )
-			bridge.println( Bridge.unwrapBoolean(arg).ToString() );
-		else if( arg.face == Bridge.faceRat )
-			bridge.println( Bridge.unwrapRational(arg).ToString() );
-		else if( arg.face == Bridge.faceObject )
-			bridge.println( "object" );
-		else if( arg is Null )
-			bridge.println( "null" );
-		else
-			throw new NotImplementedException(
-				"unknown type cannot be converted to string " +
-				"because breeders aren't implemented yet");
-		
-		return new Null();
 	}
 	
 	void printNode(int level, INode node) {

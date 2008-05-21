@@ -1,0 +1,24 @@
+comprehension ::=
+	expression source collection
+	identifier element name
+	? expression test
+	? expression output
+
+The comprehension pseudo-node has the syntax:
+	[(output) for (element name) in (source collection) if (test)]
+
+which is translated to:
+	generator
+		for (element name) in (source collection)
+			if (test)
+				yield (output)
+
+For example, this input:
+	[2*x for x in L if x^2 > 3]
+
+Is translated to this:
+	generator
+		for x in L
+			if x^2 > 3
+				yield 2*x
+	

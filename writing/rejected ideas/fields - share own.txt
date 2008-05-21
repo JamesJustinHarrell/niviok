@@ -1,0 +1,6 @@
+fields of an object marked as "share" or "own"
+allows automatic creation of constructors and copiers
+
+rejected because it conflicts with closures
+closures mean the data an object uses is not limited to its fields
+mixing this idea with closures would result in much confusing and difficult bugs

@@ -1,0 +1,13 @@
+special expressions
+
+They can be executed, but they can't appear where an "expression" is required. None of the special expressions produce.
+
+declare-first
+hidable
+identikey-special-new
+identikey-special-old
+limit-old
+module
+namespace
+
+Rationale: Some nodes can be executed, but should only appear in certain case when explicitly allowed.

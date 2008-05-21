@@ -1,0 +1,49 @@
+Why does Niviok have declare-first nodes?
+What can they do that declare-assign nodes cannot?
+
+--- original reasons:
+* could be intermixed with other expressions, but still execute first
+	This was changed back and forth, but the final decision was to not allow declare-first nodes to be used as normal expressions. It made the order of execution too difficult to follow.
+* ability for expressions to reference each other limited to this node
+	example:
+		declare-assign constant Foo = interface[ get Bar bar ]
+		declare-assign constant Bar = interface[ get Foo foo ]
+		This would be illegal, because the interface nodes would not be allowed to reference each other. If the declare-assign nodes were instead declare-first nodes, it would be allowed.
+
+--- current reasons:
+* ability for expressions to reference each other limited to this node
+	This may change in instances where it would not require the expressions to be reordered. But this is a low priority. If this change were made, this reason would become "ability for expressions to be reordered to meet identikey dependencies limited to this node".
+* declare-first nodes can execute in differing order from their given order to resolve identikey dependencies
+	example:
+		declare-first constant Foo = interface[ get Bar bar ]
+		declare-first constant Bar = get_something()
+		The call to get_something would be executed first, because Foo depends on Bar.
+
+The ability for expressions to reference each other has not yet been clearly defined (or defined at all). Acrid thus implements this feature extremely poorly.
+	example:
+		declare-first constant Foo = interface[ get Bar bar ]
+		declare-first constant Bar = 123
+		This code currently wouldn't throw an exception, because the interface node doesn't check that Bar is really bound to an Interface worker.
+
+--- goals:
+* Define this kind of cyclical reference.
+* Rename declare-first.
+	possibilities: declare-cycle, declare-cyclical, declare-reorderable, declare-unordered, declare-cyclicalable, declare-together
+
+Cyclical references should be limited to nodes like "interface", "function", and "object", in very limited situations. Order of execution should be based on identikey dependencies (as can be determined in Acrid using the Depends class).
+
+example:
+	declare-first constant Foo = interface[ get Bar bar ]
+	declare-first constant Bar = 123
+	The integer node would be executed first. Then the interface node would be executed and throw an exception.
+
+example:
+	declare-first constant Foo = interface[ get Bar bar ]
+	declare-first constant Bar = interface[ get Foo foo ]
+	Cyclical reference allowed because both are "interface" nodes, and each is used by the other only for type information. Foo would be executed first, since it is given first.
+
+example:
+	declare-first constant Foo = interface[ get do_something(Bar) bar ]
+	declare-first constant Bar = interface[ get do_something(Foo) foo ]
+	Cyclical reference not allowed, because each interface node requires that the value bound to the other identikey be sent to a function before it can begin execution.
+

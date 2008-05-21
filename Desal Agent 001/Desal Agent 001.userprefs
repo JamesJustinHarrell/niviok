@@ -1,10 +1,12 @@
 ﻿<UserCombinePreferences version="1.0" filename="/home/justin/files/Desal/Desal Agent 001/Desal Agent 001.mds">
-  <Files />
+  <Files>
+    <File name="Desal Agent 001/DesalAgent001.cs" line="110" column="43" />
+  </Files>
   <Views>
     <ViewMemento id="ProjectPad">
       <Node expanded="True">
         <Node name="Desal Agent 001" expanded="True">
-          <Node name="Bridge.cs" selected="True" />
+          <Node name="DesalAgent001.cs" selected="True" />
         </Node>
       </Node>
     </ViewMemento>
@@ -13,7 +15,7 @@
     </ViewMemento>
   </Views>
   <Properties>
-    <Property key="ActiveWindow" value="" />
+    <Property key="ActiveWindow" value="/home/justin/files/Desal/Desal Agent 001/Desal Agent 001/DesalAgent001.cs" />
     <Property key="ActiveConfiguration" value="Debug" />
   </Properties>
 </UserCombinePreferences>

@@ -63,7 +63,7 @@ class WorkerBuilder : WorkerBase {
 				delegate(Scope scope) {
 					return func();
 				},
-				null));
+				Bridge.universalScope));
 	}
 	
 	public void addPropertyGetter(Identifier ident, IWorker func) {

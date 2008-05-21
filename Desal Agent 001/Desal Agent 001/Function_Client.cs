@@ -1,4 +1,4 @@
-//function defined by client code
+//function defined using a Desal "function" node
 
 using System.Collections.Generic;
 
@@ -35,8 +35,18 @@ class Function_Client : IFunction {
 	}
 	
 	public IWorker call(IList<Argument> arguments) {
-		return Executor.execute(
-			_body,
-			G.setupArguments(_parameters, arguments, _scope));
+		Scope argScope = G.setupArguments(_parameters, arguments, _scope);
+	
+		try {
+			return Executor.executeAny(_body, argScope);
+		}
+		catch(ClientReturn ret) {
+			if( ret.worker == null ) {
+				return new Null(_returnType.face);
+			}
+			else {
+				return ret.worker;
+			}
+		}
 	}	
 }

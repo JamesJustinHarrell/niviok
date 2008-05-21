@@ -30,9 +30,9 @@ static class Depends {
 		        unionDepends(node.childNodes) );
 	}
 	
-	//block
+	//compound
 	//xxx may want to remove references to global identikeys (optimization)
-	public static HashSet<Identifier> depends(Node_Block node) {
+	public static HashSet<Identifier> depends(Node_Compound node) {
 		HashSet<Identifier> idents = unionChildDepends(node);
 		foreach( INode_Expression member in node.members ) {
 			if( member is INode_Declaration ) {
@@ -62,15 +62,6 @@ static class Depends {
 	//extract-member
 	public static HashSet<Identifier> depends(Node_ExtractMember node) {
 		return depends(node.source);
-	}
-	
-	//for-range
-	public static HashSet<Identifier> depends(Node_ForRange node) {
-		HashSet<Identifier> idents = depends(node.action);
-		idents.Remove(node.name.value);
-		idents.UnionWith(depends(node.start));
-		idents.UnionWith(depends(node.limit));
-		return idents;
 	}
 	
 	//function

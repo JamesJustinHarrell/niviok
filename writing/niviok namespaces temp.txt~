@@ -1,0 +1,66 @@
+# declares new local identikeys and assigns preexisting stuff to them
+identikey-special-old ::= (family)
+	using|expose
+
+# declares new local identikeys and assigns new stuff to them
+identikey-special-new ::= (family)
+	namespace|declare-first|limit-old
+
+# root/global/top node
+# Purposely only has one limit-old node; identikey-special-old children are global.
+module ::=
+	* import
+	limit-old
+
+# adds child identikeys to specified namespace
+# "namespace" here could be thought of as a verb; "Please namespace these identikeys."
+# namespaces child identikeys
+namespace ::=
+	+ identifier name
+	limit-old
+
+# limits reach of identikeys created by identikey-special-old nodes
+# only exposes new stuff
+limit-old ::=
+	* identikey-special-old
+	* hidable
+
+hidable ::=
+	boolean hidden
+	identikey-special-new
+
+compound ::=
+	* identikey-special-old
+	* identikey-special-new
+	+ expression
+
+
+The namespace node does not have a 1-to-1 correspondence with a namespace. A namespace node merely inserts child identikeys into the specified namespace. Multiple namespace nodes can insert identikeys into the same namespace.
+
+
+--- file A
+module
+	import Foo [...]
+	limit-old
+		include B
+		include C
+
+--- file B
+using Foo as Bar
+
+--- file C
+func main {
+	println(Bar:something)
+}
+
+--- all together
+module
+	import Foo
+	limit-old
+		limit-old
+			using Foo as Bar
+		limit-old
+			func main {
+				Bar:do_something() #error - Bar namespace not defined
+			}
+

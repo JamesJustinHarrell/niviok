@@ -1,0 +1,76 @@
+generator/stream/cursor/lazy-list/iterator/enumerator
+
+Unix pipes
+
+Python generators
+	
+C streams
+
+C++ streams
+	e.g. ifstream
+
+C++ iterators
+	foo = *iter
+	*iter = foo
+	iter++
+	iter--
+	iter1 == iter2
+	iter + n
+		iter + 1
+	iter - n
+		iter - 1
+
+Java - interface Enumeration
+	boolean hasMoreElements()
+	Object nextElement()
+
+Java - interface Iterator
+	boolean hasNext()
+	Object next()
+	void remove()
+
+C# - interface IEnumerator
+	bool MoveNext()
+	void Reset()
+	Object Current {get;}
+Current is undefined until MoveNext is first called
+
+
+
+properties that often vary:
+	side effects
+		should moving forward be expected to not produce side effects?
+	direction
+		can you move backwards?
+	reference
+		can the object be used to refer to an element in a collection?
+		examples:
+			collection.replace(iterator, newValue)
+			iterator.replace(newValue)
+			collection.insertAfter(iterator, newValue)
+			interator.insertAfter(newValue)
+			collection.remove(iterator)
+			iterator.remove()
+			iterator.removeAndMoveForward()
+	owner
+		does the object know of something like a collection or file that the values are coming from?
+	size
+		Is the object yielding from a finite collection of a know size, or is the object yielding from an infinite sequence?
+	next
+		Does the object know whether there is another value after the current one? Or must you just try to get the next value and catch the exception if there aren't any more?
+	validity
+		Can the object be in an invalid state?
+		If so, when does the iterator become invalid?
+			What about when the owner collection is modified?
+	mutation
+		Do I have to mutate the object to get values, or can I obtain another iterator/generator object that refers to the next value?
+	reset
+		Can I reset the object to the beginning or some arbitrary point?
+	comparison
+		Can two iterators be compared to each other?
+	value
+		Does the object know the current value, or does it forget about it as soon as it tells me what it is?
+	like collection
+		Does it share a common interface with collections, to reduce code duplication?
+		(e.g. just map(Iterable), no map(Iterator) required)
+		example: Python iterators/generators

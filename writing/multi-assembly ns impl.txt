@@ -1,0 +1,212 @@
+imagine an enormous namespace
+lots of stuff wants to live in this namespace
+different libraries want to add to this namespace
+
+examples:
+	.NET
+	Java
+	C++ standard library
+	Boost
+
+Multiple modules can declare they are in the same namespace, without having to give that namespace a name or worry about name collisions. Then, multiple modules can be imported and a single name defined for that namespace.
+
+For example, imagine the Miracle Library, which is sectioned up into several top-level namespaces. One of the top level namespaces is "Alpha", and two sub-namespaces of Alpha are "Foo" and "Bar". Consider how Miracle's Alpha:Foo and Alpha:Bar namespaces could be implemented in different modules.
+
+module
+	root-namespace-identification "http://www.miraclelibrary.example/"
+	module-namespace Alpha:Foo
+	enclosure
+		func stuff {...}
+
+module
+	root-namespace-identification "http://www.miraclelibrary.example/"
+	module-namespace Alpha:Bar
+	enclosure
+		func stuff {...}
+
+module
+	root-namespace-bind "http://www.magiclibrary.com/1.X" as Miracle
+	import bind [ "lib/miracle/alpha/foo" ]
+	import bind [ "lib/miracle/alpha/bar" ]
+	func main {
+		println( Miracle:Alpha:Foo:stuff() )
+		println( Miracle:Alpha:Bar:stuff() )
+	}
+
+---
+
+It would probably be a good idea to disallow shadowing of namespace identikeys.
+
+---
+
+A useful (but inaccurate) simplification is to think of namespaces as just an automatic identikey prefix. For example, consider this:
+
+module
+	namespace A
+		declfirst name = "A"
+		namespace B
+			declfirst name = "A:B"
+	namespace A
+		declfirst message = "I'm A"
+		namespace B
+			declfirst message = "I'm A:B"
+	func main {
+		namespace A
+			declfirst whoIsBest = "A is the best"
+			namespace B
+				declfirst whoIsBest = "A:B is the best"
+				namespace C
+					declfirst name = "C"
+					declfirst message = "I'm A:B:C"
+					declfirst whoIsBest = "A:B:C is the best"
+		println(A:name)
+		println(A:message)
+		println(A:whoIsBest)
+		println(A:B:name)
+		println(A:B:message)
+		println(A:B:whoIsBest)
+		println(A:B:C:name)
+		println(A:B:C:message)
+		println(A:B:C:whoIsBest)
+	}
+
+It could be thought of as this:
+
+module
+	declfirst A:name = "A"
+	declfirst A:B:name = "A:B"
+	declfirst A:message = "I'm A"
+	declfirst A:B:message = "I'm A:B"
+	func main {
+		declfirst A:whoIsBest = "A is the best"
+		declfirst A:B:whoIsBest = "A:B is the best"
+		declfirst A:B:C:name = "C"
+		declfirst A:B:C:message = "I'm A:B:C"
+		declfirst A:B:C:whoIsBest = "A:B:C is the best"
+		println(A:name)
+		println(A:message)
+		println(A:whoIsBest)
+		println(A:B:name)
+		println(A:B:message)
+		println(A:B:whoIsBest)
+		println(A:B:C:name)
+		println(A:B:C:message)
+		println(A:B:C:whoIsBest)
+	}
+
+---
+
+One place this simplification fails is hidden namespace children.
+
+module
+	namespace A
+		namespace B
+			hidden declfirst text = "some text to read"
+			func printText { println(text) }
+	func main {
+		A:B:printText()
+	}
+
+---
+
+Another place is when an expression in a nested namespace node refers to identikeys declared in the parent namespace node.
+
+module
+	namespace A
+		namespace B
+			func stuff { println("B stuff") }
+			namespace C
+				func stuff { println("C stuff") }
+				func callBStuff { B:stuff() }
+	func main { A:B:C:callBStuff() }
+
+becomes
+
+module
+	func A:B:stuff { println("B stuff") }
+	func A:B:C:stuff { println("C stuff") }
+	func A:B:C:callBStuff { B:stuff() } #Error - B not defined
+	func main { A:B:C:callBStuff() }
+
+---
+
+Note that the order of execution of declare-first nodes can even be reordered between namespace nodes. For example, consider this:
+
+module
+	namespace A
+		func getText {Object o | "string one"}
+		declfirst text getText(123)
+	namespace A
+		func getText {Int i | "string two"}
+	func main {
+		//what does is printed
+		println(A:getText(123))
+		println(A:text)
+	}
+
+Here, the two getText functions are executed first, before the call to getText. So the println outputs "string two". This is easier to understand if the simplification noted above is used:
+
+module
+	func A:getText {Object o | "string one"}
+	declfirst A:text getText(123)
+	func A:getText {Int i | "string two"}
+	func main {
+		println(A:getText(123))
+		println(A:text)
+	}
+
+Rationale: It is done this way so that evaluating the getText identikey gives consistent results. If the expressions in the first namespace node were executed before the expressions in the second namespace node, evaluating the getText identikey would give different results depending on whether it was called before or after the second namespace node was executed.
+
+---
+
+module
+	namespace A
+		declfirst foo "one"
+		namespace B
+			namespace C
+				declfirst fooCopy foo
+				declfirst getFoo { foo }
+	namespace A
+		namespace B
+			declfirst foo "two"
+	func main {
+		println( A:B:C:fooCopy )
+		println( A:B:C:getFoo() )
+	}
+
+What does this output? First let's use the simplification:
+
+module
+	declfirst A:foo "one"
+	declfirst A:B:C:fooCopy foo
+	declfirst A:B:C:getFoo {foo}
+	declfirst A:B:foo "two"
+	func main {
+		println(A:B:C:fooCopy)
+		println(A:B:C:getFoo())
+	}
+
+When the expressions for the fooCopy and getFoo identikeys are executed, they are aware of the existence of A:B:foo (as well as A:foo) because all the identikeys are executed together, rather than namespace node by namespace node. Therefore, main outputs "two" twice.
+
+---
+
+The order of declare-first nodes is still only changed as much as required for all to execute. For example, the code below:
+
+namespace A
+	namespace B
+		declfirst ? B1 println("B1")
+	namespace C
+		declfirst ? C1 println("C1")
+namespace A
+	namespace C
+		declfirst ? C2 println("C2")
+	namespace B
+		declfirst ? B2 println("B2")
+
+output would be:
+B1
+C1
+C2
+B2
+
+Since none of the expressions (each a call to println) relied on any identikeys, they were executed in the given order.

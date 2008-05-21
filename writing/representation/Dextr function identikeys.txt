@@ -1,0 +1,68 @@
+functions:
+	{ print("stuff") }
+	{ a,b,c | a*b+c }
+	{ Int a, Int b, Int c -> Int | a*b+c }
+	{ out ?Int a = 3, inout ?Bool b = true -> ?String | String(a) & String(b) }
+
+function interfaces:
+	( Int, Int -> Int )
+	( -> void )
+	( Bool -> void )
+	( dyn, dyn -> dyn )
+	( Int a, Int b -> String )
+	( out ?Int a ?, inout ?Bool b ? -> ?String )
+
+	the 2nd and 4th "?" above means the parameter is optional because it has a default value
+
+generic functions:
+	<T>{ T a, T b -> T | a + b }
+
+generic function interfaces:
+	<T>( T a, T b -> T )
+
+function identikeys
+	"func" [ expression ] identifier expression
+
+other identikeys
+	var a 2
+	var ?Int a 2
+	var auto foo getStuff()
+	const a 123
+
+Variables can be type restricted (statically typed) or type unrestricted (dynamically typed).
+
+
+--- function identiky examples
+
+func getFuncFace() doStuff { a,b,c |
+	things(something(a, b), c)
+}
+	Dependening on what getFuncFace() produces, the function interface here could be, for example:
+	(Int, Int, Int -> void)
+	(Bool, Bool, Bool -> String)
+	(SomeType, Rat, String -> Function)
+
+func doStuff { println("stuff") }
+
+func (->void) doStuff { -> void |
+	println("stuff")
+}
+
+func square { a | a * a }
+
+func square { Int a -> Int | a * a }
+
+func square { Int a -> Int |
+	a * a
+}
+
+func foo { a,b,c | a*b+c }
+
+func foo { Int a, Int b, Int c -> Int | a*b+c }
+
+doStuff({ Xml:Node parent, (Stringable -> void) printer, Bool shouldPrint |
+	for Xml:Element child in childElements(parent)
+		if shouldPrint
+			printer(child.tagName)
+		mutate(child)
+})

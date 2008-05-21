@@ -1,4 +1,4 @@
-<Combine name="Desal Agent 001" fileversion="2.0" outputpath="./build/bin/">
+<Combine name="Desal Agent 001" fileversion="2.0" outputpath="build/bin/">
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="CombineConfiguration">
       <Entry build="True" name="Desal Agent 001" configuration="Debug" />
@@ -12,6 +12,6 @@
   </StartMode>
   <DeployTargets />
   <Entries>
-    <Entry filename="./Desal Agent 001/Desal Agent 001.mdp" />
+    <Entry filename="Desal Agent 001/Desal Agent 001.mdp" />
   </Entries>
 </Combine>

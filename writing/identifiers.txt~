@@ -1,0 +1,9 @@
+An identifier is a sequence of words, with an optional ending exclamation mark or question mark.
+A word is a sequence of Unicode characters, where each Unicode character is a letter or an Arabic numerical digit.
+A letter is a member of an alphabet, abjad, abugida, syllabary, or logogram.
+(letters are case sensitive wherever Unicode defines an uppercase and lowercase character for the same letter)
+This specification does not specify all characters that do or do not qualify as letters, but it does list some characters that must be recognized a certain way.
+letters: a-z, A-Z
+not letters: `~!@#$%^&*(){}[]/=?+0-9_
+Non-normative: This means a word is a sequence of Unicode characters, where each Unicode character is meaningful and is not a control character, punctation, or some other "weird" symbol. Basically, "name characters". If a character would be in somebody's name, it can be part of a word.
+An Arabic numerical digit is from 0 to 9.

@@ -1,0 +1,54 @@
+comprehension ::=
+	expression source collection
+	identifier element name
+	? expression test
+	? expression output
+
+The comprehension pseudo-node has the syntax:
+	[(output) for (element name) in (source collection) if (test)]
+
+which is translated to:
+	generator
+		for (element name) in (source collection)
+			if (test)
+				yield (output)
+
+For example, this input:
+	[2*x for x in L if x^2 > 3]
+
+Is translated to this:
+	generator
+		for x in L
+			if x^2 > 3
+				yield 2*x
+	
+
+Other examples:
+
+decl foo = [2*x for x in L if x^2 > 3]
+container: L
+element name: x
+test: x^2 > 3
+output: 2*x
+
+decl foo = [x in L if x^2 > 3]
+container: L
+element name: x
+test: x^2 > 3
+output: (implicit: x)
+
+decl foo = [x in L]
+container: L
+element name: x
+test: (implicit: true)
+output: (implicit: x)
+
+for o in [2*x for x in L if x^2 > 3] {
+	println o
+}
+
+//convert to Array
+Array&lt;Int>([2*x for x in L if x^2 > 3])
+
+//insert into existing collection
+collection.insert([2*x for x in L if x^2 > 3])

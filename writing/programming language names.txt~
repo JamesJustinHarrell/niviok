@@ -1,0 +1,108 @@
+--- domains ---
+
+python.org
+perl.org
+ecmascript.org
+smalltalk.org
+lua.org
+
+schemers.org
+
+php.net
+java.com
+cplusplus.com
+
+ruby-lang.org
+
+boo.codehaus.org
+groovy.codehaus.org
+
+digitalmars.com/d/
+eiffel.com (company)
+
+
+--- names ---
+
+Lua (foreign word for moon)
+Boo (exclamation)
+Perl, Ruby (jewels)
+Python (monty python, animal)
+Eiffel (building)
+Java (food)
+ECMAScript, JavaScript, Groovy (descriptive)
+C, C++, C#, D (letters)
+PHP (initialism)
+Kite, Subtext (things)
+
+4 chars is too short (perl, ruby, java)
+10 chars is too long (ecmascript)
+
+1 syllable is too short (boo, perl)
+3 syllables is too long (c++, ecmascript, php)
+
+double characters suck (smaLLtalk, grOOvy, eiFFel)
+
+guidelines:
+	6-8 characters
+	2 syllables
+	no repeated characters
+
+representations should not have names that are similar to the name of the semantics
+things that need names:
+	semantics (previously Desam)
+		Niviok
+	text representation favoring terseness (previously Dextr)
+		Fujin (from Final Fantasy VIII, whose sentences often consist of a single word)
+	text representation favoring clarity (previously Desexp)
+		Ivan (EE-von, from Digimon Savers, who keeps saying out loud what he's thinking)
+	XML representation (previously Desible)
+		Desible
+	visual representation (previously Desual)
+		Mitsuka (for Mitsuka Yoshimine from DearS, who is very sexy and showy)
+	proof-of-concept implementation (previously Desal Implementation 001 and Desal Agent 001)
+		Acrid (because it's written in C#, and "acrid" can be a synonym for sharp)
+
+fruits:
+	apple
+	apricot
+	blueberry
+	blackberry
+	banana
+	cantalope
+	cherry
+	fig
+	grape
+	grapefruit
+	honeydew
+	kiwi
+	lime
+	lemon
+	mango
+	melon
+	orange
+	Papaya
+	peach
+	pear
+	pineapple
+	plum
+	raspberry
+	strawberry
+	tangerine
+	watermelon
+
+weather:
+	earthquake
+	tsunami
+	tornado
+	hurricane
+	blizzard
+	snow
+	hail
+	sleet
+	rain
+	flood
+	drought
+	breeze
+	wind
+	
+	

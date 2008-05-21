@@ -10,7 +10,7 @@
 		(
 			(in (- false) title -))
 		-
-		(block () (
+		(compound () (
 			(println "")
 			(println ((extract-member title concat) " :"))
 		))))
@@ -22,7 +22,7 @@
 			(in (- false) title -)
 			(in (- false) func -))
 		-
-		(block () (
+		(compound () (
 			(header ((extract-member "calling " concat) title))
 			(func)
 			(println "")
@@ -32,7 +32,7 @@
 (declare-first main
 	(function (- false)) false
 	(function () -
-		(block () (
+		(compound () (
 			(headerize "doStuff" doStuff)
 			(headerize "testNonProducers" testNonProducers)
 			(headerize "testSometimesProducers" testSometimesProducers)
@@ -48,7 +48,7 @@
 (declare-first createObject
 	(function (- false)) false
 	(function () -
-		(block () (
+		(compound () (
 			(declare-assign mText (variable (String false)) false false "initial text")
 			
 			(object (
@@ -74,16 +74,19 @@
 (declare-first doStuff
 	(function (- false)) false
 	(function () -
-		(block () (
-			(possibility
-				true
-				(println "this is a test"))
+		(compound () (
+/*xxx
+			(conditional
+				true (println "this is a test")
+				- )
 			(declare-assign str (constant (String false)) false false
 				((extract-member "🿰 Hello," concat) " World 🿱"))
 			(println str)
 			(println (extract-member str length))
-			(for-range x 1 20 false -
+*/
+			(enumerator-loop (range 1 20 false) (((- false) x)) -
 				(println ((extract-member x add) 10000)))
+/*xxx			
 			(declare-assign 🿰🿱 (constant (- false)) false false
 				"astral characters in identifiers")
 			(println 🿰🿱)
@@ -95,22 +98,38 @@
 			(println (extract-member obj text))
 			(set-property obj text "alpha beta gamma")
 			(println (extract-member obj text))
+			
+			(declare-assign gen (constant (- false)) false false
+				(generator - (compound () (
+					(println "printed by generator")
+					(yield "yielded from generator")
+					))))
+			
+			(println ((extract-member gen yield)))
+*/
 		))))
 
 (declare-first testNonProducers
 	(function (- false)) false
 	(function () -
-		(block () (
-			
+		(compound () (
+			(declare-first testReturn
+				(function (- false)) false
+				(function () -
+					(compound () (
+						123
+						(return 456)
+						789))))
+			(println (testReturn))
 		))))
 
 (declare-first testSometimesProducers
 	(function (- false)) false
 	(function () -
-		(block () (
+		(compound () (
 			(header "assign, block, call")
 			(declare-empty foo (constant (- false)))
-			(assign foo false (block () (123)))
+			(assign foo false (compound () (123)))
 			(println foo)
 			
 			(header "cast")
@@ -119,20 +138,18 @@
 			(header "conditional")
 			(println
 				(conditional
-					(
-						(false 000)
-						(true 111))
-					222))
-			
-			(header "possibility")
-			(println (possibility true 123))
-			(println (possibility false 123))
+					false 000
+					(conditional
+						true 111
+						(222))))
+			(println (conditional true 123 -))
+			(println (conditional false 123 -))
 		))))
 
 (declare-first testAlwaysProducers
 	(function (- false)) false
 	(function () -
-		(block () (
+		(compound () (
 			(header "testBooleanLogic")
 			(testBooleanLogic)
 			
@@ -156,17 +173,17 @@
 (declare-first testBooleanLogic
 	(function (- false)) false
 	(function () -
-		(block () (
+		(compound () (
 			/*
 			for "and", "nand", "or", and "nor" node tests:
 			first come values that should shortcut,
 			then values that should not shortcut
 			*/
 			(declare-assign t
-				(constant (- false)) false
+				(constant (- false)) false false
 				true)
 			(declare-assign f
-				(constant (- false)) false
+				(constant (- false)) false false
 				false)
 		
 			(header "and")
@@ -206,7 +223,7 @@ extract member syntax
 That will reduce the header function to this:
 (declfunc header
 	((in (- false) title false -))
-	(block () (
+	(compound () (
 		(println "")
 		(println (title.concat " :")))))
 */

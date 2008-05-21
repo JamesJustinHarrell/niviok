@@ -83,19 +83,6 @@ class DesexpParser : DesexpParserAuto {
 		return myParser.parseBundle(roots);
 	}
 	
-	protected override INode_Expression parseTerminalExpression(Sexp sexp) {
-		if( sexp.type == SexpType.INTEGER )
-			return parseInteger(sexp);
-		if( sexp.type == SexpType.RATIONAL )
-			return parseRational(sexp);
-		if( sexp.type == SexpType.STRING )
-			return parseString(sexp);
-		if( sexp.type == SexpType.WORD )
-			return parseIdentifier(sexp);
-		throw new ParseError(String.Format(
-			"unknown type of terminal S-Expression: '{0}'", sexp));
-	}
-	
 	Node_Bundle parseBundle(LinkedList<Sexp> roots) {
 		LinkedListNode<Sexp> cur = roots.First;
 		
@@ -126,6 +113,24 @@ class DesexpParser : DesexpParserAuto {
 				declareFirsts));
 		
 		return new Node_Bundle(imports, scopeAlterations, planes);
+	}
+	
+	protected override INode_Expression parseTerminalExpression(Sexp sexp) {
+		if( sexp.type == SexpType.INTEGER )
+			return parseInteger(sexp);
+		if( sexp.type == SexpType.RATIONAL )
+			return parseRational(sexp);
+		if( sexp.type == SexpType.STRING )
+			return parseString(sexp);
+		if( sexp.type == SexpType.WORD )
+			return parseIdentifier(sexp);
+		throw new ParseError(String.Format(
+			"unknown type of terminal S-Expression: '{0}' at [{1}:{2}]",
+			sexp, sexp.line, sexp.column));
+	}
+	
+	protected override INode_Expression parseNonwordExpression(Sexp sexp) {
+		return parseExpressionDefault(sexp);
 	}
 	
 	//when automatically generated code is unable to determine how to parse an expression

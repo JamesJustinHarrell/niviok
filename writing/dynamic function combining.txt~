@@ -1,0 +1,12 @@
+The built-in static function combining can be leveraged to implement dynamic function combining.
+
+func combine_functions { a, b -> dyn |
+	func rv a
+	func rv b
+	rv
+}
+
+func doStuff1 {x|println(x)}
+func doStuff2 {x,y|println(x+y)}
+const doStuff combine_functions(doStuff1, doStuff2)
+

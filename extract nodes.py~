@@ -53,16 +53,28 @@ def extractNodeTypes(filePath) :
 	def extractFamilyType(sectElem) :
 		def findTypes() :
 			listElem = filter(
-				lambda x: x.getAttribute("role") == "family-contents",
+				lambda x: x.getAttribute("role") == "family-members",
 				childElements(sectElem) )[0]
-			return map(
-				textValue, childElements(listElem))
+			def getTypes(memberElem) :
+				#defines a node, and is not defined within the section of another node
+				def isTopNode(elem) :
+					return definesNode(elem) and not hasAncestorElement(elem, definesNode)
+				assert memberElem.tagName == "member"
+				if memberElem.hasAttribute("linkend") and \
+				memberElem.getAttribute("linkend").find("node.") != 0 :
+					id = memberElem.getAttribute("linkend")
+					sect = memberElem.ownerDocument.getElementById(id)
+					if sect == None :
+						raise Exception("no element with id '%s'" % id)
+					return map(getTitle, filter(isTopNode, descendantElements(sect)))
+				return [textValue(memberElem)]
+			rv = []
+			for member in childElements(listElem) :
+				rv += getTypes(member)
+			return rv
 		
 		typename = getTitle(sectElem)
-		if typename == "expression" :
-			types = expressionNodeTypes
-		else :
-			types = findTypes()
+		types = findTypes()
 		
 		return {
 			"category" : "family",
@@ -110,9 +122,7 @@ def extractNodeTypes(filePath) :
 	
 	def extractNodeType(elem) :
 		assert definesNode(elem)
-		
-		if isExpressionNodeType(elem) :
-			expressionNodeTypes.append(getTitle(elem))
+
 		if isFamily(elem) :
 			return extractFamilyType(elem)
 		elif isTree(elem) :
@@ -121,10 +131,8 @@ def extractNodeTypes(filePath) :
 			return extractTerminalType(elem)
 
 	doc = DOM.parse(filePath)
-	expressionNodeTypes = [] #modified by nested functions
-	nodeElems = filter(definesNode, descendantElements(doc))
-	nodeTypes = map(extractNodeType, nodeElems)
-	return nodeTypes
+	setXmlId(doc)
+	return map(extractNodeType, filter(definesNode, descendantElements(doc)))
 
 def serializeNodeTypes(nodeTypes, path) :
 	def append(parentNode, tagName, content) :
@@ -170,7 +178,7 @@ def serializeNodeTypes(nodeTypes, path) :
 	file = open(path, "w")
 	doc = DOM.parseString(doc.toprettyxml())
 	for elem in doc.getElementsByTagName("*") :
-		if len(elem.getElementsByTagName("*")) == 0 :
+		if len(elem.getElementsByTagName("*")) == 0 and elem.firstChild != None :
 			elem.firstChild.nodeValue = elem.firstChild.nodeValue.strip()
 	file.write(doc.toxml())
 	file.close()
@@ -179,4 +187,9 @@ def serializeNodeTypes(nodeTypes, path) :
 #----- entry point
 
 nodeTypes = extractNodeTypes(inputPath)
+
+#ensure no types are listed twice (it's happened)
+typenames = set(map(lambda x: x["typename"], nodeTypes))
+assert len(nodeTypes) == len(typenames)
+
 serializeNodeTypes(nodeTypes, outputPath)

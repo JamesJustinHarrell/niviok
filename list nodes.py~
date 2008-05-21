@@ -1,3 +1,7 @@
+"""
+outputs a list of node typenames
+"""
+
 import os
 import xml.dom.minidom as DOM
 from lib import *

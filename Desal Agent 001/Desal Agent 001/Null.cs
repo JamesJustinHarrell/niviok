@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 
+//throw instead of return null to find errors faster
+
 class Null : IWorker {
 	IWorker _face;
 	
@@ -10,23 +12,20 @@ class Null : IWorker {
 		_face = face;
 	}
 	
-	//xxx remove?
-	public Null(IInterface face) {
-		_face = Bridge.wrapInterface(face);
-	}
-	
-	//xxx throw or return null?
 	public IObject owner {
-		get { return null; }
+		get { throw new ClientException("null has no owner"); }
 	}
 	
-	//xxx throw, return null, or return empty list?
 	public IList<IWorker> children {
-		get { return null; }
+		get { throw new ClientException("null has no children"); }
 	}
 	
 	public IWorker face {
-		get { return _face; }
+		get {
+			if( _face != null )
+				return _face;
+			throw new ClientException("untyped null has no face");
+		}
 	}
 	
 	public IWorker breed(IInterface face) {

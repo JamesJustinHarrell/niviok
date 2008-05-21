@@ -1,0 +1,7 @@
+ifstream in("data.txt");
+istream_iterator<string> start(in);
+istream_iterator<string> end;
+vector<string> v(start, end);
+
+
+const v = Vector<String>(FileTextIn("data.txt").iterateStrings())

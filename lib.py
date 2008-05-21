@@ -6,6 +6,10 @@ def childElements(elem) :
 def descendantElements(elem) :
 	return elem.getElementsByTagName("*")
 
+def getElementsByAttribute(root, attrName, attrValue) :
+	return [x for x in descendantElements(root)
+		if x.hasAttribute(attrName) and x.getAttribute(attrName) == attrValue]
+
 def hasAncestorElement(node, test) :
 		if test(node) :
 			return True
@@ -15,6 +19,16 @@ def hasAncestorElement(node, test) :
 
 def isElement(elem) :
 	return elem.nodeType == DOM.Node.ELEMENT_NODE
+
+#tells Python that xml:id attributes are IDs
+#required for getElementById to work
+def setXmlId(node) :
+	if isElement(node) and node.hasAttribute("xml:id") :
+		#xxx note that Python's version differs from the standard
+		#the standard has a boolean parameter to turn ID status on/off
+		node.setIdAttribute("xml:id")
+	for child in node.childNodes :
+		setXmlId(child)
 
 def selectAll(node, selector) :
 	return node.getElementsByTagName(selector)

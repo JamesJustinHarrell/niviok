@@ -1,0 +1,44 @@
+
+--- namespace-member visibility
+
+Just having "visible" and "hidden" isn't good enough. It leaves open the question of what happens with multiple namespace definitions.
+
+namespace A
+	hidden declfirst foo = "some text"
+namespace A:B
+	declfirst bar = foo
+
+Does A:B have access to A:foo?
+
+If yes, hidden members are no longer hidden. They can easily be accessed at any time.
+
+module
+	namespace A
+		hidden declfirst nasty_impl_detail = "some text"
+	func main
+		namespace A
+			declfirst exposed_nid = nasty_impl_detail
+		println(A:exposed_nid)
+
+The hidden information became public! So make hidden identikeys only accessible by siblings (and descendants of those simblings) in the same namespace node. But there are cases where it would be useful for a namespace node to define a hidden member that child namespaces, even if not defined by child nodes, could access, even if that mean it was possible for others to access that information.
+
+Thus, hidden/visible is not enough. I think public/protected/private should be enough.
+
+module
+	namespace A
+		public declfirst pub = "I'm public"
+		protected declfirst pro = "I'm protected"
+		private declfirst pri = "I'm private"
+		namespace B
+			//can access pub, pro, and pri
+	namespace A
+		namespace B
+			//can access pub and pro
+	func main
+		namespace A:B
+			//can access pub and pro
+	
+		//can access pub
+
+But this is awfully complicated. I should think hard about this before adding so much complexity.
+

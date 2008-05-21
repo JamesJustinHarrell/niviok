@@ -1,6 +1,8 @@
 //function defined by native code
 
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 class Function_Native : IFunction {
 	public delegate IWorker FunctionType(Scope scope);
@@ -18,6 +20,9 @@ class Function_Native : IFunction {
 		_parameters = parameters;
 		_returnType = returnType;
 		_scope = scope;
+		
+		if( _scope == null )
+			throw new NullReferenceException();
 	}
 	
 	public IList<ParameterImpl> parameters {

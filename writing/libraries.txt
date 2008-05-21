@@ -1,0 +1,49 @@
+* determine every bundle that will be needed (self and libraries)
+
+*
+
+*
+
+
+
+----- cyclical dependencies
+
+--- library A
+
+import B
+
+decl a = B.b + 1
+
+
+--- library B
+
+import A
+
+decl b = A.a + 1
+
+
+
+----- shared libraries and I/O
+
+--- library S
+
+func doStuff()
+	std:println("test")
+
+--- library Alpha
+
+import S
+
+func main()
+	S:doStuff()
+
+--- library Beta
+
+import S
+
+func main()
+	S:doStuff()
+
+
+How is S going to print to the correct console?
+
