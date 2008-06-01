@@ -1,0 +1,55 @@
+Agents need to be able to call client-implemented Exception interfaces to push location information as the stack unwinds.
+
+exception.push(functionName)
+
+interface Exception
+	func push(String)
+	get Sequence<String> stack
+	get String message
+	get ?Exception innner
+	get Dict<dyn,dyn> data
+
+The push method is first called when the exception is thrown. If possible, Agents should push file, line, and possibly column numbers, to specify where the error occurred. This first push should be the most specific about location and other relevant information.
+
+stack and message return a new copy each time
+inner and data return the same object each time
+
+inheritance hierarchy:
+
+Exception
+	SpecialCase
+	Error
+		InputError
+		ApplicationError
+			Unimplemented
+		NullError
+		InterfaceError
+	UnstoppableException
+
+Exceptions differ from the common case. They may be rare events, unexpected events, or events which were thought to be impossible.
+
+A special case is expected to happen, but only rarely. A special case is not bad, just uncommon. Exceptions that derive from SpecialCase can be used to separate rarely traversed code from the common case.
+
+An error is bad and undesireable.
+
+An input error may occur when code has detected that something external which it relies on is in a bad state. This may be a function receiving bad arguments, or receiving bad data from users.
+
+An application error means there is a problem with the program. Whether intentionally (e.g. Unimplemented) or not, the program is not functioning correctly.
+
+An unimplemented error signifies part of a program has not yet been implemented.
+
+A null error means a null value was found where a non-null value was required.
+
+An interface error occurs when a value has a different active interface from what is required. For example, when casting (either explicitly or implicitly).
+
+--- unstoppable
+
+An unstoppable exception cannot be caught. Code can react to an unstoppable exception by trying to backup data or release resources, but it cannot stop the exception from propogating, even if another exception is thrown. It should only be used when the throwing area is absolutely certain that the problem can never be recovered from. It should be considered on the same level as the exit() function commonly found in the standard library of other programming languages.
+
+Once the exception has propogated out of all modules, the library_dispose method should be called on any module the unstoppable exception traveled through that was acting as a library, and all modules it traveled through should be thrown away.
+
+Agents may stop UnstoppableExceptions when they emerge from library modules, then try to reload the library module. If the library could not be reloaded successfully, the agent must then continue to propogate the UnstoppableException. If the library is reloaded successfully, the agent must then throw an Error (or a type that inherits from Error) where the UnstoppableException emerged from the library.
+
+Developers considering using UnstoppableException should keep in mind that the purpose of exceptions is to tell the calling code what happened, not necessarily how that event should be handled. To decide if an Exception is fatal or recoverable should usually be left to the code that intercepts the exception, not to exception itself.
+
+

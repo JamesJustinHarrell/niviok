@@ -1,0 +1,14 @@
+!ivan
+
+All keywords entirely lowercase with no spaces/dashes/underscores, and prefixed with "!". The name of the representation is still "Ivan", but in the logo it is represented as "!ivAn". The exclamation mark and i, as well as the v and A, complement each other.
+
+long form:
+!keyword[ ... ; ... ; ... ]
+
+list of nodes of same tree type:
+!!foo[ ... ; ... ; ... ]
+
+list of nodes of same family type:
+!!expression[
+	!call[...] ;
+	!memberaccess[...] ]

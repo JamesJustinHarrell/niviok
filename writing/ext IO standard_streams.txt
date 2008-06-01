@@ -1,0 +1,24 @@
+namespace ext
+	namespace IO
+		interface InTextStream
+			func read() String
+	
+		interface OutTextStream
+			func write(String)
+	
+		interface StandardStreamsManager
+			get InTextStream in
+			get OutTextStream out
+			get OutTextStream log
+	
+		declfirst StandardStreamsManager standard_streams ...
+
+---
+
+func println(Stringable s) {
+	ext:IO:standard_streams.out.write( (s to String) & "\n" )
+}
+
+func main {
+	println("Hello, World!")
+}

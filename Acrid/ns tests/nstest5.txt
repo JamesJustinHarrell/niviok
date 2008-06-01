@@ -1,0 +1,22 @@
+module
+	limit-old
+		visible namespace A
+			limit-old
+				visible limit-old
+					visible limit-old
+						visible limit-old
+							hidden namespace B
+								limit-old
+									visible declarefirst alpha "alpha "
+							visible namespace B
+								limit-old
+									visible declarefirst beta (alpha & B:alpha & "beta ")
+				visible declarefirst gamma (B:beta & "gamma")
+		visible func main {
+			println(A:gamma)
+		}
+
+/*
+should print:
+"alpha alpha beta gamma\n"
+*/

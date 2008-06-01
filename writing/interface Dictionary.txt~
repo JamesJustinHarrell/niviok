@@ -1,0 +1,24 @@
+interface<Key,Value> Dictionary
+	func associate(Key key, Value value) void
+	func lookup(Key key) Value
+	func remove(Key key) Value #throws
+	func tryRemove(Key key) Bool
+	func has_key?(Key key) Bool
+
+Dictionary<Int,String> dict = ...
+
+dict[123] = "text"
+dict.associate(123, "text")
+
+println( dict[123] )
+println( dict.lookup(123) )
+
+println( 123 in dict )
+println( dict.has_key?(123) )
+
+//for other types
+foo[123, 456, 789] = "text"
+foo.associate(123, 456, 789, "text")
+println( bar[a, b, c] )
+println( bar.lookup(a,b,c) )
+

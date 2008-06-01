@@ -19,7 +19,6 @@
 			<typename>conditional</typename>
 			<typename>curry</typename>
 			<typename>declare-assign</typename>
-			<typename>declare-first</typename>
 			<typename>identifier</typename>
 			<typename>ignore</typename>
 			<typename>labeled</typename>
@@ -33,7 +32,6 @@
 			<typename>xor</typename>
 			<typename>xnor</typename>
 			<typename>breed</typename>
-			<typename>bundle</typename>
 			<typename>caller</typename>
 			<typename>object</typename>
 			<typename>dictionary</typename>
@@ -54,10 +52,18 @@
 		</members>
 	</family>
 	<family>
-		<typename>scope-alteration</typename>
+		<typename>identikey-special-old</typename>
 		<members>
 			<typename>using</typename>
 			<typename>expose</typename>
+		</members>
+	</family>
+	<family>
+		<typename>identikey-special-new</typename>
+		<members>
+			<typename>declare-first</typename>
+			<typename>limit-old</typename>
+			<typename>namespace</typename>
 		</members>
 	</family>
 	<family>
@@ -89,13 +95,6 @@
 		<typename>direction</typename>
 	</terminal>
 	<tree>
-		<typename>expose</typename>
-		<entry>
-			<count>+</count>
-			<typename>identifier</typename>
-		</entry>
-	</tree>
-	<tree>
 		<typename>generic-parameter</typename>
 		<entry>
 			<count>1</count>
@@ -126,13 +125,25 @@
 		<typename>import</typename>
 		<entry>
 			<count>1</count>
+			<typename>identifier</typename>
+			<label>alias</label>
+		</entry>
+		<entry>
+			<count>+</count>
+			<typename>import-attempt</typename>
+		</entry>
+	</tree>
+	<tree>
+		<typename>import-attempt</typename>
+		<entry>
+			<count>1</count>
 			<typename>string</typename>
-			<label>library</label>
+			<label>scheme</label>
 		</entry>
 		<entry>
 			<count>1</count>
-			<typename>identifier</typename>
-			<label>alias</label>
+			<typename>string</typename>
+			<label>body</label>
 		</entry>
 	</tree>
 	<tree>
@@ -240,15 +251,80 @@
 		</entry>
 	</tree>
 	<tree>
-		<typename>plane</typename>
+		<typename>declare-first</typename>
 		<entry>
-			<count>*</count>
-			<typename>scope-alteration</typename>
-			<label>alt</label>
+			<count>1</count>
+			<typename>identifier</typename>
+			<label>name</label>
 		</entry>
 		<entry>
+			<count>1</count>
+			<typename>identikey-type</typename>
+		</entry>
+		<entry>
+			<count>1</count>
+			<typename>boolean</typename>
+			<label>breed</label>
+		</entry>
+		<entry>
+			<count>1</count>
+			<typename>expression</typename>
+			<label>value</label>
+		</entry>
+	</tree>
+	<tree>
+		<typename>expose</typename>
+		<entry>
 			<count>+</count>
-			<typename>declare-first</typename>
+			<typename>identifier</typename>
+		</entry>
+	</tree>
+	<tree>
+		<typename>hidable</typename>
+		<entry>
+			<count>1</count>
+			<typename>boolean</typename>
+			<label>hidden</label>
+		</entry>
+		<entry>
+			<count>1</count>
+			<typename>identikey-special-new</typename>
+			<label>declaration</label>
+		</entry>
+	</tree>
+	<tree>
+		<typename>limit-old</typename>
+		<entry>
+			<count>*</count>
+			<typename>identikey-special-old</typename>
+			<label>declaration</label>
+		</entry>
+		<entry>
+			<count>*</count>
+			<typename>hidable</typename>
+		</entry>
+	</tree>
+	<tree>
+		<typename>module</typename>
+		<entry>
+			<count>*</count>
+			<typename>import</typename>
+		</entry>
+		<entry>
+			<count>1</count>
+			<typename>limit-old</typename>
+		</entry>
+	</tree>
+	<tree>
+		<typename>namespace</typename>
+		<entry>
+			<count>1</count>
+			<typename>identifier</typename>
+			<label>name</label>
+		</entry>
+		<entry>
+			<count>1</count>
+			<typename>limit-old</typename>
 		</entry>
 	</tree>
 	<tree>
@@ -425,11 +501,16 @@
 		<typename>compound</typename>
 		<entry>
 			<count>*</count>
-			<typename>scope-alteration</typename>
-			<label>alt</label>
+			<typename>identikey-special-old</typename>
+			<label>old declaration</label>
 		</entry>
 		<entry>
 			<count>*</count>
+			<typename>identikey-special-new</typename>
+			<label>new declaration</label>
+		</entry>
+		<entry>
+			<count>+</count>
 			<typename>expression</typename>
 			<label>member</label>
 		</entry>
@@ -489,28 +570,6 @@
 			<count>1</count>
 			<typename>boolean</typename>
 			<label>infer interface</label>
-		</entry>
-		<entry>
-			<count>1</count>
-			<typename>expression</typename>
-			<label>value</label>
-		</entry>
-	</tree>
-	<tree>
-		<typename>declare-first</typename>
-		<entry>
-			<count>1</count>
-			<typename>identifier</typename>
-			<label>name</label>
-		</entry>
-		<entry>
-			<count>1</count>
-			<typename>identikey-type</typename>
-		</entry>
-		<entry>
-			<count>1</count>
-			<typename>boolean</typename>
-			<label>breed</label>
 		</entry>
 		<entry>
 			<count>1</count>
@@ -736,22 +795,6 @@
 			<count>?</count>
 			<typename>expression</typename>
 			<label>interface</label>
-		</entry>
-	</tree>
-	<tree>
-		<typename>bundle</typename>
-		<entry>
-			<count>*</count>
-			<typename>import</typename>
-		</entry>
-		<entry>
-			<count>*</count>
-			<typename>scope-alteration</typename>
-			<label>alt</label>
-		</entry>
-		<entry>
-			<count>+</count>
-			<typename>plane</typename>
 		</entry>
 	</tree>
 	<tree>

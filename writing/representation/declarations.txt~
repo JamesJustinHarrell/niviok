@@ -1,0 +1,39 @@
+namespace, constant, variable, function
+
+namespace
+	using Foo:Bar:Baz
+	expose Alpha
+	namespace Beta
+		...
+
+constant
+	const foo 123
+	const ?Int foo 123
+	first foo 123
+	first ?Int foo 123
+
+variable
+	var foo 123
+	var ?Int foo 123
+	var auto foo getSomething()
+	var ?auto foo getSomething()
+	auto foo getSomething()
+	?auto foo getSomething()
+	
+function
+	func doStuff {...}
+	func (Int, Int -> Int) doStuff getFunction()
+
+---
+
+Idea: Although I don't want the "=" in declarations to be required, I think it would be a good idea to allow them. So instead of requiring them (like other languages) or disallowing them (like I previously wanted to do), they would be optional.
+
+e.g. these are equivalent:
+	const foo 123
+	const foo = 123
+
+But then most people would probably continue to use them and ignore the shorter form.
+
+---
+
+For consistency reasons, the "var auto"/"var ?auto" form should probably be removed. But that makes me realize that having an optional "=" in declarations also breeds inconsistency. Perhaps optional things are bad.

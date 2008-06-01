@@ -1,0 +1,30 @@
+module
+	limit-old
+		visible func main {
+			compound
+				limit-old
+					visible namespace A
+						limit-old
+							visible namespace B
+								limit-old
+									visible declarefirst result hider
+							visible declarefirst downTop "down-top "
+							hidden declarefirst hider (B:C:result & "up-top")
+					visible namespace A
+						limit-old
+							visible namespace B
+								limit-old
+									visible namespace C
+										visible declarefirst result hider
+							visible declarefirst downMiddle (A:downTop & "down-middle ")
+							hidden declarefirst hider (bottom & "up-middle ")
+					visible declarefirst bottom (A:downMiddle & "reverse-bottom ")
+				println( A:B:result )
+		}
+
+/*
+should print:
+"down-top down-middle reverse-bottom up-middle up-top\n"
+
+Same as nstest2, but with "($downTop &" changed to "(A:downTop &" to make sure the A namespace is visible within the A namespace.
+*/

@@ -1,0 +1,17 @@
+<UserCombinePreferences version="1.0" filename="/home/justin/files/Niviok/Acrid/Acrid.mds">
+  <Files />
+  <Views>
+    <ViewMemento id="ProjectPad">
+      <Node expanded="True">
+        <Node name="Acrid" expanded="True" />
+      </Node>
+    </ViewMemento>
+    <ViewMemento id="ClassPad">
+      <Node expanded="True" />
+    </ViewMemento>
+  </Views>
+  <Properties>
+    <Property key="ActiveWindow" value="" />
+    <Property key="ActiveConfiguration" value="Debug" />
+  </Properties>
+</UserCombinePreferences>

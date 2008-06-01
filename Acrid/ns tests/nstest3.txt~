@@ -1,0 +1,92 @@
+module #<11>
+	limit-old #<10>
+		visible namespace A
+			limit-old
+				visible declarefirst A1 "A#1 "
+				visible namespace B
+					limit-old
+						visible declarefirst B1 "AB#1 "
+						visible namespace C
+							limit-old
+								visible declarefirst C1 "ABC#1 "
+		visible declarefirst main {#<9>
+			compound #<8>
+				namespace A
+					limit-old
+						visible declarefirst A2 "A#2 "
+						visible namespace B
+							limit-old
+								visible declarefirst B2 "AB#2 "
+								visible namespace C
+									limit-old
+										visible declarefirst C2 "ABC#2 "
+				declarefirst result = compound[ #<7>
+					namespace A #<6>
+						limit-old #<5>
+							visible declarefirst A3 "A#3 "
+							visible namespace B #<4>
+								limit-old #<3>
+									visible declarefirst B3 "AB#3 "
+									visible namespace C
+										limit-old
+											visible declarefirst C3 "ABC#3"
+									visible namespace C #<2>
+										limit-old #<1>
+											visible declarefirst result (A1 & A2 & A3 & B1 & B2 & B3 & C1 & C2 & C3)
+					A:B:C:result
+				]
+				println(result)
+		}
+
+/*
+
+This should print "A#1 A#2 A#3 AB#1 AB#2 AB#3 ABC#1 ABC#2 ABC#3\n"
+
+The expression being assigned to A:B:C:result should search through these scopes in this order:
+<1> node
+<2> node
+	knows about -> 3rd A:B:C namespace
+	searches through parent node scopes for ->
+		2nd A:B:C namespace
+		1st A:B:C namespace
+<3> node
+<4> node
+	3rd A:B namespace
+		2nd A:B namespace
+			1st A:B namespace
+<5> node
+<6> node
+	3rd A namespace
+		2nd A namespace
+			1st A namespace
+<7> node
+<8> node
+<9> node
+<10> node
+<11> node
+
+"namespace" nodes should not have a scope; instead, they should refer to the actual namespace scope (and to their parent node scope)
+
+Simplification:
+
+module
+	limit-old
+		visible declarefirst A:A1 "A#1 "
+		visible declarefirst A:B:B1 "AB#1 "
+		visible declarefirst A:B:C:C1 "ABC#1 "
+		visible declarefirst main {
+			compound
+				visible declarefirst A:A2 "A#2 "
+				visible declarefirst A:B:B2 "AB#2 "
+				visible declarefirst A:B:C:C2 "ABC#2 "
+				declarefirst result = compound[
+					visible declarefirst A:A3 "A#3 "
+					visible declarefirst A:B:B3 "AB#3 "
+					visible declarefirst A:B:C:C3 "ABC#3"
+					visible declarefirst A:B:C:result (A1 & A2 & A3 & B1 & B2 & B3 & C1 & C2 & C3)
+					A:B:C:reselt
+				]
+				println(result)
+		}
+
+*/

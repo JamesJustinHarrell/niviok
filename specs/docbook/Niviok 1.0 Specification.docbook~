@@ -21,10 +21,10 @@ xmlns:xi="http://www.w3.org/2003/XInclude">
 			
 			<para>This document is a draft of the first edition of the specification describing the 1.0 version of Niviok.</para>
 			
-			<para>Niviok is a collection of abstract nodes. Nodes that can be "executed" are called "expressions". (Niviok does not make use of the terms "statement", "evaluate", or "evaluation".) Some expressions "produce" a value when executed, and others do not.</para>
+			<para>Niviok is an abstract programming language. This document defines several node types which are used to represent Niviok source code. How Niviok nodes are represented is outside the scope of this standard. While syntax and semantics are not completetly separate, Niviok does contain much less syntax-influenced semantics than most programming languages.</para>
 			
-			<para>How Niviok nodes are represented is outside the scope of this standard. Syntax and semantics are intended to be entirely separate.</para>
-			
+			<para>Nodes that can be executed are statements or expressions. Statements are greatly restricted in where they can appear, while expressions are more relaxed and can be interchanged for on another. An expression may produce a value when executed.</para>
+
 			<para>Niviok contains some dynamic aspects, but in several ways is very static. For example, the tree of scopes ("environments" in some languages) and variables/constants ("identikeys" in Niviok) can be entirely known before runtime; identikeys cannot be declared conditionally like in highly dynamic languages such as JavaScript.</para>
 		</section>
 		
@@ -719,6 +719,7 @@ declfirst func bar = func() {
 	<chapter xml:id="nodes">
 		<title>Nodes</title>
 	
+		<!-- xxx need to fill in NODECOUNT -->
 		<para>Niviok defines $$$NODECOUNT$$$ nodes.</para>
 		
 		<para>Niviok code is represented by a tree of nodes. How this tree and its nodes are represented is outside the scope of this specification. Many means may exist of representing a Niviok tree.</para>

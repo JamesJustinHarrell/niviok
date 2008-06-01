@@ -1,4 +1,4 @@
-<chapter xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="node-types">
+ <chapter xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="node-types">
 	<title>Node types</title>
 
 	<para>This chapter describes the various types of nodes. A node type is either a family, tree, or terminal node type. A family node type is a collection of node types. A tree node is a node that is composed of other nodes. Tree nodes do not directly encode any data themselves. The nodes a tree node type contains is specified by the tree node's layout. When the a layout specifies the type of a child node is that of a family node type, the type of the child that takes that place must be in the collection of that family node type. A terminal node encodes data directly and does not contain other nodes.</para>
@@ -27,14 +27,30 @@
 			</simplelist>
 		</section>
 		
-		<section xml:id="node.scope-alteration">
-			<title>scope-alteration</title>
+		<section xml:id="node.identikey-special-old">
+			<title>identikey-special-old</title>
+			
+			<para>Declares new local identikeys and assigns preexisting stuff to them.</para>
 			
 			<para>This family node type includes these types:</para>
 			
 			<simplelist role="family-members">
 				<member>using</member>
 				<member>expose</member>
+			</simplelist>
+		</section>
+		
+		<section xml:id="node.identikey-special-new">
+			<title>identikey-special-new</title>
+			
+			<para>Declares new local identikeys and assigns new stuff to them.</para>
+			
+			<para>This family node type includes these types:</para>
+			
+			<simplelist role="family-members">
+				<member>declare-first</member>
+				<member>limit-old</member>
+				<member>namespace</member>
 			</simplelist>
 		</section>
 		
@@ -160,23 +176,6 @@ beta(num) //value mutated
 gamma(num) //num assigned to different value
 delta(num) //num assigned to different value
 epsilon(num) //value mutated and num assigned to different value
-			</programlisting>
-		</section>
-		
-		<section xml:id="node.expose">
-			<title>expose</title>
-			
-			<para>Imports all the child identikeys of the specified namespace into the enclosing scope.</para>
-			
-			<simplelist role="layout">
-				<member>+ identifier</member>
-			</simplelist>
-			
-			<programlisting>
-decl std::Array&lt;std::Int> numbers = generateNumbers()
-
-expose std
-decl Array&lt;Int> numbers = generateNumbers()
 			</programlisting>
 		</section>
 		
@@ -326,20 +325,180 @@ def Xml:Element root = doc.documentElement
 			
 			<para>When a [default value] is given, [default value] is executed for every call to the function. It is not executed when the function node is executed.</para>
 		</section>
-				
-		<section xml:id="node.plane">
-			<title>plane</title>
-			
-			<para>A group of declarations within a bundle.</para>
+	</section>
+	
+	<section xml:id="statements">
+		<title>Statements</title>
+		
+		<para>Statements can be executed. Statements do not produce when executed. Statements differ from non-producing expressions in that statements have special execution rules that greatly restrict where they can appear.</para>
+		
+		<section xml:id="node.declare-first">
+			<title>declare-first</title>
 			
 			<simplelist role="layout">
-				<member>* scope-alteration alt</member>
-				<member>+ declare-first</member>
+				<member>identifier name</member>
+				<member>identikey-type</member>
+				<member>boolean breed</member>
+				<member>expression value</member>
 			</simplelist>
 			
-			<para>This node has scope, but only private identifiers are bound to it. Public and exported identifiers are bound to the scope of the bundle node.</para>
+			<para role="process">The identikey-category of the identikey-type must specify "constant" or "function". (Should breed be required to be false if the identikey-category is function?)</para>
 			
-			<para>Planes aren't expressions because their declare-first nodes might rely on declare-first nodes in other planes, so all the declare-first nodes in a single plane can't just be executed all together.</para>
+			<para>Creates an identikey in the parent scope with the specified type, then assigns the specified value to it.</para>
+			
+			<para>When a compound contains declare-first nodes, the declare-first nodes are executed before the other expressions in the compound are executed. The value expressions of declare-first nodes may depend on the values of other declare-first nodes in the same compound. For example, two interfaces could reference each other.</para>
+			
+			<para>This node can create identikeys before execution reaches it. For more information, see <link linkend="handling-declare-first">this section</link>.</para>
+			
+			<para role="exec">Produce the value bound to the identikey created by this node.</para>
+			
+			<programlisting>
+declfirst Foo = interface {
+	prop ro Bar bar
+	prop ro Int number
+}
+
+declfirst Bar = interface {
+	prop ro Foo foo
+}
+
+Foo foo = getFoo()
+println( foo.bar.foo.bar.foo.bar.foo.number )
+			</programlisting>
+		</section>
+		
+		<section xml:id="node.expose">
+			<title>expose</title>
+			
+			<para>Imports all the child identikeys of the specified namespace into the enclosing scope.</para>
+			
+			<simplelist role="layout">
+				<member>+ identifier</member>
+			</simplelist>
+			
+			<programlisting>
+decl std::Array&lt;std::Int> numbers = generateNumbers()
+
+expose std
+decl Array&lt;Int> numbers = generateNumbers()
+			</programlisting>
+		</section>
+		
+		<section xml:id="node.hidable">
+			<title>hidable</title>
+
+			<simplelist role="layout">
+				<member>boolean hidden</member>
+				<member>identikey-special-new declaration</member>
+			</simplelist>
+		</section>
+		
+		<section xml:id="node.limit-old">
+			<title>limit-old</title>
+			
+			<para>Limits reach of identikeys created by identikey-special-old nodes. Only exposes new stuff.</para>
+			
+			<para>Like some other special expressions, limit-old nodes add identikeys to their parent scope, as well as creating their own scope and adding identikeys to it.</para>
+			
+			<para role="xxx">Doesn't just limit old stuff, can also limit new stuff when [hidden] of a hidable child is true.</para>
+			
+			<simplelist role="layout">
+				<member>* identikey-special-old declaration</member>
+				<member>* hidable</member>
+			</simplelist>
+			
+			<para>Example of limit-old nodes used to contain the effects of "using" nodes:</para>
+			
+			<programlisting>
+--- file A
+module
+	import as Foo [...]
+	limit-old
+		include B
+		include C
+
+--- file B
+using Foo as Bar
+
+--- file C
+func main {
+	println(Bar:something)
+}
+
+--- all together
+module
+	import as Foo
+	limit-old
+		limit-old
+			using Foo as Bar
+		limit-old
+			func main {
+				Bar:do_something() #error - Bar namespace not defined
+			}
+			</programlisting>
+		</section>
+		
+		<section xml:id="node.module">
+			<title>module</title>
+			
+			<para>A grouping of identikey declarations, for use as a library or a standalone program.</para>
+			
+			<simplelist role="layout">
+				<member>* import</member>
+				<member>limit-old</member>
+			</simplelist>
+			
+			<para>No node can contain a module node. Module nodes are the only nodes which can ever be parentless. All nodes that are ever executed in any way must be part of a complete tree, with a module node as the rootmost node.</para>
+			
+			<para role="xxx">Following stuff needs to be moved. Also, see "executing module.txt".</para>
+			
+			<para>Implementations must not pass any arguments to the main function when executing a bundle as a standalone executable. Implementations should instead provide program arguments through a library which can be imported with the import node. Note that the program arguments are not required by this specification to be a sequence of strings.</para>
+			
+			<para>The result produced by executing a bundle node as a standalone executable may be converted as necesary to suit the containing environment. How this conversion is performed depends on the containing environment and the Desal implementation, and is not covered by this specification.</para>
+			
+			<para>When treating a bundle as a standalone executable:</para>
+			
+			<orderedlist role="exec">
+				<listitem>Let globalScope be a new scope.</listitem>
+				<listitem>Create the identikeys required by <link linkend="reserved-identikey-names">Reserved identikey names</link>.</listitem>
+				<listitem>For each @@import, @@using, and @@expose child node, add the identikeys to globalScope specified by that node.</listitem>
+				<listitem>Execute all declaration-first children of each plane together as required by <link linkend="handling-declare-first">Handling declare-first nodes</link>.</listitem>
+				<listitem>Let mainKey be the identikey in globalScope that is associated with identifier "main". If such an identikey does not exist, throw an error.</listitem>
+				<listitem>Let mainVal be the result of evaluating mainKey. If mainVal is null, throw an error.</listitem>
+				<listitem>Call mainVal with no arguments and let rv be the result. If mainVal is not callable, throw an error. If mainVal does not have a callee that takes no arguments, throw an error.</listitem>
+				<listitem>If rv is null, produce a value, with Int as the active interface, that encodes the number zero. Else if rv has an active interface that inherits from Int, downcast rv to Int and produce the result. Else if rv, with it's current active interface, can breed an Int, have rv breed an Int, and produce the result. Else throw an error.</listitem>
+			</orderedlist>
+			
+			<para>When treating a bundle as a library:</para>
+			
+			<orderedlist role="exec">
+				<listitem>Let globalScope be a new scope.</listitem>
+				<listitem>Create the identikeys required by <link linkend="reserved-identikey-names">Reserved identikey names</link>.</listitem>
+				<listitem>For each @@import, @@using, and @@expose child node, add the identikeys to globalScope specified by that node.</listitem>
+				<listitem>Execute all declaration-first children of each plane together as required by <link linkend="handling-declare-first">Handling declare-first nodes</link>.</listitem>
+				<listitem>Expose globalScope, in an immutable form, to the containing environment. How this is done depends on the containing enviornment and the Desal implementation, and is not covered by this specification.</listitem>
+			</orderedlist>
+			
+			<para role="xxx">When acting as a standalone executable, need to specify what happens to exceptions that bubble all the way up to the bundle node. They are caught, an error message is output, and the bundle node returns some value, like 1. The bundle may expose to the containing environment additional information, depending on the enclosing environment and Desal implementation.</para>
+			
+			<para role="xxx">When acting as a standalone executable, what kind of errors should bundle by throwing? This is a problem that applies to many other nodes as well.</para>
+			
+			<para role="xxx">For when acting as a library, need a means of hiding/showing certain child namespaces/identikeys of the global namespace. For example, a bundle may have declarations in the global namespace and in a "private" namespace. The bundle should expose the declarations in the global namespace but hide the declarations in the private namespace. There has also been consideration of an "export" attribute/node that would expose specified identikeys, and all other identikeys would not be exposed.</para>
+			
+			<para role="xxx">The identikeys added to globalScope by import, using, and expose nodes should not be exposed to the containing environment when the bundle is acting as a library.</para>
+		</section>
+		
+		<section xml:id="node.namespace">
+			<title>namespace</title>
+			
+			<para>Adds child identikeys to specified namespace. "namespace" here could be thought of as a verb, as in, "Please namespace these identikeys." This node namespaces child identikeys as directed.</para>
+
+			<para>The namespace node does not have a 1-to-1 correspondence with a namespace. A namespace node merely inserts child identikeys into the specified namespace. Multiple namespace nodes can insert identikeys into the same namespace.</para>
+			
+			<simplelist role="layout">
+				<member>identifier name</member>
+				<member>limit-old</member>
+			</simplelist>
 		</section>
 		
 		<section xml:id="node.using">
@@ -458,6 +617,8 @@ compound
 @for[ x @in keys(foo) ; doStuff(x) ]
 
 @for[ Int x @in keys&lt;Int>(foo) ; doStuff(x) ]
+
+@for[ Int x, Int y @in coords ; drawPoint(x, y) ]
 				</programlisting>
 				
 				<programlisting>
@@ -771,8 +932,9 @@ decl String ? b = a as null
 			<title>compound</title>
 			
 			<simplelist role="layout">
-				<member>* scope-alteration alt</member>
-				<member>* expression member</member>
+				<member>* identikey-special-old old declaration</member>
+				<member>* identikey-special-new new declaration</member>
+				<member>+ expression member</member>
 			</simplelist>
 			
 			<para>Has scope.</para>
@@ -785,8 +947,7 @@ decl String ? b = a as null
 compound {
 	using System:Console
 	using System:Collections as Boxes
-	export Boxes:Generic
-	Boxes:List numbers = List&lt;MyFace>()
+	const numbers = Boxes:List&lt;MyFace>()
 	Console.WriteLine(numbers.Count.ToString())
 }
 			</programlisting>
@@ -935,41 +1096,6 @@ decl auto foo = 123
 decl auto ? foo = 123
 decl Int foo = 123
 decl Int ? foo = 123
-			</programlisting>
-		</section>
-		
-		<section xml:id="node.declare-first">
-			<title>declare-first</title>
-			
-			<simplelist role="layout">
-				<member>identifier name</member>
-				<member>identikey-type</member>
-				<member>boolean breed</member>
-				<member>expression value</member>
-			</simplelist>
-			
-			<para role="process">The identikey-category of the identikey-type must specify "constant" or "function". (Should breed be required to be false if the identikey-category is function?)</para>
-			
-			<para>Creates an identikey in the parent scope with the specified type, then assigns the specified value to it.</para>
-			
-			<para>When a compound contains declare-first nodes, the declare-first nodes are executed before the other expressions in the compound are executed. The value expressions of declare-first nodes may depend on the values of other declare-first nodes in the same compound. For example, two interfaces could reference each other.</para>
-			
-			<para>This node can create identikeys before execution reaches it. For more information, see <link linkend="handling-declare-first">this section</link>.</para>
-			
-			<para role="exec">Produce the value bound to the identikey created by this node.</para>
-			
-			<programlisting>
-declfirst Foo = interface {
-	prop ro Bar bar
-	prop ro Int number
-}
-
-declfirst Bar = interface {
-	prop ro Foo foo
-}
-
-Foo foo = getFoo()
-println( foo.bar.foo.bar.foo.bar.foo.number )
 			</programlisting>
 		</section>
 		
@@ -1356,55 +1482,6 @@ decl Rat num3 = (num to Rat)
 (decl Int num2 (copy num))
 (decl Rat num3 (breed num Rat))
 			</programlisting>
-		</section>
-		
-		<section xml:id="node.bundle">
-			<title>bundle</title>
-			
-			<para>A grouping of library references (import) and groups of declarations (plane).</para>
-			
-			<simplelist role="layout">
-				<member>* import</member>
-				<member>* scope-alteration alt</member>
-				<member>+ plane</member>
-			</simplelist>
-			
-			<para>The bundle node type is the type of the root node. No node can contain a bundle node. All Desal nodes that are executed in any way must be part of a complete Desal tree, which means having a bundle node as the root node.</para>
-			
-			<para>Implementations must not pass any arguments to the main function when executing a bundle as a standalone executable. Implementations should instead provide program arguments through a library which can be imported with the import node. Note that the program arguments are not required by this specification to be a sequence of strings.</para>
-			
-			<para>The result produced by executing a bundle node as a standalone executable may be converted as necesary to suit the containing environment. How this conversion is performed depends on the containing environment and the Desal implementation, and is not covered by this specification.</para>
-			
-			<para>When treating a bundle as a standalone executable:</para>
-			
-			<orderedlist role="exec">
-				<listitem>Let globalScope be a new scope.</listitem>
-				<listitem>Create the identikeys required by <link linkend="reserved-identikey-names">Reserved identikey names</link>.</listitem>
-				<listitem>For each @@import, @@using, and @@expose child node, add the identikeys to globalScope specified by that node.</listitem>
-				<listitem>Execute all declaration-first children of each plane together as required by <link linkend="handling-declare-first">Handling declare-first nodes</link>.</listitem>
-				<listitem>Let mainKey be the identikey in globalScope that is associated with identifier "main". If such an identikey does not exist, throw an error.</listitem>
-				<listitem>Let mainVal be the result of evaluating mainKey. If mainVal is null, throw an error.</listitem>
-				<listitem>Call mainVal with no arguments and let rv be the result. If mainVal is not callable, throw an error. If mainVal does not have a callee that takes no arguments, throw an error.</listitem>
-				<listitem>If rv is null, produce a value, with Int as the active interface, that encodes the number zero. Else if rv has an active interface that inherits from Int, downcast rv to Int and produce the result. Else if rv, with it's current active interface, can breed an Int, have rv breed an Int, and produce the result. Else throw an error.</listitem>
-			</orderedlist>
-			
-			<para>When treating a bundle as a library:</para>
-			
-			<orderedlist role="exec">
-				<listitem>Let globalScope be a new scope.</listitem>
-				<listitem>Create the identikeys required by <link linkend="reserved-identikey-names">Reserved identikey names</link>.</listitem>
-				<listitem>For each @@import, @@using, and @@expose child node, add the identikeys to globalScope specified by that node.</listitem>
-				<listitem>Execute all declaration-first children of each plane together as required by <link linkend="handling-declare-first">Handling declare-first nodes</link>.</listitem>
-				<listitem>Expose globalScope, in an immutable form, to the containing environment. How this is done depends on the containing enviornment and the Desal implementation, and is not covered by this specification.</listitem>
-			</orderedlist>
-			
-			<para role="xxx">When acting as a standalone executable, need to specify what happens to exceptions that bubble all the way up to the bundle node. They are caught, an error message is output, and the bundle node returns some value, like 1. The bundle may expose to the containing environment additional information, depending on the enclosing environment and Desal implementation.</para>
-			
-			<para role="xxx">When acting as a standalone executable, what kind of errors should bundle by throwing? This is a problem that applies to many other nodes as well.</para>
-			
-			<para role="xxx">For when acting as a library, need a means of hiding/showing certain child namespaces/identikeys of the global namespace. For example, a bundle may have declarations in the global namespace and in a "private" namespace. The bundle should expose the declarations in the global namespace but hide the declarations in the private namespace. There has also been consideration of an "export" attribute/node that would expose specified identikeys, and all other identikeys would not be exposed.</para>
-			
-			<para role="xxx">The identikeys added to globalScope by import, using, and expose nodes should not be exposed to the containing environment when the bundle is acting as a library.</para>
 		</section>
 		
 		<section xml:id="node.caller">
@@ -2145,6 +2222,8 @@ println( 789 )
 				</simplelist>
 				
 				<para>Specifies that implementations of that interface can be converted into the specified type. Or, if [interface] isn't given, that the value can be copied.</para>
+				
+				<para role="xxx">What is rationale for not just having an "* expression breedable interface" layout entry of interface nodes?</para>
 			</section>
 			
 			<section xml:id="node.callee">

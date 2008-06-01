@@ -1,0 +1,9 @@
+scope
+	can have child scopes
+	Scope b = new Scope(a); #okay!
+
+???
+	does not have child scopes
+	Scope b = new Scope(a); #wrong!
+
+Executing a module should not produce a scope, because the thing that module produces should not be capable of being a parent to a scope.

@@ -1,0 +1,71 @@
+(Considering renaming identikeys to "wref" and "nsref" for worker reference and namespace reference.)
+
+namespace
+	publically exposed set of namespace/constant/function identikeys
+
+named namespace
+	namespace bound to an identikey
+
+module
+	implementation of a namespace
+
+namespace-inserter node
+	inserts identikeys into a namespace
+	specifies which namespace to insert identikeys into
+	also exposes members of specified namespace
+
+known-namespace-inserter node
+	insert identikeys into a namespace
+	does not specify which namespace to insert identikeys into
+
+A limit-old node is like a known-namespace-inserter, except it inserts into a scope instead of a namespace.
+A namespace-inserter is like a known-namespace-inserter that specifies which namespace the known-namespace-inserter should insert into.
+
+What's the difference between a namespace and a scope?
+
+What's the deal with this:
+module
+	namespace A
+		...
+	func main {
+		namespace A
+			...
+	}
+There are two namespaces created by these nodes! The second namespace-inserter does *not* insert into the namespace it specifies! Yet it's somehow related to the namespace created by the first namespace-inserter.
+
+module ::=
+	* import
+	known-namespace-inserter
+
+namespace-inserter ::=
+	identifier namespace to insert into
+	* declare-first|namespace-inserter
+
+---
+
+namespace A
+	first foo = "bar"
+
+compound
+	namespace A
+		expose A
+		first foo2 = foo
+
+---
+
+namespace A
+	alpha
+	namespace B
+		beta
+	gamma
+
+namespace A
+	alpha
+
+namespace A:B
+	beta
+
+namespace A
+	gamma
+
+---

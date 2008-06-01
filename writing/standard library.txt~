@@ -1,0 +1,99 @@
+Notice: This document currently diverges greatly from past ideas. Which ideas will be chose to move forward is not currently clear.
+
+
+interface Object
+/*
+The Object interface doesn't define any members.
+Interfaces that don't inherit from anything else inherit from Object.
+*/
+
+interface Interface
+	get ?Int identification_number
+	get Set<InheritableType> inherited_types
+	get ?Function callee
+	get Dict<Identifier,Property> properties
+	get Dict<Identifier,Set<Method>> methods
+	get Set<Breeder> breeders
+
+interface Union
+	get Set<Interface> member_interfaces
+	get Set<InterfaceMember> shared_interface_members
+
+union Type
+	members
+		Union
+		Interface
+		Nullable
+		Void
+	shared					#stuff that's the same for each member type
+		inherit Object		#implicit if no shared inherits specified
+
+interface Nullable
+	get ?union[Union,Interface] type
+
+interface Void
+/* empty */
+
+union Function
+	members
+		NamedFunction
+		UnnamedFunction
+	shared
+		calee				#should be possible to just declare that something has a callee?
+
+
+~~~ problem:
+
+faceOf(Union) -> Interface
+faceOf(Type) -> Union
+faceOf(Interface) -> Interface
+faceOf(NamedFunction) -> ???
+faceOf(UnnamedFunction) -> ???
+
+should "???" be "Interface"?
+
+~~~
+/*
+A superset interface is one of:
+* non-function interface
+	callee is null
+	may inherit from function interfaces
+* unnamed function interface
+	callee is UnnamedCallee
+	only inherits from Object
+* named function interface
+	calle is NamedCallee
+	only inherits from matching UnnamedCallee 
+*/
+
+interface NamedFunction
+	get Sequence<NamedParameter> parameters
+	get ?NullableType return_type
+
+interface UnnamedFunction
+
+
+
+
+
+
+
+
+
+
+declfirst Function = compound[
+	const face = interface[
+		inherit Callee
+		callee(dyn[] params) ]
+	const func = { dyn f -> face |
+		object[
+			impl face[
+				impl Callee <-> interfaceOf(f).callee
+				callee <-> { dyn[] params ps | apply(f, ps) }]]}
+	object[
+		impl Interface <-> face
+		callee <-> func ]]
+
+const Function f = Function( { Int a -> void | println(a) } )
+f(123)
+

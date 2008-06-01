@@ -1,0 +1,22 @@
+new term: scidentre
+abbreviations: wo-ref, ns-ref, wo-scidenter, ns-scidenter
+
+scope + identifier + reference
+sc + ident + re
+scidentre
+similar to "variables" found in other programming languages
+Non-normative: Can be pronounced like ski-din-ter, from "skim", "dinner" and "enter", with stress on the "din". This is only suggested pronounciation.
+
+worker reference
+wo-ref
+
+namespace reference
+ns-ref
+
+worker scidentre
+scope + identifier + worker reference
+wo-scidentre
+
+namespace scidentre
+scope + identifier + namespace reference
+ns-scidentre

@@ -1,0 +1,44 @@
+For a module to be usable as a library, it must have an attribute known as "reach". This attribute states how that library module can be shared. A module cannot have multiple reaches.
+
+The various reaches are:
+* program
+* module
+* machine
+* independent
+
+Modules acting as programs can import modules with any reach. Modules acting as libraries can import modules given by the table below:
+
+key: Reach of library -> Reach of modules that library can import
+program -> program, module, machine, independent
+module -> module, machine, independent
+machine -> module, machine, independent
+independent -> module, independent
+
+--- program
+A new instance of the module is setup only for each program module that imports it. It guarentees it will be shared within a program. When a program imports libraries A and B, both with program scope, and B imports A, then B and the program must share the instance of A.
+
+Examples:
+standard streams (in, out, log)
+current working directory
+
+--- module
+A new instance of the module is setup for every module that imports it. A module with module scope is never shared. Note that cyclical dependencies are not allowed here. For example, if A and B are libraries with module reach, they cannot import each other.
+
+Examples:
+module's location in the filesystem
+
+--- machine
+Any module on the same machine that imports a module with machine reach can use the same instance of that module. However, the module is not guaranteed to only have one instance per machine.
+
+Examples:
+filesystem
+processor count
+
+--- independent
+The module does not have program, module, or machine dependent behavior. In can be shared by multiple modules. However, it is not guaranteed to be shared by all modules that import it.
+
+Examples:
+most interfaces
+
+
+

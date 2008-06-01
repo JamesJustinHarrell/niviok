@@ -1,0 +1,69 @@
+In many languages, libraries behave differently depending on the machine, program, and/or thread calling into them. This is especially prevalent with standard libraries.
+
+Examples:
+* accessing hardware
+* information about operating system
+* standard streams (in, out, err)
+* program arguments
+* program result codes
+* process ID
+* current directory
+* current running thread
+
+C example:
+	printf("text");
+
+C++ example:
+	std::cout << "text" << std::endl;
+
+C# example:
+	System.Environment.MachineName
+	System.Console.WriteLine("text");
+	System.Environment.GetCommandLineArgs()
+	System.Environment.ExitCode = 1;
+	System.Environment.CurrentDirectory
+	System.Threading.Thread.Sleep(100);
+
+Java example:
+	System.out.println("text");
+	java.lang.Thread.sleep(100);
+
+Python
+	sys.stdout.write("text\n")
+	sys.argv
+	os.chdir("..")
+	os.getcwd()
+
+Either these aren't shared libraries, or they're using some kind of crazy magic.
+
+Related: How do libraries output to (and input from) the standard streams?
+
+Perhaps new nodes that produce integers when executed.
+e.g. "program-id" and "module-id"
+Same if the module the node is in is acting as a program, but if the module is acting as a library, produces the module id of the program module that called into the library module.
+
+Then libraries could take advantage of this to behave differently depending on which program called into the library. For example, println(Stringable) could use the program-id to find that program module's standard out stream.
+
+There could also be a std:println(Int, Stringable) so that libraries could print to the standard streams of the calling program module.
+e.g. std:println(programid, "Bad arguments to do_stuff(). Doing nothing.")
+
+It might be better to use an object with hidden internal stuff, rather than an integer. That would prevent feeding random integers into stuff.
+	std:println(123, "test")
+	object prog = programobject
+	std:println(prog, "test")
+
+However, that might make it more difficult to make a dictionary of id -> something. So maybe it would be a good idea to define an interface that has an integer property. That still requires obtaining the non-integer object, but allows using the integer to do integer-friendly stuff.
+
+interface ModuleID
+	get Int value
+
+---
+
+When you have this figured out, may want to:
+* remove bridge property of Scope
+* remove Bridge instances
+* change how the agent prints strings for a specific module
+	scope.bridge.println("text")
+	scope.evaluateIdentifier(new Identifier("println")).call(
+		new Argument(null, Bridge.toClientString("text")))
+	G.println(scope, "text")

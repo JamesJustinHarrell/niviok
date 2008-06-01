@@ -1,0 +1,14 @@
+"""
+outputs a list of node typenames
+"""
+
+import os
+import xml.dom.minidom as DOM
+from lib import *
+extractor = __import__('extract nodes')
+
+nodeTypes = extractor.extractNodeTypes(extractor.inputPath)
+typenames = map(lambda x: x["typename"], nodeTypes)
+typenames.sort()
+print "%s nodes:" % len(typenames)
+print "\n".join(typenames)

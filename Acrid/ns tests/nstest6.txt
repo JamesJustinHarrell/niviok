@@ -1,0 +1,21 @@
+module
+	limit-old
+		visible func main {
+			compound
+				limit-old
+					visible declarefirst foo A:B:foo
+					hidden namespace A
+						limit-old
+							visible namespace B
+								limit-old
+									visible declarefirst foo outer:foo
+							visible declarefirst foo "A"
+			println(foo)
+		}
+
+/*
+should print:
+"A\n"
+
+see also nstest1
+*/

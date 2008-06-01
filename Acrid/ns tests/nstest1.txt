@@ -1,0 +1,19 @@
+module
+	limit-old
+		hidden declarefirst foo A:B:foo
+		hidden namespace A
+			limit-old
+				visible namespace B
+					limit-old
+						visible declarefirst foo (outer:outer:foo & A:foo)
+				visible declarefirst foo "A"
+		visible func main {
+			println(foo)
+		}
+
+/*
+should print:
+"AA\n"
+
+see also nstest6
+*/

@@ -1,0 +1,170 @@
+
+Ignoring identikey-special-old nodes for now.
+Ignoring declare-first.identikey-type.nullable-type.interface expressions for now.
+
+Note that all the nullable-type nodes can't be executed before all the value expressions, because the nullable-type of some declare-firsts may depend on the value of other declare-firsts. Example:
+	declfirst Interface Foo = interface[...]
+	declfirst Foo foo = object[ worker Foo[...] ]
+
+
+--- method 01
+
+gatherIdentikeys(compound) => foo, A:B:foo, A:foo
+	gatherIdentikeys(limit-old) => foo, A:B:foo, A:foo
+		gI(first foo) + => foo
+		gI(namespace A) => A:B:foo, A:foo
+			gI(limit-old) => B:foo, foo
+				gI(namespace B) + => B:foo
+					gI(limit-old) => foo
+						gI(first foo) => foo
+				gI(first foo) => foo
+
+function associateIdentikeyReferencesWithIdentikeys( outerScope, node )
+	innerScope = outerScope + gatherIdentikeys(node)
+	if node is identikey-reference
+		findIdentikey(innerScope, node)
+	else
+		foreach child in node
+			associatedIdentikeyReferencesWithIdentikeys(innerScope, child)
+
+How to execute module and compound nodes:
+1) Associate all identikey references (e.g. declare-first, identifier) with an identikey.
+2) Gather up all declare-first nodes into a seqence. Continuously find, execute, and remove the first df node in the sequence which does not depend on a df identikey which hasn't already been assigned. Do this until the sequence is empty. If a pass doesn't reduce the size of the sequence, throw an error.
+3) If a module, call main or library_initialize. If a compound, execute the normal expression nodes in order.
+
+
+Caching would help performance here alot. Like entire order-of-magnitudes.
+
+
+--- method 02
+
+type Entry( Identikey, Node_Expression, Scope, Set<Identikey> depends )
+
+executeCompound(node, outerScope)
+	innerScope = new Scope(outerScope)
+	queue = new Sequence<Entry>()
+	
+	//load up queue from identikey-special-new
+	foreach( isn in node.isns )
+		executeISN( isn, innerScope, queue )
+	
+	//execute queue
+	extry = findAndRemoveExecutableEntry(queue)
+	while( entry != null )
+		executeEntry(entry)
+	if queue.empty == false
+		throw new ClientException()
+	
+	//execute expressions
+	foreach( expression in node.members )
+		execute( expression, innerScope )
+
+executeISN( isn, outerScope, queue )
+	if isn is Node_DeclareFirst
+		executeDeclareFirst( isn as Node_DeclareFirst, outerScope, queue )
+	if isn is Node_LimitOld
+		executeLimitOld(isn as Node_LimitOld, outerScope, queue)
+	if isn is Node_Namespace
+		executeNamespace(isn as Node_Namespace, outerScope, queue)
+
+executeDeclareFirst( node, scope, queue )
+	key = new Identikey(node.category)
+	scope.add( node.name, key )
+	queue.push( key, node.valueExpression, scope )
+	return key //used by executeLimitOld
+
+executeLimitOld(node, outerScope)
+	innerScope = new Scope(outerScope)
+	foreach hidable in node.hidables
+		//add to innerScope and to queue
+		executeISN( hidable.isn, innerScope, queue )
+		
+		//if visible, add to outerScope
+		???
+
+executeNamespace(node, outerScope, queue)
+	innerScope = new Scope(outerScope)
+	executeLimitOld( node.limitOld, innerScope, queue )
+	Namespace ns = outerScope.createGetNamespace(node.name)
+	foreach( Identifier+Identikey pair in innerScope )
+		ns.add( pair.name, pair.identikey )
+
+~~~
+
+To obey [visible] members of [hidable] nodes:
+
+executeLimitOld(node, outerScope)
+	innerScope = new Scope(outerScope)
+	foreach hidable in node.hidables
+		if hidable.visible
+			executeISN( hidable.isn, outerScope, queue )
+		else
+			executeISN( hidable.isn, innerScope, queue )
+	
+However, this would mean expressions would be given a scope that did not have access to the hidden members. This could be fixed by splitting the scope into a scope to set identikeys on, and a scope to use for executing expressions. I'm not so sure that would solve everything though.
+
+~~~
+
+Problem with this method: Expressions in namespace nodes only see the identikeys of their parent nodes, they don't see the children of the actual namespace. Example:
+namespace A
+	first foo = "text"
+namespace A
+	first bar = foo //error -- foo is not defined in this scope
+That means the scope of the namespace node will have two parents: the namespace and the parent node.
+
+class Scope
+	Scope _parent;
+	Scope _nsScope;
+	func evaluateIdentikey( identifier id )
+		if( _nsScope )
+			IWorker w = _nsScope.tryEval(id)
+			if w != null : return w
+		if localIdents.contains(id)
+			return localIdents[id].value
+		if _parent != null : return _parent.evaluateIdentikey(id)
+		throw new IdentikeyNotFound() //not ClientError
+
+Scope should not throw a ClientError. Instead, it should throw IdentikeyNotFound, and *if* the scope was accessed from client code, then it should be wrapped with a ClientError. This also applies to several other areas.
+
+Maybe: bridge property of namespace scopes should be null. No expression should be executed with a scope that is a namespace scope. Instead, those expressions should be evaluated with a normal scope that has a non-null _nsScope property. Perhaps the Scope class should be split into three (with one as a base or interface), since NS scopes don't have _nsScope or _bridge.
+
+
+--- method 03
+
+Like method 02, but with the scopes for expressions created differently.
+
+NormalScope : IScope
+	IScope _parent
+	Dict<id,identikey> _idents
+	Dict<id,IScope> _namespaces
+	
+	func evaluateIdentifier(id)
+		if id in _idents
+			return _idents[id]
+		if _parent != null
+			return _parent.evaluateIdentifier(id)
+		throw error
+	
+	func evaluateNsedIdentifier(nses, id)
+		if nses.count == 0
+			return evaluateIdentifier(id)
+		else
+			return _namespaces[ first(nses) ].evaluateNsedIdentifier( rest(nses), id )
+
+NamespaceNodeScope : IScope
+	IScope _parent
+	Identifier _name
+	
+	func evaluateIdentifier(id)
+		IScope current = _parent
+		nses = List<Identifier>
+		while current != null
+			if current is NamespaceNodeScope
+				nses.push( (current as NamespaceNodeScope).name )
+			else
+				if current.hasNsedIdentifier(nses, id)
+					return current.getNsedIdentifier(nses, id)
+			current = current.parent
+		throw error
+
+
