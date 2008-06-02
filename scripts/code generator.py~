@@ -10,7 +10,7 @@ from templates import *
 nodeClassesOutputPath = os.path.join(paths.acridSourceDir,"node classes auto.cs")
 desibleParserOutputPath = os.path.join(paths.acridSourceDir,"DesibleParserAuto.cs")
 desibleSerializerOutputPath = os.path.join(paths.acridSourceDir,"DesibleSerializerAuto.cs")
-desexpParserOutputPath = os.path.join(paths.acridSourceDir,"DesexpParserAuto.cs")
+desexpParserOutputPath = os.path.join(paths.acridSourceDir,"ToyParserAuto.cs")
 executorOutputPath = os.path.join(paths.acridSourceDir,"Executor auto.cs")
 
 def lowerCamelCase(text) :
@@ -265,6 +265,7 @@ def createDesexpParser(nodeTypes) :
 
 		assert nodeType["category"] == "tree"
 		return desexpParserTemplate % {
+			"typename" : nodeType["typename"],
 			"csType" : nodeType["csTypename"],
 			"csName" : upperCamelCase(nodeType["typename"]),
 			"childNodes" : ",\n\t\t\t".join(map(createCall, nodeType["layout"])),

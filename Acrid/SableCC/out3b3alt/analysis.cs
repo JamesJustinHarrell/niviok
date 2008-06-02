@@ -2,9 +2,9 @@
 
 using System;
 using System.Collections;
-using Dextr.Sablecc.node;
+using Fujin.Sablecc.node;
 
-namespace Dextr.Sablecc.analysis {
+namespace Fujin.Sablecc.analysis {
 
 
 public interface Analysis : Switch
@@ -4689,4 +4689,4 @@ public class ReversedDepthFirstAdapter : AnalysisAdapter
         OutAUsing(node);
     }
 }
-} // namespace Dextr.Sablecc.analysis
+} // namespace Fujin.Sablecc.analysis

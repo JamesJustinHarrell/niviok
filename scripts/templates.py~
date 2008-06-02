@@ -103,9 +103,11 @@ abstract class DesibleSerializerAuto : DesibleSerializerBase {
 		switch(node.typeName) {
 			%(cases)s
 			default:
-				throw new ParseError(
-					String.Format("can't serialize node of type {0}", node.typeName),
-					node.nodeSource);
+				throw new ApplicationException(
+					String.Format(
+						"can't serialize node of type {0} from {1}",
+						node.typeName,
+						node.nodeSource));
 		}
 	}
 }
@@ -135,13 +137,13 @@ desibleSerializerCaseTemplate = """
 desexpParserFileTemplate = autoHeader + """
 using System.Xml;
 
-namespace Desexp {
+namespace Toy {
 
-abstract class DesexpParserAuto : DesexpParserBase {
+abstract class ToyParserAuto : ToyParserBase {
 	%s
 }
 
-} //end namespace Desexp
+} //end namespace Toy
 
 """
 

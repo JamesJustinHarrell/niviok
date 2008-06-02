@@ -15,7 +15,7 @@
   </Configurations>
   <Contents>
     <File name="AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
-    <File name="DesalAgent001.cs" subtype="Code" buildaction="Compile" />
+    <File name="Acrid.cs" subtype="Code" buildaction="Compile" />
     <File name="exceptions.cs" subtype="Code" buildaction="Compile" />
     <File name="Client_Function.cs" subtype="Code" buildaction="Compile" />
     <File name="Identifier.cs" subtype="Code" buildaction="Compile" />
@@ -37,7 +37,7 @@
     <File name="Client_Rational.cs" subtype="Code" buildaction="Compile" />
     <File name="Client_Interface.cs" subtype="Code" buildaction="Compile" />
     <File name="NullableType.cs" subtype="Code" buildaction="Compile" />
-    <File name="Dextr_Custom_ParserManager.cs" subtype="Code" buildaction="Compile" />
+    <File name="Fujin_Custom_ParserManager.cs" subtype="Code" buildaction="Compile" />
     <File name="G.cs" subtype="Code" buildaction="Compile" />
     <File name="HashSet.cs" subtype="Code" buildaction="Compile" />
     <File name="node classes auto.cs" subtype="Code" buildaction="Compile" />
@@ -54,15 +54,15 @@
     <File name="../SableCC/out3b3alt/parser.cs" subtype="Code" buildaction="Compile" />
     <File name="../SableCC/out3b3alt/prods.cs" subtype="Code" buildaction="Compile" />
     <File name="../SableCC/out3b3alt/tokens.cs" subtype="Code" buildaction="Compile" />
-    <File name="Dextr_Custom_SableCCLexer.cs" subtype="Code" buildaction="Compile" />
+    <File name="Fujin_Custom_SableCCLexer.cs" subtype="Code" buildaction="Compile" />
     <File name="../CocoR/Parser.cs" subtype="Code" buildaction="Compile" />
     <File name="../CocoR/Scanner.cs" subtype="Code" buildaction="Compile" />
-    <File name="DesexpParser.cs" subtype="Code" buildaction="Compile" />
-    <File name="DesexpParserAuto.cs" subtype="Code" buildaction="Compile" />
+    <File name="ToyParser.cs" subtype="Code" buildaction="Compile" />
+    <File name="ToyParserAuto.cs" subtype="Code" buildaction="Compile" />
     <File name="node classes manual.cs" subtype="Code" buildaction="Compile" />
     <File name="enums.cs" subtype="Code" buildaction="Compile" />
     <File name="interfaces.cs" subtype="Code" buildaction="Compile" />
-    <File name="DesalObject.cs" subtype="Code" buildaction="Compile" />
+    <File name="NiviokObject.cs" subtype="Code" buildaction="Compile" />
     <File name="WorkerBuilder.cs" subtype="Code" buildaction="Compile" />
     <File name="Worker.cs" subtype="Code" buildaction="Compile" />
     <File name="WorkerBase.cs" subtype="Code" buildaction="Compile" />

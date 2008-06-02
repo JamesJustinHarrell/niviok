@@ -1,4 +1,4 @@
-//corresponds to Desal "argument" nodes
+//corresponds to "argument" nodes
 
 class Argument {
 	Identifier _name;

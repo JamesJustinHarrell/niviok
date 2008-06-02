@@ -134,20 +134,20 @@ desibleSerializerCaseTemplate = """
 				return serialize((%(csTypename)s)node);
 """.strip()
 
-desexpParserFileTemplate = autoHeader + """
+toyParserFileTemplate = autoHeader + """
 using System.Xml;
 
-namespace Desexp {
+namespace Toy {
 
-abstract class DesexpParserAuto : DesexpParserBase {
+abstract class ToyParserAuto : ToyParserBase {
 	%s
 }
 
-} //end namespace Desexp
+} //end namespace Toy
 
 """
 
-desexpParserTemplate = """
+toyParserTemplate = """
 	protected virtual %(csType)s parse%(csName)s(Sexp sexp) {
 		if( sexp.list.Count != %(childCount)s )
 			throw new ParseError(
@@ -161,7 +161,7 @@ desexpParserTemplate = """
 	}
 """.strip()
 
-desexpTerminalParserTemplate = """
+toyTerminalParserTemplate = """
 	protected virtual %(csType)s parse%(csName)s(Sexp sexp) {
 		try {
 			return new %(csType)s(sexp.atom, getSource(sexp));
@@ -177,7 +177,7 @@ desexpTerminalParserTemplate = """
 	}
 """.strip()
 
-desexpFamilyParserTemplate = """
+toyFamilyParserTemplate = """
 	protected virtual %(csType)s parse%(csName)s(Sexp sexp) {
 		if( sexp.type != SexpType.LIST )
 			return parseTerminal%(csName)s(sexp);
@@ -216,7 +216,7 @@ desexpFamilyParserTemplate = """
 	}
 """.strip()
 
-desexpFamilyCaseTemplate = """
+toyFamilyCaseTemplate = """
 			case "%(specType)s":
 				return parse%(csName)s(sexp);
 """.strip()

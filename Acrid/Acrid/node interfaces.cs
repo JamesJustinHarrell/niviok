@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 //xxx would it be better to generate some of this automatically?
 
-//any Desal node
+//any node
 interface INode {
 	//e.g. foo-bar-baz
 	string typeName {get;}

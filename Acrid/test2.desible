@@ -1,0 +1,906 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<module xmlns="urn:desible1">
+	<limit-old>
+		<expose label="declaration">
+			<identifier>std</identifier>
+		</expose>
+		<hidable>
+			<boolean label="hidden">False</boolean>
+			<declare-first label="declaration">
+				<identifier label="name">header</identifier>
+				<identikey-type>
+					<identikey-category>FUNCTION</identikey-category>
+					<nullable-type>
+						<boolean label="nullable">False</boolean>
+					</nullable-type>
+				</identikey-type>
+				<boolean label="breed">False</boolean>
+				<function label="value">
+					<parameter-impl>
+						<direction>IN</direction>
+						<nullable-type>
+							<boolean label="nullable">False</boolean>
+						</nullable-type>
+						<identifier label="name">title</identifier>
+					</parameter-impl>
+					<compound label="body">
+						<call label="member">
+							<identifier label="receiver">println</identifier>
+							<argument>
+								<string label="value">
+								</string>
+							</argument>
+						</call>
+						<call label="member">
+							<identifier label="receiver">println</identifier>
+							<argument>
+								<call label="value">
+									<extract-member label="receiver">
+										<identifier label="source">title</identifier>
+										<identifier label="member-name">concat</identifier>
+									</extract-member>
+									<argument>
+										<string label="value"> :</string>
+									</argument>
+								</call>
+							</argument>
+						</call>
+					</compound>
+				</function>
+			</declare-first>
+		</hidable>
+		<hidable>
+			<boolean label="hidden">False</boolean>
+			<declare-first label="declaration">
+				<identifier label="name">headerize</identifier>
+				<identikey-type>
+					<identikey-category>FUNCTION</identikey-category>
+					<nullable-type>
+						<boolean label="nullable">False</boolean>
+					</nullable-type>
+				</identikey-type>
+				<boolean label="breed">False</boolean>
+				<function label="value">
+					<parameter-impl>
+						<direction>IN</direction>
+						<nullable-type>
+							<boolean label="nullable">False</boolean>
+						</nullable-type>
+						<identifier label="name">title</identifier>
+					</parameter-impl>
+					<parameter-impl>
+						<direction>IN</direction>
+						<nullable-type>
+							<boolean label="nullable">False</boolean>
+						</nullable-type>
+						<identifier label="name">func</identifier>
+					</parameter-impl>
+					<compound label="body">
+						<call label="member">
+							<identifier label="receiver">header</identifier>
+							<argument>
+								<call label="value">
+									<extract-member label="receiver">
+										<string label="source">calling </string>
+										<identifier label="member-name">concat</identifier>
+									</extract-member>
+									<argument>
+										<identifier label="value">title</identifier>
+									</argument>
+								</call>
+							</argument>
+						</call>
+						<call label="member">
+							<identifier label="receiver">func</identifier>
+						</call>
+						<call label="member">
+							<identifier label="receiver">println</identifier>
+							<argument>
+								<string label="value">
+								</string>
+							</argument>
+						</call>
+						<call label="member">
+							<identifier label="receiver">println</identifier>
+							<argument>
+								<call label="value">
+									<extract-member label="receiver">
+										<string label="source">done with </string>
+										<identifier label="member-name">concat</identifier>
+									</extract-member>
+									<argument>
+										<identifier label="value">title</identifier>
+									</argument>
+								</call>
+							</argument>
+						</call>
+					</compound>
+				</function>
+			</declare-first>
+		</hidable>
+		<hidable>
+			<boolean label="hidden">False</boolean>
+			<declare-first label="declaration">
+				<identifier label="name">main</identifier>
+				<identikey-type>
+					<identikey-category>FUNCTION</identikey-category>
+					<nullable-type>
+						<boolean label="nullable">False</boolean>
+					</nullable-type>
+				</identikey-type>
+				<boolean label="breed">False</boolean>
+				<function label="value">
+					<compound label="body">
+						<call label="member">
+							<identifier label="receiver">headerize</identifier>
+							<argument>
+								<string label="value">doStuff</string>
+							</argument>
+							<argument>
+								<identifier label="value">doStuff</identifier>
+							</argument>
+						</call>
+						<call label="member">
+							<identifier label="receiver">headerize</identifier>
+							<argument>
+								<string label="value">testNonProducers</string>
+							</argument>
+							<argument>
+								<identifier label="value">testNonProducers</identifier>
+							</argument>
+						</call>
+						<call label="member">
+							<identifier label="receiver">headerize</identifier>
+							<argument>
+								<string label="value">testSometimesProducers</string>
+							</argument>
+							<argument>
+								<identifier label="value">testSometimesProducers</identifier>
+							</argument>
+						</call>
+						<call label="member">
+							<identifier label="receiver">headerize</identifier>
+							<argument>
+								<string label="value">testAlwaysProducers</string>
+							</argument>
+							<argument>
+								<identifier label="value">testAlwaysProducers</identifier>
+							</argument>
+						</call>
+					</compound>
+				</function>
+			</declare-first>
+		</hidable>
+		<hidable>
+			<boolean label="hidden">False</boolean>
+			<declare-first label="declaration">
+				<identifier label="name">Test</identifier>
+				<identikey-type>
+					<identikey-category>CONSTANT</identikey-category>
+					<nullable-type>
+						<identifier label="interface">Interface</identifier>
+						<boolean label="nullable">False</boolean>
+					</nullable-type>
+				</identikey-type>
+				<boolean label="breed">False</boolean>
+				<interface label="value">
+					<property label="member">
+						<identifier label="name">number</identifier>
+						<boolean label="writable">False</boolean>
+						<nullable-type>
+							<identifier label="interface">Int</identifier>
+							<boolean label="nullable">False</boolean>
+						</nullable-type>
+					</property>
+					<property label="member">
+						<identifier label="name">text</identifier>
+						<boolean label="writable">True</boolean>
+						<nullable-type>
+							<identifier label="interface">String</identifier>
+							<boolean label="nullable">False</boolean>
+						</nullable-type>
+					</property>
+				</interface>
+			</declare-first>
+		</hidable>
+		<hidable>
+			<boolean label="hidden">False</boolean>
+			<declare-first label="declaration">
+				<identifier label="name">createObject</identifier>
+				<identikey-type>
+					<identikey-category>FUNCTION</identikey-category>
+					<nullable-type>
+						<boolean label="nullable">False</boolean>
+					</nullable-type>
+				</identikey-type>
+				<boolean label="breed">False</boolean>
+				<function label="value">
+					<compound label="body">
+						<declare-assign label="member">
+							<identifier label="name">mText</identifier>
+							<identikey-type>
+								<identikey-category>VARIABLE</identikey-category>
+								<nullable-type>
+									<identifier label="interface">String</identifier>
+									<boolean label="nullable">False</boolean>
+								</nullable-type>
+							</identikey-type>
+							<boolean label="breed">False</boolean>
+							<boolean label="infer-interface">False</boolean>
+							<string label="value">initial text</string>
+						</declare-assign>
+						<object label="member">
+							<worker>
+								<identifier label="face">Test</identifier>
+								<member-implementation>
+									<member-identification>
+										<member-type>PROPERTY_GETTER</member-type>
+										<identifier label="name">number</identifier>
+									</member-identification>
+									<function label="function">
+										<integer label="body">123</integer>
+									</function>
+								</member-implementation>
+								<member-implementation>
+									<member-identification>
+										<member-type>PROPERTY_GETTER</member-type>
+										<identifier label="name">text</identifier>
+									</member-identification>
+									<function label="function">
+										<identifier label="body">mText</identifier>
+									</function>
+								</member-implementation>
+								<member-implementation>
+									<member-identification>
+										<member-type>PROPERTY_SETTER</member-type>
+										<identifier label="name">text</identifier>
+									</member-identification>
+									<function label="function">
+										<parameter-impl>
+											<direction>IN</direction>
+											<nullable-type>
+												<identifier label="interface">String</identifier>
+												<boolean label="nullable">False</boolean>
+											</nullable-type>
+											<identifier label="name">newval</identifier>
+										</parameter-impl>
+										<assign label="body">
+											<identifier label="name">mText</identifier>
+											<boolean label="breed">False</boolean>
+											<identifier label="value">newval</identifier>
+										</assign>
+									</function>
+								</member-implementation>
+							</worker>
+						</object>
+					</compound>
+				</function>
+			</declare-first>
+		</hidable>
+		<hidable>
+			<boolean label="hidden">False</boolean>
+			<declare-first label="declaration">
+				<identifier label="name">doStuff</identifier>
+				<identikey-type>
+					<identikey-category>FUNCTION</identikey-category>
+					<nullable-type>
+						<boolean label="nullable">False</boolean>
+					</nullable-type>
+				</identikey-type>
+				<boolean label="breed">False</boolean>
+				<function label="value">
+					<compound label="body">
+						<conditional label="member">
+							<identifier label="test">true</identifier>
+							<call label="result">
+								<identifier label="receiver">println</identifier>
+								<argument>
+									<string label="value">this is a test</string>
+								</argument>
+							</call>
+						</conditional>
+						<declare-assign label="member">
+							<identifier label="name">str</identifier>
+							<identikey-type>
+								<identikey-category>CONSTANT</identikey-category>
+								<nullable-type>
+									<identifier label="interface">String</identifier>
+									<boolean label="nullable">False</boolean>
+								</nullable-type>
+							</identikey-type>
+							<boolean label="breed">False</boolean>
+							<boolean label="infer-interface">False</boolean>
+							<call label="value">
+								<extract-member label="receiver">
+									<string label="source">ð¿° Hello,</string>
+									<identifier label="member-name">concat</identifier>
+								</extract-member>
+								<argument>
+									<string label="value"> World ð¿±</string>
+								</argument>
+							</call>
+						</declare-assign>
+						<call label="member">
+							<identifier label="receiver">println</identifier>
+							<argument>
+								<identifier label="value">str</identifier>
+							</argument>
+						</call>
+						<call label="member">
+							<identifier label="receiver">println</identifier>
+							<argument>
+								<extract-member label="value">
+									<identifier label="source">str</identifier>
+									<identifier label="member-name">length</identifier>
+								</extract-member>
+							</argument>
+						</call>
+						<enumerator-loop label="member">
+							<call label="container">
+								<identifier label="receiver">range</identifier>
+								<argument>
+									<integer label="value">1</integer>
+								</argument>
+								<argument>
+									<integer label="value">20</integer>
+								</argument>
+								<argument>
+									<identifier label="value">false</identifier>
+								</argument>
+							</call>
+							<receiver>
+								<nullable-type>
+									<boolean label="nullable">False</boolean>
+								</nullable-type>
+								<identifier label="name">x</identifier>
+							</receiver>
+							<call label="body">
+								<identifier label="receiver">println</identifier>
+								<argument>
+									<call label="value">
+										<extract-member label="receiver">
+											<identifier label="source">x</identifier>
+											<identifier label="member-name">add</identifier>
+										</extract-member>
+										<argument>
+											<integer label="value">10000</integer>
+										</argument>
+									</call>
+								</argument>
+							</call>
+						</enumerator-loop>
+						<declare-assign label="member">
+							<identifier label="name">ð¿°ð¿±</identifier>
+							<identikey-type>
+								<identikey-category>CONSTANT</identikey-category>
+								<nullable-type>
+									<boolean label="nullable">False</boolean>
+								</nullable-type>
+							</identikey-type>
+							<boolean label="breed">False</boolean>
+							<boolean label="infer-interface">False</boolean>
+							<string label="value">astral characters in identifiers</string>
+						</declare-assign>
+						<call label="member">
+							<identifier label="receiver">println</identifier>
+							<argument>
+								<identifier label="value">ð¿°ð¿±</identifier>
+							</argument>
+						</call>
+						<declare-assign label="member">
+							<identifier label="name">obj</identifier>
+							<identikey-type>
+								<identikey-category>CONSTANT</identikey-category>
+								<nullable-type>
+									<identifier label="interface">Test</identifier>
+									<boolean label="nullable">False</boolean>
+								</nullable-type>
+							</identikey-type>
+							<boolean label="breed">False</boolean>
+							<boolean label="infer-interface">False</boolean>
+							<call label="value">
+								<identifier label="receiver">createObject</identifier>
+							</call>
+						</declare-assign>
+						<call label="member">
+							<identifier label="receiver">println</identifier>
+							<argument>
+								<extract-member label="value">
+									<identifier label="source">obj</identifier>
+									<identifier label="member-name">number</identifier>
+								</extract-member>
+							</argument>
+						</call>
+						<call label="member">
+							<identifier label="receiver">println</identifier>
+							<argument>
+								<extract-member label="value">
+									<identifier label="source">obj</identifier>
+									<identifier label="member-name">text</identifier>
+								</extract-member>
+							</argument>
+						</call>
+						<set-property label="member">
+							<identifier label="source">obj</identifier>
+							<identifier label="property-name">text</identifier>
+							<string label="value">alpha beta gamma</string>
+						</set-property>
+						<call label="member">
+							<identifier label="receiver">println</identifier>
+							<argument>
+								<extract-member label="value">
+									<identifier label="source">obj</identifier>
+									<identifier label="member-name">text</identifier>
+								</extract-member>
+							</argument>
+						</call>
+						<declare-assign label="member">
+							<identifier label="name">gen</identifier>
+							<identikey-type>
+								<identikey-category>CONSTANT</identikey-category>
+								<nullable-type>
+									<boolean label="nullable">False</boolean>
+								</nullable-type>
+							</identikey-type>
+							<boolean label="breed">False</boolean>
+							<boolean label="infer-interface">False</boolean>
+							<generator label="value">
+								<compound label="body">
+									<call label="member">
+										<identifier label="receiver">println</identifier>
+										<argument>
+											<string label="value">printed by generator</string>
+										</argument>
+									</call>
+									<yield label="member">
+										<string label="value">yielded from generator</string>
+									</yield>
+								</compound>
+							</generator>
+						</declare-assign>
+						<call label="member">
+							<identifier label="receiver">println</identifier>
+							<argument>
+								<call label="value">
+									<extract-member label="receiver">
+										<identifier label="source">gen</identifier>
+										<identifier label="member-name">yield</identifier>
+									</extract-member>
+								</call>
+							</argument>
+						</call>
+						<try-catch label="member">
+							<identifier label="try">nonexistantidentikey</identifier>
+							<exception-handler>
+								<boolean label="catch">True</boolean>
+								<identifier label="interface">Object</identifier>
+								<call label="result">
+									<identifier label="receiver">println</identifier>
+									<argument>
+										<string label="value">exception caught</string>
+									</argument>
+								</call>
+							</exception-handler>
+							<call label="else">
+								<identifier label="receiver">println</identifier>
+								<argument>
+									<string label="value">no exception</string>
+								</argument>
+							</call>
+							<call label="finally">
+								<identifier label="receiver">println</identifier>
+								<argument>
+									<string label="value">finally!</string>
+								</argument>
+							</call>
+						</try-catch>
+					</compound>
+				</function>
+			</declare-first>
+		</hidable>
+		<hidable>
+			<boolean label="hidden">False</boolean>
+			<declare-first label="declaration">
+				<identifier label="name">testNonProducers</identifier>
+				<identikey-type>
+					<identikey-category>FUNCTION</identikey-category>
+					<nullable-type>
+						<boolean label="nullable">False</boolean>
+					</nullable-type>
+				</identikey-type>
+				<boolean label="breed">False</boolean>
+				<function label="value">
+					<compound label="body">
+						<declare-first label="new-declaration">
+							<identifier label="name">testReturn</identifier>
+							<identikey-type>
+								<identikey-category>FUNCTION</identikey-category>
+								<nullable-type>
+									<boolean label="nullable">False</boolean>
+								</nullable-type>
+							</identikey-type>
+							<boolean label="breed">False</boolean>
+							<function label="value">
+								<compound label="body">
+									<integer label="member">123</integer>
+									<return label="member">
+										<integer label="value">456</integer>
+									</return>
+									<integer label="member">789</integer>
+								</compound>
+							</function>
+						</declare-first>
+						<call label="member">
+							<identifier label="receiver">println</identifier>
+							<argument>
+								<call label="value">
+									<identifier label="receiver">testReturn</identifier>
+								</call>
+							</argument>
+						</call>
+					</compound>
+				</function>
+			</declare-first>
+		</hidable>
+		<hidable>
+			<boolean label="hidden">False</boolean>
+			<declare-first label="declaration">
+				<identifier label="name">testSometimesProducers</identifier>
+				<identikey-type>
+					<identikey-category>FUNCTION</identikey-category>
+					<nullable-type>
+						<boolean label="nullable">False</boolean>
+					</nullable-type>
+				</identikey-type>
+				<boolean label="breed">False</boolean>
+				<function label="value">
+					<compound label="body">
+						<call label="member">
+							<identifier label="receiver">header</identifier>
+							<argument>
+								<string label="value">assign, block, call</string>
+							</argument>
+						</call>
+						<declare-empty label="member">
+							<identifier label="name">foo</identifier>
+							<identikey-type>
+								<identikey-category>CONSTANT</identikey-category>
+								<nullable-type>
+									<boolean label="nullable">False</boolean>
+								</nullable-type>
+							</identikey-type>
+						</declare-empty>
+						<assign label="member">
+							<identifier label="name">foo</identifier>
+							<boolean label="breed">False</boolean>
+							<compound label="value">
+								<integer label="member">123</integer>
+							</compound>
+						</assign>
+						<call label="member">
+							<identifier label="receiver">println</identifier>
+							<argument>
+								<identifier label="value">foo</identifier>
+							</argument>
+						</call>
+						<call label="member">
+							<identifier label="receiver">header</identifier>
+							<argument>
+								<string label="value">conditional</string>
+							</argument>
+						</call>
+						<call label="member">
+							<identifier label="receiver">println</identifier>
+							<argument>
+								<conditional label="value">
+									<identifier label="test">false</identifier>
+									<integer label="result">0</integer>
+									<conditional label="else">
+										<identifier label="test">true</identifier>
+										<integer label="result">111</integer>
+										<call label="else">
+											<integer label="receiver">222</integer>
+										</call>
+									</conditional>
+								</conditional>
+							</argument>
+						</call>
+						<call label="member">
+							<identifier label="receiver">println</identifier>
+							<argument>
+								<conditional label="value">
+									<identifier label="test">true</identifier>
+									<integer label="result">123</integer>
+								</conditional>
+							</argument>
+						</call>
+						<call label="member">
+							<identifier label="receiver">println</identifier>
+							<argument>
+								<conditional label="value">
+									<identifier label="test">false</identifier>
+									<integer label="result">123</integer>
+								</conditional>
+							</argument>
+						</call>
+					</compound>
+				</function>
+			</declare-first>
+		</hidable>
+		<hidable>
+			<boolean label="hidden">False</boolean>
+			<declare-first label="declaration">
+				<identifier label="name">testAlwaysProducers</identifier>
+				<identikey-type>
+					<identikey-category>FUNCTION</identikey-category>
+					<nullable-type>
+						<boolean label="nullable">False</boolean>
+					</nullable-type>
+				</identikey-type>
+				<boolean label="breed">False</boolean>
+				<function label="value">
+					<compound label="body">
+						<call label="member">
+							<identifier label="receiver">header</identifier>
+							<argument>
+								<string label="value">testBooleanLogic</string>
+							</argument>
+						</call>
+						<call label="member">
+							<identifier label="receiver">testBooleanLogic</identifier>
+						</call>
+						<call label="member">
+							<identifier label="receiver">header</identifier>
+							<argument>
+								<string label="value">function</string>
+							</argument>
+						</call>
+						<call label="member">
+							<identifier label="receiver">println</identifier>
+							<argument>
+								<call label="value">
+									<function label="receiver">
+										<string label="body">some stuff</string>
+									</function>
+								</call>
+							</argument>
+						</call>
+						<call label="member">
+							<identifier label="receiver">header</identifier>
+							<argument>
+								<string label="value">identifier</string>
+							</argument>
+						</call>
+						<call label="member">
+							<identifier label="receiver">println</identifier>
+							<argument>
+								<identifier label="value">true</identifier>
+							</argument>
+						</call>
+						<call label="member">
+							<identifier label="receiver">header</identifier>
+							<argument>
+								<string label="value">integer</string>
+							</argument>
+						</call>
+						<call label="member">
+							<identifier label="receiver">println</identifier>
+							<argument>
+								<integer label="value">98765</integer>
+							</argument>
+						</call>
+						<call label="member">
+							<identifier label="receiver">header</identifier>
+							<argument>
+								<string label="value">rational</string>
+							</argument>
+						</call>
+						<call label="member">
+							<identifier label="receiver">println</identifier>
+							<argument>
+								<rational label="value">123.456</rational>
+							</argument>
+						</call>
+						<call label="member">
+							<identifier label="receiver">header</identifier>
+							<argument>
+								<string label="value">string</string>
+							</argument>
+						</call>
+						<call label="member">
+							<identifier label="receiver">println</identifier>
+							<argument>
+								<string label="value">This is some text.</string>
+							</argument>
+						</call>
+					</compound>
+				</function>
+			</declare-first>
+		</hidable>
+		<hidable>
+			<boolean label="hidden">False</boolean>
+			<declare-first label="declaration">
+				<identifier label="name">testBooleanLogic</identifier>
+				<identikey-type>
+					<identikey-category>FUNCTION</identikey-category>
+					<nullable-type>
+						<boolean label="nullable">False</boolean>
+					</nullable-type>
+				</identikey-type>
+				<boolean label="breed">False</boolean>
+				<function label="value">
+					<compound label="body">
+						<declare-assign label="member">
+							<identifier label="name">t</identifier>
+							<identikey-type>
+								<identikey-category>CONSTANT</identikey-category>
+								<nullable-type>
+									<boolean label="nullable">False</boolean>
+								</nullable-type>
+							</identikey-type>
+							<boolean label="breed">False</boolean>
+							<boolean label="infer-interface">False</boolean>
+							<identifier label="value">true</identifier>
+						</declare-assign>
+						<declare-assign label="member">
+							<identifier label="name">f</identifier>
+							<identikey-type>
+								<identikey-category>CONSTANT</identikey-category>
+								<nullable-type>
+									<boolean label="nullable">False</boolean>
+								</nullable-type>
+							</identikey-type>
+							<boolean label="breed">False</boolean>
+							<boolean label="infer-interface">False</boolean>
+							<identifier label="value">false</identifier>
+						</declare-assign>
+						<call label="member">
+							<identifier label="receiver">header</identifier>
+							<argument>
+								<string label="value">and</string>
+							</argument>
+						</call>
+						<call label="member">
+							<identifier label="receiver">println</identifier>
+							<argument>
+								<and label="value">
+									<identifier label="first">f</identifier>
+									<identifier label="second">t</identifier>
+								</and>
+							</argument>
+						</call>
+						<call label="member">
+							<identifier label="receiver">println</identifier>
+							<argument>
+								<and label="value">
+									<identifier label="first">t</identifier>
+									<identifier label="second">t</identifier>
+								</and>
+							</argument>
+						</call>
+						<call label="member">
+							<identifier label="receiver">header</identifier>
+							<argument>
+								<string label="value">nand</string>
+							</argument>
+						</call>
+						<call label="member">
+							<identifier label="receiver">println</identifier>
+							<argument>
+								<nand label="value">
+									<identifier label="first">f</identifier>
+									<identifier label="second">t</identifier>
+								</nand>
+							</argument>
+						</call>
+						<call label="member">
+							<identifier label="receiver">println</identifier>
+							<argument>
+								<nand label="value">
+									<identifier label="first">t</identifier>
+									<identifier label="second">t</identifier>
+								</nand>
+							</argument>
+						</call>
+						<call label="member">
+							<identifier label="receiver">header</identifier>
+							<argument>
+								<string label="value">or</string>
+							</argument>
+						</call>
+						<call label="member">
+							<identifier label="receiver">println</identifier>
+							<argument>
+								<or label="value">
+									<identifier label="first">t</identifier>
+									<identifier label="second">f</identifier>
+								</or>
+							</argument>
+						</call>
+						<call label="member">
+							<identifier label="receiver">println</identifier>
+							<argument>
+								<or label="value">
+									<identifier label="first">f</identifier>
+									<identifier label="second">f</identifier>
+								</or>
+							</argument>
+						</call>
+						<call label="member">
+							<identifier label="receiver">header</identifier>
+							<argument>
+								<string label="value">nor</string>
+							</argument>
+						</call>
+						<call label="member">
+							<identifier label="receiver">println</identifier>
+							<argument>
+								<nor label="value">
+									<identifier label="first">t</identifier>
+									<identifier label="second">f</identifier>
+								</nor>
+							</argument>
+						</call>
+						<call label="member">
+							<identifier label="receiver">println</identifier>
+							<argument>
+								<nor label="value">
+									<identifier label="first">f</identifier>
+									<identifier label="second">f</identifier>
+								</nor>
+							</argument>
+						</call>
+						<call label="member">
+							<identifier label="receiver">header</identifier>
+							<argument>
+								<string label="value">xor</string>
+							</argument>
+						</call>
+						<call label="member">
+							<identifier label="receiver">println</identifier>
+							<argument>
+								<xor label="value">
+									<identifier label="first">t</identifier>
+									<identifier label="second">f</identifier>
+								</xor>
+							</argument>
+						</call>
+						<call label="member">
+							<identifier label="receiver">println</identifier>
+							<argument>
+								<xor label="value">
+									<identifier label="first">t</identifier>
+									<identifier label="second">t</identifier>
+								</xor>
+							</argument>
+						</call>
+						<call label="member">
+							<identifier label="receiver">header</identifier>
+							<argument>
+								<string label="value">xnor</string>
+							</argument>
+						</call>
+						<call label="member">
+							<identifier label="receiver">println</identifier>
+							<argument>
+								<xnor label="value">
+									<identifier label="first">t</identifier>
+									<identifier label="second">f</identifier>
+								</xnor>
+							</argument>
+						</call>
+						<call label="member">
+							<identifier label="receiver">println</identifier>
+							<argument>
+								<xnor label="value">
+									<identifier label="first">t</identifier>
+									<identifier label="second">t</identifier>
+								</xnor>
+							</argument>
+						</call>
+					</compound>
+				</function>
+			</declare-first>
+		</hidable>
+	</limit-old>
+</module>

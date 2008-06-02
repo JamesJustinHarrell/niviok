@@ -23,8 +23,8 @@ relaxngSchema = libxml2.relaxNGNewParserCtxt(os.path.join(paths.docbookDir,"docb
 
 fileBases = (
 	'Niviok 1.0 Specification',
-	'Desal XML Representation',
-	'Desal Text Representation'
+	'Desible',
+	'Fujin'
 )
 
 tagMap = {

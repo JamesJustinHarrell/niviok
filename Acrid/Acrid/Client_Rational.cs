@@ -4,7 +4,7 @@
 class Client_Rational {
 	public static IWorker wrap(double value) {
 		Client_Rational o = new Client_Rational(value);
-		DesalObject obj = new DesalObject();
+		NiviokObject obj = new NiviokObject();
 		WorkerBuilder builder = new WorkerBuilder(
 			Bridge.std_Rat, obj, new IWorker[]{} );
 

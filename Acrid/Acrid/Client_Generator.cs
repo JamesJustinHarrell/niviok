@@ -20,7 +20,7 @@ class Client_Generator {
 	//xxx automate wrapping
 	public static IWorker wrap(INode_Expression body, Scope scope) {
 		Client_Generator o = new Client_Generator(body, scope);
-		IObject obj = new DesalObject();
+		IObject obj = new NiviokObject();
 		WorkerBuilder builder = new WorkerBuilder(
 			Bridge.std_Generator, obj, new IWorker[]{} );
 

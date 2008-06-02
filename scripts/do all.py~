@@ -20,13 +20,13 @@ call([
 	os.path.join(paths.scriptsDir, "code generator.py")
 ])
 
-#generate Desexp parser with CocoR
+#generate Toy parser with CocoR
 call([
 	"python",
 	os.path.join(paths.scriptsDir, "runcoco.py")
 ])
 
-#generate Dextr parser with SableCC
+#generate Fujin parser with SableCC
 call([
 	"python",
 	os.path.join(paths.scriptsDir, "generateSableParser.py"),
@@ -36,8 +36,7 @@ call([
 #compile Desal Agent 001
 call([
 	"python",
-	os.path.join(paths.scriptsDir, "runmdtoolbuild.py"),
-	"3b3alt"
+	os.path.join(paths.scriptsDir, "runmdtoolbuild.py")
 ])
 
 #run all Desal Agent 001 tests using "runtest.py"

@@ -402,9 +402,15 @@ def normalize(node) :
 #converts @@foo to <link linkend="node.foo">foo</link>
 #replaces $$$foo$$$
 def setupMarkup(markup) :
-	markup = re.sub(r"@@([a-z\-]+)", r'<link linkend="node.\1">\1</link>', markup)
-	markup = markup.replace("$$$CURRENTDATE$$$", datetime.date.today().isoformat())
-	markup = markup.replace("$$$NODECOUNT$$$", str(len(extractor.extractNodeTypes(extractor.inputPath))))
+	markup = re.sub(
+		r"@@([a-z\-]+)",
+		r'<link linkend="node.\1">\1</link>', markup)
+	markup = markup.replace(
+		"$$$CURRENTDATE$$$",
+		datetime.date.today().isoformat())
+	markup = markup.replace(
+		"$$$NODECOUNT$$$",
+		str(len(extractor.extractNodeTypes(extractor.inputPath))))
 	if markup.count("$$$") :
 		for f in re.findall(r"(\$\$\$.*\$\$\$)", markup) :
 			warn("couldn't replace " + f)

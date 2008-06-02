@@ -1,4 +1,4 @@
-//makes a Desal object that implements the Interface interface look like an IInterface
+//makes a Niviok object that implements the Interface interface look like an IInterface
 
 /*
 Remember that an object can have

@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="desible.css"?>
+
+<module xmlns="urn:desible1" version="1.0"
+	xmlns:des="urn:desible1" xmlns:foo="http://site.com/stuff">
+	<limit-old>
+		<expose label="declaration">
+			<identifier>std</identifier>
+		</expose>
+		<hidable>
+			<boolean label="hidden">False</boolean>
+			
+			<!-- the des prefix shouldn't affect anything -->
+			<des:declare-first label="declaration">
+				<identifier label='name'>main</identifier>
+				<identikey-type>
+					<identikey-category>function</identikey-category>
+					<nullable-type>
+						<boolean label='nullable'>false</boolean>
+					</nullable-type>
+				</identikey-type>
+				<boolean label='breed'>false</boolean>
+				<function label='value'>
+					<!-- the foo:label shouldn't affect anything -->
+					<compound foo:label="stuff" label='body'>
+						
+						<call label='member'>
+							<identifier label='receiver'>println</identifier>
+							<argument>
+								<!-- the des:label attribute shouldn't affect anything, since non-namespaced attributes are used -->
+								<string label='value' des:label='foo'>text one</string>
+							</argument>
+						</call>
+						
+						<!-- this should be ignored since it's in a different namespace -->
+						<foo:ignored-stuff label='member'>
+							<candy>
+								ABC
+								<apple>
+									<cinnamon/>
+									DEF
+								</apple>
+							</candy>
+						</foo:ignored-stuff>
+					</compound>
+				</function>
+			</des:declare-first>
+		</hidable>
+	</limit-old>
+</module>

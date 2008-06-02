@@ -4,9 +4,9 @@ using System;
 using System.Collections;
 using System.Text;
 using System.IO;
-using Dextr.Sablecc.node;
+using Fujin.Sablecc.node;
 
-namespace Dextr.Sablecc.lexer {
+namespace Fujin.Sablecc.lexer {
 
 internal class PushbackReader {
   private TextReader reader;

@@ -3,7 +3,7 @@
 class Client_Interface {
 	public static IWorker wrap(IInterface face) {
 		Client_Interface o = new Client_Interface(face);
-		DesalObject obj = new DesalObject();
+		NiviokObject obj = new NiviokObject();
 		WorkerBuilder builder = new WorkerBuilder(
 			Bridge.std_Interface, obj, new IWorker[]{} );
 

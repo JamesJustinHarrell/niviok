@@ -1,12 +1,5 @@
-/*
-A bridge between native code and a Desal bundle node.
-
-xxx Should this merge with Node_Module or be renamed to "Bundle"?
-
-security note:
-This class defines static objects that are shared across Bundles.
-Be careful to not let one Bundle visibly affect the objects that appear to other Bundles.
-*/
+//A bridge between native code and a Niviok module.
+//xxx Should this merge with Node_Module or be renamed to "Module"?
 
 using System;
 using Reflection = System.Reflection;
@@ -30,10 +23,10 @@ class Bridge {
 		string assemblyPath = Reflection.Assembly.GetCallingAssembly().Location;
 		string assemblyDirectory = assemblyPath.Substring(
 			0, assemblyPath.LastIndexOf("/"));
-		string stdLibPath = assemblyDirectory + "/std.desexp";
+		string stdLibPath = assemblyDirectory + "/std.toy";
 		
 		Bridge bridge = new Bridge();
-		Node_Module module = Desexp.DesexpParser.parseFile(bridge, stdLibPath);
+		Node_Module module = Toy.ToyParser.parseFile(bridge, stdLibPath);
 		Scope scope = new Scope(bridge);
 		_std = new Namespace(scope);
 		

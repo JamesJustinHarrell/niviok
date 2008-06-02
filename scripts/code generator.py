@@ -10,7 +10,7 @@ from templates import *
 nodeClassesOutputPath = os.path.join(paths.acridSourceDir,"node classes auto.cs")
 desibleParserOutputPath = os.path.join(paths.acridSourceDir,"DesibleParserAuto.cs")
 desibleSerializerOutputPath = os.path.join(paths.acridSourceDir,"DesibleSerializerAuto.cs")
-desexpParserOutputPath = os.path.join(paths.acridSourceDir,"DesexpParserAuto.cs")
+toyParserOutputPath = os.path.join(paths.acridSourceDir,"ToyParserAuto.cs")
 executorOutputPath = os.path.join(paths.acridSourceDir,"Executor auto.cs")
 
 def lowerCamelCase(text) :
@@ -232,17 +232,17 @@ def createDesibleSerializerMethods(nodeTypes) :
 	})
 	out.close()
 
-def createDesexpParser(nodeTypes) :
+def createToyParser(nodeTypes) :
 	def createFamilyMethod(nodeType) :
 		def createCase(entry) :
-			return desexpFamilyCaseTemplate % {
+			return toyFamilyCaseTemplate % {
 				"specType" : entry,
 				"csType" : nodeTypes[entry]["csTypename"],
 				"csName" : upperCamelCase(entry)
 			}
 		
 		assert nodeType["category"] == "family"
-		template = desexpFamilyParserTemplate
+		template = toyFamilyParserTemplate
 
 		return template % {
 			"csType" : nodeType["csTypename"],
@@ -264,7 +264,7 @@ def createDesexpParser(nodeTypes) :
 				upperCamelCase(entry["typename"]))
 
 		assert nodeType["category"] == "tree"
-		return desexpParserTemplate % {
+		return toyParserTemplate % {
 			"typename" : nodeType["typename"],
 			"csType" : nodeType["csTypename"],
 			"csName" : upperCamelCase(nodeType["typename"]),
@@ -274,7 +274,7 @@ def createDesexpParser(nodeTypes) :
 	
 	def createTerminalMethod(nodeType) :
 		assert nodeType["category"] == "terminal"
-		return desexpTerminalParserTemplate % {
+		return toyTerminalParserTemplate % {
 			"csType" : nodeType["csTypename"],
 			"csName" : upperCamelCase(nodeType["typename"])
 		}
@@ -288,8 +288,8 @@ def createDesexpParser(nodeTypes) :
 		else :
 			meths.append(createTerminalMethod(nodeType))
 	
-	out = file(desexpParserOutputPath, "w")
-	out.write(desexpParserFileTemplate % "\n\n\t".join(meths))
+	out = file(toyParserOutputPath, "w")
+	out.write(toyParserFileTemplate % "\n\n\t".join(meths))
 	out.close()
 
 def createExecutor(nodeTypes) :
@@ -313,5 +313,5 @@ setupNodeTypes(nodeTypes)
 createNodeClasses(nodeTypes)
 createDesibleParserMethods(nodeTypes)
 createDesibleSerializerMethods(nodeTypes)
-createDesexpParser(nodeTypes)
+createToyParser(nodeTypes)
 createExecutor(nodeTypes)

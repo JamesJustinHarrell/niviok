@@ -1,4 +1,4 @@
-//corresponds to Desal "property" nodes
+//corresponds to "property" nodes
 
 class Property {
 	Identifier _name;

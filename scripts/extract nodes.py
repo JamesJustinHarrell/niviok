@@ -1,5 +1,5 @@
 """
-extracts the node layout information from the Desam spec
+extracts the node layout information from the Niviok specification
 and writes it out to an XML file
 """
 

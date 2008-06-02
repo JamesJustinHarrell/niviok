@@ -497,7 +497,7 @@ static partial class Executor {
 	
 	//object
 	public static IWorker execute(Node_Object node, Scope scope) {
-		DesalObject obj = new DesalObject();
+		NiviokObject obj = new NiviokObject();
 		IList<IWorker> subroots = new List<IWorker>();
 		foreach( Node_Worker workerNode in node.workers )
 			subroots.Add( Evaluator.evaluate(workerNode, scope, obj) );

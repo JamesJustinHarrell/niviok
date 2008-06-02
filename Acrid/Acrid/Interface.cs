@@ -1,5 +1,5 @@
 /*
-a Desal interface
+a Niviok interface
 implemented natively, or by client code with an interface node
 interfaces implemented manually by client code use InterfaceFromValue
 */

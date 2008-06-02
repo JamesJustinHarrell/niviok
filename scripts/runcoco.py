@@ -9,9 +9,9 @@ startingDir = os.getcwd()
 os.chdir(paths.cocoDir)
 exitCode = subprocess.call([
 	"cococs",
-	"desexp_basic.atg",
+	"Toy.atg",
 	"-namespace",
-	"Desexp.CocoR"
+	"Toy.CocoR"
 ])
 os.chdir(startingDir)
 exit(exitCode)

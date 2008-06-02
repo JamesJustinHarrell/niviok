@@ -4,9 +4,8 @@ import sys
 import xml.dom.minidom as DOM
 import paths
 
-sableDir = os.path.join(paths.acridDir, "SableCC")
-inputGrammarPath = os.path.join(sableDir,"Dextr sablecc grammar.txt")
-outputGrammarPath = os.path.join(sableDir,"dextr.sablecc")
+inputGrammarPath = os.path.join(paths.sableDir,"Dextr sablecc grammar.txt")
+outputGrammarPath = os.path.join(paths.sableDir,"dextr.sablecc")
 
 outputTemplate = """
 //This file was created programmatically, so

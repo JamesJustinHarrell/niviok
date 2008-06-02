@@ -19,7 +19,7 @@ class Client_String {
 
 	public static IWorker wrap(IList<uint> codePoints) {
 		Client_String o = new Client_String(codePoints);
-		DesalObject obj = new DesalObject();
+		NiviokObject obj = new NiviokObject();
 		WorkerBuilder builder = new WorkerBuilder(
 			Bridge.std_String, obj, new IWorker[]{});
 

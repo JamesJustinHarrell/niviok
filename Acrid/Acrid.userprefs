@@ -1,9 +1,12 @@
-<UserCombinePreferences version="1.0" filename="/home/justin/files/Niviok/Acrid/Acrid.mds">
+﻿<UserCombinePreferences version="1.0" filename="/media/files/Niviok/Acrid/Acrid.mds">
   <Files />
   <Views>
     <ViewMemento id="ProjectPad">
       <Node expanded="True">
-        <Node name="Acrid" expanded="True" />
+        <Node name="Acrid" expanded="True">
+          <Node name="ExternalFiles" expanded="True" />
+          <Node name="Acrid.cs" selected="True" />
+        </Node>
       </Node>
     </ViewMemento>
     <ViewMemento id="ClassPad">

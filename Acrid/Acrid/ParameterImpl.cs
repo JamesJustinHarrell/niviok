@@ -1,4 +1,4 @@
-//corresponds to Desal "parameter-impl" nodes
+//corresponds to "parameter-impl" nodes
 
 /* xxx
 the default value expression is supposed

@@ -33,12 +33,12 @@ static class G {
 	}
 
 	//xxx should use bridge for output
-	public static void printSableccToken( Dextr.Sablecc.node.Token token ) {
-		if( token is Dextr.Sablecc.node.TIndentOpen )
+	public static void printSableccToken( Fujin.Sablecc.node.Token token ) {
+		if( token is Fujin.Sablecc.node.TIndentOpen )
 			Console.Write("INDENTPOPEN");
-		else if( token is Dextr.Sablecc.node.TIndentClose )
+		else if( token is Fujin.Sablecc.node.TIndentClose )
 			Console.Write("INDENTCLOSE");
-		else if( token is Dextr.Sablecc.node.TNewline )
+		else if( token is Fujin.Sablecc.node.TNewline )
 			Console.Write("NEWLINE");
 		else
 			Console.Write(token.Text);

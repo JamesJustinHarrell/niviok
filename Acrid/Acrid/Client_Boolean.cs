@@ -4,7 +4,7 @@ class Client_Boolean {
 	//xxx automate wrapping
 	public static IWorker wrap(bool value) {
 		Client_Boolean o = new Client_Boolean(value);
-		DesalObject obj = new DesalObject();
+		NiviokObject obj = new NiviokObject();
 		WorkerBuilder builder = new WorkerBuilder(
 			Bridge.std_Bool, obj, new IWorker[]{} );
 		

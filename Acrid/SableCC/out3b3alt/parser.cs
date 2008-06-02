@@ -4,11 +4,11 @@ using System;
 using System.Collections;
 using System.Text;
 using System.IO;
-using Dextr.Sablecc.node;
-using Dextr.Sablecc.lexer;
-using Dextr.Sablecc.analysis;
+using Fujin.Sablecc.node;
+using Fujin.Sablecc.lexer;
+using Fujin.Sablecc.analysis;
 
-namespace Dextr.Sablecc.parser {
+namespace Fujin.Sablecc.parser {
 
 public class ParserException : ApplicationException
 {

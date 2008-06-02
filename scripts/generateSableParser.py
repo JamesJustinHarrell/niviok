@@ -31,13 +31,13 @@ if version == "3.2" :
 		os.path.join(paths.sableDir, "sablecc-3.2/lib/sablecc.jar"),
 		"-d",
 		os.path.join(paths.sableDir, "out32"),
-		os.path.join(paths.sableDir, "dextr.sablecc")
+		os.path.join(paths.sableDir, "Fujin.sablecc")
 	])
 	#xxx remove using Python API
 	call([
 		"rm",
 		"-r",
-		os.path.join(paths.sableDir, "out32/Dextr")
+		os.path.join(paths.sableDir, "out32/Fujin")
 	])
 
 else :
@@ -46,7 +46,9 @@ else :
 		"java",
 		"-jar",
 		os.path.join(paths.sableDir, "sablecc-3b3 alt/lib/sablecc.jar"),
-		"-o",
-		os.path.join(paths.sableDir, "test2"),
-		os.path.join(paths.sableDir, "dextr.sablecc")
+		"-d",
+		os.path.join(paths.sableDir, "out3b3alt"),
+		"-t",
+		"csharp",
+		os.path.join(paths.sableDir, "Fujin.sablecc")
 	])

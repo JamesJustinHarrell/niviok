@@ -1,5 +1,5 @@
 """
-extracts the node layout information from the Desam spec
+extracts the node layout information from the Niviok spec
 and writes it out to an XML file
 """
 
@@ -203,7 +203,7 @@ def parseNodeTypes(filePath) :
 			"members" : map(lib.textValue, lib.selectChildren(lib.selectChild(elem, "members"), "typename"))
 		}
 	
-	def parseTree(nodeElem) :
+	def parseTree(elem) :
 		def parseEntry(entryElem) :
 			child = {
 				"count" : lib.textValue(lib.selectChild(entryElem, "count")),
@@ -212,7 +212,7 @@ def parseNodeTypes(filePath) :
 			if len(lib.selectChildren(entryElem, "label")) > 0 :
 				child["label"] = lib.textValue(lib.selectChild(entryElem, "label"))
 			return child
-		assert nodeElem.tagName == "tree"
+		assert elem.tagName == "tree"
 		return {
 			"category" : "tree",
 			"typename" : lib.textValue(lib.selectChild(elem, "typename")),

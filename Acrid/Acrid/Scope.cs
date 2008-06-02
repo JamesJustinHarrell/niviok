@@ -110,7 +110,7 @@ class Scope {
 			_identikeys.Add(name, ns.scope._identikeys[name]);				
 	}
 
-	//used by Desal "assign" nodes
+	//used by "assign" nodes
 	public void assign(Identifier ident, IWorker val) {
 		if( _identikeys.ContainsKey(ident) )
 			_identikeys[ident].value = val;
@@ -121,7 +121,7 @@ class Scope {
 				"no identikey with name '{0}'", ident));
 	}
 
-	//used by Desal "declare-empty" nodes
+	//used by "declare-empty" nodes
 	public void declareEmpty(
 	Identifier ident, IdentikeyCategory category, NullableType type) {
 		_identikeys.Add(
@@ -132,7 +132,7 @@ class Scope {
 				new Null(type.face)));
 	}
 
-	//used by Desal "declare-assign" nodes
+	//used by "declare-assign" nodes
 	public void declareAssign(
 	Identifier ident, IdentikeyCategory category, NullableType type, IWorker val) {
 		_identikeys.Add(
@@ -143,7 +143,7 @@ class Scope {
 				val));
 	}
 	
-	//value expressions in Desal "declare-first" nodes
+	//value expressions in "declare-first" nodes
 	//may reference each other, so all identikeys must be created
 	//before any of the value expressions are executed
 	public void reserveDeclareFirst(Identifier ident, IdentikeyCategory category) {
@@ -184,7 +184,7 @@ class Scope {
 		key.type = type;
 	}
 	
-	//used by Desal "declare-first" nodes
+	//used by "declare-first" nodes
 	public void declareFirst(Identifier ident, IWorker val) {
 		if( ! _identikeys.ContainsKey(ident) )
 			throw new ApplicationException(

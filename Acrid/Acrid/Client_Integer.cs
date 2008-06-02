@@ -4,7 +4,7 @@
 class Client_Integer {
 	public static IWorker wrap(long value) {
 		Client_Integer o = new Client_Integer(value);
-		DesalObject obj = new DesalObject();
+		NiviokObject obj = new NiviokObject();
 		WorkerBuilder builder = new WorkerBuilder(
 			Bridge.std_Int, obj, new IWorker[]{});
 		

@@ -1,4 +1,4 @@
-//corresponds to Desal "nullable-type" nodes
+//corresponds to "nullable-type" nodes
 
 using System.Diagnostics;
 

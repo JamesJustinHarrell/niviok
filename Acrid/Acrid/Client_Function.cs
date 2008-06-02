@@ -7,7 +7,7 @@ using System.Collections.Generic;
 class Client_Function {
 	public static IWorker wrap(IFunction func) {
 		Client_Function o = new Client_Function(func);
-		DesalObject obj = new DesalObject();
+		NiviokObject obj = new NiviokObject();
 		WorkerBuilder builder = new WorkerBuilder(
 			func.face, obj, new IWorker[]{} );
 		
