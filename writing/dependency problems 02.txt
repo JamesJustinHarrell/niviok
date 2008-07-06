@@ -1,0 +1,30 @@
+--- example code
+defirst foo = { zap }
+defirst bar = foo()
+defirst zap = "text"
+
+--- dependencies
+foo has a finish dependency on zap.
+bar has an execute dependency on foo.
+zap has no dependencies.
+
+--- run through
+foo has no execute depedencies, so it is executed.
+	foo has a finish depedency on zap, which is empty, so foo changes to the waiting state.
+	foo is setup to be checked when the state of zap changes.
+bar has an execute dependency on foo, which is waiting, so the state of bar is not changed.
+	bar is setup to be checked when the state of foo changes.
+zap has no execute dependencies, so it is executed.
+	zap has no finish dependencies, so the state of zap changes to the ready state.
+	foo is alerted that the state of zap changed.
+		foo has only one finish dependency, on zap, which is ready, so foo changes state from waiting to ready.
+			bar is alerted that the state of foo changed.
+			bar has only one execute dependency, on foo, which is ready, so bar is executed.
+			bar has no finish dependencies, so bar changes to the ready state.
+
+--- order of state changes
+foo: empty -> waiting
+zap: empty -> ready
+foo: waiting -> ready
+bar: empty -> ready
+

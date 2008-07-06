@@ -1,129 +1,169 @@
 //A bridge between native code and a Niviok module.
-//xxx Should this merge with Node_Module or be renamed to "Module"?
+//xxx Should this be merged with Node_Module?
+//xxx Should this be renamed to "Module"?
 
 using System;
 using Reflection = System.Reflection;
 using System.Collections.Generic;
 using System.Xml;
 using System.Diagnostics;
+using System.IO;
 
 class Bridge {
-	//for internal types, like integers
-	//should only actually be used by those types when very bad errors occur
-	public static Scope debugScope;
+	static IDerefable _std;
 	
-	static Namespace _std;
+	//xxx temporary
+	static NType _any;
+	static NType _nullable_any;
 
 	//to fake inner functions in the static constructor
 	delegate IInterface InnerFunc(string name);
 
 	static Bridge() {
-		debugScope = new Scope(new Bridge());
+		//xxx temporary
+		_any = new NType();
+		_nullable_any = new NType();
 	
 		string assemblyPath = Reflection.Assembly.GetCallingAssembly().Location;
 		string assemblyDirectory = assemblyPath.Substring(
 			0, assemblyPath.LastIndexOf("/"));
 		string stdLibPath = assemblyDirectory + "/std.toy";
 		
-		Bridge bridge = new Bridge();
-		Node_Module module = Toy.ToyParser.parseFile(bridge, stdLibPath);
-		Scope scope = new Scope(bridge);
-		_std = new Namespace(scope);
+		Node_Module module;
 		
-		scope.declareAssign(
+		try {
+			module = Toy.ToyParser.parseFile(null, stdLibPath);
+		}
+		catch(ParseError e) {
+			throw new TypeInitializationException(
+				String.Format(
+					"Error while parsing standard library:\n{0}\nlocation: {1}",
+					e.Message, e.source),
+				e);
+		}
+		
+		buildStandardLibrary(module);
+	}
+	
+	static void buildStandardLibrary(Node_Module node) {
+		IScope scope = new Scope(null, new ScopeAllowance(false,false));
+		ScopeQueue sq = new ScopeQueue();
+		Sieve sieve = Executor.executeGetSieve(node.sieve, sq, scope);
+		_std = sieve;
+		G.declareAssign(
 			new Identifier("Interface"),
-			IdentikeyCategory.CONSTANT,
-			NullableType.dyn,
-			std_Interface.worker);
-			
-		scope.declareAssign(
+			WoScidentreCategory.CONSTANT,
+			new NType(),
+			stdn_Interface.worker,
+			sieve.visible );
+		G.declareAssign(
 			new Identifier("Object"),
-			IdentikeyCategory.CONSTANT,
-			NullableType.dyn,
-			std_Object.worker);
-			
-		Executor.execute(module, scope);
+			WoScidentreCategory.CONSTANT,
+			new NType(),
+			stdn_Object.worker,
+			sieve.visible );
+		G.declareAssign(
+			new Identifier("any"),
+			WoScidentreCategory.CONSTANT,
+			new NType(),
+			stdn_Object.worker, //xxx temporary - won't work when type checking is enabled
+			sieve.visible );
 		
-		//add func println(dyn value)
-		IList<ParameterImpl> printParameters = new ParameterImpl[] {
-			new ParameterImpl(
-				Direction.IN, NullableType.dyn,
-				new Identifier("text"), null)
-		};
-		IFunction printFunction = new Function_Native(
-			printParameters, null, printFunctionNative, scope);
-		IWorker wrappedPrintFunction = Client_Function.wrap(printFunction);
+		sq.executeAll();
 		
-		scope.declareAssign(
-			new Identifier("println"),
-			IdentikeyCategory.CONSTANT,
-			new NullableType(printFunction.face, false),
-			wrappedPrintFunction);
-			
-		scope.declareAssign(
+		G.declareAssign(
 			new Identifier("true"),
-			IdentikeyCategory.CONSTANT,
-			new NullableType(Bridge.std_Bool, false),
-			toClientBoolean(true));
-		
-		scope.declareAssign(
+			WoScidentreCategory.CONSTANT,
+			new NType(stdn_Bool),
+			Client_Boolean.wrap(true),
+			sieve.visible );
+		G.declareAssign(
 			new Identifier("false"),
-			IdentikeyCategory.CONSTANT,
-			new NullableType(Bridge.std_Bool, false),
-			toClientBoolean(false));
+			WoScidentreCategory.CONSTANT,
+			new NType(stdn_Bool),
+			Client_Boolean.wrap(false),
+			sieve.visible );
 	}
-	
-	//func println( Stringable text )
-	static IWorker printFunctionNative(Scope args) {	
-		Bridge bridge = args.bridge;
-		IWorker arg = args.evaluateLocalIdentifier( new Identifier("text") );
-		if( arg is Null )
-			bridge.println( "null" );
-		else
-			bridge.println( Bridge.toNativeString(arg) );
-		return new Null();
+
+	public static IDerefable buildStdioLib(
+	TextReader inStream, TextWriter outStream, TextWriter logStream ) {
+		Sieve sieve = new Sieve(null);
+		
+		//println function
+		IWoScidentre ws = sieve.reserveWoScidentre(
+			true, new Identifier("println"), WoScidentreCategory.FUNCTION);
+		ws.type = new NType();
+		ws.assign(
+			toClientFunction(
+				new Function_Native(
+					new ParameterImpl[] {
+						new ParameterImpl(
+							Direction.IN,
+							stdn_any,
+							new Identifier("text"),
+							null)
+					},
+					null,
+					delegate(IScope args) {
+						IWorker arg = G.evalIdent(args, "text");
+						outStream.WriteLine( arg is Null ? "null" : Bridge.toNativeString(arg) );
+						return new Null();
+					},
+					null)));
+		
+		//get_exit_status function
+		IWoScidentre ws2 = sieve.reserveWoScidentre(
+			true, new Identifier("get exit status"), WoScidentreCategory.FUNCTION);
+		ws2.type = new NType();
+		ws2.assign(
+			toClientFunction(
+				new Function_Native(
+					new ParameterImpl[] {},
+					null,
+					delegate(IScope args) {
+						return toClientInteger(0);
+					},
+					null)));
+		
+		return sieve;
 	}
-	
-	public static Namespace std {
+
+	public static IDerefable tryImport(string scheme, string body) {
+		//xxx
+		return null;
+	}
+
+	public static IDerefable std {
 		get { return _std; }
 	}
 	
-	public static IInterface std_Bool {
-		get {
-			return toNativeInterface(
-				_std.evalWorkerIdent(new Identifier("Bool")));
-		}
+	public static NType stdn_any {
+		get { return _any; }
 	}
-	public static IInterface std_Int {
-		get {
-			return toNativeInterface(
-				_std.evalWorkerIdent(new Identifier("Int")));
-		}
+	public static NType stdn_Nullable_any {
+		get { return _nullable_any; /* xxx temp */ }
 	}
-	public static IInterface std_Interface {
+	public static IInterface stdn_Bool {
+		get { return toNativeInterface(G.evalIdent(_std, "Bool")); }
+	}
+	public static IInterface stdn_Int {
+		get { return toNativeInterface(G.evalIdent(_std, "Int")); }
+	}
+	public static IInterface stdn_Interface {
 		get { return Interface_Interface.instance; }
 	}
-	public static IInterface std_Object {
+	public static IInterface stdn_Object {
 		get { return Interface_Object.instance; }
 	}
-	public static IInterface std_Rat {
-		get {
-			return toNativeInterface(
-				_std.evalWorkerIdent(new Identifier("Rat")));
-		}
+	public static IInterface stdn_Rat {
+		get { return toNativeInterface(G.evalIdent(_std, "Rat")); }
 	}
-	public static IInterface std_String {
-		get {
-			return toNativeInterface(
-				_std.evalWorkerIdent(new Identifier("String")));
-		}
+	public static IInterface stdn_String {
+		get { return toNativeInterface(G.evalIdent(_std, "String")); }
 	}
 	//xxx replace Generator interface with Iterable/Iterator generic interfaces
-	public static IInterface std_Generator {
-		get {
-			return toNativeInterface(
-				_std.evalWorkerIdent(new Identifier("Generator")));
-		}
+	public static IInterface stdn_Generator {
+		get { return toNativeInterface(G.evalIdent(_std, "Generator")); }
 	}
 
 	//e.g. Foo -> Breeder<Foo>
@@ -138,10 +178,11 @@ class Bridge {
 	}
 
 	public static IWorker toClientBoolean(bool val) {
-		return Client_Boolean.wrap(val);
+		return G.evalIdent(_std, val ? "true" : "false");
 	}
 	public static bool toNativeBoolean(IWorker worker) {
-		return (bool)G.castDown(worker, std_Bool).nativeObject;
+		//xxx how to handle client implementations of the Bool interface?
+		return (bool)G.castDown(worker, stdn_Bool).nativeObject;
 	}
 
 	public static IWorker toClientFunction(IFunction val) {
@@ -161,7 +202,7 @@ class Bridge {
 	//note: instead of Bridge.toClientInterface(face), use face.worker
 	
 	public static IInterface toNativeInterface(IWorker worker) {
-		worker = G.castDown(worker, std_Interface);
+		worker = G.castDown(worker, stdn_Interface);
 		if( worker.nativeObject == null )
 			worker.nativeObject = InterfaceFromValue.wrap(worker);
 		return (IInterface)worker.nativeObject;
@@ -180,7 +221,7 @@ class Bridge {
 	public static string toNativeString(IWorker val) {
 		//xxx doesn't work with client implementations of String
 		return StringUtil.stringFromCodePoints(
-			Client_String.unwrap(val.breed(std_String)));
+			Client_String.unwrap(val.breed(stdn_String)));
 	}
 	
 	public System.IO.TextWriter stdout {

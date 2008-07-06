@@ -3,9 +3,9 @@
 class Client_Interface {
 	public static IWorker wrap(IInterface face) {
 		Client_Interface o = new Client_Interface(face);
-		NiviokObject obj = new NiviokObject();
+		NObject obj = new NObject();
 		WorkerBuilder builder = new WorkerBuilder(
-			Bridge.std_Interface, obj, new IWorker[]{} );
+			Bridge.stdn_Interface, obj, new IWorker[]{} );
 
 		builder.addMethod(
 			new Identifier("equals?"),
@@ -13,19 +13,18 @@ class Client_Interface {
 				new ParameterImpl[]{
 					new ParameterImpl(
 						Direction.IN,
-						new NullableType(Bridge.std_Interface, false),
+						new NType(Bridge.stdn_Interface),
 						new Identifier("value"),
 						null )
 				},
-				new NullableType(Bridge.std_Interface, false),
-				delegate(Scope args) {
+				new NType(Bridge.stdn_Interface),
+				delegate(IScope args) {
 					return Bridge.toClientBoolean(
 						o.equals(
 							Bridge.toNativeInterface(
-								args.evaluateLocalIdentifier(
-									new Identifier("value"))) ));
+								G.evalIdent(args, "value"))));
 				},
-				Bridge.debugScope ));
+				null ));
 		
 		IWorker rv = builder.compile();
 		rv.nativeObject = face;

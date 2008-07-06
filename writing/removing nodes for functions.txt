@@ -1,0 +1,48 @@
+--- if
+
+The if construct could be replaced with a function.
+
+old:
+	if test
+		something(abc)
+
+old with new function:
+	if( test, { something(abc) } )
+
+new:
+	if test {
+		something(abc)
+	}
+
+
+--- if-elif-else
+
+However, elif/else wouldn't fit well into this.
+
+old:
+	if test
+		doSomething(alpha)
+	elif otherTest
+		someOtherThing(beta)
+	else
+		defaultStuff(gamma)
+
+old with new function:
+	if( test, { doSomething(alpha) },
+		{
+			if( otherTest, { someOtherThing(beta) },
+				{ defaultStuff(gamma) }
+			)
+		}
+	)
+
+new:
+	if test {
+		doSomething(alpha)
+	}{ if otherTest {
+		someOtherThing(beta)
+	}{
+		defaultStuff(gamma)
+	}}
+
+

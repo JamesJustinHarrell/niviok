@@ -14,38 +14,56 @@ resume A
 */
 
 using System;
+using System.Collections.Generic;
 using System.Threading;
 
 class Client_Generator {
+	static IDictionary<Thread,IWorker> _yieldValues = new Dictionary<Thread,IWorker>();
+	
+	public static void setYieldValue(Thread thread, IWorker yieldValue) {
+		_yieldValues[thread] = yieldValue;
+	}
+	
+	public static bool hasNullYieldValue(Thread thread) {
+		return _yieldValues[thread] == null;
+	}
+
 	//xxx automate wrapping
-	public static IWorker wrap(INode_Expression body, Scope scope) {
+	public static IWorker wrap(INode_Expression body, IScope scope) {
 		Client_Generator o = new Client_Generator(body, scope);
-		IObject obj = new NiviokObject();
+		IObject obj = new NObject();
 		WorkerBuilder builder = new WorkerBuilder(
-			Bridge.std_Generator, obj, new IWorker[]{} );
+			Bridge.stdn_Generator, obj, new IWorker[]{} );
 
 		builder.addMethod(
 			new Identifier("yield"),
 			new Function_Native(
 				new ParameterImpl[]{},
-				NullableType.dyn_nullable,
-				delegate(Scope args) {
+				Bridge.stdn_Nullable_any,
+				delegate(IScope args) {
 					return o.@yield();
 				},
-				Bridge.debugScope ));
+				null ));
 		
 		return builder.compile();
 	}
 
 	Thread _thread;
-	Scope _closure;
+	IScope _closure;
+	ClientException _exception;
 	
-	Client_Generator(INode_Expression body, Scope scope) {
-		_closure = scope.createGeneratorClosure(Depends.depends(body));
+	Client_Generator(INode_Expression body, IScope scope) {
+		_closure = G.createClosure(Depends.depends(body), scope);
 		_thread = new Thread(new ThreadStart(delegate() {
-			Executor.executeAny(body, _closure);
+			try {
+				Executor.executeAny(body, _closure);
+			}
+			catch(ClientException e) {
+				_exception = e;
+			}
 		}));
 		_thread.IsBackground = true;
+		_yieldValues.Add(_thread, null);
 	}
 	
 	~Client_Generator() {
@@ -74,8 +92,8 @@ class Client_Generator {
 				"{0} ; thread state is {1} ; yieldValue is {2}",
 				location,
 				_thread.ThreadState,
-				_closure.yieldValue == null ? "null" :
-					Bridge.toNativeInteger(_closure.yieldValue).ToString()));
+				_yieldValues[_thread] == null ? "null" :
+					Bridge.toNativeInteger(_yieldValues[_thread]).ToString()));
 		Console.Out.Flush();
 	}
 	
@@ -83,6 +101,9 @@ class Client_Generator {
 		#if GEN_DEBUG
 		outputState("yield called");
 		#endif
+	
+		if( _exception != null )
+			throw _exception;
 	
 		if( isState(ThreadState.Unstarted) )
 			_thread.Start();
@@ -104,7 +125,7 @@ class Client_Generator {
 		#endif
 	
 		while( (isState(ThreadState.WaitSleepJoin) || isRunning()) &&
-		_closure.yieldValue == null )
+		_yieldValues[_thread] == null )
 			Thread.Sleep(1);
 	
 		#if GEN_DEBUG
@@ -123,8 +144,9 @@ class Client_Generator {
 			#if GEN_DEBUG
 			outputState("one");
 			#endif
-			IWorker yieldValue = _closure.yieldValue;
-			_closure.yieldValue = null;
+			IWorker yieldValue = _yieldValues[_thread];
+			//setting to null required for workaround used in execute(Node_Yield, IScope)
+			_yieldValues[_thread] = null;
 			#if GEN_DEBUG
 			outputState("two");
 			#endif

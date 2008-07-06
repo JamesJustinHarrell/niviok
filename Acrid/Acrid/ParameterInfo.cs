@@ -2,16 +2,16 @@
 
 class ParameterInfo {
 	Direction _direction;
-	NullableType _nullableType;
+	IType _type;
 	Identifier _name;
 	bool _hasDefaultValue;
 	
 	public ParameterInfo(
-	Direction direction, NullableType nullableType,
+	Direction direction, IType type,
 	Identifier name, bool hasDefaultValue )
 	{
 		_direction = direction;
-		_nullableType = nullableType;
+		_type = type;
 		_name = name;
 		_hasDefaultValue = hasDefaultValue;
 	}
@@ -20,8 +20,8 @@ class ParameterInfo {
 		get { return _direction; }
 	}
 	
-	public NullableType nullableType {
-		get { return _nullableType; }
+	public IType type {
+		get { return _type; }
 	}
 	
 	public Identifier name {

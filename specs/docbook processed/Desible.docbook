@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?><book version="5.0" xmlns="http://docbook.org/ns/docbook">
+	<title>Desal XML Representation</title>
+	
+	<titleabbrev>Desible</titleabbrev>
+	
+	<chapter xml:id="introduction">
+		<title>Introduction</title>
+		
+		<para>This document defines a means of representing Desal semantics, and a means for extracting the semantics from that representation.</para>
+	</chapter>
+	
+	<chapter xml:id="unsorted-stuff">
+		<title>unsorted stuff</title>
+
+		<para>&quot;.desible&quot; file extesion</para>
+		
+		<para>default namespace - xmlns attribute on root attribute not required</para>
+		
+		<para>elements from other namespaces should be ignored if unrecognized</para>
+		
+		<para>recognized elements from other namespaces produce undefined behavior</para>
+		
+		<para>all whitespace is considered part of the string for text nodes</para>
+		
+		<para>integer nodes consist of text which is evaluated as an integer</para>
+		
+		<section xml:id="text-nodes-escaping">
+			<title>text nodes escaping</title>
+			
+			<para>Elements that contain only text have an implied attribute &quot;escaped&quot; which defaults to &quot;false&quot;. The other possible option is &quot;true&quot;. The value is not inherited by child elements. If the @escaped attribute appears on elements that do not directly contain text nodes, agents should warn that it has no effect.</para>
+			
+			<para>If escaping is enabled, \000000 (6 hexadecimal digits) should be interpreted as a Unicode code point, and \\ should be interpreted as a backslash. If an agent encounters a \ that isn't followed by either 6 hex digits or another \ in a text node with escaping on, the agent should stop and output an error message.</para>
+		</section>
+	</chapter>
+</book>

@@ -1,0 +1,71 @@
+The flow altering nodes in question here are:
+	break
+	continue
+	return
+	yield
+
+There is also one more flow altering node:
+	throw
+
+The previous implementation idea was to throw a native exception (e.g. ClientReturn) that would hopefully travel up the stack and be caught by the execute() function of an appropriate node. However, if there wasn't an appropriate node in the parent chain to catch the exception, the native exception would result in termination of the client program.
+
+What is desired in this case, is for the agent to first notice that there is nothing to catch the exception, and then throw a ClientException instead of the native exception.
+
+One way of doing this is for scopes to carry information about which types of exceptions are prepared to be caught. Then, before throwing a native exception, the scope can be checked to see if that type of exception is allowed to be thrown. If it is, the native exception is thrown (and caught at the appropriate place). If not, a client exception is thrown.
+
+Note that this would remove the need to catch native exceptions in Executor.executeProgram(), since such exceptions would be due to a problem in the agent and not in the client code.
+
+The break and continue statuses always come together, so it is refered to below as "break/continue".
+
+Adding a yield or return status removes all other statuses.
+example: (yield removes break/continue and return)
+	{
+		for thing in stuff
+			def g = generator[ yield 123 ]
+			g.advance()
+	}
+example: (return removes break/continue and yield)
+	generator[
+		for thing in stuff
+			yield { n | return n * n }
+	]
+
+Adding a break/continue status does not remove any statuses.
+example: (break/continue added to return)
+	{ stuff, is_it? -> ?any |
+		for thing in stuff
+			if thing..is_it?()
+				return thing
+	}
+	{ stuff, is_it? -> ?any |
+		var result
+		for thing in stuff
+			if thing..is_it?()
+				result = thing
+				break
+		return result
+	}
+example: (break/continue added to yield)
+	generator[
+		for thing in stuff
+			yield thing
+	]
+	generator[
+		for thing in stuff
+			if should_skip?(thing)
+				continue
+			yield thing
+	]
+
+These 3 statuses (break/continue, return, yield) result in 6 possible status combinations:
+	(none)
+	break/continue
+	return
+	return + break/continue
+	yield
+	yield + break/continue
+
+
+XXX
+Perhaps "status" is the wrong word? Perhaps something like "ability" or "allowance" would be better?
+

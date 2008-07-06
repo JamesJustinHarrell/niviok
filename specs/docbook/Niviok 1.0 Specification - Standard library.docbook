@@ -1,0 +1,625 @@
+<chapter
+	xmlns="http://docbook.org/ns/docbook"
+	xmlns:xi="http://www.w3.org/2003/XInclude"
+	version="5.0"
+	xml:id="standard-library">
+
+	<title>Standard library</title>
+
+	<para>Some new ideas the standard library might not reflect yet: Every object has 1 or more workers. Every worker implements an interface. An interface is a set of interface members. A type places restrictions on what kind of values can appear at a certain location. A cast is an explicit operation that takes a worker and a type, and returns a worker, or throws an exception. How the cast works depends on the type. A downcast is similar to a cast, but it is (or can be) an implicit operation.</para>
+	
+	<screen>
+		<xi:include href="../../writing/standard%20library.txt" parse="text"/>
+	</screen>
+	
+	<screen>
+def null = compound[
+	var foo #declare-empty
+	foo #evaluating wo-scidentre not associated with any worker
+]
+	</screen>
+	
+	<para role="xxx">Below is old.</para>
+	
+	<simplelist>
+		<!-- basic types -->
+		<member>interface Object</member>
+		<member>interface Interface</member>
+		<member>... Bool</member>
+		<member>interface String</member>
+		<member>interface Int</member>
+		<member>interface Rat</member>
+		<member>interface BigInt</member>
+		<member>interface BigRat</member>
+		<member>interface&lt;I> Generator</member>
+		<member>interface Octet</member>
+		<member>interface Blob</member>
+
+		<!-- containers -->
+		<member>interface&lt;I> Ref</member>
+		<member>interface&lt;I> WeakRef</member>
+		<member>interface&lt;I> Array</member>
+		<member>... Deque</member>
+		<member>func toDeque&lt;I>(Collection&lt;I>) Deque&lt;I></member>
+		<member>... Chain</member> <!-- doubly-linked list; constructor and interface -->
+		
+		<!-- functions -->
+		<member>func&lt;I>(val)I cast</member>
+		<member>func(val, Interface face)Bool implements?</member>
+
+		<!-- values -->
+		<member>Bool true</member>
+		<member>Bool false</member>
+	</simplelist>
+	
+	<screen>
+decl Deque numbers = Deque(3, 4, 5, 9)
+numbers.pushFront(2)
+numbers.pushFront(1)
+numbers.popBack()
+println(join(numbers, " ")) //prints "1 2 3 4 5"
+
+decl Array&lt;Int> numbers2 = Array&lt;Int>(10, 11, 12, 13)
+decl Deque&lt;Int> numbers3 = toDeque&lt;Int>(numbers2)
+	</screen>
+
+	<screen>
+<![CDATA[
+possible additions:
+
+interface<I> Collection
+interface<I> List
+	indexed
+	elements can be added to beginning and end
+	dynamic array
+interface<I> FwdChain
+	forward chain, a singly-linked list
+interface<I> Deck
+	a deque with an easier name
+interface Complex
+	a complex number where both parts are limited to rational numbers
+interface<I> Grid
+	a 2-dimensional array
+interface<I> Vector
+	a resizable list
+interface<I> Queue
+interface<I> Stack
+interface<I> Dict, SortedDict, MultDict, SortedMultDict, BiDict, SortedBiDict, MiltBiDict, SortedMultiBiDict
+interface<I> Set, OrderdSet, MultiSet, OrderdMultiSect
+
+func getProperty(dyn value, String propertyName) dyn
+func setProperty(dyn value, String propertyName, dyn propertyValue) dyn
+
+fixed-width/fixed-precision numbers
+fixed-point integers
+"limited" namespace
+interface LimInt
+interface LimRat
+]]>
+
+	</screen>
+	
+	<para role="xxx">How to differentiate between mutable and immmutable versions?</para>
+	
+	<screen>
+<![CDATA[
+//T is the type of an entry in this enum
+interface<T : EnumEntry> Enum
+	inherit Collection<T>
+	func fromName(String str) T
+
+//an Enum where every entry has an associated value
+//T is the type of an entry in this enum
+//U is the type of a value of an enum entry
+interface<T : EnumDictEntry, U> EnumDict
+	inherit Enum<T>
+	func fromValue(U val) T
+
+interface EnumEntry
+	get String name
+	func equals?( EnumEntry ) Bool
+
+//U is the type of value each entry is associated with
+interface<U> EnumDictEntry
+	inherit EnumEntry
+	get U value
+]]>
+	</screen>
+
+	<section xml:id="object.println">
+		<title>println</title>
+		
+		<screen>
+interface PrintLnFace {
+	call( param Stringable objs[] ) PrintLnFace
+}
+declfirst PrintLnFace println = ...
+		</screen>
+		
+		<para role="xxx">Need some way for client code to obtain function interfaces that return themselves. For example, "func(...)Self" and "getRecursiveFuncFace(...)". Then, the interface of println could be defined as something like "func(param Stringable objs[]) Self".</para>
+		
+		<para role="xxx">Need to define varargs (variadic functions).</para>
+		
+		<para>Takes in multiple Stringable values, prints each to standard output, and returns itself.</para>
+		
+		<programlisting>
+println( 1, " ", 2, " ", 3 ) /* call once with multiple arguments */
+println(1)(" ")(2)(" ")(3) /* call several times with one argument each time */
+println 1 " " 2 " " 3 /* call several times with one argument each time */
+		</programlisting>
+		
+		<programlisting>
+(println 1 " " 2 " " 3) /* call once with multiple arguments */
+(((((println 1) " ") 2) " ") 3) /* call several times with one argument each time */
+		</programlisting>
+	</section>
+	
+	<section xml:id="object.activeInterface">
+		<title>activeInterface</title>
+		
+		<screen>
+func activeInterface(dyn) Interface
+
+println( activeInterface(false) == Bool ) //true
+		</screen>
+		
+		<para>Returns the interface that is the active interafce of the specified value.</para>
+	</section>
+	
+	<section xml:id="object.String">
+		<title>String</title>
+		
+		<para>Besides downcasting to an Interface, String can also be called to produce a String.</para>
+		
+		<screen>
+func String( Collection&lt;Int> unicodeCodePoints ) String
+		</screen>
+	</section>
+	
+	<section xml:id="object.cast">
+		<title>func{I}(dyn)I cast</title>
+		
+		<para>The cast function returns an object cast to the specified interface, or throws a cast error. The returned object must be the same object that was passed in.</para>
+		
+		<programlisting>
+if (foo is Bar)
+	cast&lt;Bar>(foo).propOfBar()
+		</programlisting>
+	</section>
+	
+	<section xml:id="object.ceil">
+		<title>ceil</title>
+		
+		<screen>func ceil(Rat) Int</screen>
+		
+		<para>Finds the ceiling of the specified rational number.</para>
+	</section>
+	
+	<section xml:id="object.floor">
+		<title>floor</title>
+		
+		<screen>func floor(Rat) Int</screen>
+	</section>
+	
+	<section xml:id="object.modulo">
+		<title>modulo</title>
+		
+		<para>Finds the remainder of dividing two integers.</para>
+		
+		<screen>
+func modulo( Int dividend, Int divisor, ModuloMethod method = ModuloMethod.divisor ) Int
+
+enum ModuloMethod {
+	dividend,
+	divisor,
+	positive,
+	negative
+}
+		</screen>
+		
+		<para>When one or both of dividend and divisor are negative, there could be two possible remainders, one positive and one negative. In such a case, the ModuloMethod determines which of these to return. When there is only one possible remainder, the ModuloMethod is ignored.</para>
+		
+		<para>The "dividend" option returns the remainder with the same sign as the dividend. The "divisor" option returns the remainder with the same sign as the divisor. The "positive" option returns the positive remainder. The "negative" option returns the negative remainder.</para>
+		
+		<para>This function should throw an error if divisor is 0.</para>
+			
+<!--
+15 mod 4
+15 = 3 * 4 + 3
+r = 3
+
+15 mod -4
+15 = -3 * -4 + 3
+15 = -4 * -4 + -1
+r = 3 or -1
+
+-15 mod 4
+-15 = -3 * 4 + -3
+-15 = -4 * 4 + 1
+r = -3 or 1
+
+-15 mod -4
+-15 = 3 * -4 + -3
+-15 = 4 * -4 + 1
+r = -3 or 1
+-->
+		
+		<screen>
+modulo(15, 4, dividend) -> 3
+modulo(15, 4, divisor) -> 3
+modulo(15, 4, positive) -> 3
+modulo(15, 4, negative) -> 3
+
+modulo(15, -4, dividend) -> 3
+modulo(15, -4, divisor) -> -1
+modulo(15, -4, positive) -> 3
+modulo(15, -4, negative) -> -1
+
+modulo(-15, 4, dividend) -> -3
+modulo(-15, 4, divisor) -> 1
+modulo(-15, 4, positive) -> 1
+modulo(-15, 4, negative) -> -3
+
+modulo(-15, -4, dividend) -> -3
+modulo(-15, -4, divisor) -> -3
+modulo(-15, -4, positive) -> 1
+modulo(-15, -4, negative) -> -3
+		</screen>
+	</section>
+	
+	<section xml:id="object.round">
+		<title>round</title>
+		
+		<screen>
+func round(Rat, RoundMethod = nearest_away) Int
+
+enum RoundMethod {
+	up, //ceiling
+	down, //floor
+	awayFromZero,
+	towardsZero, //truncation
+	nearest_up,
+	nearest_down,
+	nearest_away, //common rounding
+	nearest_towards,
+	nearest_unbiased //unbiased rounding, bankers rounding
+}
+		</screen>
+		
+		<para>Rounds a rational number to an integer using the specified method. The nearest_* method comes in various forms to determine what to do when the rational number is exactly halfway between two integers. For all rational numbers that are not exactly halfway between two rational numbers, the nearest_* methods behave the same. The nearest_unbiased method rounds to the nearest even integer when the number is exactly halfway between two integers. (This is most commonly called bankers rounding.)</para>
+		
+		<screen>
+round(3.1) -> 3
+round(3.1, up) -> 4
+
+round(3.5) -> 4
+round(3.5, nearest_towards) -> 3
+
+round(3.9) -> 4
+round(3.9, nearest_towards) -> 4
+
+round(-3.1) -> -3
+round(-3.1, up) -> -3
+
+round(-3.5) -> -4
+round(-3.5, nearest_towards) -> -3
+
+round(-3.9) -> -4
+round(-3.9, nearest_towards) -> -4
+
+round(3.4, nearest_unbiased) -> 3
+round(3.5, nearest_unbiased) -> 4
+round(3.6, nearest_unbiased) -> 4
+
+round(8.4, nearest_unbiased) -> 8
+round(8.5, nearest_unbiased) -> 8
+round(8.500000001, nearest_unbiased) -> 9
+round(8.6, nearest_unbiased) -> 9
+		</screen>
+	</section>
+	
+	<section xml:id="object.generator">
+		<title>interface generator</title>
+		
+		<screen>
+interface{I} generator
+	func next() I
+		</screen>
+		
+		<para>The next() method will return objects when called until it throws a GeneratorDone exception.</para>
+		
+		<para>Some looping constructs will automatically obtain a generator by calling the object's getValueIterator, getKeyIterator, or getPairIterator method, and call the next() method of the generator until the exception is thrown</para>
+		
+		<programlisting>
+MyClass[] objs
+for each o in objs
+	o.doStuff()
+		</programlisting>
+	</section>
+	
+	<section xml:id="object.id">
+		<title>func id</title>
+		
+		<screen>
+func id(obj) Int
+
+println( id(true) )
+		</screen>
+		
+		<para>Every object is associated with a constant non-negative integer. No two objects that are still accessible can have the same object number. This function returns a value, with Int as the active interface, that encodes the object number for the object associated with the given value. Two objects with non-overlapping lifetimes may have the same object id.</para>
+		
+		<para>Returns a different number for every object. Always returns the same number for the same object, even if that object is a part of different values (the same object cast to different interfaces).</para>
+	</section>
+	
+	<section xml:id="object.sameObject_q">
+		<title>func sameObject?</title>
+		
+		<para>Determines whether the two values have the same object.</para>
+		
+		<screen>
+func sameObject?(obj, obj) Bool
+
+println( sameObject?(foo, bar) )
+//same as
+println( (foo as obj) == (bar as obj) )
+//same as
+println( id(foo) == id(bar) )
+		</screen>
+		
+		<para>Tells whether the values are associated with the same object.</para>
+	</section>
+	
+	<section xml:id="object.implements_q">
+		<title>func(obj, interface)bool implements?</title>
+		
+		<para>Tells whether the object implements the interface, like the implements node.</para>
+		
+		<programlisting>
+if implements(foo, Bar)
+	(foo as Bar).propOfBar()
+		</programlisting>
+	</section>
+	
+	<!-- xxx XML comments contain important information -->
+	<section xml:id="ident.Int">
+		<title>interface Int</title>
+		
+		<simplelist>
+			<!-- comparison -->
+			<member>func lessThan?(Int) Bool</member>
+			<member>func lessThanOrEqual?(Int) Bool</member>
+			<member>func equal?(Int) Bool</member>
+			<member>func greaterThanOrEqual?(Int) Bool</member>
+			<member>func greaterThan?(Int) Bool</member>
+			<member>func unequal?(Int) Bool</member>
+			
+			<!-- information -->
+			<member>Bool positive?</member>
+			<member>Bool negative?</member>
+			
+			<!-- math operations -->
+			<member>func add(Int) Int</member>
+			<member>func subtract(Int) Int</member>
+			<member>func multiply(Int) Int</member>
+			<member>func multiply(Rat) Rat</member>
+			<member>func divide(Int) Rat</member>
+			<member>func divide(Rat) Rat</member>
+			<member>func floorDivide(Int) Int</member>
+			<member>func floorDivide(Rat) Int</member>
+			<member>func remainder(Int) Int</member>
+			<member>Int absolute</member>
+			
+			<!-- mutation -->
+			<member>func add!(Int)</member>
+			<member>func subtract!(Int)</member>
+			<member>func multiply!(Int)</member>
+			<member>func increment!()</member>
+			<member>func decrement!()</member>
+			<member>func floorDivide!(Int)</member>
+			<member>func floorDivide!(Rat)</member>
+			
+			<!-- conversion -->
+			<member>func toBuiltin() Int</member>
+			<member>convert Int</member> <!-- copy -->
+			<member>convert Rat</member>
+			<member>convert String</member>
+		</simplelist>
+		
+		<para>The non-mutating methods of Int should never throw for precsion reasons, i.e. they should always return an Int that fully represents the result without loss of precision. However, the mutator methods may throw a PrecisionError if the value is not capable of representing the resultant integer.</para>
+		
+		<para>When Niviok implementations need to determine the value of Int objects that were implemented by user code, they should call the toBuiltin method to get an Int object that was implemented by the implementation. If toBuiltin throws an error, it should raise into user code. If the returned Int is not a built-in, an error results that should extend into user code.</para>
+		
+		<para>The String produced by the String convertee must represent the stored integer absolutely, with no loss of precision. It may throw an error if it is incapable of producing such a representation. There are no restrictions on how the integer should be represented, although Int implementations generally should try to produce a representation that is simple and short. Implementations of Int should prefer exotic and strange representations over throwing an error. For example, implementations should prefer representing a googolplex with e.g. "10E(10E100)" ofer throwing an error.</para>
+	</section>
+		
+	<section xml:id="object.BigInt">
+		<title>interface BigInt</title>
+		
+		<para>Inherits from Int.</para>
+	</section>
+	
+	<section xml:id="object.BigRat">
+		<title>interface BigRat</title>
+		
+		<para>Inherits from Rat.</para>
+	</section>
+
+	<section xml:id="ident.Interface">
+		<title>interface Interface</title>
+		
+		<simplelist>
+			<member>get Bool fromAddition?</member>
+			<member>get Set{Interface} inheritees</member>
+			<member>get List{Parameters} parameters</member>
+			<member>get Type returnType</member>
+			<member>get List{Property} properties</member>
+			<member>get List{Method} methods</member>
+			<member>func add(Interface) Interface</member>
+			<member>func subtract(Interface) Interface</member>
+		</simplelist>
+		
+		<para>Implements itself.</para>
+	</section>
+		
+	<section xml:id="object.Object">
+		<title>interface Object</title>
+		
+		<simplelist>
+			<member>Bool builtin?</member>
+			<member>Bool mutable?</member>
+			<member>Int number</member>
+			<member>func{I} cast() I</member>
+			<member>func implements? (Interface) Bool</member>
+			<member>func sameObject? (Object) Bool</member>
+		</simplelist>
+		
+		<para>These methods expose the same functionality of some of the nodes.</para>
+		
+		<para>The builtin? property tells whether the object is implemented by the Niviok implementation, such as for integers and strings. The implements? method tells whether the object implements a specified interface.</para>
+	</section>
+	
+	<section xml:id="interface.rat">
+		<title>interface rat</title>
+		
+		<simplelist>
+			<member>func toInt() int</member>
+			<member>func round() int</member>
+			<member>func round!()</member>
+		</simplelist>
+		
+		<para>toInt will throw if the represented value is not already an integer. round should not throw. round! modifies the represented value.</para>
+	</section>
+
+	<para role="xxx">Para between sections:</para>
+	
+	<para>Constant identikeys in the std namespace. The values these identikeys are bound to are immutable.</para>
+	
+	<simplelist>
+		<member>interface InterfaceBuilder</member>
+		<member>func()InterfaceBuilder CInterfaceBuilder</member>
+	
+		<member>func(int, interface[], interface)interface getFuncInterface</member>
+		
+		<member>interface{I} Iterator</member>
+		
+		<!-- expose functionality of Niviok as functions -->
+		<member>func{I}(:vararg)array{I} CArray</member>
+		<member>func(bool[] bits, bool positive = true)int CInt</member>
+		<member>func{I}(:vararg)list{I} CList</member>
+		
+		<member>func{I}(I)SelfGen print</member>
+		<member>func{I}(I)SelfGen println</member>
+	</simplelist>
+	
+	<section xml:id="Generator">
+		<title>Generator</title>
+		
+		<programlisting>
+generic&lt;T>
+interface Generator {
+	func yield() T //throws a GeneratorExhausted exception (which inherits from SpecialCase) when all values have been yielded
+}
+		</programlisting>
+	</section>
+		
+	<!-- xxx does this go against the purpose of interfaces? -->
+	<section xml:id="InterfaceBuilder">
+		<title>InterfaceBuilder</title>
+	
+		<simplelist>
+			<member>map{string, interface} properties</member>
+			<!-- xxx should this be an object-by-object pref or an interface-defined pref? Some interfaces, like interface interface, are always immutable, but users should be able to create immutable forms of non-immutable interfaces. -->
+			<member>bool alwaysImmutable?</member> 
+			<member>func()interface generate</member>
+		</simplelist>
+		
+		<para>interface interface is always immutable, so InterfaceBuilder exists to allow creating interface objects procedurally.</para>
+	</section>
+		
+	<section xml:id="Iterator">
+		<title>Iterator</title>
+			
+		<screen>
+interface{I} Iterator
+	//values may change
+	bool first?
+	bool last?
+	bool hasNext?
+	bool hasPrevious?
+	bool between? //iterator points between 2 items (such as after the item was removed)
+	bool valid?
+
+	//capabilities of the iterator - values should not change
+	bool canMoveForward? //whether the iterator can move forward
+	bool canMoveBackward? //whether the iterator can move backwards
+	bool canRemove?
+	bool canReplace? //whether the objects can be replaced with different objects
+	bool canRead?
+	bool canInsertAfter?
+	bool canInsertBefore?
+	bool canCompareCollection?
+	bool canCompareIterator? //corresponds to equal?
+	bool canComparePosition? //corresponds to before? and after?
+
+	func moveForward()
+	func moveBackward()
+	func remove()
+	func replace(I)
+	func insertAfter(I)
+	func insertBefore(I)
+	func sameCollection?( Iterator{I} ) bool
+	func before?( Iterator{I} ) bool
+	func after?( Iterator{I} ) bool
+	func equal?( Iterator{I} ) bool
+	
+	I value
+		</screen>
+
+		<para>An iterator is used to access the elements in a container. If the elements are not ordered 2-dimensionally, an 2-dimensional order must be decided for the iterator that does not change for that iterator instance. If the elements in the container are ordered 2-dimensionally, the iterator must refer the elements in that order.</para>
+
+		<para>The equals? method returns true if both iterators are pointing to same item of the same collection. If the collection is unordered, the order the iterator moves over items must also be the same.</para>
+
+		<para>A valid iterator either refers to an element or a position between two elements. An iterator should only refer to a position between two elements when the element the iterator currently pointed to was removed. If the iterator is not valid, or read? is false, the value property refers to null.</para>
+			
+		<para>An iterator only becomes invalid if:</para>
+		<simplelist>
+			<member>the container contains no objects</member>
+			<member>the iterator is moved beyond all objects</member>
+			<member>a non-supported method is called (example: moveBackward() is called on an iterator that can only move forward)</member>
+		</simplelist>
+
+		<para>If an iterator is not valid, it may be possible to revalidate it by calling next() or previous(). For example, if the iterator refers to the last object and next is called, the iterator becomes invalid, but calling previous may make the iterator valid again. Whether an iterator can be revalidated and under what circumstances the iterator is revalidated is dependant on the implementation of the iterator.</para>
+			
+		<para>Containers should always give iterators with the same functionality. For example, if a container, when it has three elements, gives an iterator with forward? set to true, it should also give an iterator with the property forward? set to true when it has 1, even though calling moveForward() would invalidate the iterator.</para>
+
+		<programlisting>
+Container{int} numbers;
+Iterator iter = numbers.iterate();
+int num = iter.value
+
+while( iter.valid? )
+	int num = iter.value
+	iter.moveForward()
+		</programlisting>
+	</section>
+		
+	<section xml:id="CInterfaceBuilder">
+		<title>CInterfaceBuilder</title>
+			
+		<para>CInterfaceBuilder, when called, returns an object that can be used to procedurally and/or dynamically create interface objects.</para>
+	</section>
+		
+	<section xml:id="getFuncInterface">
+		<title>getFuncInterface</title>
+			
+		<screen>
+func getFuncInterface (
+	int templateParamCount,
+	interface[] params,
+	interface returnInterface,
+) interface
+		</screen>
+			
+		<para>Returns an interface specifying a call method with the specified number of template parameters, the specified parameters, and the specified return interface. If returnInterface is null, the interface specifies a void call method. Every time it is called with the same arguments, it must return the same object.</para>
+	</section>
+</chapter>

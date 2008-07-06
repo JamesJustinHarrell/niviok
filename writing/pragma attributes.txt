@@ -1,0 +1,7 @@
+Every node should be capable of having multiple "pragma attributes". These attributes speak to the Niviok agent.
+
+One use of pragma attributes would be to direct the agent to not output certain warnings.
+
+It was decided to create pragma attributes, instead of a pragma node, because a pragma node would be too restricted about where it could appear.
+
+For example, if the pragma node was an expression that wrapped another expression, and specified information about that expression, it could not be used for nodes that weren't expressions.

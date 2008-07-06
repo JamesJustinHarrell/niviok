@@ -16,18 +16,18 @@ interface INode {
 	string nodeSource {get;}
 }
 
+/* xxx remove
 //xxx what's the deal with this?
 //node that declares a value identikey
 interface INode_Declaration : INode_Expression {
 	Node_Identifier name {get;}
 	Node_IdentikeyType identikeyType {get;}
 }
+*/
 
 //node that can be executed
 interface INode_Expression : INode {}
 
-interface INode_IdentikeySpecialNew : INode {}
-
-interface INode_IdentikeySpecialOld : INode {}
+interface INode_StatementDeclaration : INode {}
 
 interface INode_InterfaceMember : INode {}

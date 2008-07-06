@@ -1,19 +1,42 @@
-func printNames(Collection<String> names)
-	for String name in names
-		println(name)
+interface Iterable<T>
+	func iterate (-> Iterator<T>)
 
-func printNames2(Collection<String> names)
-	for Iterator<String> iter in yieldIterators(names)
-		println(iter.current)
+interface Iterator<T>
+	get T value
+	get Bool next?
+	func advance (-> void)
+		#mutates this iterator to refer to the next value
+		#throws if iterator doesn't have next
 
-func replaceNames(Collection<String> names, String searchName, String newName)
-	for Iterator<String> iter in yieldIterators(names)
-		if iter.current == searchName
+func yieldIterators<T> { Iterable<T> iterable |
+	let Iterator<T> iter = iterable.iterate()
+	yieldwhile {
+		iter
+	} {
+		if iter.has_next?
+			iter = iter.next
+			true
+		else
+			false
+	}
+}
+
+func printNames { Iterable<String> names |
+	for names println
+}
+
+func printNames2 { Iterable<String> names |
+	for (yieldIterators names) { Iterator<String> iter | println iter.value }
+}
+
+func printNames3 { Iterable<String> names |
+	for (map (yieldIterators names) ::value) println
+}
+
+func replaceNames { SomeCollection<String> names, String searchName, String newName |
+	for (yieldIterators names) { Iterator<String> iter |
+		if iter.value == searchName
 			names.replace(iter, newName)
-
-//or if built-in support (could just be syntactic)
-func replaceNames2(Collection<String> names, String searchName, String newName)
-	for Iterator<String> iter from names
-		if iter.current == searchName
-			names.replace(iter, newName)
+	}
+}
 

@@ -3,9 +3,9 @@
 class Property {
 	Identifier _name;
 	bool _writable;
-	NullableType _type;
+	IType _type;
 
-	public Property(Identifier name, bool writable, NullableType type) {
+	public Property(Identifier name, bool writable, IType type) {
 		_name = name;
 		_writable = writable;
 		_type = type;
@@ -19,7 +19,7 @@ class Property {
 		get { return _writable; }
 	}
 	
-	public NullableType type {
+	public IType type {
 		get { return _type; }
 	}
 }

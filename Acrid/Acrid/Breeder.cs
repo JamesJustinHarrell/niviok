@@ -1,13 +1,13 @@
-//corresponds to Desal "breeder" nodes
+//corresponds to Niviok "breeder" nodes
 
 class Breeder {
-	IInterface _face;
+	IType _type;
 	
-	public Breeder(IInterface face) {
-		_face = face;
+	public Breeder(IType type) {
+		_type = type;
 	}
 	
-	public IInterface face {
-		get { return _face; }
+	public IType type {
+		get { return _type; }
 	}
 }

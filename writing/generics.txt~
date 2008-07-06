@@ -1,0 +1,15 @@
+interface Generic<Int parameterCount, Type ReturnType>
+	func specialize (Type param1, Type param2, Type param3, ... -> ReturnType)
+
+interface GenericFunction<params Type parameter_types, Type return_type> : Generic<parameter_types, return_type>
+	get Sequence<GenericFunctionParameter> parameters
+
+interface GenericFunctionParameter
+	get ?Int typeIndex
+
+The GenericFunction interface provides information to allow generic functions to be called without first specializing it. In other words, it allows the call node to automatically specialize the function.
+
+node generic ::=
+	expression
+
+If expression is a function node, the generic node produces a GenericFunction worker. Otherwise, it produces a Generic worker. (XXX should this be split up?)

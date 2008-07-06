@@ -3,56 +3,60 @@ The std library.
 Note: Desal Agent 001 must be recompiled to get this file copied next to the binary. Just modifying this file won't produce changes in Desal Agent 001.
 */
 
+1 0 #niviok version numbers
+
 () #imports
 
-( #limit-old
+( #sieve
 
-() #identikey-special-old
+() #expose
 
-( #identikey-special-new
+() #using
+
+( #statement-declaration
 
 #child nodes below are "hidable" nodes
 
 (false
-(declare-first Bool (constant (Interface false)) false
+(declare-first Bool constant Interface false
 	(interface () (
-		(method equals?
+		(normal (method equals?
 			(interface () (
-				(callee
-					((in (Bool false) value false))
-					(Bool false)))))))))
+				(normal (callee
+					((in Bool value false))
+					Bool))))))))))
 
 (false
-(declare-first Int (constant (Interface false)) false
+(declare-first Int constant Interface false
 	(interface () (
-		(method add
+		(normal (method add
 			(interface () (
-				(callee
-					((in (Int false) value false))
-					(Int false)))))))))
+				(normal (callee
+					((in Int value false))
+					Int))))))))))
 
 (false
-(declare-first Rat (constant (Interface false)) false
+(declare-first Rat constant Interface false
 	(interface () ())))
 
 (false
-(declare-first String (constant (Interface false)) false
+(declare-first String constant Interface false
 	(interface () (
-		(property length false (Int false))
-		(method concat
+		(normal (property length false Int))
+		(normal (method concat
 			(interface () (
-				(callee
-					((in (String false) value false))
-					(String false)))))))))
+				(normal (callee
+					((in String value false))
+					String))))))))))
 
 (false
-(declare-first Generator (constant (Interface false)) false
+(declare-first Generator constant Interface false
 	(interface () (
-		(method yield
+		(normal (method yield
 			(interface () (
-				(callee
+				(normal (callee
 					()
-					(- false)))))))))
+					any))))))))))
 
 /*
 	func range(start, finish, inclusive)
@@ -64,21 +68,21 @@ Note: Desal Agent 001 must be recompiled to get this file copied next to the bin
 	xxx inclusive is currently ignored
 */
 (false
-(declare-first range (function (- false)) false
+(declare-first range function any false
 	(function
 		(
-			(in - start -)
-			(in - limit -)
-			(in - inclusive -)
+			(in any start -)
+			(in any limit -)
+			(in any inclusive -)
 		)
-		-
-		(generator (- false)
-			(compound () () (
-				(declare-assign i (variable (Int false)) false false
+		any
+		(generator Int
+			(compound () () () (
+				(declare-assign i variable Int false
 					start)
-				(conditional-loop
+				(conditional-loop -
 					((extract-member i lessThan?) limit)
-					(compound () () (
+					(compound () () () (
 						(yield i)
 						(assign i false
 							((extract-member i add) 1)))))))))))

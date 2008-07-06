@@ -2,39 +2,42 @@
 
 /* test comment test */
 
+1 0 #niviok version 1.0
+
 () #imports
 
-( #limit-old
+( #sieve
 
-( #identikey-special-old
-	(expose (std))
+( #expose
+	((std))
+	((stdio))
 )
 
-( #identikey-special-new
+() #using
+
+( #statement-declaration list
 
 #child nodes below are "hidable" nodes
 
 (false
-(declare-first header
-	(function (- false)) false
+(declare-first header function any false
 	(function
 		(
-			(in (- false) title -))
-		-
-		(compound () () (
+			(in any title -))
+		any
+		(compound () () () (
 			(println "")
 			(println ((extract-member title concat) " :"))
 		)))))
 
 (false
-(declare-first headerize
-	(function (- false)) false
+(declare-first headerize function any false
 	(function
 		(
-			(in (- false) title -)
-			(in (- false) func -))
-		-
-		(compound () () (
+			(in any title -)
+			(in any func -))
+		any
+		(compound () () () (
 			(header ((extract-member "calling " concat) title))
 			(func)
 			(println "")
@@ -42,10 +45,9 @@
 		)))))
 
 (false
-(declare-first main
-	(function (- false)) false
-	(function () -
-		(compound () () (
+(declare-first main function any false
+	(function () any
+		(compound () () () (
 			(headerize "doStuff" doStuff)
 			(headerize "testNonProducers" testNonProducers)
 			(headerize "testSometimesProducers" testSometimesProducers)
@@ -53,69 +55,75 @@
 		)))))
 
 (false
-(declare-first Test (constant (Interface false)) false
+(declare-first Test constant Interface false
 	(interface () (
-		(property number false (Int false))
-		(property text true (String false))
+		(normal (property number false Int))
+		(normal (property text true String))
 		))))
 
 (false
-(declare-first createObject
-	(function (- false)) false
-	(function () -
-		(compound () () (
-			(declare-assign mText (variable (String false)) false false "initial text")
+(declare-first createObject function any false
+	(function () any
+		(compound () () () (
+			(declare-assign mText variable String false "initial text")
 			
 			(object (
 				(Test () (
 					(
-						(property_getter number -)
-						(function()- 123)
+						property_getter
+						number
+						any
+						(function()any 123)
 					)
 					(
-						(property_getter text -)
-						(function()- mText)
+						property_getter
+						text
+						any
+						(function()any mText)
 					)
 					(
-						(property_setter text -)
+						property_setter
+						text
+						any
 						(function(
-							(in (String false) newval -)
-						)- (assign mText false newval))
+							(in String newval any)
+						)any
+							(assign mText false newval))
 					)
 				))
 			))
 		)))))
 
 (false
-(declare-first doStuff
-	(function (- false)) false
-	(function () -
-		(compound () () (
+(declare-first doStuff function any false
+	(function () any
+		(compound () () () (
 			(conditional
 				true (println "this is a test")
-				- )
-			(declare-assign str (constant (String false)) false false
+				any )
+			(declare-assign str constant String false
 				((extract-member "🿰 Hello," concat) " World 🿱"))
 			(println str)
 			(println (extract-member str length))
 
-			(enumerator-loop (range 1 20 false) (((- false) x)) -
+/* xxx enumerator-loop was removed
+			(enumerator-loop - (range 1 20 false) ((any x)) -
 				(println ((extract-member x add) 10000)))
-		
-			(declare-assign 🿰🿱 (constant (- false)) false false
+*/
+			(declare-assign 🿰🿱 constant String false
 				"astral characters in identifiers")
 			(println 🿰🿱)
 
-			(declare-assign obj (constant (Test false)) false false
+			(declare-assign obj constant Test false
 				(createObject))
 			
 			(println (extract-member obj number))
 			(println (extract-member obj text))
-			(set-property obj text "alpha beta gamma")
+			(set-property obj text "text set through set-property node")
 			(println (extract-member obj text))
 			
-			(declare-assign gen (constant (- false)) false false
-				(generator - (compound () () (
+			(declare-assign gen constant any false
+				(generator any (compound () () () (
 					(println "printed by generator")
 					(yield "yielded from generator")
 					))))
@@ -125,36 +133,29 @@
 			(try-catch
 				/* try */ nonexistantidentikey
 				/* exception-handlers */ (
-					(true Object - (println "exception caught"))
+					(Object -  - (println "exception caught"))
 				)
 				/* else */ (println "no exception")
 				/* finally */ (println "finally!") )
 		)))))
 
 (false
-(declare-first testNonProducers
-	(function (- false)) false
-	(function () -
-		(compound () (
-			(declare-first testReturn
-				(function (- false)) false
-				(function () -
-					(compound () () (
-						123
-						(return 456)
-						789))))
+(declare-first testNonProducers function any false
+	(function () any
+		(compound () () (
+			(declare-first dfval constant any false "declare-first value")
 		) (
-			(println (testReturn))
-		)))))
+			(println dfval)
+		))
+)))
 
 (false
-(declare-first testSometimesProducers
-	(function (- false)) false
-	(function () -
-		(compound () () (
+(declare-first testSometimesProducers function any false
+	(function () any
+		(compound () () () (
 			(header "assign, block, call")
-			(declare-empty foo (constant (- false)))
-			(assign foo false (compound () () (123)))
+			(declare-empty foo variable any)
+			(assign foo false (compound () () () (123)))
 			(println foo)
 			
 /* xxx enable when Bridge.getBreederFace is implemented
@@ -173,15 +174,14 @@
 		)))))
 
 (false
-(declare-first testAlwaysProducers
-	(function (- false)) false
-	(function () -
-		(compound () () (
+(declare-first testAlwaysProducers function any false
+	(function () any
+		(compound () () () (
 			(header "testBooleanLogic")
 			(testBooleanLogic)
 			
 			(header "function")
-			(println ((function()- "some stuff")))
+			(println ((function()any "some stuff")))
 
 			(header "identifier")
 			(println true)
@@ -198,20 +198,17 @@
 		)))))
 
 (false
-(declare-first testBooleanLogic
-	(function (- false)) false
-	(function () -
-		(compound () () (
+(declare-first testBooleanLogic function any false
+	(function () any
+		(compound () () () (
 			/*
 			for "and", "nand", "or", and "nor" node tests:
 			first come values that should shortcut,
 			then values that should not shortcut
 			*/
-			(declare-assign t
-				(constant (- false)) false false
+			(declare-assign t constant any false
 				true)
-			(declare-assign f
-				(constant (- false)) false false
+			(declare-assign f constant any false
 				false)
 		
 			(header "and")
@@ -240,22 +237,6 @@
 
 		)))))
 
+) #close statement-declaration list
 
-
-
-/*
-constructs needed to make this less verbose:
-declfunc pseudo-node
-extract member syntax
-
-That will reduce the header function to this:
-(declfunc header
-	((in (- false) title false -))
-	(compound () () (
-		(println "")
-		(println (title.concat " :")))))
-*/
-
-) #close identikey-special-new
-
-) #close enclosure
+) #close sieve

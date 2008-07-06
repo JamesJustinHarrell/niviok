@@ -1,0 +1,2 @@
+When a command in a terminal or script directs an executable to be executed, how does the executable obtain knowledge of the standard streams?
+

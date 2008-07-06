@@ -19,12 +19,12 @@ class Client_String {
 
 	public static IWorker wrap(IList<uint> codePoints) {
 		Client_String o = new Client_String(codePoints);
-		NiviokObject obj = new NiviokObject();
+		NObject obj = new NObject();
 		WorkerBuilder builder = new WorkerBuilder(
-			Bridge.std_String, obj, new IWorker[]{});
+			Bridge.stdn_String, obj, new IWorker[]{});
 
 		builder.addBreeder(
-			Bridge.std_String,
+			Bridge.stdn_String,
 			delegate(){ return wrap(codePoints); });
 
 		builder.addPropertyGetter(
@@ -37,19 +37,18 @@ class Client_String {
 				new ParameterImpl[]{
 					new ParameterImpl(
 						Direction.IN,
-						new NullableType(Bridge.std_String, false),
+						new NType(Bridge.stdn_String),
 						new Identifier("value"),
 						null )
 				},
-				new NullableType(Bridge.std_String, false),
-				delegate(Scope args) {
+				new NType(Bridge.stdn_String),
+				delegate(IScope args) {
 					return wrap(
 						o.concat(
 							unwrap(
-								args.evaluateIdentifier(
-									new Identifier("value"))) ));
+								G.evalIdent(args, "value"))));
 				},
-				Bridge.debugScope ));
+				null ));
 			
 		builder.addMethod(
 			new Identifier("concat!"),
@@ -57,19 +56,18 @@ class Client_String {
 				new ParameterImpl[]{
 					new ParameterImpl(
 						Direction.IN,
-						new NullableType(Bridge.std_String, false),
+						new NType(Bridge.stdn_String),
 						new Identifier("value"),
 						null )
 				},
 				null,
-				delegate(Scope args) {
+				delegate(IScope args) {
 					o.concat0(
 						unwrap(
-							args.evaluateIdentifier(
-								new Identifier("value"))) );
+							G.evalIdent(args, "value")));
 					return wrap(o._codePoints);
 				},
-				Bridge.debugScope ));
+				null ));
 
 		builder.addMethod(
 			new Identifier("substring"),
@@ -77,19 +75,18 @@ class Client_String {
 				new ParameterImpl[]{
 					new ParameterImpl(
 						Direction.IN,
-						new NullableType(Bridge.std_Int, false),
+						new NType(Bridge.stdn_Int),
 						new Identifier("start"),
 						null )
 				},
-				new NullableType(Bridge.std_String, false),
-				delegate(Scope args) {
+				new NType(Bridge.stdn_String),
+				delegate(IScope args) {
 					return wrap(
 							o.substring(
 								Bridge.toNativeInteger(
-									args.evaluateLocalIdentifier(
-										new Identifier("start"))) ));
+									G.evalIdent(args, "start"))));
 				},
-				Bridge.debugScope ));
+				null ));
 
 		builder.addMethod(
 			new Identifier("substring"),
@@ -97,27 +94,25 @@ class Client_String {
 				new ParameterImpl[]{
 					new ParameterImpl(
 						Direction.IN,
-						new NullableType(Bridge.std_Int, false),
+						new NType(Bridge.stdn_Int),
 						new Identifier("start"),
 						null ),
 					new ParameterImpl(
 						Direction.IN,
-						new NullableType(Bridge.std_Int, false),
+						new NType(Bridge.stdn_Int),
 						new Identifier("limit"),
 						null )
 				},
-				new NullableType(Bridge.std_String, false),
-				delegate(Scope args) {
+				new NType(Bridge.stdn_String),
+				delegate(IScope args) {
 					return wrap(
 							o.substring(
 								Bridge.toNativeInteger(
-									args.evaluateLocalIdentifier(
-										new Identifier("start"))),
+									G.evalIdent(args, "start")),
 								Bridge.toNativeInteger(
-									args.evaluateLocalIdentifier(
-										new Identifier("limit"))) ));
+									G.evalIdent(args, "limit"))));
 				},
-				Bridge.debugScope ));
+				null ));
 		
 		IWorker rv = builder.compile();
 		rv.nativeObject = codePoints;

@@ -5,34 +5,20 @@
 using System;
 using System.Collections.Generic;
 static partial class Executor {
-	public static IWorker executeAny(INode_Expression node, Scope scope) {
+	public static IWorker executeAny(INode_Expression node, IScope scope) {
 		switch(node.typeName) {
-			case "conditional-loop":
-				return execute((Node_ConditionalLoop)node, scope);
-			case "enumerator-loop":
-				return execute((Node_EnumeratorLoop)node, scope);
-			case "unconditional-loop":
-				return execute((Node_UnconditionalLoop)node, scope);
-			case "break":
-				return execute((Node_Break)node, scope);
-			case "continue":
-				return execute((Node_Continue)node, scope);
-			case "return":
-				return execute((Node_Return)node, scope);
+			case "remit":
+				return execute((Node_Remit)node, scope);
 			case "throw":
 				return execute((Node_Throw)node, scope);
 			case "yield":
 				return execute((Node_Yield)node, scope);
 			case "declare-empty":
 				return execute((Node_DeclareEmpty)node, scope);
-			case "null":
-				return execute((Node_Null)node, scope);
 			case "assign":
 				return execute((Node_Assign)node, scope);
 			case "call":
 				return execute((Node_Call)node, scope);
-			case "cast":
-				return execute((Node_Cast)node, scope);
 			case "compound":
 				return execute((Node_Compound)node, scope);
 			case "conditional":
@@ -43,16 +29,16 @@ static partial class Executor {
 				return execute((Node_DeclareAssign)node, scope);
 			case "identifier":
 				return execute((Node_Identifier)node, scope);
-			case "ignore":
-				return execute((Node_Ignore)node, scope);
-			case "labeled":
-				return execute((Node_Labeled)node, scope);
-			case "namespaced-value-identikey":
-				return execute((Node_NamespacedValueIdentikey)node, scope);
+			case "namespaced-wo-scidentre":
+				return execute((Node_NamespacedWoScidentre)node, scope);
 			case "select":
 				return execute((Node_Select)node, scope);
+			case "set-property":
+				return execute((Node_SetProperty)node, scope);
 			case "try-catch":
 				return execute((Node_TryCatch)node, scope);
+			case "type-select":
+				return execute((Node_TypeSelect)node, scope);
 			case "and":
 				return execute((Node_And)node, scope);
 			case "nand":
@@ -93,12 +79,8 @@ static partial class Executor {
 				return execute((Node_Integer)node, scope);
 			case "interface":
 				return execute((Node_Interface)node, scope);
-			case "implements":
-				return execute((Node_Implements)node, scope);
 			case "rational":
 				return execute((Node_Rational)node, scope);
-			case "set-property":
-				return execute((Node_SetProperty)node, scope);
 			case "string":
 				return execute((Node_String)node, scope);
 			default:

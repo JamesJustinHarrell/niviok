@@ -1,0 +1,92 @@
+I have some nodes which are extremely similar in nature.
+
+---
+
+conditional ::=
+	* conditional-case
+	expression else
+
+conditional-case ::=
+	expression test
+	expression result
+
+conditional
+case i lt 0
+	println "< zero"
+case i lt 5
+	println "< five, but >= zero"
+case i lt 100
+	println "[5, 100)"
+else
+	println ">= 100"
+
+---
+
+select ::=
+	expression input value
+	* select-case
+	expression else
+
+select-case ::=
+	+ expression value
+	expression result
+
+select foo
+case 123
+	println "foo is 123"
+case 456, 789
+	println "foo is 456 or 789"
+else
+	println "foo isn't 123, 456, or 789"
+
+---
+
+match ::=
+	expression input value
+	? identifier name
+	* match-case
+	expression else
+
+match-case ::=
+	+ expression test type
+	expression result
+
+match foo2 <== foo
+case Int
+	println "foo is an Int"
+	foo2.add(123)
+case String
+	println "foo is a String"
+	foo2.concat("text")
+else
+	println "I don't know what foo is"
+
+---
+
+try ::=
+	expression body
+	? identifier name
+	* try-case
+	? expression success
+	? expression finally
+
+try-case ::=
+	expression type
+	? expression test
+	expression result
+
+When no matching [case], let exception continue up.
+
+catch e <== doStuff()
+case NullException
+	println "whoops!"
+	throw e
+case SomeError if e.foo is "bar"
+	println "I'll just stop this."
+else
+	println "I don't have a clue what this is."
+	throw e
+success
+	println "No errors. ^_^"
+finally
+	println "all done with this node!"

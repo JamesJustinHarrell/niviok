@@ -3,6 +3,16 @@
 using System;
 using System.Collections.Generic;
 
+class LibraryFailure : Exception {
+	public LibraryFailure(string message)
+		:base(message) {}
+
+	public LibraryFailure(string message, Exception inner)
+		:base(message,inner) {}
+}
+
+class UnknownScidentre : Exception {}
+
 //errors caused by the user, but not in client code
 //e.g. invalid program arguments
 class UserError : Exception {
@@ -58,11 +68,32 @@ class ClientException : Exception {
 			this.thrown = Bridge.toClientString(message);
 		}
 		catch(Exception e) {
-			Console.Error.WriteLine(message);
+			Console.WriteLine("ClientException exception: " + e);
+			Console.Error.WriteLine("ClientException message: " + message);
 			throw new ApplicationException(
-				"unable to create ClientException before Bridge has been setup");
+				"Unable to create ClientException because " +
+				"Bridge hasn't been setup. Message: " + message);
 		}
 		stackTrace = new Stack<string>();
+	}
+	
+	public ClientException(string message, string location)
+	:base(message)
+	{
+		try {
+			//this will fail if the client exception
+			//arose from the Bridge static constructor
+			this.thrown = Bridge.toClientString(message);
+		}
+		catch(Exception e) {
+			Console.WriteLine("ClientException exception: " + e);
+			Console.Error.WriteLine("ClientException message: " + message);
+			throw new ApplicationException(
+				"Unable to create ClientException because " +
+				"Bridge hasn't been setup. Message: " + message);
+		}
+		stackTrace = new Stack<string>();
+		stackTrace.Push(location);
 	}
 	
 	public ClientException(string message, Exception innerException)
@@ -87,9 +118,9 @@ class ClientException : Exception {
 			
 			/* xxx enable when Breeders are implemented
 			//if can breed string
-			if( G.canBreed(thrown.face, Bridge.std_String) ) {
+			if( G.canBreed(thrown.face, Bridge.stdn_String) ) {
 				message += Bridge.toNativeString(
-					thrown.breed(Bridge.std_String)) + "\n\n";
+					thrown.breed(Bridge.stdn_String)) + "\n\n";
 			}			
 			*/
 			try{
@@ -110,3 +141,22 @@ class ClientException : Exception {
 //xxx how the hell am I supposed to implement this?
 class ClientYield : Exception {}
 
+class UnassignedDeclareFirst : Exception {
+	Identifier _ident;
+	public UnassignedDeclareFirst(Identifier ident) {
+		_ident = ident;
+	}
+	public Identifier ident {
+		get { return _ident; }
+	}
+}
+
+class NoCorrespondingNamespaceScidentre : Exception {
+	Identifier _ident;
+	public NoCorrespondingNamespaceScidentre(Identifier ident) {
+		_ident = ident;
+	}
+	public Identifier ident {
+		get { return _ident; }
+	}
+}

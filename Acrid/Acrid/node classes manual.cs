@@ -33,14 +33,25 @@ class Node_Identifier : TerminalNode<Identifier, Node_Identifier>, INode_Express
 	}
 }
 
-class Node_IdentikeyCategory : TerminalNode<IdentikeyCategory, Node_IdentikeyCategory>, INode {
-	public Node_IdentikeyCategory(IdentikeyCategory value, string nodeSource)
+class Node_MemberStatus : TerminalNode<MemberStatus, Node_MemberStatus>, INode {
+	public Node_MemberStatus(MemberStatus value, string nodeSource)
 		: base(value, nodeSource) {}
-	public Node_IdentikeyCategory(string str, string nodeSource)
-		: base(G.parseEnum<IdentikeyCategory>(str), nodeSource) {}
+	public Node_MemberStatus(string str, string nodeSource)
+		: base(G.parseEnum<MemberStatus>(str), nodeSource) {}
 	
 	public string typeName {
-		get { return "identikey-category"; }
+		get { return "member-status"; }
+	}
+}
+
+class Node_WoScidentreCategory : TerminalNode<WoScidentreCategory, Node_WoScidentreCategory>, INode {
+	public Node_WoScidentreCategory(WoScidentreCategory value, string nodeSource)
+		: base(value, nodeSource) {}
+	public Node_WoScidentreCategory(string str, string nodeSource)
+		: base(G.parseEnum<WoScidentreCategory>(str), nodeSource) {}
+	
+	public string typeName {
+		get { return "wo-scidentre-category"; }
 	}
 }
 

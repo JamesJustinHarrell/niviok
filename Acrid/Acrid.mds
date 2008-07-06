@@ -2,16 +2,20 @@
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="CombineConfiguration">
       <Entry build="True" name="Acrid" configuration="Debug" />
+      <Entry build="True" name="ComandLine" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
       <Entry build="True" name="Acrid" configuration="Release" />
+      <Entry build="True" name="ComandLine" configuration="Release" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="Acrid" single="True">
     <Execute type="None" entry="Acrid" />
+    <Execute type="None" entry="ComandLine" />
   </StartMode>
   <DeployTargets />
   <Entries>
     <Entry filename="Acrid/Acrid.mdp" />
+    <Entry filename="ComandLine/ComandLine.mdp" />
   </Entries>
 </Combine>

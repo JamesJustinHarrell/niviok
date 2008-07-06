@@ -1,0 +1,116 @@
+Loop nodes can catch Break and Continue signals.
+
+for-each ::=
+	expression iterable
+	? expression type
+	? identifier name
+	? expression test
+	expression body
+
+repeat ::=
+	expression body
+
+while ::=
+	expression test
+	expression body
+
+func $each { iterable, body |
+	for i in iterable
+		body i
+}
+
+func $each_apply { iterable, body |
+	for i in iterable
+		apply body i
+}
+
+func $repeat { body |
+	repeat
+		body()
+}
+
+func $while { test, body |
+	while callback()
+		body()
+}
+
+
+
+cast ::=
+	expression value
+	expression type
+
+downcast ::=
+	expression value
+	expression type
+
+rootcast ::=
+	expression value
+
+func $cast { val, type | val as type }
+func $downcast { val, type | val downas type }
+func $rootcast { val | rootcast val }
+
+
+
+
+
+Criteria for determining whether a feature should get a node or just be included in the library.
+
+--- action
+
+Features that don't "do" anything should be in the library. Nodes should perform actions.
+
+Examples: interfaces, types, null, constructors for collections
+
+Counter examples: dictionary node
+
+--- ability to implement
+
+Strive for library features to be implementable using only nodes. (Avoid "magic" functions.) Strive for nodes to generally not be easily implementable using other nodes. (Avoid redundant features.)
+
+Examples: each, map, filter
+
+Counter examples: root_cast, redundancy of loop-iterator node and each function
+
+--- ease of implementation
+
+When either of a library addition or node would be easier to implement than the other, strive to go for the easier one.
+
+--- easy to explain and understand
+
+When one option is much more difficult to explain and understand than the other, go for the easier one.
+
+--- complication
+
+When one of a library addition or node would be very complicated, while the other would be much simpler, strive for the simpler one.
+
+Simplicity also usually leads to it being easier to explain and understand. See above.
+
+Example: generator node
+
+Counter example: generator function
+
+--- power
+
+If one option is significantly more powerful than the other, go for the more powerful option.
+
+Exception: When the function version is the more powerful version, but the function version is much harder to understand, and it could easily be defined in terms of a node. For example, generators.
+
+--- precedence
+
+If the feature is usually a statement/expression in other languages, strive to give it a node in Niviok. If the feature is usually a function in other languages, strive to make it a function in Niviok.
+
+Examples: if-else node, each function
+
+--- normality
+
+If one option would be much weirder than the other, and it breaks lots of expectations, go for the more normal one.
+
+Examples: generator node creating "yield" wo-scidentre vs. generator function passing in argument
+
+--- default to node and function wrapper
+
+If otherwise unable to decide, create a node and a function to wrap the node.
+
+Examples: conditional node and ifelse function, generator node and make_generator function, loop-iterable and each function

@@ -10,31 +10,29 @@ from executing these nodes, instead of child expression nodes.
 */
 static class Evaluator {
 	//argument
-	public static Argument evaluate(Node_Argument node, Scope scope) {
+	public static Argument evaluate(Node_Argument node, IScope scope) {
 		return new Argument(
 			node.parameterName == null ? null : node.parameterName.value,
 			Executor.executeAny(node.value, scope));
 	}
 	
 	//breeder
-	public static Breeder evaluate(Node_Breeder node, Scope scope) {
-		return new Breeder(
-			Bridge.toNativeInterface(
-				Executor.executeAny(node.@interface, scope)));
+	public static Breeder evaluate(Node_Breeder node, IScope scope) {
+		return new Breeder(ReservedType.tryWrap(node.type, scope));
 	}
 	
 	//callee
-	public static Callee evaluate(Node_Callee node, Scope scope) {
+	public static Callee evaluate(Node_Callee node, IScope scope) {
 		IList<ParameterInfo> parameters = new List<ParameterInfo>();
 		foreach( Node_ParameterInfo child in node.parameterInfos )
 			parameters.Add(evaluate(child, scope));
 		return new Callee(
 			parameters,
-			evaluate(node.returnInfo, scope));
+			ReservedType.tryWrap(node.returnType, scope));
 	}
 	
 	//interface
-	public static IInterface evaluate(Node_Interface node, Scope scope) {
+	public static IInterface evaluate(Node_Interface node, IScope scope) {
 		IList<IInterface> inheritees = new List<IInterface>();
 		IList<Callee> callees = new List<Callee>();
 		IList<Breeder> breeders = new List<Breeder>();
@@ -46,7 +44,9 @@ static class Evaluator {
 				Bridge.toNativeInterface(
 					Executor.executeAny(inherNode, scope)));
 
-		foreach( INode_InterfaceMember member in node.members ) {
+		foreach( Node_StatusedMember sm in node.members ) {
+			//xxx member status (sm.memberStatus) is ignored
+			INode_InterfaceMember member = sm.member;
 			if( member is Node_Callee )
 				callees.Add(evaluate(member as Node_Callee, scope));
 			if( member is Node_Breeder )
@@ -62,40 +62,17 @@ static class Evaluator {
 	}
 	
 	//method
-	public static Method evaluate(Node_Method node, Scope scope) {
+	public static Method evaluate(Node_Method node, IScope scope) {
 		return new Method(
 			node.name.value,
 			Bridge.toNativeInterface(Executor.executeAny(node.@interface, scope)) );
 	}
 
-	//module
-	//called by Executor.executeProgram(Node_Module, Bridge)
-	public static Scope evaluate(Node_Module node, Bridge bridge) {
-		Scope scope = new Scope(bridge);
-		scope.declareNamespace(new Identifier("std"), Bridge.std);
-		Executor.execute(node, scope);
-		return scope;
-	}
-	
-	//nullable-type
-	public static NullableType evaluate(Node_NullableType node, Scope scope) {
-		IInterface face;
-		if( node.@interface == null )
-			face = null;
-		else if( (node.@interface is Node_Identifier) &&
-		scope.isReserved( ((Node_Identifier)node.@interface).value ) )
-			face = new ReservedInterface(
-				scope.getReservedIdentikey( ((Node_Identifier)node.@interface).value ));
-		else
-			face = Bridge.toNativeInterface(Executor.executeAny(node.@interface, scope));
-		return new NullableType(face, node.nullable.value);
-	}
-
 	//parameter-impl
-	public static ParameterImpl evaluate(Node_ParameterImpl node, Scope scope) {
+	public static ParameterImpl evaluate(Node_ParameterImpl node, IScope scope) {
 		return new ParameterImpl(
 			node.direction.value,
-			node.nullableType == null ? null : evaluate(node.nullableType, scope),
+			evaluateType(node.type, scope),
 			node.name.value,
 		    ( node.defaultValue == null ?
 		    	null :
@@ -103,26 +80,31 @@ static class Evaluator {
 	}
 
 	//parameter-info
-	public static ParameterInfo evaluate(Node_ParameterInfo node, Scope scope) {
+	public static ParameterInfo evaluate(Node_ParameterInfo node, IScope scope) {
 		return new ParameterInfo(
 			node.direction.value,
-			evaluate(node.nullableType, scope),
+			ReservedType.tryWrap(node.type, scope),
 			node.name.value,
 		    node.hasDefaultValue.value);
 	}
 	
 	//property
-	public static Property evaluate(Node_Property node, Scope scope) {
+	public static Property evaluate(Node_Property node, IScope scope) {
 		return new Property(
 			node.name.value,
 			node.writable.value,
-			evaluate(node.nullableType, scope) );
+			evaluateType(node.type, scope) );
+	}
+	
+	//type
+	public static IType evaluateType(INode_Expression node, IScope scope) {
+		return new NType(Executor.executeAny(node, scope));
 	}
 	
 	//worker
-	public static IWorker evaluate(Node_Worker node, Scope scope, IObject owner) {
+	public static IWorker evaluate(Node_Worker node, IScope scope, IObject owner) {
 		IList<IWorker> children = new List<IWorker>();
-		foreach( Node_Worker child in node.childs )
+		foreach( Node_Worker child in node.childWorkers )
 			children.Add(evaluate(child, scope, owner));
 	
 		WorkerBuilder builder = new WorkerBuilder(
@@ -130,13 +112,13 @@ static class Evaluator {
 			owner,
 			children );
 		foreach( Node_MemberImplementation nmi in node.memberImplementations ) {
-			Node_MemberIdentification id = nmi.memberIdentification;
-			if( id.memberType.value == MemberType.PROPERTY_GETTER )
+			Node_MemberType type = nmi.memberType;
+			if( type.value == MemberType.PROPERTY_GETTER )
 				builder.addPropertyGetter(
-					id.name.value, Executor.executeAny(nmi.function, scope));
-			if( id.memberType.value == MemberType.PROPERTY_SETTER )
+					nmi.name.value, Executor.executeAny(nmi.function, scope));
+			if( type.value == MemberType.PROPERTY_SETTER )
 				builder.addPropertySetter(
-					id.name.value,
+					nmi.name.value,
 					Executor.executeAny(nmi.function, scope));
 		}
 		return builder.compile();

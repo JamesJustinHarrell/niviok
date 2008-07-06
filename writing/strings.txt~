@@ -1,20 +1,47 @@
-Some people think a string is nothing more than a sequence of characters. But these people are wrong.
+Most string types provide little more functionality than sequences (of characters, octets or 16-bit values). This is so common that some fail to imagine that a string type could do anything else.
 
-In Unicode, there are many rules about what characters can appear where. For example, a combining character cannot appear at the beginning of a string, because it would have nothing to combine with.
+For example:
+"Semantically, strings are more or less a subset of lists in which the elements are characters."
+http://paulgraham.com/hundred.html
 
-(Also, a surrogate should not appear anywhere in a string (expect internally and non-visibly as a surrogate pair), but a character type could take care of that.)
+However, there are several ways in which a string type could be more helpful to programmers, especially with Unicode. Unicode strings should not be handled on a character-by-character basis.
 
-If a Unicode string is reversed as if it were just a sequence of characters, you would change which characters the combining characters combine with.
+* A combining character should not appear at the beginning of a string, because it would have nothing to combine with.
+* If a Unicode string is reversed as if it were just a sequence of characters, you would change which characters the combining characters combine with.
+* When taking substrings of strings, combining characters can be pulled away from the characters they combine with.
+* A lowercase sharp S uppercasses to two "S" characters by default. This means uppercasing a string can increase it's length. When this lengthening is accounted for, it can lead to bugs.
 
-However, could a string be defined as a sequence of "minimum Unicode string"? A minimum Unicode string could be, for example, a single meaningful character, or a meaningful character followed by combining characters. A minimum Unicode string could also ensure that certain characters which may be allowed to standalone, like null or surrogates, is not included.
+The approach Niviok takes to be more helpful here is to define a String as being a sequence of "minimum Unicode strings". While the String type is literally just a sequence of another type, it is this MinimumString type that will hopefully provide more help to programmers.
 
-If that would be enough to comply with Unicode, then a string could be defined as something like:
+A minimum Unicode string could be, for example, a single meaningful character, or a meaningful character followed by combining characters. A lowercase sharp S MinimumString uppercases to a single MinimumString of "SS". A minimum Unicode string could also ensure that certain code points which may be allowed to standalone, like null or surrogates, is not included.
 
-declare Interface String = Sequence<MinimumString>
+In many programming languages, strings are encoded using UTF-16, and there is no abstraction over this encoding choice. The lenth/size of a string is the number of 16-bit unsigned integers used to encode the string, not the actual number of meaningful code points. Getting a character at a certain index returns a 16-bit unsigned integer, which may be a meaningful code point or may be a surrogate. However, surrogates are NOT meaningful Unicode code points. Surrogates have NO MEANING other than being reserved for UTF-16. If you are working directly with surrogates, you are not working with Unicode code points. You are working with UTF-16.
 
-for MinimumString ms in getSomeString()
-	println(ms)
+Implementations of the MinimumString interface should ensure the represented sequence of code points is valid and meaningful according to the latest Unicode standard. A MinimumString must never include any surrogates or surrogate pairs, and instead use characters that the surrogate pairs refer to.
 
-If String were defined this way, a String could be easily reversed without problem.
+Functions that produce MinimumString workers should use replace surrogate pairs with the characters the pairs refer to. They should also follow the normalization rules described by Unicode.
 
-An idea that probably differs from Unicode terminology would by to call a String a sequence of Character, and a Character a sequence of CodePoint. (Multiple code points, e.g. a standalone followed by combining characters, come together to form a single character.)
+If strings provide built-in support for working with individual code points, it should be explicit.
+
+A Sequence may be mutable or immutable. The Sequence interface does not provide any way to mutate it, but it may be inherited by e.g. MutableSequence.
+
+(String as Interface) == Sequence<MinimumString>
+
+interface MinimumString
+	get Sequence<Character> characters
+	breed String
+
+interface Character
+	get Int code`point
+	breed String # e.g. U+00000F
+
+interface<T> Sequence
+	inherit Collection<T>
+	get Int size
+	func concat(Sequence<T>) Sequence<T>
+
+interface<T> Collection
+	inherit Iterable<T>
+	get Bool empty?
+	func getIterator() Iterator<T>
+

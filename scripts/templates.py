@@ -223,7 +223,7 @@ toyFamilyCaseTemplate = """
 
 executorFileTemplate = autoHeader + """
 static partial class Executor {
-	public static IWorker executeAny(INode_Expression node, Scope scope) {
+	public static IWorker executeAny(INode_Expression node, IScope scope) {
 		switch(node.typeName) {
 			%s
 			default:

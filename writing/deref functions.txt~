@@ -1,0 +1,108 @@
+----- class
+
+class DerefResults
+	IWorker _worker
+	IList<IWorker> _workerList
+
+	construct( IWorker worker, IList<IWorker> workerList )
+		_worker = worker
+		_workerList = workerList
+		Assert( _worker == null || _workerList == null )
+		Assert( _workerList == null || _workerList.Count > 0 )
+	
+	func add( DerefResults other )
+		if other.worker != null
+			if _worker != null
+				throw new Exception("cannot add worker because already have worker")
+			if _workerList != null
+				throw new Exception("cannot add worker because already have workerList")
+			_worker = other.worker
+		
+		if other.workerList != null
+			if _worker != null
+				throw new Exception("cannot add workerList because already have worker")
+			if _workerList == null
+				_workerList = other.workerList
+			else
+				addEach(_workerList, other.workerList)
+
+	get IWorker worker
+		_worker
+	
+	get IList<IWorker> workerList
+		_workerList
+
+
+----- SCOPE
+
+func upDeref(IList<Identifier> idents) -> DerefResults
+	return commonDeref(idents, _woScidentres, _nsScidentres, _exposes, _parent)
+	
+func upDeref(IList<Identifier> idents) -> DerefResults
+	DerefResults results = new DerefResults(null, null)
+	if idents.length == 1
+		if _woScidentres.ContainsKey( first(idents) )
+			results.add( _woScidentres[ first(idents) ].deref() )
+	else if _nsScidentres.ContainsKey( first(idents) )
+		results.add( _nsScidentres[first(idents)].deref(rest(idents)) )
+	for IDerefable d in _exposes
+		results.add(d.deref(idents))
+	if _parent != null && results.worker == null
+		DerefResults parentResults = _parent.upDeref(idents)
+		if results.workerList == null || parentResults.worker == null
+			results.add(parentResults)
+	return results
+
+
+----- SIEVE
+
+func deref(IList<Identifier> idents) -> DerefResults
+	return commonDeref(idents, _visibleWoScidentres, _visibleNsScidentres, _exposes, null)
+
+func deref(IList<Identifier> idents) -> DerefResults
+	DerefResults results = new DerefResults(null, null)
+	if idents.length == 1
+		if _visibleWoScidentres.ContainsKey( first(idents) )
+			results.add( _visibleWoScidentres[ first(idents) ].deref() )
+	else if _visibleNsScidentres.ContainsKey( first(idents) )
+		results.add( _visibleNsScidentres[first(idents)].deref(rest(idents)) )
+	for IDerefable d in _exposes
+		results.add(d.deref(idents))
+	return results
+
+
+----- NSSCIDENTRE
+
+	func deref(IList<Identifier> idents) -> DerefResults
+		return commonDeref(idents, null, null, _list, null)
+	
+	
+		DerefResults results = new DerefResults(null, null)
+		for IDerefable d in _list
+			results.add(d.deref(idents))
+		return results
+
+
+----- common
+
+func commonDeref(
+IList<Identifier> idents,
+IDictionary<Identifier,IWoScidentre> woScidentres,
+IDictionary<Identifier,NsScidentre> nsScidentres,
+IList<IDerefable> derefables,
+IScope scope ) -> DerefResults
+	DerefResults results = new DerefResults(null, null)
+	if idents.Count == 1
+		if woScidetres != null && woScidentres.ContainsKey( first(idents) )
+			results.add( woScidentres[ first(idents) ].deref() )
+	else if nsScidentres != null && nsScidentres.ContainsKey( first(idents) )
+		results.add( nsScidentres[first(idents)].deref(rest(idents)) )
+	if derefables != null
+		for IDerefable d in derefables
+			results.add(d.deref(idents))
+	if scope != null && results.worker == null
+		DerefResults scopeResults = scope.upDeref(idents)
+		if results.workerList == null || scopeResults.worker == null
+			results.add(scopeResults)
+	return results
+

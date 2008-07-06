@@ -1,0 +1,7 @@
+For methods that give objects, use "give".
+For methods that take in objects, use "receive".
+
+io:out.receive("Hello, World!")
+
+def foo = collection.give()
+

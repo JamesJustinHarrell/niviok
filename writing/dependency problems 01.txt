@@ -1,0 +1,72 @@
+--- algorithm
+scidentres have 3 states: empty, waiting, ready
+"execute dependency" requires other scidentres be ready
+	afterwards, scidentre enters waiting or ready state
+"finish dependency" requires other scidentres be waiting or ready
+	afterwards, scidentre enters ready state
+
+events:
+	to_ready, for execute dependencies
+	any_change, for finish dependencies
+
+XXX How to determine every scidentre entered the ready state? Have a HashSet of scidentres and call .remove(scidentre) when a scidentre enters the ready state?
+
+If not all scidentres entered the ready state, throw an execption. If agent is able to determine before execution of any of the scidentres that not all scidentres will enter the ready state, it must still execute the nodes that can be executed, in the same order as specified here, before throwing an exception. (Note that this does not prevent the agent from doing the ordering ahead of time and removing expressions that will not be executed or have no effect.)
+
+--- example code
+frst A = interface[ get D d ]
+frst B = getFaceFrom(A)
+frst C = createFace()
+frst D = interface[ get C c ]
+frst getFaceFrom = { face | face.properties..first().type }
+frst createFace = { interface[] }
+
+--- dependencies
+A has a finish dependency on D.
+B has execute dependencies on getFaceFrom and A.
+C has an execute dependency on createFace.
+D has a finish dependency on C.
+getFaceFrom has no dependencies.
+createFace has no dependencies.
+
+--- run through
+A has no execute dependencies, so it is executed.
+	A has a finish dependency on D, which is empty, so A enters the waiting state.
+	A is setup to be checked when the state of D changes.
+B is skipped because it has execute dependencies on getFaceFrom and A, which are not ready.
+	B is setup to be checked when the state of getFaceFrom changes to ready.
+	B is setup to be checkde when the state of A changes to ready.
+C is skipped because it has an execute dependency on createFace, which is not ready.
+	C is setup to be checked when the state of createFace changes to ready.
+D has no execute dependencies, so it is executed.
+	D has a finish dependency on C, which is empty, so D enters the waiting state.
+	D is setup to be checked when the state of C changes.
+	A is checked because the state of D has changed.
+		A has only a finish dependency on D, which is waiting, but D has a finish dependency on C, which is empty. The state of A does not change.
+getFaceFrom has no execute dependencies, so it is executed.
+	getFaceFrom has no finish dependencies, so it enters the ready state.
+	B is checked because the state of getFaceFrom changed to ready.
+		B has execute dependencies on A, which is in the waiting state, so B is not executed.
+createFace has no execute dependencies, so it is executed.
+	createFace has no finish dependencies, so it enters the ready state.
+	C is checked because the state of createFace changed.
+		C has only an execute dependency on createFace, which is ready, so C is executed.
+		C does not have any finish dependencies, so it enters the ready state.
+			D is checked because the state of C changed.
+			D has only a finish dependency on C, which is ready, so D enters the ready state.
+				A is checked because the state of D changed.
+				A has only a finish dependency on D, which is ready, so A enters the ready state.
+					B is checked because the state of A changed to ready.
+					B has no remaining execute dependencies, so it is executed.
+					B has no finish dependencies, so B enters the ready state.
+
+--- order of state changes
+A: empty -> waiting
+D: empty -> waiting
+getFaceFrom: empty -> ready
+createFace: empty -> ready
+C: empty -> ready
+D: waiting -> ready
+A: waiting -> ready
+B: empty -> ready
+

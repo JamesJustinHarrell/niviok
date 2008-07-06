@@ -116,7 +116,7 @@ class DesibleParser : DesibleParserAuto {
 		if( child == null ) {
 			throw new ParseError(
 				String.Format(
-					"did not contain '{1}' element with '{2}' label",
+					"did not contain '{0}' element with '{1}' label",
 					tagName, label ),
 				getSource(element));
 		}

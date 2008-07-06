@@ -30,7 +30,7 @@ class FunctionInterface : IInterface {
 	}
 	
 	public IList<IInterface> inheritees {
-		get { return new IInterface[]{ Bridge.std_Object }; }
+		get { return new IInterface[]{ Bridge.stdn_Object }; }
 	}
 	
 	public IList<Callee> callees {

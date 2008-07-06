@@ -24,7 +24,7 @@ class Acrid {
 			return 1;
 		}
 		catch(ParseError e) {
-			bridge.printlnError("Parsing: " + e.Message);
+			bridge.printlnError("Parsing: " + e.Message + "\n" + e.source);
 			return 1;
 		}
 	}
@@ -83,7 +83,8 @@ class Acrid {
 		//see "executing module.txt" for details
 		if( bool.Parse(args["run"]) ) {
 			//all exceptions in client code should be caught, and not bubble up here
-			return Executor.executeProgram(module, bridge);
+			return Executor.executeProgramModule(
+				module, Console.In, Console.Out, Console.Error);
 		}
 		
 		return 0;
@@ -129,14 +130,14 @@ class Acrid {
 		Console.Write(node.typeName);
 
 		//write identikey dependencies
-		ICollection<Identifier> depends = Depends.depends(node);
+		HashSet<IdentifierSequence> depends = Depends.depends(node);
 		if( depends.Count > 0 ) {
 			Console.Write(" (");
 			bool first = true;
-			foreach( Identifier ident in depends ) {
+			foreach( IdentifierSequence identseq in depends ) {
 				if( first ) first = false;
 				else Console.Write(", ");
-				Console.Write( ident.ToString() );
+				Console.Write( identseq.ToString() );
 			}
 			Console.Write(")");
 		}

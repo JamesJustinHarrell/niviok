@@ -1,0 +1,889 @@
+//----- INTERFACES
+
+
+//a collection of scidentres
+//used by e.g. namespaces, sieves, and libraries
+interface IDerefable
+	func deref(IdentifierSequence) -> DerefResults
+	func findEmptyWoScidentres(IdentifierSequence) -> Set<IWoScidentre>
+
+
+interface IScope
+	func expose( IDerefable )
+	func bindNamespace( Identifier, IDerefable )
+	func reserveWoScidentre( Identifier, WoScidentreCategory ) -> WoScidentre
+
+	//scidentre reserved by the above function; used by declare-assign and declare-first nodes
+	func activateWoScidentre(Identifier, Type, IWorker /* can be Null */)
+	
+	func assign(Identifier, IWorker)
+	
+	//searches up a chain of scopes
+	func upDeref(IdentifierSequence) -> DerefResults
+	
+	/*
+	returns every wo-scidentre that:
+		* can be referenced by the specified Identifier sequence, and
+		* is in the EMPTY state
+	May also return others. All that is guaranteed is that the wanted ones are returned.
+	*/
+	func findEmptyWoScidentres(IdentifierSequence) -> Set<IWoScidentre>
+	
+	get ScopeAllowance allowance
+
+
+interface IWoScidentre
+	prop Type type
+	func assign(IWorker)
+	func deref() -> DerefResults
+
+
+//----- CLASSES
+
+
+/*
+This class was created because the MSDN and Mono documentation doesn't
+say anything about the Equals and GetHashCode methods of the List<T> class,
+and I need them to work by value.
+*/
+class IdentifierSequence : IEnumerable<Identifier>
+	IEnumerable<Identifier> _idents
+	
+	construct(IEnumerable<Identifier> idents)
+		_idents = idents
+
+	public IEnumerator<Identifier> GetEnumerator()
+		return _idents.GetEnumerator()
+	
+	public override bool Equals(object o)
+		return (o is IdentifierSequence) && (o as IdentifierSequence).ToString() == ToString()
+	
+	public override int GetHashCode()
+		return ToString().GetHashCode()
+	
+	public override string ToString()
+		StringBuilder sb
+		for Identifier ident in _idents
+			sb.Append(ident.ToString())
+			sb.Append(":")
+		return sb.ToString()
+
+
+class __WoScidentreBase
+	Type _type
+	
+	Type type {
+		get { return _type; }
+		set {
+			if value == null : throw NullException()
+			if _type != null : throw new Exception("type already set")
+			_type = value
+		}
+	}
+
+class __SingleWoScidentreBase : __WoScidentreBase
+	IWorker _worker
+	
+	private func ready()
+		_worker != null
+	
+	func deref() -> DerefResults
+		if ! ready()
+			throw new Exception("scidentre not ready")
+		return new DerefResults(_worker, null)
+
+class FunctionScidentre : IWoScidentre, __WoScidentreBase
+	int _requiredCount
+	IList<IWorker> _workers
+	
+	construct()
+		_requiredCount = 1
+		_workers = new List<IWorker>
+	
+	private func ready()
+		_workers.Count == _requiredCount
+	
+	func incrementRequiredCount()
+		if _workers.Count != 0 : throw new Exception("workers already added")
+		_requiredCount++
+	
+	func assign(IWorker w)
+		if w == null : throw
+		if ready() : throw new Exception("function scidentre full")
+		_workers.Add( downcast(w, _type) )
+	
+	func deref() -> DerefResults
+		if ! ready() : throw new Exception("function scidentre not ready")
+
+class ConstantScidentre : IWoScidentre, __SingleWoScidentreBase
+	func assign(IWorker worker)
+		if worker == null : throw
+		if ready() : throw
+		_worker = worker
+
+class VariableScidentre : IWoScidentre, __SingleWoScidentreBase
+	func assign(IWorker worker)
+		if worker == null : throw
+		_worker = worker
+
+
+class NsScidentre
+	IList<IDerefable> _list
+	
+	construct
+		_list = new List<IDerefable>()
+	
+	func bind(IDerefable d)
+		_list.add(d)
+	
+	func deref(IdentifierSequence idents) -> DerefResults
+		return commonDeref(idents, null, null, _list, null)
+
+
+class NamespaceReference : IDerefable
+	IdentifierSequence _idents
+	IScope _scope
+	
+	construct(IdentifierSequence idents, IScope scope)
+		_idents = idents
+		_scope = scope
+	
+	func deref(IdentifierSequence idents) -> DerefResults
+		return _scope.upDeref( join(_idents, idents) )
+
+	func findEmptyWoScidentres(IdentifierSequence idents) -> Set<IWoScidentre>
+		_scope.findEmptyWoScidentres( join(_idents, idents) )
+
+
+class Library : IDerefable, IDisposable
+	IDerefable _derefable
+
+	construct(IDerefable derefable)
+		_derefable = derefable
+		callIfFound("library_initialize")
+	
+	func callIfFound(Identifier i)
+		IWoScidentre ws = G.tryEvalIdent(_derefable, i)
+		if ws != null
+			ws.call(new Arguments[]{})
+	
+	func deref(IdentifierSequence idents) -> DerefResults
+		if (idents[0] in ["library_initialize", "library_dispose", "main"])
+			new DerefResults(null, null)
+		else
+			_derefable.deref(idents)
+
+	func findEmptyWoScidentres(IdentifierSequence idents) -> Set<IWoScidentre>
+		return new Set<IWoScidentre>()
+	
+	public override void Finalize()
+		callIfFound("library_dispose")
+
+
+class SieveScope : IScope
+	IScope _parent
+	Sieve _sieve
+	bool _visible
+	
+	construct(IScope parent, Sieve sieve, bool visible)
+		_parent = parent
+		_sieve = sieve
+		_visible = visible
+
+	func expose( IDerefable d )
+		if _hidden
+			_sieve.expose(d)
+		else
+			throw new NotImplementedException()
+	
+	func bindNamespace( Identifier name, IDerefable d )
+		_sieve.bindNamespace( _visible, name, d )
+	
+	func reserveWoScidentre( Identifier name, WoScidentreCategory cat ) -> IWoScidentre
+		return _sieve.reserveWoScidentre( _visible, name, cat )
+	
+	func activateWoScidentre(Identifier, Type, IWorker)
+		throw new NotImplementedException()
+	
+	func assign(Identifier, IWorker)
+		throw new NotImplementedException()
+	
+	func upDeref(IdentifierSequence idents) -> DerefResults
+		return _sieve.upDeref(idents)
+	
+	func findEmptyWoScidentres(IdentifierSequence idents) -> Set<IWoScidentre>
+		return _sieve.findEmptyWoScidentres(idents)
+	
+	get ScopeAllowance allowance
+		_parent.allowance
+
+class Sieve : IDerefable
+	IScope _parent
+	Set<IDerefable> _exposes //all hidden
+	Dict<Identifier, NsScidentre> _visibleNsScidentres
+	Dict<Identifier, NsScidentre> _allNsScidentres
+	Dict<Identifier, IWoScidentre> _visibleWoScidentres
+	Dict<Identifier, IWoScidentre> _hiddenWoScidentres
+	SieveScope _visibleScope
+	ScopeScope _hiddenScope
+
+	construct(IScope parent)
+		_parent = parent
+		_exposes = new Set<IDerefable>()
+		_visibleNsScidentres = new Dict<Identifier,NsScidentre>()
+		_nsScidentres = new Dict<Identifier,NsScidentre>()
+		_visibleWoScidentres = new Dict<Identifier,IWoScidentre>()
+		_allWoScidentres = new Dict<Identifier,IWoScidentre>()
+		_hiddenScope = new SieveScope(_parent, this, false)
+		_visibleScope = new SieveScope(_parent, this, true)
+
+	private func isInEither<T>(T a, T b, Identifier name, string message)
+		if a.ContainsKey(name) || b.ContainsKey(name)
+			throw new Execption(message)
+	
+	func expose(IDerefable d)
+		_exposes.Add(d)
+
+	private func bindNamespace( Dict<Identifier,NsScidentre> dict, Identifier name, IDerefable d )
+		if ! dict.ContainsKey(name)
+			dict.Add(name, new NsScidentre())
+		dict[name].bind(d)
+	
+	func bindNamespace(bool visible, Identifier name, IDerefable d)
+		isInEither(_visibleWoScidentres, _hiddenWoScidentres,
+			"scidentre declared as worker and namespace")
+		bindNamespace( _allNsScidentres, name, d )
+		if visible
+			bindNamespace( _visibleNsScidentres, name, d )
+	
+	//this function is very similar to Scope::reserveWoScidentre
+	private func reserveWoScidentre(
+	Dict<Identifier,IWoScidentre> dict, Identifier name, WoScidentreCategory cat ) -> WoScidentre
+
+		if dict.ContainsKey(name)
+			//note that here we know that the category is FUNCTION
+			IWoScidentre ws = dict[name]
+			(ws as FunctionScidentre).incrementRequiredCount()
+		else
+			dict.Add(name, (
+				cat == FUNCTION ? new FunctionScidentre() :
+				cat == CONSTANT ? new ConstantScidentre() :
+				cat == VARIABLE ? new VariableScidentre() :
+				throw new Exception("unknown category") ))
+		return dict[name]
+	
+	func reserveWoScidentre(bool visible, Identifier name, WoScidentreCategory cat ) -> IWoScidentre
+		if _allNsScidentres.ContainsKey(name)
+			"scidentre declared as worker and namespace")
+		if cat == FUNCTION
+			if(
+			( _hiddenNsScidentres.ContainsKey(name) &&
+			!(_hiddenNsScidentres[name] is FunctionScidentre) ) ||
+			( _visibleNsScidentres.ContainsKey(name) &&
+			!(_visibleNsScidentres[name] is FunctionScidentre) ) )
+				throw new Exception("scidentre in same scope declared as function and non-function")
+		else
+			isInEither(_visibleWoScidentres, _hiddenWoScidentres, name,
+				"non-function wo-scidentre declared multiple times in same scope")
+		reserveWoScidentre( visible ? _visibleWoScidentres : _hiddenWoScidentres, name, cat )
+	
+	func deref(IdentifierSequence idents) -> DerefResults
+		return commonDeref(idents, _visibleWoScidentres, _visibleNsScidentres, _exposes, null)
+	
+	private func addWoScidentres()
+		IDictionary<Identifier,IWoScidentre> woScidentres =
+			new Dictionary<Identifier,IWoScidentre>(_hiddenWoScidentres)
+		for Identifier name in _visibleWoScidentres
+			IWoScidentre visibleWS = _visibleWoScidentres[name]
+			if (visibleWS is FunctionScidentre) && woScidentres.ContainsKey(name)
+				FunctionScidentre allWS = new FunctionScidentre()
+				IEnumerable<IWorker> workerList =
+					visibleWS.deref().workerList + woScidentres[name].deref().workerList
+				for IWorker worker in workerList
+					allWS.incrementRequiredCount()
+					allWS.assign(worker)
+				woScidentres[name] = allWS
+			else
+				woScidentres.Add(name, ws)
+		return woScidentres
+	
+	func upDeref(IdentifierSequence idents) -> DerefResults
+		return commonDeref(idents, addWoScidentres(), _allNsScidentres, _exposes, _parent)
+	
+	func findEmptyWoScidentres(IdentifierSequence idents) -> Set<IWoScidentre>
+		return commonFindEmptyWoScidentres(idents, addWoScidentres, _allNsScidentres, _exposes, _parent)
+
+	get IScope visible
+		_visible
+	
+	get IScope hidden
+		_hidden
+
+
+class Scope : IScope
+	IScope _parent
+	Set<IDerefable> _exposes
+	Dict<Identifier, NsScidentre> _nsScidentres
+	Dict<Identifier, IWoScidentre> _woScidentres
+	ScopeAllowance _sa
+
+	construct( ?IScope parent, ?ScopeAllowance sa )
+		_parent = parent
+		_exposes = new Set<IDerefable>()
+		_nsScidentres = new Dict<Identifier, NsScidentre>()
+		_woScidentres = new Dict<Identifier, IWoScidentre>()
+		_sa = sa
+		if _parent == null and _sa == null
+			throw new Exception("parent and allowance can't both be null")
+	
+	func expose(IDerefable d)
+		_exposes.add(d)
+	
+	func bindNamespace( Identifier i, IDerefable d )
+		if _nsScidentres.ContainsKey(i) == false
+			_nsScidentres.add(i, new NsScidentre())
+		_nsScidentres[i].bind(d)
+	
+	//this function is very similar to Sieve::reserveWoScidentre
+	func reserveWoScidentre( Identifier name, WoScidentreCategory cat ) -> WoScidentre
+		if _nsScidentres.ContainsKey(name)
+			throw new Exception("scidentre declared as worker and namespace")
+		if cat != FUNCTION
+			if _woScidentres.ContainsKey(name)
+				throw new Exception("non-function wo-scidentre declared multiple times in same scope")
+		if _woScidentres.ContainsKey(name)
+			//note that here we know that the category is FUNCTION
+			IWoScidentre ws = _woScidentres[name]
+			if ! (ws is FunctionScidentre)
+				throw new Exception("scidentre in same scope declared as function and non-function")
+			(ws as FunctionScidentre).incrementRequiredCount()
+		else
+			_woScidentres.Add(name, (
+				cat == FUNCTION ? new FunctionScidentre() :
+				cat == CONSTANT ? new ConstantScidentre() :
+				cat == VARIABLE ? new VariableScidentre() :
+				throw new Exception("unknown category") ))
+		return _woScidentres[name]
+
+	func activateWoScidentre(Identifier i, Type t, IWorker w)
+		_woScidentres[i].type = t
+		_woScidentres[i].assign(w)
+	
+	func assign(Identifier i, IWorker w)
+		_woScidentres[i].assign(w)
+	
+	func upDeref(IdentifierSequence idents) -> DerefResults
+		return commonDeref(idents, _woScidentres, _nsScidentres, _exposes, _parent)
+	
+	func findEmptyWoScidentres(IdentifierSequence idents) -> Set<IWoScidentre>
+		return commonFindEmptyWoScidentres(idents, _wsScidentres, _nsScidentres, _exposes, _parent)
+	
+	get ScopeAllowance allowance
+		if _sa == null
+			_parent.allowance
+		else
+			_sa
+
+
+/* When executing module or compound node:
+* first create the complete hierachy of scopes, complete with all scidentres
+* along the way build up a queue of empty wo-scidentres
+* execute entries in the queue, assigning to the associated wo-scidentres */
+class ScopeQueue
+	enum State {
+		EMPTY, WAITING, READY
+	}
+	struct Entry {
+		WoScidentre target
+		INode_Expression typeExpr
+		INode_Expression valueExpr
+		IScope scope
+		Set<Entry> executeDependencies
+		Set<Entry> finishDependencies
+		State state
+		Set<Entry> listeners
+	}
+	List<Entry> _entries #needed to store order of entries
+	Dict<IWoScidentre, Entry> _entryLookup
+
+	construct
+		_entries = new List<Entry>()
+		_entryLookup = new Dict<IWoScidentre, Entry>()
+
+	func add( WoScidentre ws, INode_Expression typeExpr, INode_Expression valueExpr, IScope scope )
+		Entry e = new Entry(
+			ws,
+			typeExpr, valueExpr,
+			scope,
+			null, null,
+			EMPTY,
+			new Set<Entry>() )
+		_entries.Add(entry)
+		_entryLookup.Add(ws, entry)
+	
+	func executeAll()
+		findAllDepedencies()
+		reduceQueue()
+
+	private func findAllDependencies()
+		for entry e in entries
+			Set<IdentifierSequence> valExecDepends, valFinishDepends
+			depends( e.valueExpr, valExecDepends, valFinishDepends )
+			valExecDepends.unionWith(depends(e.typeExpr))
+			e.executeDependencies = findDependencies( valExecDepends, e.scope )
+			e.finishDependencies = findDependencies( valFinishDepends, e.scope )
+	
+	private func findDependencies( Set<IdentifierSequence> identseqs, IScope scope )
+		Set<Entry> output
+		for IdentifierSequence identseq in identseqs
+			for IWoScidentre ws in scope.findEmptyWoScidentres(identseq)
+				if _entryLookup.hasKey(ws)
+					output.add(_entryLookup[ws])
+		return output
+
+	private func reduceQueue()
+		for Entry e in _entries
+			tryAdvance(e)
+		for Entry e in _entries
+			if e.state != READY
+				throw new Exception("some entries could not be set to the READY state")
+
+	private func tryAdvance(Entry e)
+		if e.state == EMPTY
+			removeReadyDepends(e.executeDepends)
+			if e.executeDependencies.empty
+				e.target.type = Executor.execute(e.typeExpr, e.scope)
+				e.target.assign(Executor.execute(e.valueExpr, e.scope))
+				e.state = WAITING
+				checkListeners(e)
+			else
+				setListeners( e, e.executeDependencies )
+		if e.state == WAITING
+			removeReadyDepends(e.finishDepends)
+			if cyclicalReady(e, new Set<IWoScidentre>())
+				e.state = READY
+				checkListeners(e)
+			else
+				setListeners( e, e.finishDependencies )
+	
+	private func setListeners( Entry entry, Set<Entry> dependencies )
+		for Entry dep in dependencies
+			dep.listeners.unionWith(entry)
+	
+	private func checkListeners( Entry e )
+		for Entry e2 in e.listeners
+			tryAdvance(e2)
+	
+	private func removeReadyDepends( Set<Entry> depends )
+		for Entry e in depends
+			if e.state == READY
+				depends.remove(e)
+
+	//tells if @entry is READY or WAITING with only cyclical dependencies
+	private func cyclicalReady( Entry entry, Set<Entry> cleared )
+		select entry.state
+		case EMPTY
+			false
+		case WAITING
+			(entry in cleared) or all_true?(
+				entry.finishDependencies,
+				{Entry dep | cyclicalReady(dep, cleared + entry)})
+		case READY
+			true
+		else
+			throw new Exception()
+
+
+class WoScidentreReserver
+	static func reserve( Node_Call node, IScope scope )
+		reserveAny(node.receiver)
+		for Node_Argument a in node.arguments
+			if a.value != null
+				reserveAny(a.value)
+
+	static func reserve( Node_Compound node, IScope scope )
+		for INode_Expression child in node.members
+			reserveAny(child, scope)
+	
+	static func reserve( Node_DeclareAssign node, IScope scope )
+		scope.reserveWoScidentre( node.name, node.category )
+
+	static func reserve( Node_DeclareEmpty node, IScope scope )
+		scope.reserveWoScidentre( node.name, node.category )
+	
+	static func reserveAny( INode_Expression node, IScope scope )
+		switch( node.typeName )
+		case "integer"
+		case "string"
+		case "rational"
+			break
+		case "call"
+			reserve(node as Node_Call, scope)
+		case "compound"
+			reserve(node as Node_Compound, scope)
+		case "declare-assign"
+			reserve(node as Node_DeclareAssign, scope)
+		case "declare-empty"
+			reserve(node as Node_DeclareEmpty, scope)
+		default
+			throw new Error()
+
+
+class DerefResults
+	IWorker _worker
+	IList<IWorker> _workerList
+
+	construct( IWorker worker, IList<IWorker> workerList )
+		_worker = worker
+		_workerList = workerList
+		Assert( _worker == null || _workerList == null )
+		Assert( _workerList == null || _workerList.Count > 0 )
+	
+	func add( DerefResults other )
+		if other.worker != null
+			if _worker != null
+				throw new Exception("cannot add worker because already have worker")
+			if _workerList != null
+				throw new Exception("cannot add worker because already have workerList")
+			_worker = other.worker
+		
+		if other.workerList != null
+			if _worker != null
+				throw new Exception("cannot add workerList because already have worker")
+			if _workerList == null
+				_workerList = other.workerList
+			else
+				addEach(_workerList, other.workerList)
+
+	get IWorker worker
+		_worker
+	
+	get IList<IWorker> workerList
+		_workerList
+
+
+class NamespaceScope : IScope
+	IScope _parent
+	Identifier _name
+	
+	construct(IScope parent, Identifier name)
+		_parent = parent
+		_name = name
+	
+	func expose( IDerefable d )
+		_parent.expose(d)
+	
+	func bindNamespace( Identifier name, IDerefable d)
+		_parent.bindNamespace(name, d)
+	
+	func reserveWoScidentre( Identifier name, WoScidentreCategory cat) -> WoScidentre
+		return _parent.reserveWoScidentre(name, cat)
+	
+	func activateWoScidentre(Identifier name, Type type, IWorker worker)
+		_parent.activateWoScidentre(name, type, worker)
+
+	func assign(Identifier name, IWorker worker)
+		_parent.assign(name, worker)
+	
+	func upDeref(IdentifierSequence idents) -> DerefResults
+		DerefResults results = new DerefResults(null, null)
+		results.add( _parent.upDeref(join(_name,idents)) )
+		results.add( _parent.upDeref(idents) )
+		return results
+	
+	func findEmptyWoScidentres(IdentifierSequence) -> Set<IWoScidentre>
+		Set<IWoScidentre> results
+		results.UnionWith( _parent.upDeref(join(_name,idents)) )
+		results.UnionWith( _parent.upDeref(idents) )
+		return results
+	
+	get ScopeAllowance allowance
+		_parent.allowance
+
+
+//----- FUNCTIONS
+
+
+FUNCTION createClosure( Set<IdentifierSequence> idents, IScope scope ) -> IScope
+	//xxx temp
+	return scope
+
+
+FUNCTION commonDeref(
+IdentifierSequence idents,
+IDictionary<Identifier,IWoScidentre> woScidentres,
+IDictionary<Identifier,NsScidentre> nsScidentres,
+IList<IDerefable> derefables,
+IScope scope ) -> DerefResults
+	DerefResults results = new DerefResults(null, null)
+	if idents.Count == 1
+		if woScidetres != null && woScidentres.ContainsKey( first(idents) )
+			results.add( woScidentres[ first(idents) ].deref() )
+	else if nsScidentres != null && nsScidentres.ContainsKey( first(idents) )
+		results.add( nsScidentres[first(idents)].deref(rest(idents)) )
+	if derefables != null
+		for IDerefable d in derefables
+			results.add(d.deref(idents))
+	if scope != null && results.worker == null
+		DerefResults scopeResults = scope.upDeref(idents)
+		if results.workerList == null || scopeResults.worker == null
+			results.add(scopeResults)
+	return results
+
+
+FUNCTION commonFindEmptyWoScidentres(
+IdentifierSequence idents,
+IDictionary<Identifier,IWoScidentre> woScidentres,
+IDictionary<Identifier,NsScidentre> nsScidentres,
+IList<IDerefable> derefables,
+IScope scope ) -> Set<IWoScidentre>
+	Set<IWoScidentre> results = new Set<IWoScidentre>()
+	if idents.Count == 1
+		if woScidentres.ContainsKey( first(idents) )
+			results.Add( woScidentres[ first(idents) ] )
+	else if nsScidentres.ContainsKey( first(idents) )
+		results.UnionWith( nsScidentres[first(idents)].findEmptyWoScidentres(rest(idents)) )
+	for IDerefable d in derefables
+		results.UnionWith( d.findEmptyWoScidentres(idents) )
+	if scope != null
+		results.UnionWith(scope.findEmptyWoScidentres(idents))
+	return results
+
+
+FUNCTION declareAssign (
+Identifier name, WoScidentreCategory cat,
+Type type, IWorker worker, IScope scope )
+	IWoScidentre ws = scope.reserveWoScidentre(name, cat)
+	ws.type = type
+	ws.assign(worker)
+
+
+FUNCTION build standard library ( ) -> IDerefable
+	Node_Module node = ...
+	IScope scope = new Scope(null)
+	ScopeQueue sq = new ScopeQueue()
+	Sieve sieve = executeGet(node.sieve, sq, scope)
+	declareAssign(
+		new Identifier("Interface"),
+		WoScidentreCategory.CONSTANT,
+		new Type(null),
+		stdn_Interface.worker,
+		sieve.visible )
+	declareAssign(
+		new Identifier("Object"),
+		WoScidentreCategory.CONSTANT,
+		new Type(null),
+		stdn_Object.worker,
+		sieve.visible )
+	sq.executeAll()
+	declareAssign(
+		new Identifier("true"),
+		WoScidentreCategory.CONSTANT,
+		new Type(stdn_Bool),
+		Client_Boolean.wrap(true),
+		sieve.visible )
+	declareAssign(
+		new Identifier("false"),
+		WoScidentreCategory.CONSTANT,
+		new Type(stdn_Bool),
+		Client_Boolean.wrap(false),
+		sieve.visible )
+	_std = sieve
+
+
+FUNCTION build standard io library ( TextIn, TextOut outStream, TextOut ) -> IDerefable
+	Sieve sieve = new Sieve(null)
+	IWoScidentre ws = sieve.reserveWoScidentre(
+		true, new Identifier("println"), WoScidentreCategory.FUNCTION)
+	ws.type = new Type(null)
+	ws.assign(
+		toClientFunction(
+			new Function_Native(
+				new ParameterImpl[] {
+					new ParameterImpl(
+						Direction.IN,
+						stdn_any,
+						new Identifier("text"),
+						null)
+				},
+				null,
+				delegate(IScope args) {
+					IWorker arg = G.evalIdent(args, "text");
+					outStream.WriteLine( arg is Null ? "null" : Bridge.toNativeString(arg) );
+					return new Null();
+				},
+				scope)))
+	return sieve
+
+
+FUNCTION execute Program Module ( Node_Module node, in, out, err ) -> int
+	try
+		IScope scope = new Scope(new ScopeAllowance(false,false,false))
+		
+		#bind libraries
+		scope.bindNamespace("std", Bridge.std)
+		IDerefable stdio = Bridge.createStdioLib(in,out,err)
+		scope.bindNamespace("stdio", stdio)
+		try
+			for i in node.imports
+				execute(i, scope)
+		catch LibraryFailure e
+			out.writeline("Failed to load library. Program will not execute.")
+			return 1
+		
+		#execute global declarations
+		IDerefable sieve
+		try
+			ScopeQueue sq = new ScopeQueue()
+			sieve = executeGet(node.sieve, sq, scope)
+			sq.executeAll()
+		catch ClientException e
+			out.writeline("Global declaration threw an exception.")
+			return 1
+		
+		#get main function
+		IWorker main
+		try
+			main = G.evalIdent(sieve, "main")
+		catch UnknownScidentre e
+			out.writeline("no main function")
+			return 1
+	
+		#call main function
+		try
+			main.call(new Argument[]{})
+		catch ClientException e
+			out.writeline("uncaught exception: " + e.message)
+			return 1
+
+		IWorker exitStatus = G.evalIdent(stdio,"get exit status").call(new Argument[]{})
+		return Bridge.unwrapInteger(exitStatus)
+	
+	catch Exception e
+		try
+			out.writeline("An error occurred in Acrid. Client program terminated.")
+		catch Exception e {}
+		throw
+
+
+FUNCTION execute Library Module ( Node_Module node, in, out, err ) -> IDerefable
+	IScope scope = new Scope(new ScopeAllowance(false,false,false))
+	
+	#bind libraries
+	scope.bindNamespace("std", Bridge.std)
+	try
+		for i in node.imports
+			execute(i, scope)
+	catch LibraryFailure e
+		throw new LibraryFailure("couldn't load library due to failure to load child library", e)
+	
+	#execute global declarations
+	IDerefable sieve
+	try
+		ScopeQueue sq = new ScopeQueue()
+		sieve = executeGet(node.sieve, sq, scope)
+		sq.executeAll()
+	catch ClientException e
+		throw new LibraryFailure("couldn't load library because it throw an exception", e)
+	
+	return new Library(sieve)
+
+
+FUNCTION execute import ( Node_Import node, IScope s )
+	for at in node.attempts
+		IDerefable lib = Bridge.tryImport(at.sheme, at.body)
+		if lib != null
+			s.bindNamespace(node.name, lib)
+			return
+	throw new LibraryFailure("couldn't load library with attempts ...")
+
+
+FUNCTION execute Compound ( Node_Compound node, IScope parentScope ) -> IWorker
+	IScope scope = new Scope(parentScope)
+	for exp in node.exposes
+		execute(exp, scope)
+	for us in node.uses
+		execute(us, scope)
+	
+	WoScidentreReserver.reserve( node, scope )
+
+	ScopeQueue sq = new ScopeQueue()
+	for sd in node.declarations
+		execute(sd, sq, scope)
+	sq.executeAll()
+	
+	for m in node.members
+		execute(m, scope)
+
+
+FUNCTION execute expose ( Node_Expose node, IScope scope )
+	List<Identifier> idents = G.extractIdents(node.identifiers)
+	scope.expose( new NamespaceReference(idents, scope) )
+
+
+FUNCTION execute using ( Node_Using node, IScope scope )
+	List<Identifier> idents = G.extractIdents(node.identifiers)
+	Identifier name =
+		if node.name == null
+			G.last(idents)
+		else
+			node.name.value
+	scope.bindNamespace( name, new NamespaceReference(idents, scope) )
+
+
+FUNCTION execute sieve ( Node_Sieve node, ScopeQueue sq, IScope scope )
+	scope.addExpose( executeGetSieve(node, sq, scope) )
+
+
+FUNCTION execute get sieve ( Node_Sieve node, ScopeQueue sq, IScope scope ) -> Sieve
+	Sieve sieve = new Sieve(scope)
+	for e in node.exposes
+		execute(e, sieve.hidden)
+	for u in node.uses
+		execute(u, sieve.hidden)
+	for hidable in node.hidables
+		execute(hidable, sq, sieve.hidden)
+	return si
+
+
+FUNCTION execute hidable ( Node_Hidable node, ScopeQueue sq, Sieve sieve )
+	execute( node.declaration, sq, node.hidden ? sieve.hidden : sieve.visible )
+
+
+FUNCTION execute namespace ( Node_Namespace node, ScopeQueue sq, IScope scope )
+	scope.bindNamespace( node.name,
+		executeGetSieve( node.sieve, sq,
+			new NamespaceScope(scope, node.name)))
+
+
+FUNCTION execute declare-first ( Node_DeclareFirst node, ScopeQueue sq, IScope scope )
+	#the ScopeQueue takes care of finding dependencies
+	sq.add( scope.reserveWoScidentre(node.name, node.category), node.value, scope )
+
+
+//----- NAMESPACES
+
+
+NAMESPACE stdio
+	interface InTextStream
+	interface OutTextStream
+	
+	InTextStream in
+	OutTextStream out
+	OutTextStream log
+	
+	String program`arguments
+	
+	func get`exit`status ( -> Int )
+	func set`exit`status ( Int -> void )
+	
+	func get`error`exit`status ( -> Int ) #number used in case of error e.g. uncaught exception
+	func set`error`exit`status ( Int -> void ) #can't be 0
+	
+	interface InOctetStream
+	interface OutOctetStream
+	
+	InOctetStream octet`in
+	OutOctetStream octet`out
+	OutOctetStream octet`log
+

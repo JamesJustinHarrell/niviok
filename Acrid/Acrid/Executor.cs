@@ -1,58 +1,232 @@
 //executes statement and expression nodes
 
 using System;
+using System.Diagnostics;
 using System.Collections.Generic;
 using System.Threading; //for yield node
+using System.IO;
 
 static partial class Executor {
 
 	//----- STATEMENTS
 
+	public static int executeProgramModule(
+	Node_Module node, TextReader inStream, TextWriter outStream, TextWriter logStream ) {
+		try {
+			IScope scope = new Scope(null, new ScopeAllowance(false,false));
+			
+			//bind libraries
+			scope.bindNamespace(new Identifier("std"), Bridge.std);
+			IDerefable stdio = Bridge.buildStdioLib(inStream, outStream, logStream);
+			scope.bindNamespace(new Identifier("stdio"), stdio);
+			try {
+				foreach(Node_Import i in node.imports)
+					execute(i, scope);
+			}
+			catch(LibraryFailure e) {
+				outStream.WriteLine(
+					"Failed to load library. Program will not execute.");
+				return 1;
+			}
+			
+			//execute global declarations
+			ScopeQueue sq = new ScopeQueue();
+			IDerefable sieve = executeGetSieve(node.sieve, sq, scope);
+			try {
+				sq.executeAll();
+			}
+			catch(ClientException e) {
+				outStream.WriteLine("Global declaration threw an exception: " + e);
+				return 1;
+			}
+			
+			//get main function
+			IWorker main;
+			try {
+				main = G.evalIdent(sieve, "main");
+			}
+			catch(UnknownScidentre e) {
+				outStream.WriteLine("no main function");
+				return 1;
+			}
+		
+			//call main function
+			try {
+				main.call(new Argument[]{});
+			}
+			catch(ClientException e) {
+				outStream.WriteLine("uncaught exception: " + e.clientMessage);
+				return 1;
+			}
+
+			IWorker exitStatus = G.evalIdent(stdio, "get exit status").call(new Argument[]{});
+			return (int)Bridge.toNativeInteger(exitStatus);
+		}
+		catch(Exception e) {
+			outStream.WriteLine(
+				"An error occurred in Acrid. Client program terminated.");
+			throw;
+		}
+	}
+
+	public static IDerefable executeLibraryModule(
+	Node_Module node, TextReader inStream, TextWriter outStream, TextWriter logStream ) {
+		IScope scope = new Scope(null, new ScopeAllowance(false,false));
+		
+		//bind libraries
+		scope.bindNamespace(new Identifier("std"), Bridge.std);
+		try {
+			foreach(Node_Import i in node.imports)
+				execute(i, scope);
+		}
+		catch(LibraryFailure e) {
+			throw new LibraryFailure(
+				"couldn't load library due to failure to load child library", e);
+		}
+		
+		//execute global declarations
+		IDerefable sieve;
+		try {
+			ScopeQueue sq = new ScopeQueue();
+			sieve = executeGetSieve(node.sieve, sq, scope);
+			sq.executeAll();
+		}
+		catch(ClientException e) {
+			throw new LibraryFailure(
+				"couldn't load library because it throw an exception", e);
+		}
+		
+		return new Library(sieve);
+	}
+
+	public static void execute( Node_Expose node, IScope scope ) {
+		IList<Identifier> idents = G.extractIdents(node.identifiers);
+		scope.expose( new NamespaceReference(new IdentifierSequence(idents), scope) );
+	}
+
+	public static void execute( Node_Import node, IScope s ) {
+		foreach(Node_ImportAttempt at in node.importAttempts) {
+			IDerefable lib = Bridge.tryImport(at.scheme.value, at.body.value);
+			if(lib != null) {
+				s.bindNamespace(node.alias.value, lib);
+				return;
+			}
+		}
+		throw new LibraryFailure("couldn't load library with attempts ...");
+	}
+
+	public static void execute( Node_Using node, IScope scope ) {
+		IList<Identifier> idents = G.extractIdents(node.targets);
+		Identifier name;
+		if(node.name == null)
+			name = G.last(idents);
+		else
+			name = node.name.value;
+		scope.bindNamespace( name, new NamespaceReference(new IdentifierSequence(idents), scope) );
+	}
+
+	public static void execute( Node_Sieve node, ScopeQueue sq, IScope scope ) {
+		scope.expose( executeGetSieve(node, sq, scope) );
+	}
+
+	public static Sieve executeGetSieve( Node_Sieve node, ScopeQueue sq, IScope scope ) {
+		Sieve sieve = new Sieve(scope);
+		foreach( Node_Expose e in node.exposes )
+			execute(e, sieve.hidden);
+		foreach( Node_Using u in node.usings )
+			execute(u, sieve.hidden);
+		foreach( Node_Hidable hidable in node.hidables )
+			execute(hidable, sq, sieve);
+		return sieve;
+	}
+
+	public static void execute( Node_Hidable node, ScopeQueue sq, Sieve sieve ) {
+		execute( node.declaration, sq, node.hidden.value ? sieve.hidden : sieve.visible );
+	}
+
+	public static void execute( Node_Namespace node, ScopeQueue sq, IScope scope ) {
+		scope.bindNamespace( node.name.value,
+			executeGetSieve( node.sieve, sq,
+				new NamespaceScope(scope, node.name.value)));
+	}
+
+	public static void execute( Node_DeclareFirst node, ScopeQueue sq, IScope scope ) {
+		//the ScopeQueue takes care of finding dependencies
+		sq.add(
+			scope.reserveWoScidentre(node.name.value, node.woScidentreCategory.value),
+			node.type,
+			node.value,
+			scope );
+	}
+	
+	public static void execute( INode_StatementDeclaration decl, ScopeQueue sq, IScope scope ) {
+		switch(decl.typeName) {
+		case "declare-first" :
+			execute(decl as Node_DeclareFirst, sq, scope);
+			break;
+		case "namespace" :
+			execute(decl as Node_Namespace, sq, scope);
+			break;
+		case "sieve" :
+			execute(decl as Node_Sieve, sq, scope);
+			break;
+		default :
+			throw new Exception();
+		}
+	}
+
+
+
+
+
+
+
+
+
+
+	/* xxx remove
+	
 	//xxx remove? -- execution of declare-first is done by limit-old executor
 	//declare-first
-	public static void execute(Node_DeclareFirst node, Scope scope) {
-		//xxx
-		scope.bridge.printlnWarning("declare-first implemented incorrectly");
+	public static void execute(Node_DeclareFirst node, IScope scope) {
 		scope.declareAssign(
 			node.name.value,
-			node.identikeyType.identikeyCategory.value,
-			Evaluator.evaluate(node.identikeyType.nullableType, scope),
+			node.woScidentreCategory.value,
+			new Type(executeAny(node.type, scope)),
 			executeAny(node.value, scope));
 	}
 
 	//expose
-	public static void execute(Node_Expose node, Scope scope) {
+	public static void execute(Node_Expose node, IScope scope) {
+		Debug.Assert(node != null && scope != null, "null argument");
 		IList<Identifier> idents = new List<Identifier>();
 		foreach( Node_Identifier ident in node.identifiers )
 			idents.Add(ident.value);
-		scope.expose(idents);
-	}
-
-	//hidable
-	public static void execute(Node_Hidable node, Scope scope) {
-		//set on scope
-		executeISN(node.declaration, scope);
-		
-		//set on scope.parent if hidden=false
-		//xxx
-		scope.bridge.printlnWarning("hidable node implemented incorrectly");
-		if( node.hidden.value == false && (node.declaration is Node_DeclareFirst) ) {
-			Node_DeclareFirst df = (node.declaration as Node_DeclareFirst);
-			scope.parent.declareAssign(
-				df.name.value,
-				df.identikeyType.identikeyCategory.value,
-				NullableType.dyn,
-				scope.evaluateLocalIdentifier(df.name.value));
+		try {
+			scope.expose(idents);
+		}
+		catch(NoCorrespondingNamespaceScidentre e) {
+			throw new ClientException(
+				"no namespace scidentre found with name '" + e.ident + "'",
+				node.nodeSource);
 		}
 	}
 
-	//xxx remove? -- execution is handled by limit-old executor
-	//identikey-special-new
-	public static void executeISN(INode_IdentikeySpecialNew node, Scope scope) {
+	//hidable
+	//xxx throws away visiblity information
+	public static void execute(Node_Hidable node, IScope scope) {
+		executeStatementDeclaration(node.declaration, scope);
+	}
+
+	//xxx remove? -- execution is handled by sieve executor
+	//statement-declaration
+	//xxx out of order
+	public static void executeStatementDeclaration(
+	INode_StatementDeclaration node, IScope scope) {
 		if( node is Node_DeclareFirst )
 			execute( node as Node_DeclareFirst, scope );
-		else if( node is Node_LimitOld )
-			execute( node as Node_LimitOld, scope );
+		else if( node is Node_Sieve )
+			execute( node as Node_Sieve, scope );
 		else if( node is Node_Namespace )
 			execute( node as Node_Namespace, scope );
 		else
@@ -61,32 +235,23 @@ static partial class Executor {
 					"unknown type of identikey-special-new node: {0}",
 					node));
 	}
-
-	//identikey-special-old
-	public static void executeISO(INode_IdentikeySpecialOld node, Scope scope) {
-		if( node is Node_Expose )
-			execute( node as Node_Expose, scope );
-		else if( node is Node_Using )
-			execute( node as Node_Using, scope );
-		else
-			throw new ApplicationException(
-				String.Format(
-					"unknown type of identikey-special-old node: {0}",
-					node));
-	}
-
+	
 	//import
-	public static void execute(Node_Import node, Scope scope) {
+	public static void execute(Node_Import node, IScope scope) {
 		//xxx
 		scope.bridge.printlnWarning("import node not implemented");
 	}
 
-	//limit-old
-	public static void execute(Node_LimitOld node, Scope outerScope) {
-		Scope innerScope = new Scope(outerScope);
+	//sieve
+	//xxx out of order
+	public static void execute(Node_Sieve node, old_Scope outerScope) {
+		old_Scope innerScope = new old_Scope(outerScope);
 		
-		foreach( INode_IdentikeySpecialOld iso in node.declarations )
-			executeISO(iso, innerScope);
+		foreach( Node_Expose exposeNode in node.exposes )
+			execute(exposeNode, innerScope);
+		
+		foreach( Node_Using usingNode in node.usings )
+			execute(usingNode, innerScope); 
 
 		//reserve identikeys
 		foreach( Node_Hidable h in node.hidables ) {
@@ -99,10 +264,10 @@ static partial class Executor {
 			}
 			Node_DeclareFirst df = h.declaration as Node_DeclareFirst;
 			innerScope.reserveDeclareFirst(
-				df.name.value, df.identikeyType.identikeyCategory.value);
+				df.name.value, df.woScidentreCategory.value);
 			if( h.hidden.value == false )
 				outerScope.reserveDeclareFirst(
-					df.name.value, df.identikeyType.identikeyCategory.value);
+					df.name.value, df.woScidentreCategory.value);
 		}
 
 		//set nullable-type of reserved identikeys
@@ -115,7 +280,7 @@ static partial class Executor {
 				continue;
 			}
 			Node_DeclareFirst df = h.declaration as Node_DeclareFirst;
-			NullableType nt = Evaluator.evaluate(df.identikeyType.nullableType, innerScope);
+			Type nt = df.type == null ? null : Evaluator.evaluateType(df.type, innerScope);
 			innerScope.setType(df.name.value, nt);
 			if( h.hidden.value == false )
 				outerScope.setType(df.name.value, nt);
@@ -137,30 +302,39 @@ static partial class Executor {
 				outerScope.declareFirst(df.name.value, val);
 		}
 	}
-
-	//module
-	//called by Evaluator.evaluate(Node_Module, Bridge)
-	//the std namespace should have already been added
-	public static void execute(Node_Module node, Scope scope) {
-		//xxx check types of main, library_initialize, and library_dispose
-
-		foreach( Node_Import imp in node.imports )
-			execute(imp, scope);
-		
-		execute(node.limitOld, scope);
+	
+	//namespace
+	public static void execute(Node_Namespace node, IScope scope) {
+		//xxx
+		scope.bridge.printlnWarning("namespace node not implemented");
 	}
+	
+	//using
+	public static void execute(Node_Using node, IScope scope) {
+		//xxx
+		scope.bridge.printlnWarning("using node not implemented");
+	}
+	
+	* /
 
 	//module
-	public static int executeProgram(Node_Module node, Bridge bridge) {
-		//evaluator should handle importing the std library
-		Scope scope = Evaluator.evaluate(node, bridge);
+	public static int executeProgram(
+	Node_Module node, TextReader inStream, TextWriter outStream, TextWriter logStream) {
+		ScopeBuilder sb = new ScopeBuilder(null);
+		sb.createNsScidentre(new Identifier("std"), Bridge.std);
+		sb.createNsScidentre(
+			new Identifier("standard_streams"),
+			Bridge.createStdio(inStream, outStream, logStream));
+		sb.addSieve(node.sieve);
+		ISieve ns = sb.produceNamespace();
 		IWorker result;
 		try {
-			IWorker main = scope.evaluateIdentifier(new Identifier("main"));
+			IWorker main = G.evalIdent(ns, "main");
 			result = main.call(new Argument[]{});
 		}
 		catch(ClientException e) {
-			bridge.printlnError("uncaught exception: " + e.clientMessage);
+			e.pushFunc("main function");
+			logStream.WriteLine("uncaught exception: " + e.clientMessage);
 			return 1;
 		}
 		catch(ClientReturn e) {
@@ -172,25 +346,16 @@ static partial class Executor {
 			return (int)Bridge.toNativeInteger(result);
 		return 0;
 	}
+	*/
 	
-	//namespace
-	public static void execute(Node_Namespace node, Scope scope) {
-		//xxx
-		scope.bridge.printlnWarning("namespace node not implemented");
-	}
 	
-	//using
-	public static void execute(Node_Using node, Scope scope) {
-		//xxx
-		scope.bridge.printlnWarning("using node not implemented");
-	}
-	
+
 	
 	//----- EXPRESSIONS
 	//every method returns IWorker
 
 	//and
-	public static IWorker execute(Node_And node, Scope scope) {
+	public static IWorker execute(Node_And node, IScope scope) {
 		IWorker first = executeAny(node.first, scope);
 		//xxx downcast
 		if( Bridge.toNativeBoolean(first) == false )
@@ -205,24 +370,19 @@ static partial class Executor {
 	}
 
 	//assign
-	public static IWorker execute(Node_Assign node, Scope scope) {
+	public static IWorker execute(Node_Assign node, IScope scope) {
 		IWorker val = executeAny(node.value, scope);
 		scope.assign( node.name.value, val );
 		return val;
 	}
 
-	//break
-	public static IWorker execute(Node_Break node, Scope scope) {
-		throw new NotImplementedException();
-	}
-
 	//breed
-	public static IWorker execute(Node_Breed node, Scope scope) {
+	public static IWorker execute(Node_Breed node, IScope scope) {
 		throw new NotImplementedException();
 	}
 
 	//call
-	public static IWorker execute(Node_Call node, Scope scope) {
+	public static IWorker execute(Node_Call node, IScope scope) {
 		IWorker func = executeAny(node.receiver, scope);
 		
 		IList<Argument> args = new List<Argument>();
@@ -242,37 +402,38 @@ static partial class Executor {
 	}
 	
 	//caller
-	public static IWorker execute(Node_Caller node, Scope scope) {
+	public static IWorker execute(Node_Caller node, IScope scope) {
 		throw new NotImplementedException();
 	}
 	
-	//cast
-	public static IWorker execute(Node_Cast node, Scope scope) {
-		return G.cast(
-			executeAny(node.source, scope),
-			Evaluator.evaluate(node.nullableType, scope));
-	}
-
 	//compound
-	public static IWorker execute(Node_Compound node, Scope scope) {
-		Scope innerScope = new Scope(scope);
-		foreach( INode_IdentikeySpecialOld iso in node.oldDeclarations )
-			executeISO(iso, innerScope);
-		//xxx declare-first children of ISN's should all be executed together
-		foreach( INode_IdentikeySpecialNew isn in node.newDeclarations )
-			executeISN(isn, innerScope);
+	public static IWorker execute(Node_Compound node, IScope parentScope) {
+		IScope scope = new Scope(parentScope, null);
+		
+		foreach(Node_Expose exp in node.exposes)
+			execute(exp, scope);
+
+		foreach(Node_Using us in node.usings)
+			execute(us, scope);
+		
+		WoScidentreReserver.reserve(node, scope);
+
+		ScopeQueue sq = new ScopeQueue();
+		foreach(INode_StatementDeclaration decl in node.declarations)
+			execute(decl, sq, scope);
+		sq.executeAll();
+		
 		IWorker rv = new Null();
-		foreach( INode_Expression expr in node.members ) {
-			rv = executeAny(expr, innerScope);
-		}
+		foreach(INode_Expression member in node.members)
+			rv = executeAny(member, scope);
 		return rv;
 	}
 
 	//conditional
-	public static IWorker execute(Node_Conditional node, Scope scope) {
+	public static IWorker execute(Node_Conditional node, IScope scope) {
 		IWorker testVal = executeAny(node.test, scope);
 
-		if( testVal.face != Bridge.std_Bool )
+		if( testVal.face != Bridge.stdn_Bool )
 			throw new ClientException("test must be a Bool");
 		
 		return (
@@ -281,109 +442,54 @@ static partial class Executor {
 			new Null() );
 	}
 	
-	//conditional-loop
-	public static IWorker execute(Node_ConditionalLoop node, Scope scope) {
-		while( Bridge.toNativeBoolean(executeAny(node.test, scope)) )
-			executeAny(node.body, scope);
-		return new Null();
-	}
-	
-	//continue
-	public static IWorker execute(Node_Continue node, Scope scope) {
-		throw new NotImplementedException();
-	}
-	
 	//curry
-	public static IWorker execute(Node_Curry node, Scope scope) {
+	public static IWorker execute(Node_Curry node, IScope scope) {
 		throw new NotImplementedException();
 	}
 	
 	//declare-assign
-	public static IWorker execute(Node_DeclareAssign node, Scope scope) {
+	public static IWorker execute(Node_DeclareAssign node, IScope scope) {
 		IWorker val = executeAny(node.value, scope);
-		scope.declareAssign(
+		scope.activateWoScidentre(
 			node.name.value,
-			node.identikeyType.identikeyCategory.value,
-			Evaluator.evaluate(node.identikeyType.nullableType, scope),
+			new NType(executeAny(node.type, scope)),
 			val);
 		return val;
 	}
 
 	//declare-empty
-	public static IWorker execute(Node_DeclareEmpty node, Scope scope) {
-		scope.declareEmpty(
+	public static IWorker execute(Node_DeclareEmpty node, IScope scope) {
+		scope.activateWoScidentre(
 			node.name.value,
-			node.identikeyType.identikeyCategory.value,
-			Evaluator.evaluate(node.identikeyType.nullableType, scope));
-		return scope.evaluateIdentifier(node.name.value);
+			new NType(executeAny(node.type, scope)),
+			new Null());
+		return new Null();
 	}
 	
 	//dictionary
-	public static IWorker execute(Node_Dictionary node, Scope scope) {
+	public static IWorker execute(Node_Dictionary node, IScope scope) {
 		throw new NotImplementedException();
 	}
 	
 	//enum
-	public static IWorker execute(Node_Enum node, Scope scope) {
+	public static IWorker execute(Node_Enum node, IScope scope) {
 		throw new NotImplementedException();
 	}
 	
-	//enumerator-loop
-	public static IWorker execute(Node_EnumeratorLoop node, Scope scope) {
-		int rCount = node.receivers.Count;
-		if( rCount > 1 )
-			throw new NotImplementedException();
-
-		IWorker producer = executeAny(node.container, scope);
-		
-		while( node.test == null || Bridge.toNativeBoolean(executeAny(node.test, scope)) ) {
-			Scope innerScope = new Scope(scope);
-			IWorker yielded;
-			try {
-				yielded = producer
-					.extractMember(new Identifier("yield"))
-					.call(new Argument[]{});
-			}
-			catch(ClientException e) {
-				//xxx use typing and interfaces instead of values
-				if( e.thrown.face == Bridge.std_String &&
-				Bridge.toNativeString(e.thrown) == "generator exhausted" )
-					return new Null();
-				else
-					throw;
-			}
-			if( rCount == 1 ) {
-				IEnumerator<Node_Receiver> en = node.receivers.GetEnumerator();
-				en.MoveNext();
-				Node_Receiver nr = en.Current;
-				innerScope.declareAssign(
-					nr.name.value,
-					IdentikeyCategory.CONSTANT,
-					NullableType.dyn_nullable,
-					yielded);
-			}
-			executeAny(node.body, innerScope);
-		}
-		
-		return new Null();
-	}
-	
 	//extract-member
-	public static IWorker execute(Node_ExtractMember node, Scope scope) {
+	public static IWorker execute(Node_ExtractMember node, IScope scope) {
 		IWorker source = executeAny(node.source, scope);
 		Identifier memberName = node.memberName.value;
 		return source.extractMember(memberName);
 	}
 	
 	//function
-	public static IWorker execute(Node_Function node, Scope scope) {
+	public static IWorker execute(Node_Function node, IScope scope) {
 		IList<ParameterImpl> parameters = new List<ParameterImpl>();
 		foreach( Node_ParameterImpl parameter in node.parameterImpls )
 			parameters.Add(Evaluator.evaluate(parameter, scope));
 
-		NullableType returnType = ( node.returnInfo == null ?
-			null :
-			Evaluator.evaluate(node.returnInfo, scope) );
+		NType returnType = new NType(executeAny(node.returnType, scope));
 		
 		return Client_Function.wrap(
 			new Function_Client(
@@ -391,68 +497,62 @@ static partial class Executor {
 	}
 	
 	//function-interface
-	public static IWorker execute(Node_FunctionInterface node, Scope scope) {
+	public static IWorker execute(Node_FunctionInterface node, IScope scope) {
 		IList<ParameterInfo> parameters = new List<ParameterInfo>();
 		foreach( Node_ParameterInfo pinfo in node.parameterInfos )
 			parameters.Add(Evaluator.evaluate(pinfo, scope));
 		return FunctionInterface.getFuncFace(
 				new Callee(
 					parameters,
-					Evaluator.evaluate(node.returnInfo, scope))).worker;
+					new NType(executeAny(node.returnType, scope)))).worker;
 	}
 	
 	//generator
-	public static IWorker execute(Node_Generator node, Scope scope) {
+	public static IWorker execute(Node_Generator node, IScope scope) {
 		return Client_Generator.wrap(node.body, scope);
 	}
 	
 	//generic-function
-	public static IWorker execute(Node_GenericFunction node, Scope scope) {
+	public static IWorker execute(Node_GenericFunction node, IScope scope) {
 		throw new NotImplementedException();
 	}
 	
 	//generic-interface
-	public static IWorker execute(Node_GenericInterface node, Scope scope) {
+	public static IWorker execute(Node_GenericInterface node, IScope scope) {
 		throw new NotImplementedException();
 	}
 	
 	//identifier
-	public static IWorker execute(Node_Identifier node, Scope scope) {
-		return scope.evaluateIdentifier(node.value);
-	}
-	
-	//ignore
-	public static IWorker execute(Node_Ignore node, Scope scope) {
-		throw new NotImplementedException();
-	}
-	
-	//implements
-	public static IWorker execute(Node_Implements node, Scope scope) {
-		throw new NotImplementedException();
+	public static IWorker execute(Node_Identifier node, IScope scope) {
+		try {
+			return G.evalIdent(scope, node.value);
+		}
+		catch(UnassignedDeclareFirst e) {
+			//xxx temporary
+			throw new ClientException(
+				"identifier '" + e.ident + "' refers to a scidentre which was " +
+				"created by a declare-first node and hasn't been assigned to yet",
+				node.nodeSource);
+		}
 	}
 	
 	//instantiate-generic
-	public static IWorker execute(Node_InstantiateGeneric node, Scope scope) {
+	public static IWorker execute(Node_InstantiateGeneric node, IScope scope) {
 		throw new NotImplementedException();
 	}
 	
 	//interface
-	public static IWorker execute(Node_Interface node, Scope scope) {
+	public static IWorker execute(Node_Interface node, IScope scope) {
 		return Evaluator.evaluate(node, scope).worker;
 	}
 	
 	//integer
-	public static IWorker execute(Node_Integer node, Scope scope) {
+	public static IWorker execute(Node_Integer node, IScope scope) {
 		return Bridge.toClientInteger(node.value);
 	}
 	
-	//labeled
-	public static IWorker execute(Node_Labeled node, Scope scope) {
-		throw new NotImplementedException();
-	}
-	
 	//nand
-	public static IWorker execute(Node_Nand node, Scope scope) {
+	public static IWorker execute(Node_Nand node, IScope scope) {
 		IWorker first = executeAny(node.first, scope);
 		//xxx downcast
 		if( Bridge.toNativeBoolean(first) == false )
@@ -466,13 +566,13 @@ static partial class Executor {
 		return Bridge.toClientBoolean(false);
 	}
 	
-	//namespaced-value-identikey
-	public static IWorker execute(Node_NamespacedValueIdentikey node, Scope scope) {
+	//namespaced-wo-scidentre
+	public static IWorker execute(Node_NamespacedWoScidentre node, IScope scope) {
 		throw new NotImplementedException();
 	}
 	
 	//nor
-	public static IWorker execute(Node_Nor node, Scope scope) {
+	public static IWorker execute(Node_Nor node, IScope scope) {
 		IWorker first = executeAny(node.first, scope);
 		//xxx downcast
 		if( Bridge.toNativeBoolean(first) == true )
@@ -486,18 +586,9 @@ static partial class Executor {
 		return Bridge.toClientBoolean(true);
 	}
 	
-	//null
-	public static IWorker execute(Node_Null node, Scope scope) {
-		if( node.@interface == null )
-			return new Null();
-		return new Null(
-			Bridge.toNativeInterface(
-				executeAny(node.@interface, scope)));
-	}
-	
 	//object
-	public static IWorker execute(Node_Object node, Scope scope) {
-		NiviokObject obj = new NiviokObject();
+	public static IWorker execute(Node_Object node, IScope scope) {
+		NObject obj = new NObject();
 		IList<IWorker> subroots = new List<IWorker>();
 		foreach( Node_Worker workerNode in node.workers )
 			subroots.Add( Evaluator.evaluate(workerNode, scope, obj) );
@@ -506,7 +597,7 @@ static partial class Executor {
 	}
 	
 	//or
-	public static IWorker execute(Node_Or node, Scope scope) {
+	public static IWorker execute(Node_Or node, IScope scope) {
 		IWorker first = executeAny(node.first, scope);
 		//xxx downcast
 		if( Bridge.toNativeBoolean(first) == true )
@@ -521,22 +612,22 @@ static partial class Executor {
 	}
 	
 	//rational
-	public static IWorker execute(Node_Rational node, Scope scope) {
+	public static IWorker execute(Node_Rational node, IScope scope) {
 		return Bridge.toClientRational(node.value);
 	}
 	
-	//return
-	public static IWorker execute(Node_Return node, Scope scope) {
-		throw new ClientReturn(executeAny(node.value, scope));
+	//remit
+	public static IWorker execute(Node_Remit node, IScope scope) {
+		throw new NotImplementedException();
 	}
 	
 	//select
-	public static IWorker execute(Node_Select node, Scope scope) {
+	public static IWorker execute(Node_Select node, IScope scope) {
 		throw new NotImplementedException();
 	}
 	
 	//set-property
-	public static IWorker execute(Node_SetProperty node, Scope scope) {
+	public static IWorker execute(Node_SetProperty node, IScope scope) {
 		IWorker val = executeAny(node.value, scope);
 		executeAny(node.source, scope).setProperty(
 			node.propertyName.value, val );
@@ -544,19 +635,19 @@ static partial class Executor {
 	}
 	
 	//string
-	public static IWorker execute(Node_String node, Scope scope) {
+	public static IWorker execute(Node_String node, IScope scope) {
 		return Bridge.toClientString(node.value);
 	}
 	
 	//throw
-	public static IWorker execute(Node_Throw node, Scope scope) {
+	public static IWorker execute(Node_Throw node, IScope scope) {
 		throw new NotImplementedException();
 	}
 	
 	//try-catch
-	//xxx it's not clear how this node produces -- should the product of finally be used?
-	public static IWorker execute(Node_TryCatch node, Scope scope) {
-		Scope innerScope = new Scope(scope);
+	//xxx copy code over from spec -- this here is outdated
+	public static IWorker execute(Node_TryCatch node, IScope scope) {
+		IScope innerScope = new Scope(scope, null);
 		IWorker rv = new Null();
 		bool exceptionOccurred = false;
 		try {
@@ -565,41 +656,39 @@ static partial class Executor {
 		catch(ClientException exception) {
 			exceptionOccurred = true;
 			IInterface thrownFace = exception.thrown.face;
-			foreach( Node_ExceptionHandler eh in node.exceptionHandlers ) {
+			foreach( Node_Catcher eh in node.catchers ) {
 				IInterface catchFace = Bridge.toNativeInterface(
-					executeAny(eh.@interface, innerScope));
+					executeAny(eh.type, innerScope));
 				if( G.inheritsOrIs(thrownFace, catchFace) ) {
-					Scope handlerScope = new Scope(innerScope);
+					IScope handlerScope = new Scope(innerScope, null);
 					if( eh.name != null )
-						handlerScope.declareAssign(
+						G.declareAssign(
 							eh.name.value,
-							IdentikeyCategory.CONSTANT,
-							NullableType.dyn,
-							exception.thrown);
+							WoScidentreCategory.CONSTANT,
+							new NType(),
+							exception.thrown,
+							handlerScope);
 					rv = Executor.executeAny(eh.result, handlerScope);
-					if( eh.@catch.value )
-						break;
-					else
-						throw exception;
+					break;
 				}
 			}
 		}
 		finally {
-			if( exceptionOccurred == false && node.@else != null )
-				rv = executeAny(node.@else, innerScope);
+			if( exceptionOccurred == false && node.onSuccess != null )
+				rv = executeAny(node.onSuccess , innerScope);
 			if( node.@finally != null )
 				executeAny(node.@finally, innerScope);
 		}
 		return rv;
 	}
 	
-	//unconditional-loop
-	public static IWorker execute(Node_UnconditionalLoop node, Scope scope) {
+	//type-select
+	public static IWorker execute(Node_TypeSelect node, IScope scope) {
 		throw new NotImplementedException();
 	}
 	
 	//xnor
-	public static IWorker execute(Node_Xnor node, Scope scope) {
+	public static IWorker execute(Node_Xnor node, IScope scope) {
 		IWorker first = executeAny(node.first, scope);
 		IWorker second = executeAny(node.second, scope);
 
@@ -608,7 +697,7 @@ static partial class Executor {
 	}
 	
 	//xor
-	public static IWorker execute(Node_Xor node, Scope scope) {
+	public static IWorker execute(Node_Xor node, IScope scope) {
 		IWorker first = executeAny(node.first, scope);
 		IWorker second = executeAny(node.second, scope);
 		
@@ -618,17 +707,18 @@ static partial class Executor {
 	
 	//yield
 	//highly coupled with Client_Generator
-	public static IWorker execute(Node_Yield node, Scope scope) {
+	public static IWorker execute(Node_Yield node, IScope scope) {
 		IWorker yieldValue = executeAny(node.value, scope);
 		#if GEN_DEBUG
 		Console.WriteLine("fixin to yield " + Bridge.toNativeInteger(yieldValue));
 		Console.Out.Flush();
 		#endif
-		scope.yieldValue = yieldValue;
+		
+		Client_Generator.setYieldValue(Thread.CurrentThread, yieldValue);
 		
 		//xxx for each call to Interrupt, Mono throws ThreadInterruptedException twice
 		//the while loop is a workaround which would otherwise not be required
-		while( scope.yieldValue != null ) {
+		while( ! Client_Generator.hasNullYieldValue(Thread.CurrentThread) ) {
 			try {
 				Thread.Sleep(Timeout.Infinite);
 			}

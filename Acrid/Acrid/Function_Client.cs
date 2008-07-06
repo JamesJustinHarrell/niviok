@@ -4,13 +4,13 @@ using System.Collections.Generic;
 
 class Function_Client : IFunction {
 	IList<ParameterImpl> _parameters;
-	NullableType _returnType;
+	NType _returnType;
 	INode_Expression _body;
-	Scope _scope; //should have already been trimmed for closure
+	IScope _scope; //should have already been trimmed for closure
 
 	public Function_Client(
-	IList<ParameterImpl> parameters, NullableType returnType,
-	INode_Expression body, Scope scope )
+	IList<ParameterImpl> parameters, NType returnType,
+	INode_Expression body, IScope scope )
 	{
 		_parameters = parameters;
 		_returnType = returnType;
@@ -25,7 +25,7 @@ class Function_Client : IFunction {
 				paramInfos.Add(
 					new ParameterInfo(
 						p.direction,
-						p.nullableType,
+						p.type,
 						p.name,
 						p.defaultValue != null));
 			}
@@ -35,14 +35,14 @@ class Function_Client : IFunction {
 	}
 	
 	public IWorker call(IList<Argument> arguments) {
-		Scope argScope = G.setupArguments(_parameters, arguments, _scope);
+		IScope argScope = G.setupArguments(_parameters, arguments, _scope);
 	
 		try {
 			return Executor.executeAny(_body, argScope);
 		}
 		catch(ClientReturn ret) {
 			if( ret.worker == null ) {
-				return new Null(_returnType.face);
+				return new Null();
 			}
 			else {
 				return ret.worker;

@@ -1,0 +1,19 @@
+--- example code
+/* assume C and getInterface are defined in parent scopes */
+defirst A = interface[
+	get B b
+	get D d
+	get getInterface() gi
+]
+defirst B = interface[
+	get C c
+	get D d
+	get getInterface() gi
+]
+defirst D = getInterface()
+
+--- dependencies
+A has an execute dependency on getInterface and finish dependencies on B and D.
+B has an execute dependency on getInterface and finish dependencies on C and D.
+D has an execute dependency on getInterface.
+

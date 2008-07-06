@@ -1,0 +1,25 @@
+One big problem with visual and database programming language representations is their incompatibility with source control. For Mitsuka/NiviokDBFormat to catch on, very solid plans will be needed for how Niviok could be edited in Mitsuka and stored in a repository. The issue of source control actually makes NiviokDBFormat less useful, since source code is usually (or should usually be) stored in a repository.
+
+possibility:
+	When editing:
+		text format in repository -> abstract format -> Mitsuka
+	When saving:
+		text -> abstract format -> standardized text format -> repository
+	The code would still be stored using creeky old flat text files, like 99.99% of the other programming files out there. However, editing would be done using beatiful fresh new Mitsuka.
+	
+	pro: Use current tools. Mix well with other stuff.
+	con: Version of source code stored in repository would differ from view version.
+
+possibility:
+	A repository made just for Niviok. It would record Niviok nodes instead of just text fragments. It would store information such as blame in the repository on a node-by-node basis. Mitsuka could be expanded to have ways of showing blame and modification date on a node-by-node basis. An HTML generator could even be created to show this beatiful Mitsuka blame on the web.
+	
+	pro: No more flat text! Very cohesive. Always view in the same format.
+	con: Tons of work. Wouldn't work well (or at all) with anything besides Niviok source code.
+
+
+There is precendence here. Smalltalk and some Lisps have dealt with similar problems. See comments here:
+http://www.atalasoft.com/cs/blogs/rickm/archive/2008/06/06/why-are-our-programs-still-represented-by-flat-files.aspx
+
+comment:
+"Smalltalk systems have been generating 'diffs' between the system-supplied image and your own mods for what feels like centuries."
+See if this includes good blame.

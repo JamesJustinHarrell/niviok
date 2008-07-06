@@ -5,16 +5,16 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 class Function_Native : IFunction {
-	public delegate IWorker FunctionType(Scope scope);
+	public delegate IWorker FunctionType(IScope scope);
 
 	FunctionType _function;
 	IList<ParameterImpl> _parameters;
-	NullableType _returnType;
-	Scope _scope;
+	NType _returnType;
+	IScope _scope;
 	
 	public Function_Native(
-	IList<ParameterImpl> parameters, NullableType returnType,
-	FunctionType function, Scope scope )
+	IList<ParameterImpl> parameters, NType returnType,
+	FunctionType function, IScope scope )
 	{
 		_function = function;
 		_parameters = parameters;
@@ -22,14 +22,14 @@ class Function_Native : IFunction {
 		_scope = scope;
 		
 		if( _scope == null )
-			throw new NullReferenceException();
+			_scope = new Scope(null, new ScopeAllowance(false,false));
 	}
 	
 	public IList<ParameterImpl> parameters {
 		get { return _parameters; }
 	}
 	
-	public NullableType returnType {
+	public NType returnType {
 		get { return _returnType; }
 	}
 
@@ -40,7 +40,7 @@ class Function_Native : IFunction {
 				pinfos.Add(
 					new ParameterInfo(
 						p.direction,
-						p.nullableType,
+						p.type,
 						p.name,
 						p.defaultValue != null ));
 			}
@@ -50,7 +50,7 @@ class Function_Native : IFunction {
 	}
 
 	public IWorker call(IList<Argument> arguments) {
-		Scope innerScope = G.setupArguments(_parameters, arguments, _scope);		
+		IScope innerScope = G.setupArguments(_parameters, arguments, _scope);		
 		return _function(innerScope);
 	}
 }

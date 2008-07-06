@@ -1,0 +1,42 @@
+--- example code
+/* assume C and getInterface are defined in parent scopes */
+defirst A = interface[
+	get B b
+	get D d
+	get getInterface() gi
+]
+defirst B = interface[
+	get C c
+	get D d
+	get getInterface() gi
+]
+defirst D = getInterface()
+
+--- dependencies
+A has an execute dependency on getInterface and finish dependencies on B and D.
+B has an execute dependency on getInterface and finish dependencies on C and D.
+D has an execute dependency on getInterface.
+
+--- run through
+A has an execute dependency on getInterface, which is ready, so A is executed.
+	A has finish dependencies on B and D, which are both empty, so the state of A is set to waiting.
+	A is setup to be checked when the state of B or D changes.
+B has an execute dependency on getInterface, which is ready, so B is executed.
+	B has finish dependencies on C, which is ready, and D, which is empty, so B is set to waiting.
+	B is setup to be checked when the state of D changes.
+	A is checked because the state of B changes.
+		A still has a finish dependency on D, which is empty.
+D has an execute dependency on getInterface, which is ready, so D is executed.
+	D has no finish dependencies, so it is set to ready.
+	A is checked because the state of D changed.
+		A has a finish dependency on B, which is waiting, and D, which is ready.
+			B has a finish dependency on D, which is ready, so A and B change state to ready.
+	B is checked because the state of D changed, but it has already been set to the ready state.
+
+--- order of state changes
+A: empty -> waiting
+B: empty -> waiting
+D: empty -> ready
+A: waiting -> ready
+B: waiting -> ready
+

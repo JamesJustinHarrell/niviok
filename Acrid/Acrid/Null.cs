@@ -3,14 +3,8 @@ using System.Collections.Generic;
 
 //throw instead of return null to find errors faster
 
-class Null : Worker_NativeObject, IWorker {
-	IInterface _face;
-	
+class Null : Worker_NativeObject, IWorker {	
 	public Null() {}
-	
-	public Null(IInterface face) {
-		_face = face;
-	}
 	
 	public IObject owner {
 		get { throw new ClientException("null has no owner"); }
@@ -21,11 +15,7 @@ class Null : Worker_NativeObject, IWorker {
 	}
 	
 	public IInterface face {
-		get {
-			if( _face != null )
-				return _face;
-			throw new ClientException("untyped null has no face");
-		}
+		get { throw new ClientException("null has no face"); }
 	}
 	
 	public IWorker breed(IInterface face) {

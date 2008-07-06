@@ -20,7 +20,7 @@ class Interface_Object : IInterface {
 
 	public IList<IInterface> inheritees {
 		get { return new List<IInterface>();
-		//xxx return new IInterface[]{ Bridge.getBreederFace(Bridge.std_String) };
+		//xxx return new IInterface[]{ Bridge.getBreederFace(Bridge.stdn_String) };
 		}
 	}
 	

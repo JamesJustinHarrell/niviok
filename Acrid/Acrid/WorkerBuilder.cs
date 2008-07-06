@@ -43,20 +43,20 @@ class WorkerBuilder : WorkerBase {
 			face,
 			new Function_Native(
 				new ParameterImpl[]{},
-				new NullableType(face, false),
-				delegate(Scope scope) {
+				new NType(face),
+				delegate(IScope scope) {
 					return func();
 				},
-				Bridge.debugScope));
+				null));
 	}
 	
 	public IWorker compile() {
 		//xxx is this the best place for this?
 		//it would probably be best to replace this with more general
 		//code that automatically creates workers for empty interfaces
-		if( _childWorkers.Count == 0 && _face != Bridge.std_Object ) {
+		if( _childWorkers.Count == 0 && _face != Bridge.stdn_Object ) {
 			WorkerBuilder builder = new WorkerBuilder(
-				Bridge.std_Object, _owner, new IWorker[]{});
+				Bridge.stdn_Object, _owner, new IWorker[]{});
 			_childWorkers = new List<IWorker>(_childWorkers);
 			_childWorkers.Add(builder.compile());
 		}
@@ -72,11 +72,11 @@ class WorkerBuilder : WorkerBase {
 			ident,
 			new Function_Native(
 				new ParameterImpl[]{},
-				NullableType.dyn_nullable,
-				delegate(Scope scope) {
+				Bridge.stdn_Nullable_any,
+				delegate(IScope scope) {
 					return func();
 				},
-				Bridge.debugScope));
+				null));
 	}
 	
 	public void addPropertyGetter(Identifier ident, IWorker func) {

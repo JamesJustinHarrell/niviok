@@ -1,0 +1,32 @@
+Visible<Interface face> produces a ManualType
+
+For example, this function:
+	func print_node_name { Node n | println(n.name) }
+could be replaced by this function:
+	func print_node_name { Visible<Node> n | println(n.name) }
+Without loss of type safety.
+
+The Visible type requires that:
+* the active interface of the worker is the specified interface
+-or-
+* the active interface inherits from the specified interface, and
+* no members of the more-derived interfaces hide members of the specified interface
+
+For example, with these interfaces:
+
+interface A
+	get Int foo
+
+interface B
+	inherit A
+	get Rat bar
+
+interface C
+	inherit A
+	func foo ( String, String -> Bool )
+
+A worker implementing B would comply with Visible<A>, but a worker implementing C would not comply with Visible<A>, because the C interface hides a member of A.
+
+Hypothetical verbose error message:
+"This type requires all members of the specified interface be visible. The active interface of the given worker did inherit from the specified interface, but some members of the specified interface were hidden by interfaces that inherited from it."
+

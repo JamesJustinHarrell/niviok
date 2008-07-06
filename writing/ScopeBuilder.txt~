@@ -1,0 +1,45 @@
+class ScopeBuilder( ?Scope parent )
+	#used for import nodes and for importing standard library
+	addExistingNamespace(Identifier, Namespace)
+
+	#used for scopes of module and compound nodes
+	addExpose(Node_Expose)
+	addUsing(Node_Using)
+	addDeclareFirst(Node_DeclareFirst)
+	addSieve(Node_Sieve)
+	addNamespace(Node_Namespace)
+
+	#used for scopes of compound nodes
+	#see note 1
+	addDeclareEmpty(Identifier)
+	addDeclareAssign(Identifier)
+
+	produceNamespace() Namespace
+	produceScope() IScope
+
+interface IScope
+	tryEvalIdent(Identifier) ?Worker
+	tryEvalIdent(List<Identifier>) ?Worker
+	declareEmpty(Identifier)
+	declareAssign(Identifier, Worker)
+	assign(Identifier, Worker)
+
+class SimpleScope( IScope parent )
+	implement IScope
+
+class Namespace( ?Scope inner )
+	tryEvalIdent(Identifier) ?Worker
+	tryEvalIdent(List<Identifier>) ?Worker
+
+
+--- Note 1:
+
+const ?any a = null
+compound
+	println(a)
+	const ?any a = null
+
+What should happen here? I would prefer for the reference to 'a' to throw an exception stating the local scidentre 'a' has not yet been created.
+
+
+

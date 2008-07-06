@@ -179,7 +179,7 @@ cast ::=
 	expression s "as" s expression
 
 example:
-(foo as Int)
+(foo as Bar)
 			</screen>
 		</section>
 	</chapter>

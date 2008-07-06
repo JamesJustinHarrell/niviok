@@ -1,0 +1,298 @@
+<section xmlns="http://docbook.org/ns/docbook" version="5.0">
+
+		<!-- way too complicated, at least for now -->
+		<section xml:id="node.class">
+			<title>class</title>
+			
+			<para>Evaluates to a value that, when called, produces other values. The interfaces supported by the produced values are implemented in the way specified by this class node. The active interface of the produced value is specified by this class.</para>
+			
+			<para>The active interface of the value that is produced when a class node is executed inherits from the master interface of the class. The master interface is the sum of all the root interfaces implemented by the class.</para>
+			
+			<para role="xxx">XML comments with important information</para>
+			
+			<simplelist role="layout">
+				<!-- private and possibly public; can't be "call" or "callee" -->
+				<member>* static-member static declaration</member>
+				
+				<!-- private -->
+				<member>? expression static constructor</member>
+				
+				<!-- public -->
+				<member>* function static callee</member>
+				
+				<!-- public -->
+				<member>* class-property static property</member>
+				
+				<!-- private and public -->
+				<member>* function instance constructor</member>
+				
+				<!-- private -->
+				<member>* declaration instance declaration</member>
+				
+				<!-- private and public -->
+				<member>* worker</member>
+			</simplelist>
+			
+			<para>XXX The static callees and static properties may not always be visible in the class node's scope. (An example of being visible is assigning the value produced by the class node to an identifier.) Should some identifier (e.g. "thisClass") be introduced that evaluates to the class's value? (e.g. thisClass.property = foo) Or should a general means of accessing the enclosing expression node's value be introduced? (e.g. thisValue.property = foo)</para>
+			
+			<para>The above is not a problem for interface implementations due to the "this" identikey being bound to the active instance.</para>
+			
+			<para>The children of class nodes can be grouped by several means.</para>
+			
+			<para>By count:</para>
+			<table>
+				<tbody>
+					<tr>
+						<th></th>
+						<th>public</th>
+						<th>private</th>
+					</tr>
+					<tr>
+						<th>static - only 1</th>
+						<td>callees, getters/setters, methods, workers</td>
+						<td>static constructor, instance constructors, static declarations, instance methods</td>
+					</tr>
+					<tr>
+						<th>instance - 1 per instance</th>
+						<td></td>
+						<td>instance declarations</td>
+					</tr>
+				</tbody>
+			</table>
+			
+			<para>By scopes: (in scope means something can be accessed through a single identifier as a free identikey)</para>
+			<simplelist>
+				<member>static scope
+					<simplelist>
+						<member>public
+							<simplelist>
+								<member>defined by: static declarations (as properties and methods; must have access with get and/or set), static properties, instance constructors (as callees)</member>
+								<member>in scope: (none)</member>
+							</simplelist>
+						</member>
+						<member>private
+							<simplelist>
+								<member>defined by: static declarations, instance constructors (as functions bound to "construct")</member>
+								<member>in scope: static constructor, callees, getters/setters, methods, expressions in static declarations</member>
+							</simplelist>
+						</member>
+					</simplelist>
+				</member>
+				<member>instance scope
+					<simplelist>
+						<member>public
+							<simplelist>
+								<member>defined by: workers (or really, by the interface)</member>
+								<member>in scope: (none)</member>
+							</simplelist>
+						</member>
+						<member>private
+							<simplelist>
+								<member>defined by: instance declarations, instance methods</member>
+								<member>in scope: expressions in instance declarations, instance methods, interface implementations, instance constructors</member>
+							</simplelist>
+						</member>
+					</simplelist>
+				</member>
+			</simplelist>
+			
+			<para>Note: Instance scopes are children of the static scope.</para>
+			
+			<para role="process">Must have at least one worker. Including the worker nodes that are inherited by this class's child worker nodes, one and only one of the worker nodes must be specified as default.</para>
+			
+			<orderedlist role="exec">
+				<listitem>Create scope, STATIC_SCOPE.</listitem>
+				<listitem>Create an interface, CLASS_INTERFACE.</listitem>
+				<listitem>Add instance constructors as free functions to STATIC_SCOPE.</listitem>
+				<listitem>Add instance constructors as callees to CLASS_INTERFACE.</listitem>
+				<listitem>Evaluate the declaration of every <link linkend="node.static-member">static-member</link> that has a <link linkend="node.declare-first">declare-first</link>, in the scope of STATIC_SCOPE. If the identikey-type of the <link linkend="node.declare-first">declare-first</link> is function, and it has access of get, add a method to CLASS_INTERFACE with the same function interface and name. Otherwise, create a property with a getter if declared public.</listitem>
+				<listitem>Evaluate the declarations of the rest of the static-member nodes in the scope of STATIC_SCOPE, except for the static-member nodes with a declare-const-empty. Create properties as appropriate when the access nodes specify to do so.</listitem>
+				<listitem>In the scope of STATIC_SCOPE, evaluate the static-member nodes that have declare-const-empty nodes. Create properties as appropriate when the access nodes specify to do so.</listitem>
+				<listitem>Add the static callees as free functions in STATIC_SCOPE.</listitem>
+				<listitem>Add the static callees and the static properties to CLASS_INTERFACE.</listitem>
+				<listitem>Execute the static constructor.</listitem>
+				<listitem>Seal the identikeys created by the declare-const-empty nodes, meaning don't allow their bound status to change.</listitem>
+				<listitem>Create a value with CLASS_INTERFACE as the active interface.</listitem>
+				<listitem>Evaluate this node to the above value.</listitem>
+			</orderedlist>
+			
+			<para>When a constructor is called:</para>
+			<orderedlist role="exec">
+				<listitem>Create a scope, INSTANCE_SCOPE. Set STATIC_SCOPE as the parent scope.</listitem>
+				<listitem>Evaluate all declare-first nodes in scope of INSTANCE_SCOPE.</listitem>
+				<listitem>Execute the appropriate constructor.</listitem>
+				<listitem>Evaluate the function-call that lead to this constructor being evaluated to a value with INSTANCE_SCOPE as the object and the default interface implementation of the class as the active interface implementation.</listitem>
+				<listitem>Note: When the interface implementation is used, the value will pass the object into the interface implementation.</listitem>
+			</orderedlist>
+			
+			<section xml:id="node.static-member">
+				<title>static-member</title>
+				
+				<simplelist role="layout">
+					<member>declaration decl</member>
+					<member>? access</member>
+				</simplelist>
+				
+				<para role="process">If the declaration declares a const identifier, and access is present, the access node must be declared get.</para>
+				
+				<para role="xxx">poorly named</para>
+			</section>
+			
+			<section xml:id="node.declaration">
+				<title>declaration</title>
+				
+				<para>declaration is a family of node types, like expression. The node types included in this family are:</para>
+				
+				<simplelist role="family-members">
+					<member>declare-empty</member>
+					<member>declare-assign</member>
+					<member>declare-first</member>
+					<member>declare-const-empty</member>
+				</simplelist>
+			</section>
+			
+			<section xml:id="node.declare-const-empty">
+				<title>declare-const-empty</title>
+				
+				<simplelist role="layout">
+					<member>identifier name</member>
+					<member>identikey-type</member>
+				</simplelist>
+				
+				<para>Identifiers created by this node are always const. [identikey-type] must be value or function. The class's static constructor is allowed to assign values to static identifiers created by this node. If anthing tries to assign a value to an identikey create by this node, and the identikey is already bound to something, throw an error. The class's instance constructors are allowed to assign values to instance identifiers created by this node. An error results if identikeys produced by declare-const-empty nodes are dereferenced before being bound to anything.</para>
+			</section>
+			
+			<section xml:id="node.named-function">
+				<title>named-function</title>
+				
+				<simplelist role="layout">
+					<member>identifier name</member>
+					<member>function function</member>
+				</simplelist>
+			</section>
+			
+			<section xml:id="node.class-property">
+				<title>class-property</title>
+				
+				<simplelist role="layout">
+					<member>identifier</member>
+					<member>identikey-type</member>
+					<member>? function getter</member>
+					<member>? function setter</member>
+				</simplelist>
+				
+				<para role="process">Must have a getter and/or setter. If only identifier and identikey-type are given, an error results.</para>
+			</section>
+			
+			<programlisting>
+class Foo {
+	...
+	construct() {...}
+	impl Bar {...}
+}
+
+interface of Foo {
+	inherit Bar
+	call() Bar
+}
+
+(Foo as Interface) == Bar //true
+			</programlisting>
+			
+			<programlisting>
+class Foo {
+	...
+	construct() {...}
+	impl Bar default {...}
+	impl define Bar2 {...} //the identifier "Bar2" is required
+}
+
+interface of Foo {
+	inherit Bar + {{interface Bar2}}
+	call() Bar
+	get Interface Bar2
+}
+
+(Foo as Interface) == (Bar + Foo.Bar2) //true
+			</programlisting>
+		</section>
+
+		<section xml:id="node.generic-class">
+			<title>generic-class</title>
+			
+			<simplelist role="layout">
+				<member>+ generic-parameter parameter</member>
+				<member>class</member>
+			</simplelist>
+			
+			<para>Evaluates to a value with an active interface that inherits from GenericClass and one or more function interfaces. When called, the value returns the value returned from evaluating the class node.</para>
+		</section>
+		
+		
+		<!-- replaced with the can_cast? function -->
+		<section xml:id="node.implements">
+			<title>implements</title>
+			
+			<simplelist role="layout">
+				<member>expression value</member>
+				<member>expression interface</member>
+			</simplelist>
+			
+			<para>Returns a bool object reference to the true or false objects. True if [object] implements [interface], false otherwise.</para>
+			
+			<programlisting>
+if (o impls Foo)
+	(o as Foo).propOfFoo()
+			</programlisting>
+			
+			<programlisting>
+(if (impls o Foo)
+	((cast o Foo).propOfFoo))
+			</programlisting>
+			
+			<para role='xxx'>With Niviok's new expanded type system, this node becomes too restrictive, working with only one of many Type's. Perhaps this node should be replaced with a "can cast" node or function. Same with cast.</para>
+		</section>
+		
+
+		<!-- replaced with pragma attributes -->
+		<section xml:id="node.ignore">
+			<title>ignore</title>
+			
+			<para>Instructs an agent to not output certain warnings.</para>
+			
+			<simplelist role="layout">
+				<member>expression content</member>
+				<member>+ ignore-member</member>
+			</simplelist>
+			
+			<section xml:id="node.ignore-member">
+				<title>ignore-member</title>
+				
+				<simplelist role="layout">
+					<member>string name</member>
+					<member>integer depth</member>
+				</simplelist>
+			
+				<para>The [name] can be a warning name from the <link linkend="warnings-list">specified warnings</link> or an agent-defined warning name. Unknown warning names should by default produce a warning that the warning name is unknown. Agents should provide an option to disable warnings for unknown warning names.</para>
+				
+				<para>The [depth] specifies what descendant nodes are affected by the ignore node. Counting begins at one with the [content] node of the ignore node and increments by one for each further descendant.</para>
+				
+				<programlisting>
+(ignore
+	(ignore-member
+		(string.name "always null")
+		(integer.depth ...))
+	(call.content
+		(function.identifier println)
+		(assignment.argument
+			(identifier.name foo)
+			(for-value.value
+				...))))
+				</programlisting>
+				
+				<para>Here, if the [depth] was 1, a warning should be output by the agent for the assignment node that the [value] node will never produce a value when executed (a.k.a. always evaluate to null).</para>
+			</section>
+		</section>
+		
+</section>
+

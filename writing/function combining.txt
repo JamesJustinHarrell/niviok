@@ -1,0 +1,110 @@
+This document explores a few issues about function combining.
+
+----- effect of nest level
+
+limit-old
+	visible func (Bool -> String) foo = {Boo b -> void | "outer: " & b}
+	visible limit-old
+		visible func (Object -> String) foo = {Object b -> void | "inner: " & b}
+		hidden first bar = foo(true)
+
+What is the value of bar, meaning which foo should be called? The outer foo is more type specific, but the inner foo is closer. Should the nest level or the typing win out?
+
+Decision: The nest level should be completetly ignored. In this case, that would mean the outer foo would be called, giving bar a value of "outer: true".
+
+Rationale: If the nest level had an effect, then the nest level would have to be expressed in the interface (of the worker produced by evaluating the foo identifier node when determining the value of bar). But the nest level is an implementation detail. After all, that interface can be implemented either through function nodes and function combining or through implementing the interface all together using a single object node. Also, I think it would be overly complicated and messy to expose similar information in any form through the interface.
+
+Issue: What if the outer and inner functions had the same type? Then wouldn't the inner function replace the outer function?
+
+
+----- effect of nest level with equal types
+
+limit-old
+	hide func (Bool -> String) foo = {Boo b -> String | "outer: " & b}
+	visible limit-old
+		visible func (Bool -> String) foo = {Bool b -> String | "inner: " & b}
+		hidden first bar = foo(true)
+
+combineFunctions(outerFoo, innerFoo)
+->
+innerFoo
+
+bar would have a value of "inner: true"
+
+
+----- Subtype polymorphism
+
+func (Bool -> void) foo = {Boo b -> void | "first"}
+func (Object -> void) foo = {Object b -> void | "second"}
+first bar1 = foo(true)
+first bar2 = foo(true as Object)
+
+The interface of "foo" would be:
+interface
+	inherit (Bool -> void)
+		inherit Object
+	inherit (Object -> void)
+		inherit Object
+
+For bar2, there is only one matching callee. However, for bar1, there are two matching callees. So which callee should be used for bar1? Whichever one is more type specific. Here, that would mean bar1 would take on a value of "first".
+
+
+-----
+
+namespace A
+	func (Bool b -> String) foo = {Bool b -> String | "outer"}
+	namespace B
+		func (Bool -> String) foo = {Bool b -> String | "inner"}
+		first bar = foo(true)
+
+-- possibility 1
+
+combineFunctions(outerFoo, innerFoo)
+->
+interface
+	inherit (Bool b -> void)
+		inherit (Bool -> void)
+			inherit Object
+	inherit (Bool -> void)
+		inherit Object
+
+foo(true)
+->
+Error! Two callees with equal matching level! (Bool b -> void) and (Bool -> void)
+
+Pro: Less confusing.
+Con: Prevents either function from being accessed without named parameters.
+
+-- possibility 2
+
+combineFunctions(outerFoo, innerFoo)
+->
+interface
+	impl (Bool b -> void) <-> outerFoo
+		impl (Bool -> void) <-> innerFoo
+
+foo(true)
+->
+"inner"
+
+Pro: Keeps running.
+Con: Prevents access to the unnamed version of the outer function. Confusing.
+
+-- possibility 3
+
+combineFunctions(outerFoo, innerFoo)
+->
+interface
+	inherit (Bool b -> void)
+		inherit (Bool -> void)
+			inherit Object
+	inherit (Bool -> void)
+		inherit Object
+
+foo(true)
+->
+"inner"
+
+Pro: Keeps running.
+Con: Confusing.
+

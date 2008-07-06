@@ -1,4 +1,4 @@
- <chapter xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="node-types">
+<chapter xmlns="http://docbook.org/ns/docbook" version="5.0" xml:id="node-types">
 	<title>Node types</title>
 
 	<para>This chapter describes the various types of nodes. A node type is either a family, tree, or terminal node type. A family node type is a collection of node types. A tree node is a node that is composed of other nodes. Tree nodes do not directly encode any data themselves. The nodes a tree node type contains is specified by the tree node's layout. When the a layout specifies the type of a child node is that of a family node type, the type of the child that takes that place must be in the collection of that family node type. A terminal node encodes data directly and does not contain other nodes.</para>
@@ -9,7 +9,7 @@
 		<para>These node types do not contain child nodes, and are thus the only nodes that must encode information themselves (as opposed to containing child nodes which together provide information).</para>
 
 		<!-- filled in by "genhtml.py" -->
-		<simplelist/>
+		<simplelist xml:id="terminal-node-types-list"/>
 	</section>
 	
 	<section xml:id="family-node-types">
@@ -18,7 +18,7 @@
 		<section xml:id="node.expression">
 			<title>expression</title>
 			
-			<para>Any node type specified directly in one the following listed sectionsis an expression node.  (Excludes node types specified in the sections of other node types.) Expression nodes can be executed, and may produce values.</para>
+			<para>Any node type specified directly in one the following listed sections is an expression node.  (Excludes node types specified in the sections of other node types.) Expression nodes can be executed, and may produce values.</para>
 			
 			<simplelist role="family-members">
 				<member linkend="non-producing-expressions">Non-producing Expressions</member>
@@ -27,21 +27,8 @@
 			</simplelist>
 		</section>
 		
-		<section xml:id="node.identikey-special-old">
-			<title>identikey-special-old</title>
-			
-			<para>Declares new local identikeys and assigns preexisting stuff to them.</para>
-			
-			<para>This family node type includes these types:</para>
-			
-			<simplelist role="family-members">
-				<member>using</member>
-				<member>expose</member>
-			</simplelist>
-		</section>
-		
-		<section xml:id="node.identikey-special-new">
-			<title>identikey-special-new</title>
+		<section xml:id="node.statement-declaration">
+			<title>statement-declaration</title>
 			
 			<para>Declares new local identikeys and assigns new stuff to them.</para>
 			
@@ -49,7 +36,7 @@
 			
 			<simplelist role="family-members">
 				<member>declare-first</member>
-				<member>limit-old</member>
+				<member>sieve</member>
 				<member>namespace</member>
 			</simplelist>
 		</section>
@@ -92,7 +79,7 @@
 			</varlistentry>
 		</variablelist>
 		
-		<para>Next comes the name of a node type, or "expression". The child node represented by that list item must be of that type. The string "expression" means the node must be an expression.</para>
+		<para>Next comes the name of a node type. The child node represented by that list item must be of that type.</para>
 		
 		<para>Lastly comes a optional label for refering to the child nodes represented by that item, when the type alone isn't enough to disambiguate which item is being referred to. These labels carry no semantic information, and are merely used by this specification to refer to specific child nodes. (Note this label is always singular, even for collections.)</para>
 		
@@ -179,39 +166,6 @@ epsilon(num) //value mutated and num assigned to different value
 			</programlisting>
 		</section>
 		
-		<section xml:id="node.generic-parameter">
-			<title>generic-parameter</title>
-			
-			<simplelist role="layout">
-				<member>identifier name</member>
-				<member>? expression default interface</member>
-			</simplelist>
-		</section>
-		
-		<section xml:id="node.identikey-category">
-			<title>identikey-category</title>
-			
-			<para>specifies one of: namespace, variable, constant, function</para>
-			
-			<para>See the <link linkend="identikeys">section on identikeys</link>.</para>
-		</section>
-		
-		<section xml:id="node.identikey-type">
-			<title>identikey-type</title>
-			
-			<simplelist role="layout">
-				<member>identikey-category</member>
-				<member>nullable-type</member>
-			</simplelist>
-
-			<para role="process">[identikey-category] must not be namespace. [nullable-type] must not specify an interface if [identikey-category] is dynamic. [nullable-type] must specify nullable as false if [identikey-category] is function. (Note: The @@declare-first node has additional restrictions.)</para>
-			
-			<programlisting>
-decl Int a = 3
-declfirst func b = func()Int { 3 }
-			</programlisting>
-		</section>
-		
 		<section xml:id="node.import">
 			<title>import</title>
 			
@@ -223,15 +177,6 @@ declfirst func b = func()Int { 3 }
 			</simplelist>
 			
 			<para>Each import-attempt node attempts to refer to a library. The agent should try each import-attempt node in order until it is able to find one with a scheme that it recognizes and leads to a library the agent is able to load. If the agent is not able to load a library after trying all import-attempt nodes, it must output an error message and end execution immediately.</para>
-			
-			<section xml:id="node.import-attempt">
-				<title>import-attempt</title>
-				
-				<simplelist role="layout">
-					<member>string scheme</member>
-					<member>string body</member>
-				</simplelist>
-			</section>
 				
 			<programlisting>
 import Xml
@@ -251,35 +196,26 @@ def Xml:Element root = doc.documentElement
 			
 			<para role="xxx">Need versioning information. Could just include versioning information in the body of each import-attempt, but then the version information would have to be repeated for every import-attempt. Even if going with that, example should be updated to inclue versioning information. But what if different schemes wanted to denote versioning information in different ways? For example, shared libraries on Unix have their own versioning system, with version numbers different from the public version number associated with a piece of software.</para>
 		</section>
-
-		<section xml:id="node.worker">
-			<title>worker</title>
+			
+		<section xml:id="node.import-attempt">
+			<title>import-attempt</title>
 			
 			<simplelist role="layout">
-				<member>expression face</member>
-				<member>* worker child</member>
-				<member>* member-implementation</member>
+				<member>string scheme</member>
+				<member>string body</member>
 			</simplelist>
 			
-			<para>Note: May actually correspond to multiple workers, since some of the member-implementation nodes may implement members of inherited interfaces.</para>
+			<para>Used by the @@import node.</para>
 		</section>
 		
 		<section xml:id="node.member-implementation">
 			<title>member-implementation</title>
 			
 			<simplelist role="layout">
-				<member>member-identification</member>
-				<member>expression function</member>
-			</simplelist>
-		</section>
-		
-		<section xml:id="node.member-identification">
-			<title>member-identification</title>
-			
-			<simplelist role="layout">
 				<member>member-type</member>
 				<member>? identifier name</member>
 				<member>? expression interface</member>
+				<member>expression function</member>
 			</simplelist>
 		</section>
 		
@@ -288,18 +224,18 @@ def Xml:Element root = doc.documentElement
 			
 			<para>Specifies one of: breeder, callee, property setter, property getter, method.</para>
 		</section>
-		
-		<section xml:id="node.nullable-type">
-			<title>nullable-type</title>
 
-			<para>Specifies a value type, including whether the absence of a value is allowed.</para>
+		<section xml:id="node.parameter-impl">
+			<title>parameter-impl</title>
 			
 			<simplelist role="layout">
-				<member>? expression interface</member>
-				<member>boolean nullable</member>
+				<member>direction</member>
+				<member>expression type</member>
+				<member>identifier name</member>
+				<member>? expression default value</member>
 			</simplelist>
 			
-			<para>If [interface] produces null, an error results.</para>
+			<para>When a [default value] is given, [default value] is executed for every call to the function. It is not executed when the function node is executed.</para>
 		</section>
 
 		<section xml:id="node.parameter-info">
@@ -307,23 +243,30 @@ def Xml:Element root = doc.documentElement
 			
 			<simplelist role="layout">
 				<member>direction</member>
-				<member>? nullable-type</member>
+				<member>expression type</member>
 				<member>identifier name</member>
 				<member>boolean has default value</member>
 			</simplelist>
 		</section>
 
-		<section xml:id="node.parameter-impl">
-			<title>parameter-impl</title>
+		<section xml:id="node.worker">
+			<title>worker</title>
 			
 			<simplelist role="layout">
-				<member>direction</member>
-				<member>? nullable-type</member>
-				<member>identifier name</member>
-				<member>? expression default value</member>
+				<member>expression face</member>
+				<member>* worker child worker</member>
+				<member>* member-implementation</member>
 			</simplelist>
 			
-			<para>When a [default value] is given, [default value] is executed for every call to the function. It is not executed when the function node is executed.</para>
+			<para>Note: May actually correspond to multiple workers, since some of the member-implementation nodes may implement members of inherited interfaces.</para>
+		</section>
+
+		<section xml:id="node.wo-scidentre-category">
+			<title>wo-scidentre-category</title>
+			
+			<para>specifies one of: constant, function, variable</para>
+			
+			<para>See the <link linkend="identikeys">section on identikeys</link>.</para>
 		</section>
 	</section>
 	
@@ -337,32 +280,37 @@ def Xml:Element root = doc.documentElement
 			
 			<simplelist role="layout">
 				<member>identifier name</member>
-				<member>identikey-type</member>
+				<member>wo-scidentre-category</member>
+				<member>expression type</member>
 				<member>boolean breed</member>
 				<member>expression value</member>
 			</simplelist>
 			
-			<para role="process">The identikey-category of the identikey-type must specify "constant" or "function". (Should breed be required to be false if the identikey-category is function?)</para>
+			<para role="process">The [wo-scidentre-category] must specify "constant" or "function".</para>
 			
-			<para>Creates an identikey in the parent scope with the specified type, then assigns the specified value to it.</para>
+			<para role="xxx">Should [breed] be required to be false if [wo-scidentre-category] is "function"?</para>
 			
-			<para>When a compound contains declare-first nodes, the declare-first nodes are executed before the other expressions in the compound are executed. The value expressions of declare-first nodes may depend on the values of other declare-first nodes in the same compound. For example, two interfaces could reference each other.</para>
+			<para>Creates an scidentre in the parent scope with the specified type, then assigns the specified value to it.</para>
 			
-			<para>This node can create identikeys before execution reaches it. For more information, see <link linkend="handling-declare-first">this section</link>.</para>
+			<para>The value expressions of declare-first nodes may depend on the values of other declare-first nodes that appear before or after it. Some types of expressions are allowed to reference the scidentres of each other. For example, two interfaces could reference each other.</para>
 			
-			<para role="exec">Produce the value bound to the identikey created by this node.</para>
+			<para>For more (xxx outdated) information, see <link linkend="handling-declare-first">this section</link>.</para>
 			
 			<programlisting>
+func b {3}
+
+!declfirst !functionworef b = !function(->Int) { 3 }
+
 declfirst Foo = interface {
-	prop ro Bar bar
-	prop ro Int number
+	get Bar bar
+	get Int number
 }
 
 declfirst Bar = interface {
-	prop ro Foo foo
+	get Foo foo
 }
 
-Foo foo = getFoo()
+const Foo foo = getFoo()
 println( foo.bar.foo.bar.foo.bar.foo.number )
 			</programlisting>
 		</section>
@@ -389,31 +337,30 @@ decl Array&lt;Int> numbers = generateNumbers()
 
 			<simplelist role="layout">
 				<member>boolean hidden</member>
-				<member>identikey-special-new declaration</member>
+				<member>statement-declaration declaration</member>
 			</simplelist>
 		</section>
 		
-		<section xml:id="node.limit-old">
-			<title>limit-old</title>
+		<section xml:id="node.sieve">
+			<title>sieve</title>
 			
-			<para>Limits reach of identikeys created by identikey-special-old nodes. Only exposes new stuff.</para>
+			<para>Limits reach of expose and using nodes. Can hide child scidentres.</para>
 			
-			<para>Like some other special expressions, limit-old nodes add identikeys to their parent scope, as well as creating their own scope and adding identikeys to it.</para>
-			
-			<para role="xxx">Doesn't just limit old stuff, can also limit new stuff when [hidden] of a hidable child is true.</para>
+			<para>Like some other special expressions, screen nodes add identikeys to their parent scope, as well as creating their own scope and adding identikeys to it.</para>
 			
 			<simplelist role="layout">
-				<member>* identikey-special-old declaration</member>
+				<member>* expose</member>
+				<member>* using</member>
 				<member>* hidable</member>
 			</simplelist>
 			
-			<para>Example of limit-old nodes used to contain the effects of "using" nodes:</para>
+			<para>Example of sieve nodes used to contain the effects of "using" nodes:</para>
 			
 			<programlisting>
 --- file A
 module
 	import as Foo [...]
-	limit-old
+	sieve
 		include B
 		include C
 
@@ -428,10 +375,10 @@ func main {
 --- all together
 module
 	import as Foo
-	limit-old
-		limit-old
+	sieve
+		sieve
 			using Foo as Bar
-		limit-old
+		sieve
 			func main {
 				Bar:do_something() #error - Bar namespace not defined
 			}
@@ -444,8 +391,10 @@ module
 			<para>A grouping of identikey declarations, for use as a library or a standalone program.</para>
 			
 			<simplelist role="layout">
+				<member>integer niviok major version number</member>
+				<member>integer niviok minor version number</member>
 				<member>* import</member>
-				<member>limit-old</member>
+				<member>sieve</member>
 			</simplelist>
 			
 			<para>No node can contain a module node. Module nodes are the only nodes which can ever be parentless. All nodes that are ever executed in any way must be part of a complete tree, with a module node as the rootmost node.</para>
@@ -497,7 +446,7 @@ module
 			
 			<simplelist role="layout">
 				<member>identifier name</member>
-				<member>limit-old</member>
+				<member>sieve</member>
 			</simplelist>
 		</section>
 		
@@ -535,193 +484,21 @@ puts( (FBZ to String)(Gamma) )
 		
 		<para>Nodes that can be executed, but never produce.</para>
 
-		<section xml:id="loops">
-			<title>Loops</title>
-
-			<section xml:id="node.conditional-loop">
-				<title>conditional-loop</title>
-				
-				<simplelist role="layout">
-					<member>expression test</member>
-					<member>? expression body</member>
-				</simplelist>
-				
-				<para>Has scope.</para>
-				
-				<programlisting>
-@while[ container.hasMore? ; println(container.next) ]
-
-@while[ printNext() ]
-
-@until[ stack.empty? ; println(stack.pop()) ]
-
-@compound[
-	@declare Int i = 0 ;
-	@while[ i.lessThan?(container.length) ;
-		println(container[i]) ;
-		i++ ]]
-
-@compound[
-	@declare Iterator&lt;Int> iterator = container.getIterator() ;
-	@while[ iterator.hasMore? ;
-		println(iterator.current) ;
-		iterator.moveNext() ]]
-				</programlisting>
-				
-				<programlisting>
-while container.hasMore?
-	print container.next
-
-while printNext() ;
-
-until stack.empty?
-	println stack.pop()
-
-compound
-	decl Int i = 0
-	while i lt container.length
-		println(container[i])
-		i++
-
-compound
-	decl Iterator&lt;Int> iterator = container.getIterator()
-	while iterator.hasMore?
-		println(iterator.current)
-		iterator.moveNext()
-				</programlisting>
-			</section>
-			
-			<section xml:id="node.enumerator-loop">
-				<title>enumerator-loop</title>
-				
-				<simplelist role="layout">
-					<member>expression container</member>
-					<member>* receiver</member>
-					<member>? expression test</member>
-					<member>expression body</member>
-				</simplelist>
-				
-				<para>Has scope.</para>
-				
-				<orderedlist role="exec">
-					<listitem>Execute [container] and let container be the result. Throw an error if container is not a Collection or Generator.</listitem>
-					<listitem>Call enumerate on container with no arguments and let enumerator be the result.</listitem>
-					<listitem>Create an identikey for each for-receiver.</listitem>
-					<listitem>Call next on enumerator and assign the result to the identikeys. If an exception is thrown with an active interface of EnumeratorExhausted, swallow it and end execution. If anything else is thrown, follow normal exception rules.</listitem>
-					<listitem>Execute [test]. If the result is not a Bool, throw an error. If the result is false, end execution.</listitem>
-					<listitem>Execute [body].</listitem>
-					<listitem>Go to step 4.</listitem>
-				</orderedlist>
-				
-				<programlisting>
-@for[ x @in keys(foo) ; doStuff(x) ]
-
-@for[ Int x @in keys&lt;Int>(foo) ; doStuff(x) ]
-
-@for[ Int x, Int y @in coords ; drawPoint(x, y) ]
-				</programlisting>
-				
-				<programlisting>
-for x in keys(foo)
-	doStuff(x)
-
-for Int x in keys&lt;Int>(foo)
-	doStuff(x)
-
-for x, y in coords
-	drawPoint(x, y)
-
-for Int x, Int y in coords
-	drawPoint(x, y)
-
-for range(0, 100)
-	println "test"
-
-for x in range(0, 100)
-	println x
-
-for x in range(0, 100, @inclusive=true)
-	println x
-
-for range(0, string.length) while not container.full
-	container.push( string.unshift!() )
-
-for x in range(0, 100) while not foo.done?
-	foo.runTest(x)
-
-for name in names
-	println name
-
-for String name in names
-	println name
-				</programlisting>
-				
-				<section xml:id="node.receiver">
-					<title>receiver</title>
-					
-					<simplelist role="layout">
-						<member>? nullable-type</member>
-						<member>identifier name</member>
-					</simplelist>
-				</section>
-			</section>
-
-			<section xml:id="node.unconditional-loop">
-				<title>unconditional-loop</title>
-				
-				<para>Executes [action] continuously. Can only be exited by expressions in [action] such as break and return.</para>
-				
-				<simplelist role="layout">
-					<member>expression body</member>
-				</simplelist>
-				
-				<para>Has scope.</para>
-			
-				<programlisting>
-repeat
-	Event event = getNextEvent()
-	select event.type
-	case Event.QUIT
-		break
-	else
-		defaultHandler(event)
-
-repeat
-	doSomething()
-	unless someTest() : break
-				</programlisting>
-			</section>
-		</section>
-		
 		<section xml:id="control-flow-alteration">
 			<title>Control flow alteration</title>
 			
 			<para>The nodes alter the control flow when executed. For example, if present in a sequence of statements that are executed in order, executing a node of this type alters control flow in such a way that the following statements in the sequence are not executed (or execution is delayed until other expression nodes have been executed).</para>
-		
-			<section xml:id="node.break">
-				<title>break</title>
+			
+			<section xml:id="node.remit">
+				<title>remit</title>
 				
 				<simplelist role="layout">
 					<member>? identifier label</member>
 				</simplelist>
-			</section>
-			
-			<section xml:id="node.continue">
-				<title>continue</title>
 				
-				<simplelist role="layout">
-					<member>? identifier label</member>
-				</simplelist>
-			</section>
-			
-			<section xml:id="node.return">
-				<title>return</title>
+				<para role="process">Must have REMIT allowance. If [label] is specified, must have labled REMIT allowance of that name.</para>
 				
-				<simplelist role="layout">
-					<member>? expression value</member>
-				</simplelist>
-				
-				<para>Function call ends and evaluates to expression.</para>
+				<para>The catch nodes that follows the catch node that this node was in are checked, as if the catch node that this node was in was never entered.</para>
 			</section>
 			
 			<section xml:id="node.throw">
@@ -743,7 +520,9 @@ repeat
 					<member>expression value</member>
 				</simplelist>
 				
-				<para role="process">Must be a descendant of a generator node, and not inside a function or class node. (XXX spec out the kind of barriers function and class nodes create)</para>
+				<para role="process">Must have YIELD allowance.</para>
+				
+				<para>Note that this node may, in the future, become more like Python's yield expression, so that the yield node would become a sometimes-producing expression.</para>
 			</section>
 		</section>
 		
@@ -752,49 +531,30 @@ repeat
 			
 			<simplelist role="layout">
 				<member>identifier name</member>
-				<member>identikey-type</member>
+				<member>wo-scidentre-category</member>
+				<member>expression type</member>
 			</simplelist>
 			
-			<para role="process">The identikey-category of the identikey-type must specify "variable". The nullable-type of the identikey-type must not specifiy nullable as false.</para>
+			<para role="process">The [wo-scidentre-category] must specify "variable".</para>
 			
-			<para>Creates an identikey in the parent scope with the specified type. After this node executes, the produced identikey does not yet point to any values.</para>
+			<para>Creates a scidentre in the parent scope with the specified type. After this node executes, the produced identikey does not yet point to any values.</para>
 
 			<programlisting>
-decl foo
-decl ? foo
+var foo
+var any foo
+var ? foo
+var ?any foo
 decl Int foo
-decl Int ? foo
+decl ?Int foo
 			</programlisting>
 			
 			<programlisting>
-decl bar
+var bar
 bar = 123
 println(bar)
 bar = 456
 println(bar)
 			</programlisting>
-		</section>
-		
-		<section xml:id="node.null">
-			<title>null</title>
-			
-			<para>Produces an untyped null.</para>
-			
-			<simplelist role="layout">
-				<member>? expression interface</member>
-			</simplelist>
-			
-			<para>(XXX move) An untyped null can be cast to any interface, implicitly or explicitly, to form a typed null. A typed null can be downcast.</para>
-			
-			<programlisting>
-decl Int ? foo = 123
-foo = null //untyped null implicitly cast to an Int null
-foo //evaluates to an Int null
-
-decl String ? bar = (foo as void)
-			</programlisting>
-			
-			<para role="xxx">Why not just have a global reserved identikey named "null" of type void? It would always evaluate to an untyped null.</para>
 		</section>
 	</section>
 
@@ -872,68 +632,13 @@ println( person1.name ) //Michael
 			</orderedlist>
 		</section>
 		
-		<section xml:id="node.cast">
-			<title>cast</title>
-			
-			<simplelist role="layout">
-				<member>expression source</member>
-				<member>? nullable-type</member>
-			</simplelist>
-			
-			<para role="process">If [nullable-type] is given, it must declare an interface.</para>
-			
-			<orderedlist role="exec">
-				<listitem>Execute [source] and let source be the result.</listitem>
-				<listitem>If [nullable-type] is not given:
-					<orderedlist>
-						<listitem>If source is not null, throw an error, because a non-null value cannot be cast to void.</listitem>
-						<listitem>Otherwise, produce an untype null.</listitem>
-					</orderedlist>
-				</listitem>
-				<listitem>If [nullable] of [nullable-type] is true, and source is null, throw an error, because a null cannot be cast to a non-null type.</listitem>
-				<listitem>Execute the [interface] of [nullable-type] and let face be the result.</listitem>
-				<listitem>If source is non-null, cast it to face and return the result. If it cannot be cast to face, throw an error.</listitem>
-				<listitem>If source is a typed null, and the associated interface does not inherit from face, throw an error.</listitem>
-				<listitem>Produce a typed null with face as the associated face.</listitem>
-			</orderedlist>
-			
-			<para>If [source] is not null, evaluates to a value, with an active interface specified by nullable-type, that is associated with the same object as [source]. Can also be used to cast null to typed or untyped null.</para>
-			
-			<programlisting>
-//value
-123 as Int
-123 as Int ?
-123 as void //error
-
-//typed null
-(null as Int ?) as Int //error
-(null as Int ?) as Int ?
-(null as Int ?) as void
-
-//untyped null
-null as Int //error
-null as Int ?
-null as void
-
-Int o = getIntAndString()
-print (o as String).length
-
-decl Int ? a = (null as Int)
-decl String ? b = ((a as null) as String)
-
-decl Int ? a = null
-decl String ? b = a as null
-			</programlisting>
-			
-			<para>(XXX label or move) Rationale for casting to null: A generic type may want to cast an object to a parameter type, and the parameter type may be null. XXX But does that mean nullable-type must be replaced with a NullableType interface?</para> 
-		</section>
-		
 		<section xml:id="node.compound">
 			<title>compound</title>
 			
 			<simplelist role="layout">
-				<member>* identikey-special-old old declaration</member>
-				<member>* identikey-special-new new declaration</member>
+				<member>* expose</member>
+				<member>* using</member>
+				<member>* statement-declaration declaration</member>
 				<member>+ expression member</member>
 			</simplelist>
 			
@@ -992,6 +697,9 @@ decl bar =
 
 if not foo.isSetup?
 	foo.setup()
+
+unless prefs.dont_do_it
+	do_it()
 			</programlisting>
 		</section>
 		
@@ -1079,23 +787,23 @@ bar3()
 			
 			<simplelist role="layout">
 				<member>identifier name</member>
-				<member>identikey-type</member>
+				<member>wo-scidentre-category</member>
+				<member>expression type</member>
 				<member>boolean breed</member>
-				<member>boolean infer interface</member>
 				<member>expression value</member>
 			</simplelist>
 			
-			<para role="process">The identikey-category of the identikey-type node must specify "variable" or "constant". If the category is "constant", [infer interface] must be false. If [infer interface] is true, the interface of the [nullable-type] of the [identikey-type] is set to be the same as the active interface of [value].</para>
-			
+			<para role="process">The [wo-scidentre-category] must specify "variable" or "constant".</para>
+
 			<para>Creates an identikey in the parent scope with the specified type, then assigns the specified value to it.</para>
 			
 			<programlisting>
-decl foo = 123
-decl ? foo = 123
-decl auto foo = 123
-decl auto ? foo = 123
-decl Int foo = 123
-decl Int ? foo = 123
+var any foo = 123
+var Nullable&lt;any> foo = 123
+var ?any foo = 123
+var Int foo = 123
+var Nullable&lt;Int> foo = 123
+var ?Int foo = 123
 			</programlisting>
 		</section>
 		
@@ -1121,75 +829,9 @@ println( foo )
 (println foo)
 			</programlisting>
 		</section>
-		
-		<section xml:id="node.ignore">
-			<title>ignore</title>
-			
-			<para>Instructs an agent to not output certain warnings.</para>
-			
-			<simplelist role="layout">
-				<member>expression content</member>
-				<member>+ ignore-member</member>
-			</simplelist>
-			
-			<section xml:id="node.ignore-member">
-				<title>ignore-member</title>
-				
-				<simplelist role="layout">
-					<member>string name</member>
-					<member>integer depth</member>
-				</simplelist>
-			
-				<para>The [name] can be a warning name from the <link linkend="warnings-list">specified warnings</link> or an agent-defined warning name. Unknown warning names should by default produce a warning that the warning name is unknown. Agents should provide an option to disable warnings for unknown warning names.</para>
-				
-				<para>The [depth] specifies what descendant nodes are affected by the ignore node. Counting begins at one with the [content] node of the ignore node and increments by one for each further descendant.</para>
-				
-				<programlisting>
-(ignore
-	(ignore-member
-		(string.name "always null")
-		(integer.depth ...))
-	(call.content
-		(function.identifier println)
-		(assignment.argument
-			(identifier.name foo)
-			(for-value.value
-				...))))
-				</programlisting>
-				
-				<para>Here, if the [depth] was 1, a warning should be output by the agent for the assignment node that the [value] node will never produce a value when executed (a.k.a. always evaluate to null).</para>
-			</section>
-		</section>
-		
-		<section xml:id="node.labeled">
-			<title>labeled</title>
-			
-			<simplelist role="layout">
-				<member>identifier label</member>
-				<member>expression child</member>
-			</simplelist>
-			
-			<para role="process">The [child] node must be an iteration node, a compound node, a possibility node, a conditional node, or a select node. (XXX update and explain requirements instead of just listing nodes that meet requirements)</para>
-			
-			<programlisting>
-func setupCell(Int searchID) {
-	decl Cell wantedCell
-	
-	outer: for row in table {
-		for cell in row
-			if cell.ID eql searchID
-				wantedCell = cell
-				break outer
-	}
-	
-	if wantedCell != null
-		doSomething(wantedCell)
-}
-			</programlisting>
-		</section>
 
-		<section xml:id="node.namespaced-value-identikey">
-			<title>namespaced-value-identikey</title>
+		<section xml:id="node.namespaced-wo-scidentre">
+			<title>namespaced-wo-scidentre</title>
 			
 			<simplelist role="layout">
 				<member>+ identifier namespace</member>
@@ -1211,7 +853,7 @@ println( alpha ) //123
 			<title>select</title>
 			
 			<simplelist role="layout">
-				<member>expression value</member>
+				<member>expression input value</member>
 				<member>* case</member>
 				<member>? expression else</member>
 			</simplelist>
@@ -1222,7 +864,7 @@ println( alpha ) //123
 				<title>case</title>
 				
 				<simplelist role="layout">
-					<member>+ expression value</member>
+					<member>+ expression test value</member>
 					<member>expression result</member>
 				</simplelist>
 			</section>
@@ -1254,30 +896,130 @@ decl bar = select foo
 			</programlisting>
 		</section>
 		
+		<section xml:id="node.set-property">
+			<title>set-property</title>
+
+			<simplelist role="layout">
+				<member>expression source</member>
+				<member>identifier property name</member>
+				<member>expression value</member>
+			</simplelist>
+			
+			<para>Sets the value of a property. If the active interface of the value does not have a property with the specified name, or the property cannot be set, an error results. Evaluates to the value given by [value].</para>
+			
+			<programlisting>
+alpha.beta = "gamma"
+			</programlisting>
+			
+			<programlisting>
+(= alpha.beta "gamma")
+			</programlisting>
+		</section>
+		
 		<section xml:id="node.try-catch">
 			<title>try-catch</title>
 			
 			<simplelist role="layout">
 				<member>expression try</member>
-				<member>* exception-handler</member>
-				<member>? expression else</member>
+				<member>* catcher</member>
+				<member>? expression on success</member>
 				<member>? expression finally</member>
 			</simplelist>
 			
-			<para role="xxx">The term "else" is not descriptive enough in this situation. Possible replacements: "onsuccess", "then"</para>
-			
 			<para role="process">Must contain more than just [try].</para>
 			
-			<section xml:id="node.exception-handler">
-				<title>exception-handler</title>
+			<section xml:id="node.catcher">
+				<title>catch</title>
 
 				<simplelist role="layout">
-					<member>boolean catch</member>
-					<member>expression interface</member>
+					<member>expression type</member>
 					<member>? identifier name</member>
+					<member>? expression test</member>
 					<member>expression result</member>
 				</simplelist>
+				
+				<para role="allowance">The [result] node adds a REMIT allowance.</para>
 			</section>
+			
+			<screen>
+function execute ( Node_TryCatch node, IScope parentScope ) -> IWorker {
+	IScope tryCatchScope = new Scope(parentScope)
+	IWorker result
+	try {
+		result = execute(node.try, tryCatchScope)
+	}
+	catch( ClientException exception ) {
+		for(Node_Catch c in node.catchs) {
+			try {
+				Type type = Type.wrap(execute(c.type, tryCatchScope))
+				if (can_downcast(exception.worker, type)) {
+					IScope catchScope = new Scope(parentScope)
+					if (c.name != null) {
+						G.declareAssign(
+							c.name.value
+							WoScidentreCategory.CONSTANT,
+							type,
+							exception.worker,
+							catchScope)
+					}
+					if (c.test != null) {
+						if (unwrapBoolean(execute(c.test, catchScope)) == false) {
+							continue
+						}
+					}
+					try {
+						result = execute(c.result, catchScope)
+					}
+					catch( ClientRemit remit ) {
+						continue
+					}
+				}
+			}
+			catch( ClientException exception2 ) {
+				if (node.finally != null) {
+					execute(node.finally, tryCatchScope)
+					throw exception2
+				}
+			}
+		}
+		if (node.finally != null) {
+			execute(node.finally, tryCatchScope)
+			throw exception
+		}
+	}
+	if (node.onSuccess != null) {
+		try {
+			result = execute(node.onSuccess, tryCatchScope)
+		}
+		catch( ClientException exception ) {
+			if (node.finally != null) {
+				execute(node.finally, tryCatchScope)
+				throw exception
+			}
+		}
+	}
+	if (node.finally != null) {
+		execute(node.finally, tryCatchScope)
+	}
+	return result
+}
+
+Execute [try] and let result be the result.
+If an exeception raised up through [try] as it was being executed:
+	Let exception be the exception.
+	For each [catch] child:
+		Execute the type expression and let type be the result.
+		If the [type] of catch does not match exception, continue to the next catch.
+		If the catch specifies a name, bind the exception to that name as a constant.
+		If tha catch specifies a test, execute the test, and continue to the next catch if the result is false.
+		Execute the [result] of catch and set result to be the product, then stop looking for a catch.
+		If a remit signal raises out of the catch while executing it, continue the search for a catch.
+		If an exception raises out of the type, test, or result expressions, execute [finally] if present, and then allow the exception to rise out.
+	If no matching catch nodes were found, execute [finally] if present, and then allow the exception to rise out.
+Otherwise, execute [on success] if present and set [result] to be the result. If an exception raises out of [on success] while executing it, execute [finally] and allow the exception to rise out.
+Execute [finally] if present.
+Produce result.
+			</screen>
 			
 			<programlisting>
 try
@@ -1311,6 +1053,52 @@ catch( NotSoBadError ) {
 observe
 	println "something horrible not caught when trying to doSomething()"
 			</programlisting>
+			
+			<para role="xxx">This node is too complicated. Try to simplify it. In particular, see about removing remit node and reintroducing catch/observe distinction.</para>
+		</section>
+		
+		<section xml:id="node.type-select">
+			<title>type-select</title>
+			
+			<simplelist role="layout">
+				<member>expression input value</member>
+				<member>? identifier casted name</member>
+				<member>? boolean require match</member>
+				<member>* type-case</member>
+				<member>? expression else</member>
+			</simplelist>
+			
+			<para role="process">[require match] must be present if and only if an [else] is not given.</para>
+			
+			<para>If [require match] is true (which means an [else] was not given) and no match was found, an exception is thrown.</para>
+			
+			<section xml:id="node.type-case">
+				<title>type-case</title>
+				
+				<simplelist role="layout">
+					<member>+ expression test type</member>
+					<member>expression result</member>
+				</simplelist>
+			</section>
+			
+			<screen>
+if e is declare-assign
+	e2 = e as declare-assign
+	sb.reserveWoScidentre( e2.name, e2.category )
+elif e is declare-empty
+	e2 = e as declare-empty
+	sb.reserveWoScidentre( e2.name, e2.category )
+
+typeselect e as e2
+case declare-assign
+	sb.reserveWoScidentre( e2.name, e2.category )
+case declare-empty
+	sb.reserveWoScidentre( e2.name, e2.category )
+
+typeselect e as e2
+case declare-assign, declare-empty
+	sb.reserveWoScidentre( e2.name, e2.category )
+			</screen>
 		</section>
 	</section>
 	
@@ -1533,232 +1321,12 @@ println foo.doStuff(3,7)
 			</simplelist>
 		</section>
 		
-		<![CDATA[ xxxxxx
-
-		<section xml:id="node.class">
-			<title>class</title>
-			
-			<para>Evaluates to a value that, when called, produces other values. The interfaces supported by the produced values are implemented in the way specified by this class node. The active interface of the produced value is specified by this class.</para>
-			
-			<para>The active interface of the value that is produced when a class node is executed inherits from the master interface of the class. The master interface is the sum of all the root interfaces implemented by the class.</para>
-			
-			<para role="xxx">XML comments with important information</para>
-			
-			<simplelist role="layout">
-				<!-- private and possibly public; can't be "call" or "callee" -->
-				<member>* static-member static declaration</member>
-				
-				<!-- private -->
-				<member>? expression static constructor</member>
-				
-				<!-- public -->
-				<member>* function static callee</member>
-				
-				<!-- public -->
-				<member>* class-property static property</member>
-				
-				<!-- private and public -->
-				<member>* function instance constructor</member>
-				
-				<!-- private -->
-				<member>* declaration instance declaration</member>
-				
-				<!-- private and public -->
-				<member>* worker</member>
-			</simplelist>
-			
-			<para>XXX The static callees and static properties may not always be visible in the class node's scope. (An example of being visible is assigning the value produced by the class node to an identifier.) Should some identifier (e.g. "thisClass") be introduced that evaluates to the class's value? (e.g. thisClass.property = foo) Or should a general means of accessing the enclosing expression node's value be introduced? (e.g. thisValue.property = foo)</para>
-			
-			<para>The above is not a problem for interface implementations due to the "this" identikey being bound to the active instance.</para>
-			
-			<para>The children of class nodes can be grouped by several means.</para>
-			
-			<para>By count:</para>
-			<table>
-				<tbody>
-					<tr>
-						<th></th>
-						<th>public</th>
-						<th>private</th>
-					</tr>
-					<tr>
-						<th>static - only 1</th>
-						<td>callees, getters/setters, methods, workers</td>
-						<td>static constructor, instance constructors, static declarations, instance methods</td>
-					</tr>
-					<tr>
-						<th>instance - 1 per instance</th>
-						<td></td>
-						<td>instance declarations</td>
-					</tr>
-				</tbody>
-			</table>
-			
-			<para>By scopes: (in scope means something can be accessed through a single identifier as a free identikey)</para>
-			<simplelist>
-				<member>static scope
-					<simplelist>
-						<member>public
-							<simplelist>
-								<member>defined by: static declarations (as properties and methods; must have access with get and/or set), static properties, instance constructors (as callees)</member>
-								<member>in scope: (none)</member>
-							</simplelist>
-						</member>
-						<member>private
-							<simplelist>
-								<member>defined by: static declarations, instance constructors (as functions bound to "construct")</member>
-								<member>in scope: static constructor, callees, getters/setters, methods, expressions in static declarations</member>
-							</simplelist>
-						</member>
-					</simplelist>
-				</member>
-				<member>instance scope
-					<simplelist>
-						<member>public
-							<simplelist>
-								<member>defined by: workers (or really, by the interface)</member>
-								<member>in scope: (none)</member>
-							</simplelist>
-						</member>
-						<member>private
-							<simplelist>
-								<member>defined by: instance declarations, instance methods</member>
-								<member>in scope: expressions in instance declarations, instance methods, interface implementations, instance constructors</member>
-							</simplelist>
-						</member>
-					</simplelist>
-				</member>
-			</simplelist>
-			
-			<para>Note: Instance scopes are children of the static scope.</para>
-			
-			<para role="process">Must have at least one worker. Including the worker nodes that are inherited by this class's child worker nodes, one and only one of the worker nodes must be specified as default.</para>
-			
-			<orderedlist role="exec">
-				<listitem>Create scope, STATIC_SCOPE.</listitem>
-				<listitem>Create an interface, CLASS_INTERFACE.</listitem>
-				<listitem>Add instance constructors as free functions to STATIC_SCOPE.</listitem>
-				<listitem>Add instance constructors as callees to CLASS_INTERFACE.</listitem>
-				<listitem>Evaluate the declaration of every <link linkend="node.static-member">static-member</link> that has a <link linkend="node.declare-first">declare-first</link>, in the scope of STATIC_SCOPE. If the identikey-type of the <link linkend="node.declare-first">declare-first</link> is function, and it has access of get, add a method to CLASS_INTERFACE with the same function interface and name. Otherwise, create a property with a getter if declared public.</listitem>
-				<listitem>Evaluate the declarations of the rest of the static-member nodes in the scope of STATIC_SCOPE, except for the static-member nodes with a declare-const-empty. Create properties as appropriate when the access nodes specify to do so.</listitem>
-				<listitem>In the scope of STATIC_SCOPE, evaluate the static-member nodes that have declare-const-empty nodes. Create properties as appropriate when the access nodes specify to do so.</listitem>
-				<listitem>Add the static callees as free functions in STATIC_SCOPE.</listitem>
-				<listitem>Add the static callees and the static properties to CLASS_INTERFACE.</listitem>
-				<listitem>Execute the static constructor.</listitem>
-				<listitem>Seal the identikeys created by the declare-const-empty nodes, meaning don't allow their bound status to change.</listitem>
-				<listitem>Create a value with CLASS_INTERFACE as the active interface.</listitem>
-				<listitem>Evaluate this node to the above value.</listitem>
-			</orderedlist>
-			
-			<para>When a constructor is called:</para>
-			<orderedlist role="exec">
-				<listitem>Create a scope, INSTANCE_SCOPE. Set STATIC_SCOPE as the parent scope.</listitem>
-				<listitem>Evaluate all declare-first nodes in scope of INSTANCE_SCOPE.</listitem>
-				<listitem>Execute the appropriate constructor.</listitem>
-				<listitem>Evaluate the function-call that lead to this constructor being evaluated to a value with INSTANCE_SCOPE as the object and the default interface implementation of the class as the active interface implementation.</listitem>
-				<listitem>Note: When the interface implementation is used, the value will pass the object into the interface implementation.</listitem>
-			</orderedlist>
-			
-			<section xml:id="node.static-member">
-				<title>static-member</title>
-				
-				<simplelist role="layout">
-					<member>declaration decl</member>
-					<member>? access</member>
-				</simplelist>
-				
-				<para role="process">If the declaration declares a const identifier, and access is present, the access node must be declared get.</para>
-				
-				<para role="xxx">poorly named</para>
-			</section>
-			
-			<section xml:id="node.declaration">
-				<title>declaration</title>
-				
-				<para>declaration is a family of node types, like expression. The node types included in this family are:</para>
-				
-				<simplelist role="family-members">
-					<member>declare-empty</member>
-					<member>declare-assign</member>
-					<member>declare-first</member>
-					<member>declare-const-empty</member>
-				</simplelist>
-			</section>
-			
-			<section xml:id="node.declare-const-empty">
-				<title>declare-const-empty</title>
-				
-				<simplelist role="layout">
-					<member>identifier name</member>
-					<member>identikey-type</member>
-				</simplelist>
-				
-				<para>Identifiers created by this node are always const. [identikey-type] must be value or function. The class's static constructor is allowed to assign values to static identifiers created by this node. If anthing tries to assign a value to an identikey create by this node, and the identikey is already bound to something, throw an error. The class's instance constructors are allowed to assign values to instance identifiers created by this node. An error results if identikeys produced by declare-const-empty nodes are dereferenced before being bound to anything.</para>
-			</section>
-			
-			<section xml:id="node.named-function">
-				<title>named-function</title>
-				
-				<simplelist role="layout">
-					<member>identifier name</member>
-					<member>function function</member>
-				</simplelist>
-			</section>
-			
-			<section xml:id="node.class-property">
-				<title>class-property</title>
-				
-				<simplelist role="layout">
-					<member>identifier</member>
-					<member>identikey-type</member>
-					<member>? function getter</member>
-					<member>? function setter</member>
-				</simplelist>
-				
-				<para role="process">Must have a getter and/or setter. If only identifier and identikey-type are given, an error results.</para>
-			</section>
-			
-			<programlisting>
-class Foo {
-	...
-	construct() {...}
-	impl Bar {...}
-}
-
-interface of Foo {
-	inherit Bar
-	call() Bar
-}
-
-(Foo as Interface) == Bar //true
-			</programlisting>
-			
-			<programlisting>
-class Foo {
-	...
-	construct() {...}
-	impl Bar default {...}
-	impl define Bar2 {...} //the identifier "Bar2" is required
-}
-
-interface of Foo {
-	inherit Bar + {{interface Bar2}}
-	call() Bar
-	get Interface Bar2
-}
-
-(Foo as Interface) == (Bar + Foo.Bar2) //true
-			</programlisting>
-		</section>
-		
-		]]>
-		
 		<section xml:id="node.dictionary">
 			<title>dictionary</title>
 			
 			<simplelist role="layout">
-				<member>nullable-type key type</member>
-				<member>nullable-type value type</member>
+				<member>expression key type</member>
+				<member>expression value type</member>
 				<member>* dictionary-entry</member>
 			</simplelist>
 			
@@ -1798,7 +1366,7 @@ for pair name, age in ages
 			<para>An enum is similar to an immutable dict.</para>
 			
 			<simplelist role="layout">
-				<member>? nullable-type</member>
+				<member>expression type</member>
 				<member>+ enum-entry</member>
 			</simplelist>
 			
@@ -1915,22 +1483,21 @@ alpha.doStuff()
 			
 			<simplelist role="layout">
 				<member>* parameter-impl</member>
-				<member>? nullable-type return info</member>
+				<member>expression return type</member>
 				<member>expression body</member>
 			</simplelist>
 
-			<para role="xxx">Specify barrier, which is like the kind of barrier that is in class nodes. Compare this kind of barrier to scope barriers -- nodes that "have scope". The [body] node is not executed when this node is executed, but it may be executed after this node has executed.</para>
+			<para role="allowance">The [body] node adds a RETURN allowance and removes REMIT and YIELD allowances.</para>
 			
-			<para>If [return info] is not present, the function does not return anything. I.e., it does not produced a value when call.</para>
+			<para>If [return info] is not present, the function does not return anything, meaning it does not produce a value when called.</para>
 			
 			<para>When this node is executed, it produces a value with a function interface as the active interface. Only the [parameter] node and [return info]'s [interface] nodes are executed at this time. When the resultant value is called, the [body] node is executed in the scope of this function node.</para>
 			
 			<programlisting>
-decl square = func(a) {
-	a * a
-}
+func square = { n | n * n }
 
-println( square(2) )
+println( square(3) )
+=> 9
 			</programlisting>
 			
 			<programlisting>
@@ -1957,7 +1524,7 @@ println( {a|a*a} 2 )
 			<simplelist role="layout">
 				<member>? expression template-argument-count</member>
 				<member>* parameter-info</member>
-				<member>? nullable-type return info</member>
+				<member>expression return type</member>
 			</simplelist>
 			
 			<programlisting>
@@ -1975,11 +1542,11 @@ println( func(Int,Int)Rat )
 			<para>Produces a value that implements an instantiation of the Generator generic interface.</para>
 			
 			<simplelist role="layout">
-				<member>? nullable-type</member>
+				<member>expression type</member>
 				<member>expression body</member>
 			</simplelist>
 			
-			<para>Has scope.</para>
+			<para role="allowance">The [body] adds a YIELD allowance and removes REMIT and RETURN allowances.</para>
 			
 			<para>If [type] is not given, the generator does not produce. (The generator could still be useful for producing side effects.)</para>
 			
@@ -2063,29 +1630,16 @@ Array&lt;Int>([2*x for x in L if x^2 > 3])
 collection.insert([2*x for x in L if x^2 > 3])
 			</programlisting>
 		</section>
-		
-		<![CDATA[ xxx
-				  
-		<section xml:id="node.generic-class">
-			<title>generic-class</title>
-			
-			<simplelist role="layout">
-				<member>+ generic-parameter parameter</member>
-				<member>class</member>
-			</simplelist>
-			
-			<para>Evaluates to a value with an active interface that inherits from GenericClass and one or more function interfaces. When called, the value returns the value returned from evaluating the class node.</para>
-		</section>
-		
-		]]>
-		
+
 		<section xml:id="node.generic-function">
 			<title>generic-function</title>
 			
 			<simplelist role="layout">
-				<member>+ generic-parameter parameter</member>
+				<member>+ parameter-info parameter</member>
 				<member>function</member>
 			</simplelist>
+			
+			<para role="process">The direction of the [parameter-info] must be "in".</para>
 			
 			<para>Evaluates to a value with an active interface that inherits from GenericClass and one or more function interfaces. When called, the value returns the value returned from evaluating the function node.</para>
 			
@@ -2114,9 +1668,11 @@ println larger(2, 7) //prints "7"
 			<title>generic-interface</title>
 			
 			<simplelist role="layout">
-				<member>+ generic-parameter parameter</member>
+				<member>+ parameter-info parameter</member>
 				<member>interface</member>
 			</simplelist>
+			
+			<para role="process">The direction of the [parameter-info] must be "in".</para>
 			
 			<para>Evaluates to a value with an active interface that inherits from GenericClass and one or more function interfaces. When called, the value returns the value returned from evaluating the interface node.</para>
 			
@@ -2192,17 +1748,15 @@ println( 789 )
 			
 			<simplelist role="layout">
 				<member>* expression inheritee</member>
-				<member>* interface-member member</member>
+				<member>* statused-member member</member>
 			</simplelist>
-			
-			<!-- xxx
 			
 			<section xml:id="node.statused-member">
 				<title>statused-member</title>
 				
 				<simplelist role="layout">
 					<member>member-status</member>
-					<member>interface-member</member>
+					<member>interface-member member</member>
 				</simplelist>
 			</section>
 			
@@ -2212,13 +1766,11 @@ println( 789 )
 				<para>Base node. Specifies "new", "normal", or "deprecated".</para>
 			</section>
 			
-			-->
-			
 			<section xml:id="node.breeder">
 				<title>breeder</title>
 				
 				<simplelist role="layout">
-					<member>? expression interface</member>
+					<member>? expression type</member>
 				</simplelist>
 				
 				<para>Specifies that implementations of that interface can be converted into the specified type. Or, if [interface] isn't given, that the value can be copied.</para>
@@ -2231,19 +1783,7 @@ println( 789 )
 				
 				<simplelist role="layout">
 					<member>* parameter-info</member>
-					<member>? nullable-type return info</member>
-				</simplelist>
-				
-				<para>If [return info] is not present, the callee does not produce anything when called.</para>
-			</section>
-			
-			<section xml:id="node.property">
-				<title>property</title>
-				
-				<simplelist role="layout">
-					<member>identifier name</member>
-					<member>boolean writable</member>
-					<member>nullable-type</member>
+					<member>expression return type</member>
 				</simplelist>
 			</section>
 			
@@ -2255,27 +1795,16 @@ println( 789 )
 					<member>expression interface</member>
 				</simplelist>
 			</section>
-		</section>
-		
-		<section xml:id="node.implements">
-			<title>implements</title>
 			
-			<simplelist role="layout">
-				<member>expression value</member>
-				<member>expression interface</member>
-			</simplelist>
-			
-			<para>Returns a bool object reference to the true or false objects. True if [object] implements [interface], false otherwise.</para>
-			
-			<programlisting>
-if (o impls Foo)
-	(o as Foo).propOfFoo()
-			</programlisting>
-			
-			<programlisting>
-(if (impls o Foo)
-	((cast o Foo).propOfFoo))
-			</programlisting>
+			<section xml:id="node.property">
+				<title>property</title>
+				
+				<simplelist role="layout">
+					<member>identifier name</member>
+					<member>boolean writable</member>
+					<member>expression type</member>
+				</simplelist>
+			</section>
 		</section>
 		
 		<section xml:id="node.rational">
@@ -2289,26 +1818,6 @@ println( 123.456 )
 			
 			<programlisting>
 (println 123.456)
-			</programlisting>
-		</section>
-		
-		<section xml:id="node.set-property">
-			<title>set-property</title>
-
-			<simplelist role="layout">
-				<member>expression source</member>
-				<member>identifier property name</member>
-				<member>expression value</member>
-			</simplelist>
-			
-			<para>Sets the value of a property. If the active interface of the value does not have a property with the specified name, or the property cannot be set, an error results. Evaluates to the value given by [value].</para>
-			
-			<programlisting>
-alpha.beta = "gamma"
-			</programlisting>
-			
-			<programlisting>
-(= alpha.beta "gamma")
 			</programlisting>
 		</section>
 

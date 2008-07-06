@@ -1,0 +1,11 @@
+declare-first function
+	fun foo = { x | x * x }
+
+declare-first constant
+	def foo = 123
+
+declare-assign constant
+	let foo = 123
+
+declare-assign variable
+	var foo = 123

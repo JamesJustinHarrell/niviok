@@ -6,16 +6,16 @@ to be evaluated for every call to the function
 */
 class ParameterImpl {
 	Direction _direction;
-	NullableType _nullableType;
+	IType _type;
 	Identifier _name;
 	IWorker _defaultValue;
 	
 	public ParameterImpl(
-	Direction direction, NullableType nullableType,
+	Direction direction, IType type,
 	Identifier name, IWorker defaultValue )
 	{
 		_direction = direction;
-		_nullableType = nullableType;
+		_type = type;
 		_name = name;
 		_defaultValue = defaultValue;
 	}
@@ -24,8 +24,8 @@ class ParameterImpl {
 		get { return _direction; }
 	}
 	
-	public NullableType nullableType {
-		get { return _nullableType; }
+	public IType type {
+		get { return _type; }
 	}
 	
 	public Identifier name {

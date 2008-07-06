@@ -56,7 +56,7 @@ class DesibleSerializer : DesibleSerializerAuto {
 	override protected XmlElement serialize(Node_Boolean node) { return serializeTerminal(node); }
 	override protected XmlElement serialize(Node_Direction node) { return serializeTerminal(node); }
 	override protected XmlElement serialize(Node_Identifier node) { return serializeTerminal(node); }
-	override protected XmlElement serialize(Node_IdentikeyCategory node) { return serializeTerminal(node); }
+	override protected XmlElement serialize(Node_WoScidentreCategory node) { return serializeTerminal(node); }
 	override protected XmlElement serialize(Node_Integer node) { return serializeTerminal(node); }
 	override protected XmlElement serialize(Node_Rational node) { return serializeTerminal(node); }
 	override protected XmlElement serialize(Node_String node) { return serializeTerminal(node); }

@@ -1,0 +1,15 @@
+--- example code
+defirst foo = { foo() }
+
+--- dependencies
+foo has a finish dependency on foo.
+
+--- run through
+foo has no execute dependencies, so it is executed.
+	The state of foo is changed to waiting.
+	foo has a finish dependency on foo, which is waiting. foo has already been marked off as checked, so it is not checked again.
+	The state of foo is changed to ready.
+
+--- order of state changes
+foo: empty -> waiting
+foo: waiting -> ready

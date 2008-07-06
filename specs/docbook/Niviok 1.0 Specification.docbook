@@ -1,8 +1,18 @@
+<!--
+
+preprocessor features:
+@@foo becomes <link linkend="node.foo">foo</link>
+##foo becomes <link linkend="def.foo">foo</link>
+$$CURRENTDATE becomes the current date in YYYY-MM-DD format
+$$NODECOUNT becames the node count
+
+-->
+
 <book xmlns="http://docbook.org/ns/docbook" version="5.0"
 xmlns:xi="http://www.w3.org/2003/XInclude">
 	
 	<title>Niviok 1.0 Specification</title>
-	<subtitle>Edition 1 Draft $$$CURRENTDATE$$$</subtitle>
+	<subtitle>Edition 1 Draft $$CURRENTDATE</subtitle>
 	
 	<info>
 		<copyright>
@@ -13,189 +23,170 @@ xmlns:xi="http://www.w3.org/2003/XInclude">
 		<legalnotice>Permission is granted to use, copy, display, modify, sell, and distribute this document. This document is provided "as is" without warrany of any kind. In no event shall anyone be liable for any damages or other liability arising from use of this document.</legalnotice>
 	</info>
 	
-	<chapter xml:id="introduction">
-		<title>Introduction</title>
+	<chapter xml:id="Overview">
+		<title>Overview</title>
 		
-		<section xml:id="intro-basic">
-			<title>Basic</title>
-			
-			<para>This document is a draft of the first edition of the specification describing the 1.0 version of Niviok.</para>
-			
-			<para>Niviok is an abstract programming language. This document defines several node types which are used to represent Niviok source code. How Niviok nodes are represented is outside the scope of this standard. While syntax and semantics are not completetly separate, Niviok does contain much less syntax-influenced semantics than most programming languages.</para>
-			
-			<para>Nodes that can be executed are statements or expressions. Statements are greatly restricted in where they can appear, while expressions are more relaxed and can be interchanged for on another. An expression may produce a value when executed.</para>
-
-			<para>Niviok contains some dynamic aspects, but in several ways is very static. For example, the tree of scopes ("environments" in some languages) and variables/constants ("identikeys" in Niviok) can be entirely known before runtime; identikeys cannot be declared conditionally like in highly dynamic languages such as JavaScript.</para>
-		</section>
-		
-		<section xml:id="version">
-			<title>Version</title>
-			
-			<para>Each version of Niviok is described by a specification with one or more editions.</para>
-			
-			<section xml:id="niviok-version">
-				<title>Niviok version</title>
-			
-				<para>Each version of Niviok is identified by a major version number and a minor version number, both integers. Each new version that is mostly backwards compatible with the previous version increments the minor version number by one. Each new version that is not mostly backwards comptable with the previous version increments the major version number by one and resets the minor version number to 0.</para>
-			</section>
-			
-			<section xml:id="specification-version">
-				<title>Specification version</title>
-				
-				<para>Each edition of a specification describing a particular version of Niviok is identified by an integer. This edition number starts at one and is incremented by one for each additional edition.</para>
-				
-				<para>A document that is intended to become an edition is a draft. A finalized edition is no longer in the draft stage. Each draft is identified by the date on which it was published.</para>
-				
-				<para>Newer editions should serve only to better describe a particular version of Niviok, not to modify that version of Niviok. Newer editions should not attempt to correct problems with Niviok, only errors in describing that version of Niviok.</para>
-			</section>
-			
-			<section xml:id="version-notation">
-				<title>Version notation</title>
-				
-				<para>A version of Niviok may be represented as "Niviok X.Y" where X is the major version number and Y is the minor version number.</para>
-				
-				<para>A finalized specification for Niviok may be represented as "Niviok X.Y Edition A" where A is the edition number.</para>
-				
-				<para>A draft of a specification edition may be represented as "Niviok X.Y Edition A Draft YYYY-MM-DD" where YYYY-MM-DD is the date on which the draft was published, represented as specified by ISO 8601.</para>
-				
-				<para>Example: Niviok 2.3 Edition 4 Draft 2008-01-20</para>
-				
-				<para>(Note: Something like "Niviok 2.3 Draft 2008-01-20" could be ambiguous, as drafts for two different editions could be be published on the same day.)</para>
-			</section>
-		</section>
-		
-		<section xml:id="specification-scope">
-			<title>Scope</title>
-			
-			<para>This document defines Niviok node types, but not how to represent instances of them.</para>
-		</section>
-		
-		<section xml:id="compliance">
-			<title>Compliance</title>
-			
-			<para>This specification provides a definition of compliance. Other definitions of compliance may exist outside of this specification, but to be compliant as defined by this specification, these requirements must be met.</para>
-			
-			<para>For an implementation to be "base compliant", it must meet all the "must" requirements listed in this spec. If this spec says an implementation "must" do something, the implementation will not be considered base compliant according to this specification if it does not do it.</para>
-			
-			<para>Above base compliance, there are further levels of compliance. Each correct implementation of a "should" requirement increases the compliance level, and each failure to implement a "should" requirement decreases the compliance level. Two different compliance levels can only be compared if one is a subset of the other.</para>
-			
-			<para>For example, consider an implementation Alpha that meets all the "must" requirements and three of the the "should" requirements, and an implementation Beta that meets all the "must" requirements and five of the "should" requirements. If Beta does not meet the three "should" requirements that Alpha meets, Aplha is not a subset of Beta, so it cannot be said that Beta is more compliant than Alpha. But if Beta meets the same three "should" requirements as Alpha (in addition to the other two), then Alpha is a subset of Beta, so it can be said that Beta is more compliant than Alpha.</para>
-			
-			<para>This specification also has "encourgements". These encouragements are considered good ideas by the specficiation author(s), but may not always be appropriate or may not be necessary for interoperability. Complying with these encouragements does not increase an implementation's compliance.</para>
-		</section>
-		
-		<section xml:id="executing-nodes">
-			<title>Executing nodes</title>
-			
-			<para>No node besides the bundle node can be executed directly. All other nodes must only be executed when required by the execution instructions of another node, or as required to call a callee/method (such as when calling a value created by a function node). ((XXX clarify execution through calling)) Because values can only be created, directly or indirectly, by executing the bundle node, and because all node execution instructions only every instruct to execute child nodes, all node execution occurs as a result of executing the root bundle node.  All Niviok nodes that are executed in any way must be part of a complete Niviok node tree, which means having an bundle node as the root node.</para>
-			
-			<para>Note: A bundle might not have a main function. It might just expose its members, such as for scripting or a library.</para>
-			
-			<para>interpreted:</para>
-			<orderedlist>
-				<listitem>a bundle representation is parsed to extract a tree of Niviok nodes</listitem>
-				<listitem>libraries are loaded and linked</listitem>
-				<listitem>tree is processed</listitem>
-				<listitem>optimization</listitem>
-				<listitem>execution of the planes' declaration-first nodes</listitem>
-				<listitem>execution of the function bound to "main" attached to the bundle node's scope, which may return an exit status</listitem>
-				<listitem>returning exit status, or 0 if none specified</listitem>
-			</orderedlist>
-			
-			<para>runtime compilation:</para>
-			<orderedlist>
-				<listitem>a bundle representation is parsed to extract a tree of Niviok nodes</listitem>
-				<listitem>libraries are loaded and linked</listitem>
-				<listitem>tree is processed</listitem>
-				<listitem>optimization</listitem>
-				<listitem>tree translated to bytecode and/or machine code</listitem>
-				<listitem>execution of bytecode and/or machine code, which produces an exit status</listitem>
-			</orderedlist>
-			
-			<para>beforehand compilation:</para>
-			<orderedlist>
-				<listitem>a bundle representation is parsed to extract a tree of Niviok nodes</listitem>
-				<listitem>static libaries are loaded</listitem>
-				<listitem>information about shared libraries is obtained</listitem>
-				<listitem>tree is processed</listitem>
-				<listitem>optimization</listitem>
-				<listitem>tree translated to bytecode and/or machine code and stored</listitem>
-				<listitem>code is loaded</listitem>
-				<listitem>shared libraries are loaded and linked</listitem>
-				<listitem>processing</listitem>
-				<listitem>execution of bytecode and/or machine code, which produces an exit status</listitem>
-			</orderedlist>
-			
-			<para>This spec should define how to:</para>
-			<simplelist>
-				<member>process a bundle (a valid tree of Niviok nodes with a bundle node as the root node)</member>
-				<member>execute nodes of a processed tree</member>
-				<member>execute a bundle</member>
-			</simplelist>
-			
-			<para>Implementations that aren't interpreters should produce equivalent behavior when being executed.</para>
-		</section>
-		
-		<section xml:id="definitions">
-			<title>Definitions</title>
+		<para>This document is a draft for the first edition of the specification describing the 1.0 version of Niviok. It can be represented as "Niviok 1.0 Edition 1 Draft $$CURRENTDATE".</para>
 	
-			<glosslist>
-				<glossentry>
-					<glossterm>Niviok agent</glossterm>
-					<glossterm>agent</glossterm>
-					<glossdef>An implementation of the Niviok language. Could be a source interpreter, a bytecode intepreter, a bytecode compiler, a machine code compiler, etc. If it recognizes the semantics of what it's running, and follows the rules of this document, it could be called a Niviok agent. Each agent should define what representations it supports.</glossdef>
-				</glossentry>
-				
-				<glossentry>
-					<glossterm>object</glossterm>
-					<glossdef>A collection of data that holds state. Created by a class. Only the class that created it can access an object's state. Values are associated with objects.</glossdef>
-				</glossentry>
-				
-				<glossentry>
-					<glossterm>identikey</glossterm>
-					<glossdef>bound to one or more values. An identifier in a certain scope is associated with an identikey.</glossdef>
-				</glossentry>
+		<para>This document is a draft of the first edition of the specification describing the 1.0 version of Niviok.</para>
+		
+		<para>Niviok is an abstract programming language. This document defines several node types which are used to represent Niviok source code. How Niviok nodes are represented is outside the scope of this standard. While syntax and semantics are not completetly separate, Niviok does contain much less syntax-influenced semantics than most programming languages.</para>
+		
+		<para>Nodes that can be executed are statements or expressions. Statements are greatly restricted in where they can appear, while expressions are more relaxed and can be interchanged for on another. An expression may produce a value when executed.</para>
+
+		<para>Niviok contains some dynamic aspects, but in several ways is very static. For example, the tree of ##scopes and ##scidentres can be entirely known before runtime; scidentres cannot be declared conditionally like in highly dynamic languages such as JavaScript.</para>
+	</chapter>
+	
+	<chapter xml:id="versioning">
+		<title>Versioning</title>
+		
+		<para>Each version of Niviok is described by a specification with one or more editions.</para>
+		
+		<section xml:id="niviok-version">
+			<title>Niviok version</title>
+		
+			<para>Each version of Niviok is identified by a major version number and a minor version number, both integers. Each new version that is mostly backwards compatible with the previous version increments the minor version number by one. Each new version that is significantly backwards incompatible increments the major version number by one and resets the minor version number to 0.</para>
+		</section>
+		
+		<section xml:id="specification-version">
+			<title>Specification version</title>
 			
-				<glossentry>
-					<glossterm>value</glossterm>
-					<glossdef>Associated with an object and an interface implementation, except for the null value, which is associated with nothing or associated with an interface</glossdef>
-				</glossentry>
-				
-				<glossentry>
-					<glossterm>active interface implementation</glossterm>
-					<glossdef>the interface implementation a value is directly associated with</glossdef>
-				</glossentry>
-				
-				<glossentry>
-					<glossterm>active interface</glossterm>
-					<glossdef>the interface that the active interface implementation is associated with</glossdef>
-				</glossentry>
-				
-				<glossentry>
-					<glossterm>global scope</glossterm>
-					<glossdef>the scope of the bundle node. a bundle node has one and only one scope each time the bundle is executed</glossdef>
-				</glossentry>
-				
-				<glossentry>
-					<glossterm>element</glossterm>
-					<glossdef>A value stored in a container.</glossdef>
-				</glossentry>
-				
-				<glossentry>
-					<glossterm>member</glossterm>
-					<glossdef>A callee, property, method, or conversion of an interface.</glossdef>
-				</glossentry>
-				
-				<glossentry>
-					<glossterm>method</glossterm>
-					<glossdef>A member function of an interface.</glossdef>
-				</glossentry>
-			</glosslist>
+			<para>Each version of Niviok is described by a specification that can have multiple editions. Each edition of a specification describing a particular version of Niviok is identified by an integer which starts at one and is incremented by one for each new edition.</para>
+			
+			<para>A document that is intended to become an edition is a draft. A finalized edition is no longer in the draft stage. Each draft is identified by the date on which it was published.</para>
+			
+			<para>Newer editions should serve only to better describe a particular version of Niviok, not to modify that version of Niviok. Newer editions should not attempt to correct problems with Niviok, only errors in describing that version of Niviok.</para>
+		</section>
+		
+		<section xml:id="version-notation">
+			<title>Version notation</title>
+			
+			<para>A version of Niviok may be represented as "Niviok X.Y" where X is the major version number and Y is the minor version number.</para>
+			
+			<para>A finalized specification for Niviok may be represented as "Niviok X.Y Edition A" where A is the edition number.</para>
+			
+			<para>A draft of a specification edition may be represented as "Niviok X.Y Edition A Draft YYYY-MM-DD" where YYYY-MM-DD is the date on which the draft was published.</para>
+			
+			<para>Example: Niviok 2.3 Edition 4 Draft 2008-01-20</para>
 		</section>
 	</chapter>
 	
-	<chapter xml:id="overview">
-		<title>Overview</title>
+	<chapter xml:id="Glossary">
+		<title>Glossary</title>
+
+		<glosslist>
+			<glossentry>
+				<glossterm>Niviok agent</glossterm>
+				<glossterm>agent</glossterm>
+				<glossdef>An implementation of the Niviok language. Could be a source interpreter, a bytecode intepreter, a bytecode compiler, a machine code compiler, etc. If it recognizes the semantics of what it's running, and follows the rules of this document, it could be called a Niviok agent. Each agent should define what representations it supports.</glossdef>
+			</glossentry>
+			
+			<glossentry>
+				<glossterm>object</glossterm>
+				<glossdef>A collection of data that holds state. Created by a class. Only the class that created it can access an object's state. Values are associated with objects.</glossdef>
+			</glossentry>
+			
+			<glossentry>
+				<glossterm>scidentre</glossterm>
+				<glossdef>bound to one or more values. An identifier in a certain scope is associated with an identikey. In other programming languages, the terms "variable" or "constant" may refer to a similar concept. (Previously called "identikey" by this draft. Transition has only barely begun.)</glossdef>
+			</glossentry>
+		
+			<glossentry>
+				<glossterm>value</glossterm>
+				<glossdef>Associated with an object and an interface implementation, except for the null value, which is associated with nothing or associated with an interface</glossdef>
+			</glossentry>
+			
+			<glossentry>
+				<glossterm>active interface implementation</glossterm>
+				<glossdef>the interface implementation a value is directly associated with</glossdef>
+			</glossentry>
+			
+			<glossentry>
+				<glossterm>active interface</glossterm>
+				<glossdef>the interface that the active interface implementation is associated with</glossdef>
+			</glossentry>
+			
+			<glossentry>
+				<glossterm>global scope</glossterm>
+				<glossdef>the scope of the bundle node. a bundle node has one and only one scope each time the bundle is executed</glossdef>
+			</glossentry>
+			
+			<glossentry>
+				<glossterm>element</glossterm>
+				<glossdef>A value stored in a container.</glossdef>
+			</glossentry>
+			
+			<glossentry>
+				<glossterm>member</glossterm>
+				<glossdef>A callee, property, method, or conversion of an interface.</glossdef>
+			</glossentry>
+			
+			<glossentry>
+				<glossterm>method</glossterm>
+				<glossdef>A member function of an interface.</glossdef>
+			</glossentry>
+			
+			<glossentry>
+				<glossterm>scope</glossterm>
+				<glossdef>"Environment" in some languages.</glossdef>
+			</glossentry>
+		</glosslist>
+	</chapter>
+	
+	<chapter xml:id="executing-nodes">
+		<title>Executing nodes</title>
+		
+		<para>No node besides the bundle node can be executed directly. All other nodes must only be executed when required by the execution instructions of another node, or as required to call a callee/method (such as when calling a value created by a function node). ((XXX clarify execution through calling)) Because values can only be created, directly or indirectly, by executing the bundle node, and because all node execution instructions only every instruct to execute child nodes, all node execution occurs as a result of executing the root bundle node.  All Niviok nodes that are executed in any way must be part of a complete Niviok node tree, which means having an bundle node as the root node.</para>
+		
+		<para>Note: A bundle might not have a main function. It might just expose its members, such as for scripting or a library.</para>
+		
+		<para>interpreted:</para>
+		<orderedlist>
+			<listitem>a bundle representation is parsed to extract a tree of Niviok nodes</listitem>
+			<listitem>libraries are loaded and linked</listitem>
+			<listitem>tree is processed</listitem>
+			<listitem>optimization</listitem>
+			<listitem>execution of the planes' declaration-first nodes</listitem>
+			<listitem>execution of the function bound to "main" attached to the bundle node's scope, which may return an exit status</listitem>
+			<listitem>returning exit status, or 0 if none specified</listitem>
+		</orderedlist>
+		
+		<para>runtime compilation:</para>
+		<orderedlist>
+			<listitem>a bundle representation is parsed to extract a tree of Niviok nodes</listitem>
+			<listitem>libraries are loaded and linked</listitem>
+			<listitem>tree is processed</listitem>
+			<listitem>optimization</listitem>
+			<listitem>tree translated to bytecode and/or machine code</listitem>
+			<listitem>execution of bytecode and/or machine code, which produces an exit status</listitem>
+		</orderedlist>
+		
+		<para>beforehand compilation:</para>
+		<orderedlist>
+			<listitem>a bundle representation is parsed to extract a tree of Niviok nodes</listitem>
+			<listitem>static libaries are loaded</listitem>
+			<listitem>information about shared libraries is obtained</listitem>
+			<listitem>tree is processed</listitem>
+			<listitem>optimization</listitem>
+			<listitem>tree translated to bytecode and/or machine code and stored</listitem>
+			<listitem>code is loaded</listitem>
+			<listitem>shared libraries are loaded and linked</listitem>
+			<listitem>processing</listitem>
+			<listitem>execution of bytecode and/or machine code, which produces an exit status</listitem>
+		</orderedlist>
+		
+		<para>This spec should define how to:</para>
+		<simplelist>
+			<member>process a bundle (a valid tree of Niviok nodes with a bundle node as the root node)</member>
+			<member>execute nodes of a processed tree</member>
+			<member>execute a bundle</member>
+		</simplelist>
+		
+		<para>Implementations that aren't interpreters should produce equivalent behavior when being executed.</para>
+	</chapter>
+	
+	<chapter xml:id="overview-part-2">
+		<title>Overview part 2</title>
 		
 		<para>Niviok is represented by a node tree. The way this node tree is represented is not covered in this specification. This specification explains what kind of node tree a representation can represent, the meaning of the nodes in a Niviok node tree, and how to execute the node tree.</para>
 		
@@ -317,19 +308,6 @@ foo = alpha as GazInterface
 foo.gazProp
 (BazInterface foo).bazProp
 (MazInterface foo).mazProp
-			</programlisting>
-		</section>
-		
-		<section xml:id="ext-namespace">
-			<title>ext namespace</title>
-			
-			<para>Unofficial features of Niviok should appear in the "extension" namespace when possible. Implementations do not have to recognize extensions or support them, although they are encouraged to at least recognize them in order to give more useful error messages.</para>
-			
-			<para>Normal library functions that do not portray any special action not possible with normal Niviok code should not appear in the "extension" namespace.</para>
-			
-			<programlisting>
-import atExit from extension
-atExit.addListener(myfunc)
 			</programlisting>
 		</section>
 		
@@ -540,99 +518,7 @@ then the expresison is equal to:
 			</orderedlist>
 		</section>
 	</chapter>
-	
-	<chapter xml:id="special-members">
-		<title>Special members</title>
-		
-		<para>Some identifiers can only be bound to certain types of properties and methods, and have a predefined meaning. Thus, the semantics of a member with one of these identifiers is already predefined by this specification.</para>
-		
-		<para>Many of these special predefined members come in mutating and non-mutating forms. In these cases, the mutating form modifies the object and returns nothing while the non-mutating form returns a copy of the object with the mutation.</para>
-		
-		<para>Implementations must prevent identifiers from being bound to other types. Implementations are encouraged to provide shortcuts for accessing/using these members. Some examples in this section show a possible usage of the methods with and without shortcuts.</para>
-		
-		<para>add, subtract, multiply, divide, add!, subtract!, multiply!, divide!, equals?, lessThan?, lessThanOrEqual?, equal?, greaterThanOrEqual?, greaterThan?, unequal?, remainder, remainder!, floorDivide, floorDivide!, power, power!, absolute, absolute!, positive?, negative?, concat, concat!, remove, remove!</para>
-		
-		<section xml:id="member.add">
-			<title>add</title>
-			
-			<screen>func add(Self) Self</screen>
-			<screen>func add!(Self)</screen>
-			
-			<para>Inserts an object into a container, joins data together, sends an object to something, etc. This method should only be used when order is not significant, such as when adding integers. When order is significant, such as when concatenating strings, the <link linkend="member.insert">insert method</link> would be more appropriate.</para>
-			
-			<programlisting>
-Int a = 1.add(2)
-a.add!(3)
 
-Int a = 1 + 2
-a += 3
-			</programlisting>
-		</section>
-		
-		<section xml:id="member.equals">
-			<title>equals?</title>
-			
-			<screen>func equals?(Self o) Bool</screen>
-			
-			<para>Tells whether the owner value and the argument value both have state for the interface that, from the outside, appears the same.</para>
-			
-			<programlisting>
-if( a == b )
-	print "they equal each other"
-			</programlisting>
-		</section>
-		
-		<section xml:id="member.extract">
-			<title>extract</title>
-			
-			<para>
-				<screen>func extract!() Foo</screen>
-				Throws if there is nothing to extract.
-			</para>
-			
-			<para>
-				<screen>func extract!(out Foo) Bool</screen>
-				Returns false if there is nothing to extract.
-			</para>
-			
-<programlisting>
-println container.extract!()
-while container >> obj
-	println obj
-</programlisting>
-		</section>
-		
-		<section xml:id="member.insert">
-			<title>insert</title>
-			
-			<screen>func insert(Self) Self</screen>
-			<screen>func insert!(Self)</screen>
-			
-			<para>Inserts an object into a container, joins data together, sends an object to something, etc. This method should only be used when order is significant, such as when concatenating strings. When order is not significant, such as when adding integers, the <link linkend="member.add">add method</link> would be more appropriate.</para>
-			
-			<programlisting>
-			<![CDATA[
-String a = "foo".insert("bar")
-a.insert!("gaz")
-
-String a = "foo" & "bar"
-a << "gaz"
-			]]>
-			</programlisting>
-		</section>
-		
-		<section xml:id="member.throwDivide">
-			<title>throwDivide</title>
-			
-			<screen>func throwDivide(Int) Int</screen>
-			<screen>func throwDivide(Rat) Int</screen>
-			<screen>func throwDivide!(Int)</screen>
-			<screen>func throwDivide!(Rat)</screen>
-			
-			<para>Throws an error if the result is not an integer.</para>
-		</section>
-	</chapter>
-	
 	<chapter xml:id="scopes">
 		<title>Scopes</title>
 		
@@ -714,8 +600,7 @@ declfirst func bar = func() {
 	<chapter xml:id="nodes">
 		<title>Nodes</title>
 	
-		<!-- xxx need to fill in NODECOUNT -->
-		<para>Niviok defines $$$NODECOUNT$$$ nodes.</para>
+		<para>Niviok defines $$NODECOUNT nodes.</para>
 		
 		<para>Niviok code is represented by a tree of nodes. How this tree and its nodes are represented is outside the scope of this specification. Many means may exist of representing a Niviok tree.</para>
 
@@ -764,614 +649,15 @@ declfirst func bar = func() {
 			<member>false - Constant strict identikey bound to the Bool enum false member. Defined in the global scope.</member>
 			<member>outer - Namespace identikey that refers to the outer scope. Defined in all scopes except the global scope. Note that outer::outer may be valid, depending on which scope it appers in.</member>
 			<member>inst - Namespace identikey that exposes private fields of objects created by the class node. Defined in child scopes of class nodes.</member>
+			<member>std - The <link linkend="standard-library">Niviok standard library</link>. Defined in the global scope.</member>
 		</simplelist>
+		
+		<para role="xxx">Other possibilites for the standard library: standard, system, language, and various capitalizations (Standard, System, Language) and abbreviations (std, stand, sys, lang).</para>
+		
+		<para role="xxx">Need to clarify somewhere (probably multiple places) that namespaces are not scopes, and that scidentres like global and std are not defined in those scopes. But note that this causes problems with e.g. outer:outer:outer. This hasn't been thought out enough yet.</para>
 	</chapter>
 
-	<chapter xml:id="standard-library">
-		<title>Standard library</title>
-		
-		<para role="xxx">The standard library should be imported to a namespace by default. All members of that namespace can then be imported into the global scope with the "expose" node. However, what should the name of that namespace be? (The section above uses "std", and Agent 001 used "std".) Possibilites: standard, system, language, and various capitalizations (Standard, System, Language) and abbreviations (std, stand, sys, lang) thereof.</para>
-
-		<simplelist>
-			<!-- basic types -->
-			<member>interface Object</member>
-			<member>interface Interface</member>
-			<member>... Bool</member>
-			<member>interface String</member>
-			<member>interface Int</member>
-			<member>interface Rat</member>
-			<member>interface BigInt</member>
-			<member>interface BigRat</member>
-			<member>interface&lt;I> Generator</member>
-			<member>interface Octet</member>
-			<member>interface Blob</member>
-
-			<!-- containers -->
-			<member>interface&lt;I> Ref</member>
-			<member>interface&lt;I> WeakRef</member>
-			<member>interface&lt;I> Array</member>
-			<member>... Deque</member>
-			<member>func toDeque&lt;I>(Collection&lt;I>) Deque&lt;I></member>
-			<member>... Chain</member> <!-- doubly-linked list; constructor and interface -->
-			
-			<!-- functions -->
-			<member>func&lt;I>(val)I cast</member>
-			<member>func(val, Interface face)Bool implements?</member>
-
-			<!-- values -->
-			<member>Bool true</member>
-			<member>Bool false</member>
-		</simplelist>
-		
-		<screen>
-decl Deque numbers = Deque(3, 4, 5, 9)
-numbers.pushFront(2)
-numbers.pushFront(1)
-numbers.popBack()
-println(join(numbers, " ")) //prints "1 2 3 4 5"
-
-decl Array&lt;Int> numbers2 = Array&lt;Int>(10, 11, 12, 13)
-decl Deque&lt;Int> numbers3 = toDeque&lt;Int>(numbers2)
-		</screen>
-
-		<screen>
-<![CDATA[
-possible additions:
-
-interface<I> Collection
-interface<I> List
-	indexed
-	elements can be added to beginning and end
-	dynamic array
-interface<I> FwdChain
-	forward chain, a singly-linked list
-interface<I> Deck
-	a deque with an easier name
-interface Complex
-	a complex number where both parts are limited to rational numbers
-interface<I> Grid
-	a 2-dimensional array
-interface<I> Vector
-	a resizable list
-interface<I> Queue
-interface<I> Stack
-interface<I> Dict, SortedDict, MultDict, SortedMultDict, BiDict, SortedBiDict, MiltBiDict, SortedMultiBiDict
-interface<I> Set, OrderdSet, MultiSet, OrderdMultiSect
-
-func getProperty(dyn value, String propertyName) dyn
-func setProperty(dyn value, String propertyName, dyn propertyValue) dyn
-
-fixed-width/fixed-precision numbers
-fixed-point integers
-"limited" namespace
-interface LimInt
-interface LimRat
-]]>
-
-			<para role="xxx">How to differentiate between mutable and immmutable versions?</para>
-		</screen>
-		
-		<screen>
-<![CDATA[
-//T is the type of an entry in this enum
-interface<T : EnumEntry> Enum
-	inherit Collection<T>
-	func fromName(String str) T
-
-//an Enum where every entry has an associated value
-//T is the type of an entry in this enum
-//U is the type of a value of an enum entry
-interface<T : EnumDictEntry, U> EnumDict
-	inherit Enum<T>
-	func fromValue(U val) T
-
-interface EnumEntry
-	get String name
-	func equals?( EnumEntry ) Bool
-
-//U is the type of value each entry is associated with
-interface<U> EnumDictEntry
-	inherit EnumEntry
-	get U value
-]]>
-		</screen>
-
-		<section xml:id="object.println">
-			<title>println</title>
-			
-			<screen>
-interface PrintLnFace {
-	call( param Stringable objs[] ) PrintLnFace
-}
-declfirst PrintLnFace println = ...
-			</screen>
-			
-			<para role="xxx">Need some way for client code to obtain function interfaces that return themselves. For example, "func(...)Self" and "getRecursiveFuncFace(...)". Then, the interface of println could be defined as something like "func(param Stringable objs[]) Self".</para>
-			
-			<para role="xxx">Need to define varargs (variadic functions).</para>
-			
-			<para>Takes in multiple Stringable values, prints each to standard output, and returns itself.</para>
-			
-			<programlisting>
-println( 1, " ", 2, " ", 3 ) /* call once with multiple arguments */
-println(1)(" ")(2)(" ")(3) /* call several times with one argument each time */
-println 1 " " 2 " " 3 /* call several times with one argument each time */
-			</programlisting>
-			
-			<programlisting>
-(println 1 " " 2 " " 3) /* call once with multiple arguments */
-(((((println 1) " ") 2) " ") 3) /* call several times with one argument each time */
-			</programlisting>
-		</section>
-		
-		<section xml:id="object.activeInterface">
-			<title>activeInterface</title>
-			
-			<screen>
-func activeInterface(dyn) Interface
-
-println( activeInterface(false) == Bool ) //true
-			</screen>
-			
-			<para>Returns the interface that is the active interafce of the specified value.</para>
-		</section>
-		
-		<section xml:id="object.String">
-			<title>String</title>
-			
-			<para>Besides downcasting to an Interface, String can also be called to produce a String.</para>
-			
-			<screen>
-func String( Collection&lt;Int> unicodeCodePoints ) String
-			</screen>
-		</section>
-		
-		<section xml:id="object.cast">
-			<title>func{I}(dyn)I cast</title>
-			
-			<para>The cast function returns an object cast to the specified interface, or throws a cast error. The returned object must be the same object that was passed in.</para>
-			
-			<programlisting>
-if (foo is Bar)
-	cast&lt;Bar>(foo).propOfBar()
-			</programlisting>
-		</section>
-		
-		<section xml:id="object.ceil">
-			<title>ceil</title>
-			
-			<screen>func ceil(Rat) Int</screen>
-			
-			<para>Finds the ceiling of the specified rational number.</para>
-		</section>
-		
-		<section xml:id="object.floor">
-			<title>floor</title>
-			
-			<screen>func floor(Rat) Int</screen>
-		</section>
-		
-		<section xml:id="object.modulo">
-			<title>modulo</title>
-			
-			<para>Finds the remainder of dividing two integers.</para>
-			
-			<screen>
-func modulo( Int dividend, Int divisor, ModuloMethod method = ModuloMethod.divisor ) Int
-
-enum ModuloMethod {
-	dividend,
-	divisor,
-	positive,
-	negative
-}
-			</screen>
-			
-			<para>When one or both of dividend and divisor are negative, there could be two possible remainders, one positive and one negative. In such a case, the ModuloMethod determines which of these to return. When there is only one possible remainder, the ModuloMethod is ignored.</para>
-			
-			<para>The "dividend" option returns the remainder with the same sign as the dividend. The "divisor" option returns the remainder with the same sign as the divisor. The "positive" option returns the positive remainder. The "negative" option returns the negative remainder.</para>
-			
-			<para>This function should throw an error if divisor is 0.</para>
-			
-<!--
-15 mod 4
-15 = 3 * 4 + 3
-r = 3
-
-15 mod -4
-15 = -3 * -4 + 3
-15 = -4 * -4 + -1
-r = 3 or -1
-
--15 mod 4
--15 = -3 * 4 + -3
--15 = -4 * 4 + 1
-r = -3 or 1
-
--15 mod -4
--15 = 3 * -4 + -3
--15 = 4 * -4 + 1
-r = -3 or 1
--->
-			
-			<screen>
-modulo(15, 4, dividend) -> 3
-modulo(15, 4, divisor) -> 3
-modulo(15, 4, positive) -> 3
-modulo(15, 4, negative) -> 3
-
-modulo(15, -4, dividend) -> 3
-modulo(15, -4, divisor) -> -1
-modulo(15, -4, positive) -> 3
-modulo(15, -4, negative) -> -1
-
-modulo(-15, 4, dividend) -> -3
-modulo(-15, 4, divisor) -> 1
-modulo(-15, 4, positive) -> 1
-modulo(-15, 4, negative) -> -3
-
-modulo(-15, -4, dividend) -> -3
-modulo(-15, -4, divisor) -> -3
-modulo(-15, -4, positive) -> 1
-modulo(-15, -4, negative) -> -3
-			</screen>
-		</section>
-		
-		<section xml:id="object.round">
-			<title>round</title>
-			
-			<screen>
-func round(Rat, RoundMethod = nearest_away) Int
-
-enum RoundMethod {
-	up, //ceiling
-	down, //floor
-	awayFromZero,
-	towardsZero, //truncation
-	nearest_up,
-	nearest_down,
-	nearest_away, //common rounding
-	nearest_towards,
-	nearest_unbiased //unbiased rounding, bankers rounding
-}
-			</screen>
-			
-			<para>Rounds a rational number to an integer using the specified method. The nearest_* method comes in various forms to determine what to do when the rational number is exactly halfway between two integers. For all rational numbers that are not exactly halfway between two rational numbers, the nearest_* methods behave the same. The nearest_unbiased method rounds to the nearest even integer when the number is exactly halfway between two integers. (This is most commonly called bankers rounding.)</para>
-			
-			<screen>
-round(3.1) -> 3
-round(3.1, up) -> 4
-
-round(3.5) -> 4
-round(3.5, nearest_towards) -> 3
-
-round(3.9) -> 4
-round(3.9, nearest_towards) -> 4
-
-round(-3.1) -> -3
-round(-3.1, up) -> -3
-
-round(-3.5) -> -4
-round(-3.5, nearest_towards) -> -3
-
-round(-3.9) -> -4
-round(-3.9, nearest_towards) -> -4
-
-round(3.4, nearest_unbiased) -> 3
-round(3.5, nearest_unbiased) -> 4
-round(3.6, nearest_unbiased) -> 4
-
-round(8.4, nearest_unbiased) -> 8
-round(8.5, nearest_unbiased) -> 8
-round(8.500000001, nearest_unbiased) -> 9
-round(8.6, nearest_unbiased) -> 9
-			</screen>
-		</section>
-		
-		<section xml:id="object.generator">
-			<title>interface generator</title>
-			
-			<screen>
-interface{I} generator
-	func next() I
-			</screen>
-			
-			<para>The next() method will return objects when called until it throws a GeneratorDone exception.</para>
-			
-			<para>Some looping constructs will automatically obtain a generator by calling the object's getValueIterator, getKeyIterator, or getPairIterator method, and call the next() method of the generator until the exception is thrown</para>
-			
-			<programlisting>
-MyClass[] objs
-for each o in objs
-	o.doStuff()
-			</programlisting>
-		</section>
-		
-		<section xml:id="object.id">
-			<title>func id</title>
-			
-			<screen>
-func id(obj) Int
-
-println( id(true) )
-			</screen>
-			
-			<para>Every object is associated with a constant non-negative integer. No two objects that are still accessible can have the same object number. This function returns a value, with Int as the active interface, that encodes the object number for the object associated with the given value. Two objects with non-overlapping lifetimes may have the same object id.</para>
-			
-			<para>Returns a different number for every object. Always returns the same number for the same object, even if that object is a part of different values (the same object cast to different interfaces).</para>
-		</section>
-		
-		<section xml:id="object.sameObject_q">
-			<title>func sameObject?</title>
-			
-			<para>Determines whether the two values have the same object.</para>
-			
-			<screen>
-func sameObject?(obj, obj) Bool
-
-println( sameObject?(foo, bar) )
-//same as
-println( (foo as obj) == (bar as obj) )
-//same as
-println( id(foo) == id(bar) )
-			</screen>
-			
-			<para>Tells whether the values are associated with the same object.</para>
-		</section>
-		
-		<section xml:id="object.implements_q">
-			<title>func(obj, interface)bool implements?</title>
-			
-			<para>Tells whether the object implements the interface, like the implements node.</para>
-			
-			<programlisting>
-if implements(foo, Bar)
-	(foo as Bar).propOfBar()
-			</programlisting>
-		</section>
-		
-		<!-- xxx XML comments contain important information -->
-		<section xml:id="ident.Int">
-			<title>interface Int</title>
-			
-			<simplelist>
-				<!-- comparison -->
-				<member>func lessThan?(Int) Bool</member>
-				<member>func lessThanOrEqual?(Int) Bool</member>
-				<member>func equal?(Int) Bool</member>
-				<member>func greaterThanOrEqual?(Int) Bool</member>
-				<member>func greaterThan?(Int) Bool</member>
-				<member>func unequal?(Int) Bool</member>
-				
-				<!-- information -->
-				<member>Bool positive?</member>
-				<member>Bool negative?</member>
-				
-				<!-- math operations -->
-				<member>func add(Int) Int</member>
-				<member>func subtract(Int) Int</member>
-				<member>func multiply(Int) Int</member>
-				<member>func multiply(Rat) Rat</member>
-				<member>func divide(Int) Rat</member>
-				<member>func divide(Rat) Rat</member>
-				<member>func floorDivide(Int) Int</member>
-				<member>func floorDivide(Rat) Int</member>
-				<member>func remainder(Int) Int</member>
-				<member>Int absolute</member>
-				
-				<!-- mutation -->
-				<member>func add!(Int)</member>
-				<member>func subtract!(Int)</member>
-				<member>func multiply!(Int)</member>
-				<member>func increment!()</member>
-				<member>func decrement!()</member>
-				<member>func floorDivide!(Int)</member>
-				<member>func floorDivide!(Rat)</member>
-				
-				<!-- conversion -->
-				<member>func toBuiltin() Int</member>
-				<member>convert Int</member> <!-- copy -->
-				<member>convert Rat</member>
-				<member>convert String</member>
-			</simplelist>
-			
-			<para>The non-mutating methods of Int should never throw for precsion reasons, i.e. they should always return an Int that fully represents the result without loss of precision. However, the mutator methods may throw a PrecisionError if the value is not capable of representing the resultant integer.</para>
-			
-			<para>When Niviok implementations need to determine the value of Int objects that were implemented by user code, they should call the toBuiltin method to get an Int object that was implemented by the implementation. If toBuiltin throws an error, it should raise into user code. If the returned Int is not a built-in, an error results that should extend into user code.</para>
-			
-			<para>The String produced by the String convertee must represent the stored integer absolutely, with no loss of precision. It may throw an error if it is incapable of producing such a representation. There are no restrictions on how the integer should be represented, although Int implementations generally should try to produce a representation that is simple and short. Implementations of Int should prefer exotic and strange representations over throwing an error. For example, implementations should prefer representing a googolplex with e.g. "10E(10E100)" ofer throwing an error.</para>
-		</section>
-		
-		<section xml:id="object.BigInt">
-			<title>interface BigInt</title>
-			
-			<para>Inherits from Int.</para>
-		</section>
-		
-		<section xml:id="object.BigRat">
-			<title>interface BigRat</title>
-			
-			<para>Inherits from Rat.</para>
-		</section>
-
-		<section xml:id="ident.Interface">
-			<title>interface Interface</title>
-			
-			<simplelist>
-				<member>get Bool fromAddition?</member>
-				<member>get Set{Interface} inheritees</member>
-				<member>get List{Parameters} parameters</member>
-				<member>get Type returnType</member>
-				<member>get List{Property} properties</member>
-				<member>get List{Method} methods</member>
-				<member>func add(Interface) Interface</member>
-				<member>func subtract(Interface) Interface</member>
-			</simplelist>
-			
-			<para>Implements itself.</para>
-		</section>
-		
-		<section xml:id="object.Object">
-			<title>interface Object</title>
-			
-			<simplelist>
-				<member>Bool builtin?</member>
-				<member>Bool mutable?</member>
-				<member>Int number</member>
-				<member>func{I} cast() I</member>
-				<member>func implements? (Interface) Bool</member>
-				<member>func sameObject? (Object) Bool</member>
-			</simplelist>
-			
-			<para>These methods expose the same functionality of some of the nodes.</para>
-			
-			<para>The builtin? property tells whether the object is implemented by the Niviok implementation, such as for integers and strings. The implements? method tells whether the object implements a specified interface.</para>
-		</section>
-		
-		<section xml:id="interface.rat">
-			<title>interface rat</title>
-			
-			<simplelist>
-				<member>func toInt() int</member>
-				<member>func round() int</member>
-				<member>func round!()</member>
-			</simplelist>
-			
-			<para>toInt will throw if the represented value is not already an integer. round should not throw. round! modifies the represented value.</para>
-		</section>
-		
-
-		<para>Constant identikeys in the std namespace. The values these identikeys are bound to are immutable.</para>
-		
-		<simplelist>
-			<member>interface InterfaceBuilder</member>
-			<member>func()InterfaceBuilder CInterfaceBuilder</member>
-		
-			<member>func(int, interface[], interface)interface getFuncInterface</member>
-			
-			<member>interface{I} Iterator</member>
-			
-			<!-- expose functionality of Niviok as functions -->
-			<member>func{I}(:vararg)array{I} CArray</member>
-			<member>func(bool[] bits, bool positive = true)int CInt</member>
-			<member>func{I}(:vararg)list{I} CList</member>
-			
-			<member>func{I}(I)SelfGen print</member>
-			<member>func{I}(I)SelfGen println</member>
-		</simplelist>
-		
-		<section xml:id="Generator">
-			<title>Generator</title>
-			
-			<programlisting>
-generic&lt;T>
-interface Generator {
-	func yield() T //throws a GeneratorExhausted exception (which inherits from SpecialCase) when all values have been yielded
-}
-			</programlisting>
-		</section>
-		
-		<!-- xxx does this go against the purpose of interfaces? -->
-		<section xml:id="InterfaceBuilder">
-			<title>InterfaceBuilder</title>
-		
-			<simplelist>
-				<member>map{string, interface} properties</member>
-				<!-- xxx should this be an object-by-object pref or an interface-defined pref? Some interfaces, like interface interface, are always immutable, but users should be able to create immutable forms of non-immutable interfaces. -->
-				<member>bool alwaysImmutable?</member> 
-				<member>func()interface generate</member>
-			</simplelist>
-			
-			<para>interface interface is always immutable, so InterfaceBuilder exists to allow creating interface objects procedurally.</para>
-		</section>
-		
-		<section xml:id="Iterator">
-			<title>Iterator</title>
-			
-			<screen>
-interface{I} Iterator
-	//values may change
-	bool first?
-	bool last?
-	bool hasNext?
-	bool hasPrevious?
-	bool between? //iterator points between 2 items (such as after the item was removed)
-	bool valid?
-
-	//capabilities of the iterator - values should not change
-	bool canMoveForward? //whether the iterator can move forward
-	bool canMoveBackward? //whether the iterator can move backwards
-	bool canRemove?
-	bool canReplace? //whether the objects can be replaced with different objects
-	bool canRead?
-	bool canInsertAfter?
-	bool canInsertBefore?
-	bool canCompareCollection?
-	bool canCompareIterator? //corresponds to equal?
-	bool canComparePosition? //corresponds to before? and after?
-
-	func moveForward()
-	func moveBackward()
-	func remove()
-	func replace(I)
-	func insertAfter(I)
-	func insertBefore(I)
-	func sameCollection?( Iterator{I} ) bool
-	func before?( Iterator{I} ) bool
-	func after?( Iterator{I} ) bool
-	func equal?( Iterator{I} ) bool
-	
-	I value
-			</screen>
-
-			<para>An iterator is used to access the elements in a container. If the elements are not ordered 2-dimensionally, an 2-dimensional order must be decided for the iterator that does not change for that iterator instance. If the elements in the container are ordered 2-dimensionally, the iterator must refer the elements in that order.</para>
-
-			<para>The equals? method returns true if both iterators are pointing to same item of the same collection. If the collection is unordered, the order the iterator moves over items must also be the same.</para>
-
-			<para>A valid iterator either refers to an element or a position between two elements. An iterator should only refer to a position between two elements when the element the iterator currently pointed to was removed. If the iterator is not valid, or read? is false, the value property refers to null.</para>
-			
-			<para>An iterator only becomes invalid if:</para>
-			<simplelist>
-				<member>the container contains no objects</member>
-				<member>the iterator is moved beyond all objects</member>
-				<member>a non-supported method is called (example: moveBackward() is called on an iterator that can only move forward)</member>
-			</simplelist>
-
-			<para>If an iterator is not valid, it may be possible to revalidate it by calling next() or previous(). For example, if the iterator refers to the last object and next is called, the iterator becomes invalid, but calling previous may make the iterator valid again. Whether an iterator can be revalidated and under what circumstances the iterator is revalidated is dependant on the implementation of the iterator.</para>
-			
-			<para>Containers should always give iterators with the same functionality. For example, if a container, when it has three elements, gives an iterator with forward? set to true, it should also give an iterator with the property forward? set to true when it has 1, even though calling moveForward() would invalidate the iterator.</para>
-
-			<programlisting>
-Container{int} numbers;
-Iterator iter = numbers.iterate();
-int num = iter.value
-
-while( iter.valid? )
-	int num = iter.value
-	iter.moveForward()
-			</programlisting>
-		</section>
-		
-		<section xml:id="CInterfaceBuilder">
-			<title>CInterfaceBuilder</title>
-			
-			<para>CInterfaceBuilder, when called, returns an object that can be used to procedurally and/or dynamically create interface objects.</para>
-		</section>
-		
-		<section xml:id="getFuncInterface">
-			<title>getFuncInterface</title>
-			
-			<screen>
-func getFuncInterface (
-	int templateParamCount,
-	interface[] params,
-	interface returnInterface,
-) interface
-			</screen>
-			
-			<para>Returns an interface specifying a call method with the specified number of template parameters, the specified parameters, and the specified return interface. If returnInterface is null, the interface specifies a void call method. Every time it is called with the same arguments, it must return the same object.</para>
-		</section>
-	</chapter>
+	<xi:include href="Niviok%201.0%20Specification%20-%20Standard%20library.docbook"/>
 	
 	<chapter xml:id="warnings-list">
 		<title>Warnings</title>
@@ -1386,15 +672,15 @@ func getFuncInterface (
 				</tr>
 				<tr>
 					<td>always null</td>
-					<td>A node that will never produce a value when executed is being used as if it will sometimes produce a value. This warning is produced by the node that attempts to make use of the output, such as an assignment node, and not the node that doesn't produce.</td>
-				</tr>
-				<tr>
-					<td>unknown warning</td>
-					<td>A warning name in an ignore node is not recognized.</td>
+					<td>A node that will never produce a value when executed is being used as if it will sometimes produce a value. This warning is produced by the node that attempts to make use of the output, such as an assignment node, and not the node that doesn't produce. A node that will never produce a value when executed is being used as if it will produce a value. Example: The result is being assigned to an identikey or passed as an argument. This applies to node types like @@call which can sometimes produce a value, if a particular instance can be determined to never produce a value. (XXX should this warning apply to using nodes like throw, break, or return as expressions?</td>
 				</tr>
 				<tr>
 					<td>no effect</td>
-					<td>The output of a node that does not have side effects is not being used. For example, if a block contains an integer node (that is not last), the integer node has no effect.</td>
+					<td>The output of a node that does not have side effects is not being used. For example, a member of a @@compound that is an integer node and does not appear last. The integer node would have no effect.</td>
+				</tr>
+				<tr>
+					<td>unreachable</td>
+					<td>Code is unreachable. Execution will never reach a particular piece of code.</td>
 				</tr>
 			</tbody>
 		</table>
@@ -1406,27 +692,6 @@ func getFuncInterface (
 		<para>If an error is found during processing, and none of the already generated nodes have been executed, all generated nodes in the entire Niviok tree must not be used for purposes beyond explaining the source of errors. Construction of the Niviok node tree may continue after errors are found. The main() function must not be called, and the members should not be exposed as a library.</para>
 			
 		<para>If errors occur while generating the Niviok node tree, and execution has already begun, a warning should immediately be emitted describing the error. How this warning is emitted is undefined. Generation of the Niviok node tree may continue. When execution reaches the damaged section of the tree, an error should be thrown describing the error. If execution never reaches the damaged section of the tree, the error should have no effect.</para>
-	</chapter>
-	
-	<chapter xml:id="warnings">
-		<title>warnings</title>
-		
-		<table>
-			<tbody>
-				<tr>
-					<th>string identifier</th>
-					<th>meaning</th>
-				</tr>
-				<tr>
-					<td>always null</td>
-					<td>A node that will never produce a value when executed is being used as if it will produce a value. Example: The result is being assigned to an identikey or passed as an argument. This applies to node types like <link linkend="node.call">call</link> which can sometimes produce a value, if a particular instance can be determined to never produce a value. (XXX should this warning apply to using nodes like throw, break, or return as expressions?)</td>
-				</tr>
-				<tr>
-					<td>unreachable</td>
-					<td>Code is unreachable. Execution will never reach a particular piece of code.</td>
-				</tr>
-			</tbody>
-		</table>
 	</chapter>
 	
 	<chapter xml:id="rationales">
@@ -1563,8 +828,8 @@ $block {
 		</section>
 	</chapter>
 
-	<chapter xml:id="unsorted-stuff">
-		<title>unsorted stuff</title>
+	<chapter xml:id="unsorted-outdated-stuff">
+		<title>Unsorted/outdated stuff</title>
 
 		<section xml:id="closures">
 			<title>Closures</title>

@@ -19,7 +19,7 @@ class Interface_Interface : IInterface {
 	Interface_Interface(){}
 
 	public IList<IInterface> inheritees {
-		get { return new IInterface[]{ Bridge.std_Object }; }
+		get { return new IInterface[]{ Bridge.stdn_Object }; }
 	}
 	
 	public IList<Breeder> breeders {

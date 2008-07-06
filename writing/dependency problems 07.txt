@@ -1,0 +1,10 @@
+current algorithm would allow this:
+
+def Foo = interface[
+	get Bar bar
+]
+def Bar = 123
+
+That's because I don't check to see what the node type is for the values of the scidentres I'm using as finish dependencies. I should only count an identifier as a finish dependency if it is going to get its value from an interface node.
+
+However, for functions this is not the case. It seems that functions and interfaces have different kinds of dependency issues.

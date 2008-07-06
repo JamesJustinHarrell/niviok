@@ -1,0 +1,92 @@
+	<chapter xml:id="special-members">
+		<title>Special members</title>
+		
+		<para>Some identifiers can only be bound to certain types of properties and methods, and have a predefined meaning. Thus, the semantics of a member with one of these identifiers is already predefined by this specification.</para>
+		
+		<para>Many of these special predefined members come in mutating and non-mutating forms. In these cases, the mutating form modifies the object and returns nothing while the non-mutating form returns a copy of the object with the mutation.</para>
+		
+		<para>Implementations must prevent identifiers from being bound to other types. Implementations are encouraged to provide shortcuts for accessing/using these members. Some examples in this section show a possible usage of the methods with and without shortcuts.</para>
+		
+		<para>add, subtract, multiply, divide, add!, subtract!, multiply!, divide!, equals?, lessThan?, lessThanOrEqual?, equal?, greaterThanOrEqual?, greaterThan?, unequal?, remainder, remainder!, floorDivide, floorDivide!, power, power!, absolute, absolute!, positive?, negative?, concat, concat!, remove, remove!</para>
+		
+		<section xml:id="member.add">
+			<title>add</title>
+			
+			<screen>func add(Self) Self</screen>
+			<screen>func add!(Self)</screen>
+			
+			<para>Inserts an object into a container, joins data together, sends an object to something, etc. This method should only be used when order is not significant, such as when adding integers. When order is significant, such as when concatenating strings, the <link linkend="member.insert">insert method</link> would be more appropriate.</para>
+			
+			<programlisting>
+Int a = 1.add(2)
+a.add!(3)
+
+Int a = 1 + 2
+a += 3
+			</programlisting>
+		</section>
+		
+		<section xml:id="member.equals">
+			<title>equals?</title>
+			
+			<screen>func equals?(Self o) Bool</screen>
+			
+			<para>Tells whether the owner value and the argument value both have state for the interface that, from the outside, appears the same.</para>
+			
+			<programlisting>
+if( a == b )
+	print "they equal each other"
+			</programlisting>
+		</section>
+		
+		<section xml:id="member.extract">
+			<title>extract</title>
+			
+			<para>
+				<screen>func extract!() Foo</screen>
+				Throws if there is nothing to extract.
+			</para>
+			
+			<para>
+				<screen>func extract!(out Foo) Bool</screen>
+				Returns false if there is nothing to extract.
+			</para>
+			
+<programlisting>
+println container.extract!()
+while container >> obj
+	println obj
+</programlisting>
+		</section>
+		
+		<section xml:id="member.insert">
+			<title>insert</title>
+			
+			<screen>func insert(Self) Self</screen>
+			<screen>func insert!(Self)</screen>
+			
+			<para>Inserts an object into a container, joins data together, sends an object to something, etc. This method should only be used when order is significant, such as when concatenating strings. When order is not significant, such as when adding integers, the <link linkend="member.add">add method</link> would be more appropriate.</para>
+			
+			<programlisting>
+			<![CDATA[
+String a = "foo".insert("bar")
+a.insert!("gaz")
+
+String a = "foo" & "bar"
+a << "gaz"
+			]]>
+			</programlisting>
+		</section>
+		
+		<section xml:id="member.throwDivide">
+			<title>throwDivide</title>
+			
+			<screen>func throwDivide(Int) Int</screen>
+			<screen>func throwDivide(Rat) Int</screen>
+			<screen>func throwDivide!(Int)</screen>
+			<screen>func throwDivide!(Rat)</screen>
+			
+			<para>Throws an error if the result is not an integer.</para>
+		</section>
+	</chapter>
+	

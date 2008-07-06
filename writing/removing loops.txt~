@@ -1,0 +1,81 @@
+while iterator.hasMore?
+	println(iterator.next())
+
+while { iterator.hasMore? } {
+	println iterator.next()
+}
+
+while(
+	function(){ return iterater.hasMore },
+	function(){ return iterator.next() })
+
+---
+
+until stack.empty?
+	println(stack.pop())
+
+until { stack.empty? } {
+	println stack.pop()
+}
+
+---
+
+outer: for row in table
+	for cell in row
+		if cell.ID eql searchID
+			wantedCell = cell
+			break outer
+
+func double_iter { collection |
+	generator
+		for a in collection
+			for b in a
+				yield b
+}
+
+func break { throw Break() }
+
+func for { iterable, callback |
+	let iter = iterable.iterate()
+	try
+		try
+			callback iter.current
+		catch Continue
+	catch Break
+	onsuccess
+		if iter.hasNext?
+			for iter.next callback
+}
+
+for (double_iter table) { cell |
+	if cell.ID eql searchID
+		wantedCell = cell
+		break()
+}
+
+---
+
+for Int x, Int y in coords
+	drawPoint(x, y)
+
+func for_pair { iterable, callback |
+	let iter = iterable.iterate()
+	let pair = iter.current
+	callback pair.key pair.value
+	if iter.hasNext?
+		for_apply iter.next callback
+}
+
+for_pair coords { Int x, Int y |
+	drawPoint x y
+}
+
+---
+
+for x in range(0, 100) while not foo.done?
+	foo.runTest(x)
+
+for_while (range 0 100) { not foo.done? } {
+	foo.runTest x
+}
+

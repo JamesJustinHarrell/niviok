@@ -3,24 +3,31 @@
 
 <module xmlns="urn:desible1" version="1.0"
 	xmlns:des="urn:desible1" xmlns:foo="http://site.com/stuff">
-	<limit-old>
-		<expose label="declaration">
+	
+	<integer label='niviok major version number'>1</integer>
+	<integer label='niviok minor version number'>0</integer>
+	
+	<sieve>
+		<expose>
 			<identifier>std</identifier>
 		</expose>
+		
+		<expose>
+			<identifier>stdio</identifier>
+		</expose>
+		
 		<hidable>
 			<boolean label="hidden">False</boolean>
 			
 			<!-- the des prefix shouldn't affect anything -->
 			<des:declare-first label="declaration">
 				<identifier label='name'>main</identifier>
-				<identikey-type>
-					<identikey-category>function</identikey-category>
-					<nullable-type>
-						<boolean label='nullable'>false</boolean>
-					</nullable-type>
-				</identikey-type>
+				<wo-scidentre-category>function</wo-scidentre-category>
+				<identifier label='type'>any</identifier>
 				<boolean label='breed'>false</boolean>
 				<function label='value'>
+					<identifier label='return type'>any</identifier>
+					
 					<!-- the foo:label shouldn't affect anything -->
 					<compound foo:label="stuff" label='body'>
 						
@@ -31,6 +38,15 @@
 								<string label='value' des:label='foo'>text one</string>
 							</argument>
 						</call>
+						
+						<!-- should be ignored because it doesn't have a label -->
+						<call/>
+						
+						<!-- should be ignored because namespace labels are ignored -->
+						<call des:label='member' />
+						
+						<!-- should be ignored due to namespace -->
+						<call xmlns='urn:stuff' label='member' />
 						
 						<!-- this should be ignored since it's in a different namespace -->
 						<foo:ignored-stuff label='member'>
@@ -46,5 +62,5 @@
 				</function>
 			</des:declare-first>
 		</hidable>
-	</limit-old>
+	</sieve>
 </module>

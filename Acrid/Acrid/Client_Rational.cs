@@ -4,12 +4,12 @@
 class Client_Rational {
 	public static IWorker wrap(double value) {
 		Client_Rational o = new Client_Rational(value);
-		NiviokObject obj = new NiviokObject();
+		NObject obj = new NObject();
 		WorkerBuilder builder = new WorkerBuilder(
-			Bridge.std_Rat, obj, new IWorker[]{} );
+			Bridge.stdn_Rat, obj, new IWorker[]{} );
 
 		builder.addBreeder(
-			Bridge.std_String,
+			Bridge.stdn_String,
 			delegate(){
 				return Bridge.toClientString(
 					value.ToString().ToLower());
@@ -21,19 +21,18 @@ class Client_Rational {
 				new ParameterImpl[]{
 					new ParameterImpl(
 						Direction.IN,
-						new NullableType(Bridge.std_Rat, false),
+						new NType(Bridge.stdn_Rat),
 						new Identifier("value"),
 						null )
 				},
-				new NullableType(Bridge.std_Rat, false),
-				delegate(Scope args) {
+				new NType(Bridge.stdn_Rat),
+				delegate(IScope args) {
 					return Bridge.toClientRational(
 							o.add(
 								Bridge.toNativeRational(
-									args.evaluateLocalIdentifier(
-										new Identifier("value"))) ));
+									G.evalIdent(args, "value"))));
 				},
-				Bridge.debugScope ));
+				null ));
 
 		builder.addMethod(
 			new Identifier("lessThan?"),
@@ -41,19 +40,18 @@ class Client_Rational {
 				new ParameterImpl[]{
 					new ParameterImpl(
 						Direction.IN,
-						new NullableType(Bridge.std_Rat, false),
+						new NType(Bridge.stdn_Rat),
 						new Identifier("value"),
 						null )
 				},
-				new NullableType(Bridge.std_Bool, false),
-				delegate(Scope args) {
+				new NType(Bridge.stdn_Bool),
+				delegate(IScope args) {
 					return Bridge.toClientBoolean(
 							o.lessThan(
 								Bridge.toNativeRational(
-									args.evaluateLocalIdentifier(
-										new Identifier("value"))) ));
+									G.evalIdent(args, "value"))));
 				},
-				Bridge.debugScope ));
+				null ));
 
 		IWorker rv = builder.compile();
 		rv.nativeObject = value;

@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 class Callee {
 	IList<ParameterInfo> _parameters;
-	NullableType _returnType;
+	IType _returnType;
 	
-	public Callee(IList<ParameterInfo> parameters, NullableType returnType) {
+	public Callee(IList<ParameterInfo> parameters, IType returnType) {
 		_parameters = parameters;
 		_returnType = returnType;
 	}
@@ -15,7 +15,7 @@ class Callee {
 		get { return _parameters; }
 	}
 	
-	public NullableType returnType {
+	public IType returnType {
 		get { return _returnType; }
 	}
 }

@@ -1,0 +1,5 @@
+differences between scopes and namespaces:
+
+* scopes have parents while namespaces do not
+
+* when a search for a scidentre in a scope fails, you search the scope's parent, but this is not done for namespaces (in part because they don't have a parent)

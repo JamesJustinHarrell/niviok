@@ -1,0 +1,12 @@
+function interface describing a function that takes a Bool named "b" and returns nothing
+	(Bool b -> void)
+
+function that takes a Bool named "b" and prints it
+	{Bool b -> void | println(b)}
+
+function that takes a Bool and does nothing
+	{Bool b -> void}
+
+note how similar the first and third are:
+	(Bool b -> void)
+	{Bool b -> void}

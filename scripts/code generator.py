@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 import string
 import xml.dom.minidom as DOM
@@ -18,8 +19,8 @@ def lowerCamelCase(text) :
 	return string.lower(upperCamel[0]) + upperCamel[1:]
 
 def upperCamelCase(text) :
-	text = text.replace(" ", "-")
-	words = text.split("-")
+	#a sequence of any character besides space and dash
+	words = re.findall("[^ -]+", text)
 	words = [string.upper(x[0]) + x[1:] for x in words]
 	return "".join(words)
 
@@ -29,7 +30,8 @@ def getNodeTypesDict() :
 	for nodeType in nodeTypes :
 		nodeTypesDict[ nodeType["typename"] ] = nodeType
 	return nodeTypesDict
-	
+
+#add csTypename, csFamilies, csName, csTagName, csLabel, csType ("cs" refers to C#)
 def setupNodeTypes(nodeTypes) :
 	#add cs* keys
 	for (typename, nodeType) in nodeTypes.iteritems() :
@@ -55,7 +57,7 @@ def setupNodeTypes(nodeTypes) :
 			if "label" in entry :
 				entry["csName"] = lowerCamelCase(entry["label"])
 				entry["csTagName"] = '"*"'
-				entry["csLabel"] = '"%s"' % entry["label"].replace(" ", "-")
+				entry["csLabel"] = '"%s"' % entry["label"]
 			else :
 				entry["csName"] = lowerCamelCase(entry["typename"])
 				entry["csTagName"] = '"%s"' % entry["typename"]

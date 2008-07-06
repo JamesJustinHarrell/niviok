@@ -117,13 +117,15 @@ Another possibility would be to never show the $ after a keyword has been typed,
 			
 			<p>It's always possible to bind the interface of an object to an identifier.</p>
 			
-			<code xml:space="preserve">func getInterface{I}(I o) {
+			<code xml:space="preserve">
+func getInterface{I}(I o) {
 	return I;
 }
 
 dynref o = getMysteryObj()
 interface i = getInterface(o)
-i o2 = o</code>
+i o2 = o
+			</code>
 		</div>
 		
 		<div id="postfix-operator">
@@ -131,12 +133,14 @@ i o2 = o</code>
 			
 			<p>&quot;object++&quot; doesn't create a temporary. The object has its increment method called after the object is accessed. The below two groups of code represent the same semantics.</p> 
 			
-			<code xml:space="preserve">int a = 3
+			<code xml:space="preserve">
+int a = 3
 int b = a++
 
 int a = 3
 int b = a
-++a</code>
+++a
+			</code>
 		</div>
 		
 		<div id="function-interface">
@@ -699,14 +703,14 @@ example 1:
   
   
 example 2:
-  423oeuth03928nothunho394898+&amp;*(^%$$#&amp;+++oetuhntoh
+  423oeuth03928nothunho394898+&amp;*(^%$#&amp;+++oetuhntoh
   
   tokens:
     423
     oeuh0328notho3998
       transition from numerals to free characters begins a new token
       transition from free characters to numerals continues the same token
-    +&amp;*(^%$$#&amp;+++
+    +&amp;*(^%$#&amp;+++
       transition from free characters to symbols
     oetuhntoh
       transition from symbols to free characters

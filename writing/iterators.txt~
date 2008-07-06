@@ -1,0 +1,111 @@
+--- Iterable
+
+interface Iterable<T>
+	func iterate (-> Iterator<T>)
+
+
+--- Iterator
+
+interface Iterator<T>
+	get value T
+	get next? Bool
+	func advance (-> void)
+
+The advance() function mutates the iterator to refer to the next value. It throws if the iterator doesn't have a next value.
+
+
+--- generator
+
+This function takes in a callback function and returns an Iterator. The callback function takes a function and returns nothing.
+
+The first time a member of the iterator is used, the callback is called and given a yield function. When the yield function is called, the callback is paused. When the iterator is accessed in certain ways again, the callback is allowed to resume until the yield function is called again. When the callback returns, the iterator has no more values. Calls to yield() after the callback has returned throw an exception.
+
+func generator<T> { ((T->void) -> void) callback -> Iterable<T> | ... }
+
+EXAMPLE
+	func even_ints { -> Iterable<T> |
+		generator<Int> { (Int->void) yield |
+			var Int i = 0
+			loop {
+				yield(i)
+				i = i + 2
+			}
+		}
+	}
+	
+	each even_ints() println
+
+EXAMPLE
+	func even_ints {
+		generator { yield |
+			var Int i = 0
+			loop {
+				yield(i)
+				i = i + 2
+			}
+		}
+	}
+
+
+--- CoRoutine and coroutine
+
+interface CoRoutine<Tin,Tout>
+	get running? Bool
+	func send (Tin->Tout)
+
+func coroutine<Tin,Tout> { ((Tout->Tin) -> void) callback -> CoRoutine<Tin,Tout> | ... }
+
+
+
+
+
+
+
+def foo():
+	i = 0
+	while 1:
+		yield i
+		i = i + 1
+
+func yield_then_repeat<T> { (->T) valueFunc, (->void) postAction |
+	var T val = valueFunc()
+
+	object
+		impl Iterator<T>
+			get value { val }
+			get has_next? { true }
+			get next { ... }
+			func advance { val = valueFunc() }
+			func iterate { this }
+
+	get T value
+	get Bool has_next?
+	get Iterator<T> next
+	func advance (-> void)
+	func iterate (-> Iterator<T>)
+}
+
+func yield_do_while { value, test |
+	generator-while
+
+func foo {
+	var Int i = 0
+	yield_then_repeat<Int> { i } { i = i + 1 }
+}
+
+let Iterable<Int> iterable = foo()
+each iterable println
+
+
+
+
+
+
+
+
+interface CoRoutine<T,R>
+	func advance(R) T
+
+func coroutine<T,R> { ((T->R) -> void) callback -> CoRoutine<T,R> | ... }
+
+

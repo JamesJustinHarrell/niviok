@@ -1,0 +1,19 @@
+For many actions, there are three functions I want:
+
+* can_do_stuff?
+	Tells whether the action can be performed successfully.
+
+* do_stuff
+	Performs the action. Throws an error if the action could not be performed.
+
+* try_do_stuff
+	Tries to perform the action. If do_stuff doesn't return anything, returns a Bool indicating whether the action was successfully performed. If do_stuff returns something (non-nullable), returns a nullable version of that. If do_stuff returns something nullable, a try_do_stuff function might not be possible.
+
+The try function can be made from the performing function, but the can? function cannot, since the performing function may have side effects.
+
+examples:
+	can_cast?, cast, try_cast
+	Scope.hasIdentikey, Scope.evaluateIdentifier, Scope.tryEvaluateIdentifier
+
+It would be great if Niviok could somehow help here.
+

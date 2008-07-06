@@ -4,7 +4,7 @@ import sys
 import paths
 
 def runTest_desible_1() :
-	runTest([
+	return runTest([
 		"-path=%s" % os.path.join(paths.acridDir, "test1.desible"),
 		"-representation=desible",
 		"-desible-warn-unhandled=true",
@@ -27,32 +27,32 @@ def runTest_desible_2() :
 		print "unable to create Desible test file"
 		exit(1)
 	
-	runTest([
+	return runTest([
 		"-path=%s" % os.path.join(paths.acridDir, "test2.desible"),
 		"-representation=desible",
 		"-desible-warn-unhandled=true",
 		"-desible-warn-allNS=true" ])
 
 def runTest_fujin_display() :
-	runTest([
+	return runTest([
 		"-path=%s" % os.path.join(paths.acridDir, "test.fujin"),
 		"-representation=fujin",
 		"-fujin-parser=token-displayer" ])
 
 def runTest_fujin_info() :
-	runTest([
+	return runTest([
 		"-path=%s" % os.path.join(paths.acridDir, "test.fujin"),
 		"-representation=fujin",
 		"-fujin-parser=token-info-displayer" ])
 
 def runTest_fujin_sablecc() :
-	runTest([
+	return runTest([
 		"-path=%s" % os.path.join(paths.acridDir, "test.fujin"),
 		"-representation=fujin",
 		"-fujin-parser=SableCC" ])
 
 def runTest_toy() :
-	runTest([
+	return runTest([
 		"-path=%s" % os.path.join(paths.acridDir, "test.toy"),
 		"-representation=toy" ])
 

@@ -25,7 +25,7 @@ class Interface : IInterface {
 		_breeders = breeders;
 		
 		if( _inheritees.Count == 0 )
-			_inheritees.Add(Bridge.std_Object);
+			_inheritees.Add(Bridge.stdn_Object);
 		
 		_properties = new Dictionary<Identifier, Property>();
 		foreach( Property info in properties )

@@ -1,0 +1,23 @@
+NAMESPACE stdio
+	interface InTextStream
+	interface OutTextStream
+	
+	InTextStream in
+	OutTextStream out
+	OutTextStream log
+	
+	String program`arguments
+	
+	func get`exit`status ( -> Int )
+	func set`exit`status ( Int -> void )
+	
+	func get`error`exit`status ( -> Int ) #number used in case of error e.g. uncaught exception
+	func set`error`exit`status ( Int -> void ) #can't be 0
+	
+	interface InOctetStream
+	interface OutOctetStream
+	
+	InOctetStream octet`in
+	OutOctetStream octet`out
+	OutOctetStream octet`log
+

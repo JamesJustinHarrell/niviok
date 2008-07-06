@@ -1,0 +1,41 @@
+--- assemblies for Acrid
+
+node interfaces/classes
+
+executor; evaluation types like the Method class; Depends class
+
+parsing and serializing
+	should each language get a separate assembly?
+
+command line interface
+	uses the other three
+
+
+--- namespaces
+
+Acrid
+	NodeTypes
+	Execution
+	Fujin
+	Desible
+	Toy
+	CommandLine
+
+
+--- file layout
+
+/*
+comment about file
+*/
+
+using this;
+using that;
+
+namespace Acrid.Foo {
+
+class Whatever {
+	...
+}
+
+} //namespace
+

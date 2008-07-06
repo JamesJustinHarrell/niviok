@@ -1,0 +1,26 @@
+--- example code
+defirst alpha = { beta }
+defirst beta = { alpha }
+
+--- dependencies
+alpha has a finish dependency on beta.
+beta has a finish dependency on alpha.
+
+--- run through
+alpha has no execute dependencies, so it is executed.
+	The state of alpha is changed to waiting.
+	alpha has a finish dependency on beta, which is empty.
+	alpha is setup to be checked when the state of beta changes.
+beta has no execute dependencies, so it is executed.
+	The state of beta is changed to waiting.
+	alpha is checked because the state of beta changed.
+		alpha has only a finish dependency on beta, which is waiting.
+		beta has only a finish dependency on alpha, which has already been checked.
+		The state of alpha is changed to ready.
+		The state of beta is changed to ready.
+
+--- order of state changes
+alpha: empty -> waiting
+beta: empty -> waiting
+alpha: waiting -> ready
+beta: waiting -> ready

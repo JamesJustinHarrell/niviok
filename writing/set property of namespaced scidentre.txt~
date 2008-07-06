@@ -1,0 +1,25 @@
+Is this currently possible?
+
+Foo:Bar:zap.alpha = 123
+
+Should I make it possible? I'll probably just end up with "setAlpha" functions if I don't allow it.
+
+The IScope interface will probably need to be changed to allow this.
+
+--- update
+
+zomg you retard, of course it's possible. The set-property node takes a worker from an expression, and it doesn't care what kind of expression that is. I seemed to be thinking the set-property node was directed to a worker by an identifier. Like this:
+set-property ::=
+	identifier target
+	identifier property name
+	identifier value
+But that's not how it really is.
+
+Foo:Bar:zap.alpha = 123 is just
+(set-property
+	(namespaced-wo-scidentre
+		Foo
+		Bar
+		zap)
+	alpha
+	123)

@@ -712,14 +712,14 @@ example 1:
   
   
 example 2:
-  423oeuth03928nothunho394898+&*(^%$$#&+++oetuhntoh
+  423oeuth03928nothunho394898+&*(^%$#&+++oetuhntoh
   
   tokens:
     423
     oeuh0328notho3998
       transition from numerals to free characters begins a new token
       transition from free characters to numerals continues the same token
-    +&*(^%$$#&+++
+    +&*(^%$#&+++
       transition from free characters to symbols
     oetuhntoh
       transition from symbols to free characters

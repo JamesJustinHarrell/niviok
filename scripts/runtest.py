@@ -33,19 +33,7 @@ def runTest_desible_2() :
 		"-desible-warn-unhandled=true",
 		"-desible-warn-allNS=true" ])
 
-def runTest_fujin_display() :
-	return runTest([
-		"-path=%s" % os.path.join(paths.acridDir, "test.fujin"),
-		"-representation=fujin",
-		"-fujin-parser=token-displayer" ])
-
-def runTest_fujin_info() :
-	return runTest([
-		"-path=%s" % os.path.join(paths.acridDir, "test.fujin"),
-		"-representation=fujin",
-		"-fujin-parser=token-info-displayer" ])
-
-def runTest_fujin_sablecc() :
+def runTest_fujin() :
 	return runTest([
 		"-path=%s" % os.path.join(paths.acridDir, "test.fujin"),
 		"-representation=fujin",

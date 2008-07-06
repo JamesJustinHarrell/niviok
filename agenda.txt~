@@ -1,3 +1,45 @@
+2008-07-04
+	Desible serializer adds whitespace in <string/> elements
+	e.g. "" serialized to:
+								<string label="value">
+								</string>
+	which would then be parsed very differently.
+	It may be enough just to add xml:whitespace="pre" to string elements before serializing.
+	Otherwise, I won't be able to use pretty printing.
+
+2008-07-03
+	consider this:
+		var foo bar
+	is that equivalent to this:
+		var foo = bar
+	or this:
+		var foo bar = null
+
+2008-07-03
+	Consider the case of two declare-first nodes in the same scope both declaring a function with the same name, but different types.
+	func ( Int -> Int ) foo = getFoo(Int)
+	func ( String -> String ) foo = getFoo(String)
+	The current algorithm is pretty fucked up when it comes to this area.
+
+2008-07-03
+	func break { throw Break() }
+	func continue { throw Continue() }
+	func return { throw Return() }
+	func return { x | throw Return x }
+	Break, Continue, and Return are interfaces that inherit from RareOccurence
+		they also have associated constructors
+	rename SpecialCase to RareOccurrence
+	rationale for having more than one Break/Continue object: agent will add stack info as exception raises through stack
+
+2008-06-14
+	Need to replace "identikey" with "scidentre" in specs and in comments in Acrid.
+
+2008-06-12
+	idea: merge GenericFunction and GenericInterface into e.g. Generic
+	example use case: Array
+		const Array<Int> numbers = Array<Int>(12, 34, 56)
+	activeInterface( Array<Int> ) == Interface + ( params Int -> Array<Int> )
+
 2008-05-30
 	make plans for "Browser REPL"
 	Niviok interpreter that runs in the browser
@@ -27,7 +69,18 @@
 	]
 
 
-REALLY OLD STUFF: (pre 2008-05-25)
+Need to consider a standalone library module that is not part of a larger library.
+If it defines a standard namespace, how should it do so?
+There are two obvious ways.
+
+How to deal with multi-threading and modules?
+Some modules may support multi-threading, and allow multiple programs to make calls into the library at the same time.
+Other modules may not support multi-threading.
+Should modules be able to declare whether they are thread safe?
+
+
+
+BELOW: REALLY OLD STUFF (pre 2008-05-25)
 
 ----- DESAL SEMANTICS -----
 

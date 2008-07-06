@@ -1,99 +1,245 @@
-Notice: This document currently diverges greatly from past ideas. Which ideas will be chose to move forward is not currently clear.
+interface Signal (formerly "Exception")
+	get stack Sequence<String>
+
+interface Error
+	inherit Signal
+
+interface Break
+	inherit Signal
+
+interface Continue
+	inherit Signal
+
+interface Return
+	inherit Signal
+
+
+
+
+def ManualType any = ...
+def Nullable nany = Nullable<any>
+(same_object? nany Nullable<any>) => true
+
+
+func if { test_val, true_callback |
+	if test_val true_callback {}
+}
+
+func if { test_val, true_callback, false_callback |
+	let dict = dictionary
+		true : true_callback
+		false : false_callback
+	(dict test_val)()
+}
+
 
 
 interface Object
-/*
-The Object interface doesn't define any members.
-Interfaces that don't inherit from anything else inherit from Object.
-*/
+	#empty
+	#Interfaces that don't inherit from anything else inherit from Object.
 
-interface Interface
-	get ?Int identification_number
-	get Set<InheritableType> inherited_types
-	get ?Function callee
-	get Dict<Identifier,Property> properties
-	get Dict<Identifier,Set<Method>> methods
-	get Set<Breeder> breeders
-
-interface Union
-	get Set<Interface> member_interfaces
-	get Set<InterfaceMember> shared_interface_members
+func Object() Object
+	Returns a new wo-ref implementing the Object interface.
+	Here, "new" means same_object?(Object(), any_expression_here) must always be false.
 
 union Type
-	members
-		Union
-		Interface
-		Nullable
-		Void
-	shared					#stuff that's the same for each member type
-		inherit Object		#implicit if no shared inherits specified
+	Interface
+	Nullable
+	Union
+	Subset
+	ManualType
+
+declfirst ManualType any = ...
+	#worker is any non-null value (but note the existence of Nullable<any>)
+
+declfirst ManualType void = ...
+	#worker is unfaced null (can downcast from faced null)
+	#Only untyped null values are allowed.
+	#downcast: Returns unfaced null if worker is null. Throws if worker is not null.
+	#cast: Returns unfaced null.
+
+declfirst ManualType callable = ...
+	#worker is callable (i.e. a function)
+
+interface Interface
+	get Set<Interface> inheritees
+	get ?FunctionInfo callee
+	get Dict<Identifier,PropertyInfo> properties
+	get Dict<Identifier,Set<MethodInfo>> methods
+	get Set<BreederInfo> breeders
 
 interface Nullable
-	get ?union[Union,Interface] type
-
-interface Void
-/* empty */
-
-union Function
-	members
-		NamedFunction
-		UnnamedFunction
-	shared
-		calee				#should be possible to just declare that something has a callee?
-
-
-~~~ problem:
-
-faceOf(Union) -> Interface
-faceOf(Type) -> Union
-faceOf(Interface) -> Interface
-faceOf(NamedFunction) -> ???
-faceOf(UnnamedFunction) -> ???
-
-should "???" be "Interface"?
-
-~~~
+	get Type type
 /*
-A superset interface is one of:
-* non-function interface
-	callee is null
-	may inherit from function interfaces
-* unnamed function interface
-	callee is UnnamedCallee
-	only inherits from Object
-* named function interface
-	calle is NamedCallee
-	only inherits from matching UnnamedCallee 
+	check: The worker must either: 1) be an unfaced null, or 2) be a faced null with an interface that the , or 3) match the rules of the specified type.
+	can downcast: Yes if unfaced null, otherwise dependent on wrapped type.
+	can cast: Yes if null, otherwise dependent on wrapped type.
+	downcast/cast: If unfaced null and type is interface, returns faced null with interface as face. If unfaced null and type is not interface, returns unfaced null. If faced null, return a faced null with an interface returned by the downcast/cast specified by the type. If not null, follow rules of type.
 */
 
-interface NamedFunction
-	get Sequence<NamedParameter> parameters
-	get ?NullableType return_type
-
-interface UnnamedFunction
+#The interface must be one of the interfaces in the members set.
+interface Union
+	get Set<Interface> members
 
 
 
 
 
+func is?(?any worker, Type type) Bool
+func can_downcast<Type type>(?any worker) Bool
+func downcast<Type type>(?any worker) type
+func can_cast<Type type>(?any worker) Bool
+func cast<Type type>(?any worker) type
+	''foo as Bar'' could be syntactic sugar for ''cast&lt;Bar>(foo)''
+	
+	#value
+	123 as Int
+	123 as ?Int
+	123 as void #error
+	
+	#null
+	null as Int #error
+	null as ?Int
+	null as void
+	
+	const Int o = getIntAndString()
+	print( (o as String).length )
+
+#note that these also work for Types besides ManualType
+func interface_is?(Interface, Type) Bool
+func determine_downcast(Interface, Type) ?Interface
+func null_allowed?(Type) Bool
+
+interface ManualType
+	func interface_is?(Interface) Bool
+	func determine_downcast(Interface) ?Interface
+	get Bool null_allowed?
+
+--- descriptions
+
+-- is?
+Tells whether the null or worker complies with the type.
+
+pseudocode:
+	if isNull?(worker)
+		null_allowed?(type)
+	else
+		interface_is?(getInterface(worker), type)
+
+-- can_downcast?
+
+pseudocode:
+	if isNull?(worker)
+		null_allowed?(type)
+	else
+		determine_downcast(getInterface(worker), type) != null
+
+-- downcast
+If @worker is null and the type allows null, returns null. If @worker is null and the type does not allow null, throws an exception. If @worker is not null, returns @worker or a worker inherited by @worker that complies with the type. If there is no such worker, throws an exception.
+
+pseudocode:
+	if isNull?(worker)
+		if not null_allowed?(type)
+			throw NullException()
+		null
+	else
+		const ?Interface face = determine_downcast(getInterface(worker), type)
+		if isNull?(face)
+			throw CastException()
+		interface_downcast<face>(worker)
+
+-- can_cast?
+
+pseudocode:
+	if isNull?(worker)
+		null_allowed?(type)
+	else
+		determine_downcast(getRootInterface(worker), type) != null
+
+-- cast
+If @worker is null and the type allows null, returns null. If @worker is null and the type does not allow null, throws an exception. If @worker is not null, returns @worker or a worker implemented by the object associated with @worker that complies with the type. If there is no such worker, throws an exception.
+
+pseudocode:
+	if isNull?(worker)
+		if not null_allowed?(type)
+			throw NullException()
+		null
+	else
+		const ?Interface face1 = determine_downcast(getInterface(worker), type)
+		if not isNull?(face)
+			interface_downcast<face1>(worker)
+		else
+			const ?Interface face2 = determine_downcast(getRootInterface(worker), type)
+			if isNull?(face)
+				throw CastException()
+			interface_downcast<face2>(rootCast(worker))
+
+-- interface_is?
+Tells whether a worker implementing the specified interface would meet the requirements of this type.
+
+-- determine_downcast
+Of the specified interface and the interfaces inherited by it, determines which interface would meet the requirments of the type. If no such interface exists, returns null.
+
+-- null_allowed?
+Whether null is allowed by the type.
 
 
 
 
 
-declfirst Function = compound[
-	const face = interface[
-		inherit Callee
-		callee(dyn[] params) ]
-	const func = { dyn f -> face |
-		object[
-			impl face[
-				impl Callee <-> interfaceOf(f).callee
-				callee <-> { dyn[] params ps | apply(f, ps) }]]}
-	object[
-		impl Interface <-> face
-		callee <-> func ]]
+func all_false? = <T>{ Iterable<T> collection, (T -> Bool) callback |
+	for T t in collection
+		if callback(t)
+			return false
+	return true
+}
 
-const Function f = Function( { Int a -> void | println(a) } )
-f(123)
+func all_true? = <T>{ Iterable<T> collection, (T -> Bool) callback |
+	for T t in collection
+		if ! callback(t)
+			return false
+	return true
+}
 
+func any_false? = <T>{ Iterable<T> collection, (T -> Bool) callback |
+	! all_true?(collection, callback)
+}
+
+func any_true? = <T>{ Iterable<T> collection, (T -> Bool) callback |
+	! all_false?(collection, callback)
+}
+
+
+
+
+union FunctionInfo
+	NamedFunctionInfo
+	UnnamedFunctionInfo
+
+interface NamedFunctionInfo
+	get Sequence<NamedParameterInfo> parameters
+	get Type return_type
+
+interface UnnamedFunctionInfo
+	get Sequence<UnnamedParameterInfo> parameters
+	get Type return_type
+
+func<T> each { Iterable<T> iter, (T -> void) callback |
+	for T v in iter
+		callback(v)
+}
+
+func<TI, TO> map { Iterable<TI> iter, (TI -> TO) callback -> Sequence<TO> |
+	const Sequence<TO> s()
+	for TI v in iter
+		s << callback(v)
+	s
+}
+
+func<T> filter { Iterable<T> iter, (T -> Bool) callback -> Sequence<T> |
+	const Sequence<T> s()
+	for T v in iter
+		if callback(v)
+			s << v
+	s
+}

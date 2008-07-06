@@ -1,0 +1,21 @@
+Currently, there is nothing to prevent this:
+
+
+namespace Alpha
+	def beta = 123
+
+namespace Alpha
+	def beta = 567
+
+
+or this:
+
+
+sieve
+	def beta = 123
+
+sieve
+	def beta = 567
+
+
+Furthermore, there is nothing in place for catching this.
