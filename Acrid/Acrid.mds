@@ -2,20 +2,40 @@
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="CombineConfiguration">
       <Entry build="True" name="Acrid" configuration="Debug" />
-      <Entry build="True" name="ComandLine" configuration="Debug" />
+      <Entry build="True" name="CommandLine" configuration="Debug" />
+      <Entry build="True" name="Desible" configuration="Debug" />
+      <Entry build="True" name="Toy" configuration="Debug" />
+      <Entry build="True" name="Execution" configuration="Debug" />
+      <Entry build="True" name="NodeTypes" configuration="Debug" />
+      <Entry build="True" name="Fujin" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
       <Entry build="True" name="Acrid" configuration="Release" />
-      <Entry build="True" name="ComandLine" configuration="Release" />
+      <Entry build="True" name="CommandLine" configuration="Release" />
+      <Entry build="True" name="Desible" configuration="Release" />
+      <Entry build="True" name="Toy" configuration="Release" />
+      <Entry build="True" name="Execution" configuration="Release" />
+      <Entry build="True" name="NodeTypes" configuration="Release" />
+      <Entry build="True" name="Fujin" configuration="Release" />
     </Configuration>
   </Configurations>
-  <StartMode startupentry="Acrid" single="True">
+  <StartMode startupentry="CommandLine" single="True">
     <Execute type="None" entry="Acrid" />
-    <Execute type="None" entry="ComandLine" />
+    <Execute type="None" entry="CommandLine" />
+    <Execute type="None" entry="Desible" />
+    <Execute type="None" entry="Toy" />
+    <Execute type="None" entry="Execution" />
+    <Execute type="None" entry="NodeTypes" />
+    <Execute type="None" entry="Fujin" />
   </StartMode>
   <DeployTargets />
   <Entries>
     <Entry filename="Acrid/Acrid.mdp" />
-    <Entry filename="ComandLine/ComandLine.mdp" />
+    <Entry filename="CommandLine/CommandLine.mdp" />
+    <Entry filename="Desible/Desible.mdp" />
+    <Entry filename="Toy/Toy.mdp" />
+    <Entry filename="Execution/Execution.mdp" />
+    <Entry filename="NodeTypes/NodeTypes.mdp" />
+    <Entry filename="Fujin/Fujin.mdp" />
   </Entries>
 </Combine>

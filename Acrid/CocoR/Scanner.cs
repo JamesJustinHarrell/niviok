@@ -3,7 +3,7 @@ using System;
 using System.IO;
 using System.Collections;
 
-namespace Toy.CocoR {
+namespace Acrid.Toy.CocoR {
 
 public class Token {
 	public int kind;    // token kind

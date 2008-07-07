@@ -4,9 +4,9 @@ using System;
 using System.Collections;
 using System.Text;
 
-using  Fujin.Sablecc.analysis;
+using  Acrid.Fujin.SableCC.analysis;
 
-namespace Fujin.Sablecc.node {
+namespace Acrid.Fujin.SableCC.node {
 
 
 public sealed class TOperatorMinus : Token

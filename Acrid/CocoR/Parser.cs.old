@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 using System;
 
-namespace Toy.CocoR {
+namespace Acrid.Toy.CocoR {
 
 
 

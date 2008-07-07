@@ -2,9 +2,9 @@
 
 using System;
 using System.Collections;
-using Fujin.Sablecc.node;
+using Acrid.Fujin.SableCC.node;
 
-namespace Fujin.Sablecc.analysis {
+namespace Acrid.Fujin.SableCC.analysis {
 
 
 public interface Analysis : Switch
@@ -4689,4 +4689,4 @@ public class ReversedDepthFirstAdapter : AnalysisAdapter
         OutAUsing(node);
     }
 }
-} // namespace Fujin.Sablecc.analysis
+} // namespace Acrid.Fujin.SableCC.analysis

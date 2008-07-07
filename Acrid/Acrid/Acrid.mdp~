@@ -4,7 +4,7 @@
       <Output directory="bin/Debug" assemblyKeyFile="." assembly="Acrid" />
       <Build debugmode="True" target="Exe" />
       <Execution runwithwarnings="False" commandlineparameters="-debug" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
-      <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" definesymbols="DEBUG" generatexmldocumentation="False" win32Icon="." ctype="CSharpCompilerParameters" />
+      <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" definesymbols="DEBUG,COMMA_SEPARATED_ARGS,LIKE_THIS" generatexmldocumentation="False" win32Icon="." ctype="CSharpCompilerParameters" />
     </Configuration>
     <Configuration name="Release" ctype="DotNetProjectConfiguration">
       <Output directory="bin/Release" assembly="Acrid" />
@@ -15,72 +15,15 @@
   </Configurations>
   <Contents>
     <File name="AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
-    <File name="DesalAgent001.cs" subtype="Code" buildaction="Compile" />
     <File name="exceptions.cs" subtype="Code" buildaction="Compile" />
-    <File name="Client_Function.cs" subtype="Code" buildaction="Compile" />
-    <File name="Identifier.cs" subtype="Code" buildaction="Compile" />
-    <File name="node interfaces.cs" subtype="Code" buildaction="Compile" />
-    <File name="Interface.cs" subtype="Code" buildaction="Compile" />
-    <File name="Function_Native.cs" subtype="Code" buildaction="Compile" />
-    <File name="Scope.cs" subtype="Code" buildaction="Compile" />
-    <File name="Property.cs" subtype="Code" buildaction="Compile" />
-    <File name="InterfaceFromValue.cs" subtype="Code" buildaction="Compile" />
-    <File name="Bridge.cs" subtype="Code" buildaction="Compile" />
-    <File name="Argument.cs" subtype="Code" buildaction="Compile" />
-    <File name="Null.cs" subtype="Code" buildaction="Compile" />
-    <File name="DesibleParser.cs" subtype="Code" buildaction="Compile" />
-    <File name="Client_Integer.cs" subtype="Code" buildaction="Compile" />
-    <File name="Client_String.cs" subtype="Code" buildaction="Compile" />
-    <File name="Client_Boolean.cs" subtype="Code" buildaction="Compile" />
-    <File name="ParameterImpl.cs" subtype="Code" buildaction="Compile" />
-    <File name="FunctionInterface.cs" subtype="Code" buildaction="Compile" />
-    <File name="Client_Rational.cs" subtype="Code" buildaction="Compile" />
-    <File name="Client_Interface.cs" subtype="Code" buildaction="Compile" />
-    <File name="NullableType.cs" subtype="Code" buildaction="Compile" />
-    <File name="Dextr_Custom_ParserManager.cs" subtype="Code" buildaction="Compile" />
     <File name="G.cs" subtype="Code" buildaction="Compile" />
     <File name="HashSet.cs" subtype="Code" buildaction="Compile" />
-    <File name="node classes auto.cs" subtype="Code" buildaction="Compile" />
-    <File name="DesibleParserAuto.cs" subtype="Code" buildaction="Compile" />
-    <File name="Executor.cs" subtype="Code" buildaction="Compile" />
-    <File name="Depends.cs" subtype="Code" buildaction="Compile" />
-    <File name="TerminalNode.cs" subtype="Code" buildaction="Compile" />
-    <File name="Evaluator.cs" subtype="Code" buildaction="Compile" />
-    <File name="DesibleSerializer.cs" subtype="Code" buildaction="Compile" />
-    <File name="DesibleSerializerAuto.cs" subtype="Code" buildaction="Compile" />
     <File name="../SableCC/out3b3alt/analysis.cs" subtype="Code" buildaction="Compile" />
     <File name="../SableCC/out3b3alt/lexer.cs" subtype="Code" buildaction="Compile" />
     <File name="../SableCC/out3b3alt/nodes.cs" subtype="Code" buildaction="Compile" />
     <File name="../SableCC/out3b3alt/parser.cs" subtype="Code" buildaction="Compile" />
     <File name="../SableCC/out3b3alt/prods.cs" subtype="Code" buildaction="Compile" />
     <File name="../SableCC/out3b3alt/tokens.cs" subtype="Code" buildaction="Compile" />
-    <File name="Dextr_Custom_SableCCLexer.cs" subtype="Code" buildaction="Compile" />
-    <File name="../CocoR/Parser.cs" subtype="Code" buildaction="Compile" />
-    <File name="../CocoR/Scanner.cs" subtype="Code" buildaction="Compile" />
-    <File name="DesexpParser.cs" subtype="Code" buildaction="Compile" />
-    <File name="DesexpParserAuto.cs" subtype="Code" buildaction="Compile" />
-    <File name="node classes manual.cs" subtype="Code" buildaction="Compile" />
-    <File name="enums.cs" subtype="Code" buildaction="Compile" />
-    <File name="interfaces.cs" subtype="Code" buildaction="Compile" />
-    <File name="DesalObject.cs" subtype="Code" buildaction="Compile" />
-    <File name="WorkerBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="Worker.cs" subtype="Code" buildaction="Compile" />
-    <File name="WorkerBase.cs" subtype="Code" buildaction="Compile" />
-    <File name="Method.cs" subtype="Code" buildaction="Compile" />
-    <File name="Callee.cs" subtype="Code" buildaction="Compile" />
-    <File name="Function_Client.cs" subtype="Code" buildaction="Compile" />
-    <File name="ParameterInfo.cs" subtype="Code" buildaction="Compile" />
-    <File name="StringUtil.cs" subtype="Code" buildaction="Compile" />
-    <File name="Identikey.cs" subtype="Code" buildaction="Compile" />
-    <File name="Breeder.cs" subtype="Code" buildaction="Compile" />
-    <File name="Executor auto.cs" subtype="Code" buildaction="Compile" />
-    <File name="Client_Generator.cs" subtype="Code" buildaction="Compile" />
-    <File name="../std.desexp" subtype="Code" buildaction="FileCopy" />
-    <File name="Namespace.cs" subtype="Code" buildaction="Compile" />
-    <File name="ReservedInterface.cs" subtype="Code" buildaction="Compile" />
-    <File name="Interface_Interface.cs" subtype="Code" buildaction="Compile" />
-    <File name="Interface_Object.cs" subtype="Code" buildaction="Compile" />
-    <File name="Worker_NativeObject.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

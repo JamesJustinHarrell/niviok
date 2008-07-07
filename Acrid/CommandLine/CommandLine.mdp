@@ -16,8 +16,17 @@
   <Contents>
     <File name="Main.cs" subtype="Code" buildaction="Compile" />
     <File name="AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
+    <File name="exceptions.cs" subtype="Code" buildaction="Compile" />
+    <File name="../std.toy" subtype="Code" buildaction="FileCopy" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <ProjectReference type="Project" localcopy="True" refto="Desible" />
+    <ProjectReference type="Project" localcopy="True" refto="Execution" />
+    <ProjectReference type="Project" localcopy="True" refto="Fujin" />
+    <ProjectReference type="Project" localcopy="True" refto="NodeTypes" />
+    <ProjectReference type="Project" localcopy="True" refto="Toy" />
+    <ProjectReference type="Project" localcopy="True" refto="Acrid" />
+    <ProjectReference type="Gac" localcopy="True" refto="System.Xml, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   </References>
 </Project>

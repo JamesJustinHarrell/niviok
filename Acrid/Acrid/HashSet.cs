@@ -5,7 +5,9 @@
 using System.Collections;
 using System.Collections.Generic;
 
-class HashSet<T> : ICollection<T>, IEnumerable<T>, IEnumerable {
+namespace Acrid {
+
+public class HashSet<T> : ICollection<T>, IEnumerable<T>, IEnumerable {
 	Dictionary<T, bool> _dict = new Dictionary<T, bool>();
 
 	public HashSet() {}
@@ -64,3 +66,5 @@ class HashSet<T> : ICollection<T>, IEnumerable<T>, IEnumerable {
 		get { return false; }
 	}
 }
+
+} //namespace

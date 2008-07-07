@@ -4,9 +4,9 @@ using System;
 using System.Collections;
 using System.Text;
 using System.IO;
-using Fujin.Sablecc.node;
+using Acrid.Fujin.SableCC.node;
 
-namespace Fujin.Sablecc.lexer {
+namespace Acrid.Fujin.SableCC.lexer {
 
 internal class PushbackReader {
   private TextReader reader;

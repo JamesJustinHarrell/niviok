@@ -24,6 +24,8 @@ call([
 	os.path.join(paths.scriptsDir, "generateSableGrammar.py")
 ])
 
+#note: the files in the 3b3alt directory are used by Acrid
+
 if version == "3.2" :
 	call([
 		"java",

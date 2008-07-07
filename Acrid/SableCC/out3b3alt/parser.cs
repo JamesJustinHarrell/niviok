@@ -4,11 +4,11 @@ using System;
 using System.Collections;
 using System.Text;
 using System.IO;
-using Fujin.Sablecc.node;
-using Fujin.Sablecc.lexer;
-using Fujin.Sablecc.analysis;
+using Acrid.Fujin.SableCC.node;
+using Acrid.Fujin.SableCC.lexer;
+using Acrid.Fujin.SableCC.analysis;
 
-namespace Fujin.Sablecc.parser {
+namespace Acrid.Fujin.SableCC.parser {
 
 public class ParserException : ApplicationException
 {

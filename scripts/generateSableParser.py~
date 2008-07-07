@@ -50,7 +50,5 @@ else :
 		os.path.join(paths.sableDir, "out3b3alt"),
 		"-t",
 		"csharp",
-		# "-o",
-		# os.path.join(paths.sableDir, "test2"),
 		os.path.join(paths.sableDir, "Fujin.sablecc")
 	])

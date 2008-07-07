@@ -9,7 +9,7 @@ startingDir = os.getcwd()
 os.chdir(paths.cocoDir)
 exitCode = subprocess.call([
 	"cococs",
-	"top.atg",
+	"Toy.atg",
 	"-namespace",
 	"Toy.CocoR"
 ])

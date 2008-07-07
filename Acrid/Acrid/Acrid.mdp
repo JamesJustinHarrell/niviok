@@ -2,95 +2,22 @@
   <Configurations active="Debug">
     <Configuration name="Debug" ctype="DotNetProjectConfiguration">
       <Output directory="bin/Debug" assemblyKeyFile="." assembly="Acrid" />
-      <Build debugmode="True" target="Exe" />
+      <Build debugmode="True" target="Library" />
       <Execution runwithwarnings="False" commandlineparameters="-debug" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
       <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" mainclass="" definesymbols="DEBUG,COMMA_SEPARATED_ARGS,LIKE_THIS" generatexmldocumentation="False" win32Icon="." ctype="CSharpCompilerParameters" />
     </Configuration>
     <Configuration name="Release" ctype="DotNetProjectConfiguration">
       <Output directory="bin/Release" assembly="Acrid" />
-      <Build debugmode="False" target="Exe" />
+      <Build debugmode="False" target="Library" />
       <Execution runwithwarnings="True" consolepause="True" runtime="MsNet" clr-version="Net_2_0" />
       <CodeGeneration compiler="Csc" warninglevel="4" optimize="True" unsafecodeallowed="False" generateoverflowchecks="True" generatexmldocumentation="False" ctype="CSharpCompilerParameters" />
     </Configuration>
   </Configurations>
   <Contents>
     <File name="AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
-    <File name="Acrid.cs" subtype="Code" buildaction="Compile" />
     <File name="exceptions.cs" subtype="Code" buildaction="Compile" />
-    <File name="Client_Function.cs" subtype="Code" buildaction="Compile" />
-    <File name="Identifier.cs" subtype="Code" buildaction="Compile" />
-    <File name="node interfaces.cs" subtype="Code" buildaction="Compile" />
-    <File name="Interface.cs" subtype="Code" buildaction="Compile" />
-    <File name="Function_Native.cs" subtype="Code" buildaction="Compile" />
-    <File name="Scope.cs" subtype="Code" buildaction="Compile" />
-    <File name="Property.cs" subtype="Code" buildaction="Compile" />
-    <File name="InterfaceFromValue.cs" subtype="Code" buildaction="Compile" />
-    <File name="Bridge.cs" subtype="Code" buildaction="Compile" />
-    <File name="Argument.cs" subtype="Code" buildaction="Compile" />
-    <File name="Null.cs" subtype="Code" buildaction="Compile" />
-    <File name="DesibleParser.cs" subtype="Code" buildaction="Compile" />
-    <File name="Client_Integer.cs" subtype="Code" buildaction="Compile" />
-    <File name="Client_String.cs" subtype="Code" buildaction="Compile" />
-    <File name="Client_Boolean.cs" subtype="Code" buildaction="Compile" />
-    <File name="ParameterImpl.cs" subtype="Code" buildaction="Compile" />
-    <File name="FunctionInterface.cs" subtype="Code" buildaction="Compile" />
-    <File name="Client_Rational.cs" subtype="Code" buildaction="Compile" />
-    <File name="Client_Interface.cs" subtype="Code" buildaction="Compile" />
-    <File name="Fujin_Custom_ParserManager.cs" subtype="Code" buildaction="Compile" />
-    <File name="G.cs" subtype="Code" buildaction="Compile" />
+    <File name="globals.cs" subtype="Code" buildaction="Compile" />
     <File name="HashSet.cs" subtype="Code" buildaction="Compile" />
-    <File name="node classes auto.cs" subtype="Code" buildaction="Compile" />
-    <File name="DesibleParserAuto.cs" subtype="Code" buildaction="Compile" />
-    <File name="Executor.cs" subtype="Code" buildaction="Compile" />
-    <File name="Depends.cs" subtype="Code" buildaction="Compile" />
-    <File name="TerminalNode.cs" subtype="Code" buildaction="Compile" />
-    <File name="Evaluator.cs" subtype="Code" buildaction="Compile" />
-    <File name="DesibleSerializer.cs" subtype="Code" buildaction="Compile" />
-    <File name="DesibleSerializerAuto.cs" subtype="Code" buildaction="Compile" />
-    <File name="../SableCC/out3b3alt/analysis.cs" subtype="Code" buildaction="Compile" />
-    <File name="../SableCC/out3b3alt/lexer.cs" subtype="Code" buildaction="Compile" />
-    <File name="../SableCC/out3b3alt/nodes.cs" subtype="Code" buildaction="Compile" />
-    <File name="../SableCC/out3b3alt/parser.cs" subtype="Code" buildaction="Compile" />
-    <File name="../SableCC/out3b3alt/prods.cs" subtype="Code" buildaction="Compile" />
-    <File name="../SableCC/out3b3alt/tokens.cs" subtype="Code" buildaction="Compile" />
-    <File name="Fujin_Custom_SableCCLexer.cs" subtype="Code" buildaction="Compile" />
-    <File name="../CocoR/Parser.cs" subtype="Code" buildaction="Compile" />
-    <File name="../CocoR/Scanner.cs" subtype="Code" buildaction="Compile" />
-    <File name="ToyParser.cs" subtype="Code" buildaction="Compile" />
-    <File name="ToyParserAuto.cs" subtype="Code" buildaction="Compile" />
-    <File name="node classes manual.cs" subtype="Code" buildaction="Compile" />
-    <File name="enums.cs" subtype="Code" buildaction="Compile" />
-    <File name="interfaces.cs" subtype="Code" buildaction="Compile" />
-    <File name="NObject.cs" subtype="Code" buildaction="Compile" />
-    <File name="WorkerBuilder.cs" subtype="Code" buildaction="Compile" />
-    <File name="Worker.cs" subtype="Code" buildaction="Compile" />
-    <File name="WorkerBase.cs" subtype="Code" buildaction="Compile" />
-    <File name="Method.cs" subtype="Code" buildaction="Compile" />
-    <File name="Callee.cs" subtype="Code" buildaction="Compile" />
-    <File name="Function_Client.cs" subtype="Code" buildaction="Compile" />
-    <File name="ParameterInfo.cs" subtype="Code" buildaction="Compile" />
-    <File name="StringUtil.cs" subtype="Code" buildaction="Compile" />
-    <File name="Breeder.cs" subtype="Code" buildaction="Compile" />
-    <File name="Executor auto.cs" subtype="Code" buildaction="Compile" />
-    <File name="Client_Generator.cs" subtype="Code" buildaction="Compile" />
-    <File name="../std.toy" subtype="Code" buildaction="FileCopy" />
-    <File name="ReservedType.cs" subtype="Code" buildaction="Compile" />
-    <File name="Interface_Interface.cs" subtype="Code" buildaction="Compile" />
-    <File name="Interface_Object.cs" subtype="Code" buildaction="Compile" />
-    <File name="Worker_NativeObject.cs" subtype="Code" buildaction="Compile" />
-    <File name="NType.cs" subtype="Code" buildaction="Compile" />
-    <File name="NsScidentre.cs" subtype="Code" buildaction="Compile" />
-    <File name="IdentifierSequence.cs" subtype="Code" buildaction="Compile" />
-    <File name="WoScidentre classes.cs" subtype="Code" buildaction="Compile" />
-    <File name="NamespaceReference.cs" subtype="Code" buildaction="Compile" />
-    <File name="Library.cs" subtype="Code" buildaction="Compile" />
-    <File name="Sieve.cs" subtype="Code" buildaction="Compile" />
-    <File name="ScopeQueue.cs" subtype="Code" buildaction="Compile" />
-    <File name="WoScidentreReserver.cs" subtype="Code" buildaction="Compile" />
-    <File name="DerefResults.cs" subtype="Code" buildaction="Compile" />
-    <File name="NamespaceScope.cs" subtype="Code" buildaction="Compile" />
-    <File name="ScopeAllowance.cs" subtype="Code" buildaction="Compile" />
-    <File name="DependsResults.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

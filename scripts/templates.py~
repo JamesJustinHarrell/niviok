@@ -5,15 +5,20 @@ autoHeader = """
 
 using System;
 using System.Collections.Generic;
-"""
+""".strip()
 
 nodeClassFileTemplate = autoHeader + """
+
+namespace Acrid.NodeTypes {
+
 %s
+
+} //namespace
 
 """
 
 nodeClassTemplate = """
-class %(csType)s : %(inherit)s {
+public class %(csType)s : %(inherit)s {
 	%(fields)s
 	string m_nodeSource;
 	
@@ -51,10 +56,15 @@ nodeGetterTemplate = """
 
 desibleParserFileTemplate = autoHeader + """
 using System.Xml;
+using Acrid.NodeTypes;
 
-abstract class DesibleParserAuto : DesibleParserBase {
+namespace Acrid.Desible {
+
+public abstract class DesibleParserAuto : DesibleParserBase {
 	%s
 }
+
+} //namespace
 
 """
 
@@ -95,8 +105,11 @@ desibleTreeParserTemplate = """
 
 desibleSerializerFileTemplate = autoHeader + """
 using System.Xml;
+using Acrid.NodeTypes;
 
-abstract class DesibleSerializerAuto : DesibleSerializerBase {
+namespace Acrid.Desible {
+
+public abstract class DesibleSerializerAuto : DesibleSerializerBase {
 	%(methods)s
 	
 	protected XmlElement serializeAny(INode node) {
@@ -111,6 +124,9 @@ abstract class DesibleSerializerAuto : DesibleSerializerBase {
 		}
 	}
 }
+
+} //namespace
+
 """
 
 desibleSerializerTerminalTemplate = """
@@ -135,15 +151,15 @@ desibleSerializerCaseTemplate = """
 """.strip()
 
 toyParserFileTemplate = autoHeader + """
-using System.Xml;
+using Acrid.NodeTypes;
 
-namespace Toy {
+namespace Acrid.Toy {
 
-abstract class ToyParserAuto : ToyParserBase {
+public abstract class ToyParserAuto : ToyParserBase {
 	%s
 }
 
-} //end namespace Toy
+} //namespace
 
 """
 
@@ -222,8 +238,11 @@ toyFamilyCaseTemplate = """
 """.strip()
 
 executorFileTemplate = autoHeader + """
-static partial class Executor {
-	public static IWorker executeAny(INode_Expression node, Scope scope) {
+
+namespace Acrid.Execution {
+
+public static partial class Executor {
+	public static IWorker executeAny(INode_Expression node, IScope scope) {
 		switch(node.typeName) {
 			%s
 			default:
@@ -233,7 +252,10 @@ static partial class Executor {
 		}
 	}
 }
-""".strip()
+
+} //namespace
+
+"""
 
 executorCaseTemplate = """
 			case "%(typename)s":

@@ -11,7 +11,7 @@ exitCode = subprocess.call([
 	"cococs",
 	"Toy.atg",
 	"-namespace",
-	"Toy.CocoR"
+	"Acrid.Toy.CocoR"
 ])
 os.chdir(startingDir)
 exit(exitCode)

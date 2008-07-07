@@ -16,7 +16,7 @@ def runTest_desible_2() :
 	result = subprocess.call([
 		"mono",
 		"--debug",
-		os.path.join(paths.acridSourceDir, "bin/Debug/Acrid.exe"),
+		os.path.join(paths.acridDir, "CommandLine/bin/Debug/CommandLine.exe"),
 		"-path=%s" % os.path.join(paths.acridDir, "test.toy"),
 		"-representation=toy",
 		"-run=false",
@@ -49,7 +49,7 @@ def runTest(args) :
 		"mono",
 		"--debug",
 		"--trace=program",
-		os.path.join(paths.acridSourceDir, "bin/Debug/Acrid.exe"),
+		os.path.join(paths.acridDir, "CommandLine/bin/Debug/CommandLine.exe"),
 		"-print-tree=true",
 	] + args
 	
