@@ -1,3 +1,23 @@
+2008-07-07
+	func active`face
+		( ?any -> Interface )
+	func is?
+		( ?any, Type -> Bool )
+	func can`cast? #also consider "impls?"
+		( ?any, Type -> Bool )
+	func can`downcast? #also consider "downimpls?" and "dimpls?"
+		( ?any, Type -> Bool )
+	func cast
+		( ?any, Type -> ?any )
+	func downcast
+		( ?any, Type -> ?any )
+	func rootcast
+		( ?any -> ?any )
+	func same? #formerly "isSameObject?"
+		( ?any, ?any -> Bool )
+	func equal? #different from calling .equals? method since it works for nulls
+		( ?any, ?any -> Bool )
+
 2008-07-04
 	Desible serializer adds whitespace in <string/> elements
 	e.g. "" serialized to:
@@ -6,6 +26,7 @@
 	which would then be parsed very differently.
 	It may be enough just to add xml:whitespace="pre" to string elements before serializing.
 	Otherwise, I won't be able to use pretty printing.
+	This problem only seems to occur with empty strings.
 
 2008-07-03
 	consider this:

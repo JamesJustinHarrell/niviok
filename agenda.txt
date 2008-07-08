@@ -1,3 +1,27 @@
+2008-07-07
+	http://www.electricmonk.nl/log/2008/07/07/python-destructor-and-garbage-collection-notes/
+	When the agent discovers that a cycle of unreachable objects has __del__ methods, and thus cannot be GCed, it should emit a warning. It is ridiculous for the agent to keep such valuable information to itself, instead of alerting the outside world to the problem.
+
+2008-07-07
+	func active`face
+		( ?any -> Interface )
+	func is?
+		( ?any, Type -> Bool )
+	func can`cast? #also consider "impls?"
+		( ?any, Type -> Bool )
+	func can`downcast? #also consider "downimpls?" and "dimpls?"
+		( ?any, Type -> Bool )
+	func cast
+		( ?any, Type -> ?any )
+	func downcast
+		( ?any, Type -> ?any )
+	func rootcast
+		( ?any -> ?any )
+	func same? #formerly "isSameObject?"
+		( ?any, ?any -> Bool )
+	func equal? #different from calling .equals? method since it works for nulls
+		( ?any, ?any -> Bool )
+
 2008-07-04
 	Desible serializer adds whitespace in <string/> elements
 	e.g. "" serialized to:
