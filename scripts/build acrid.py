@@ -6,7 +6,7 @@ import paths
 #must change directory because mdtool build throws exceptions when path is specified
 
 startingDir = os.getcwd()
-os.chdir(paths.acridDir)
+os.chdir(paths.solutionDir)
 exitCode = subprocess.call([
 	"mdtool",
 	"build"

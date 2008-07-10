@@ -8,11 +8,11 @@ import lib
 extractor = __import__('extract nodes')
 from templates import *
 
-nodeClassesOutputPath = os.path.join(paths.acridDir,"NodeTypes/node classes auto.cs")
-desibleParserOutputPath = os.path.join(paths.acridDir,"Desible/DesibleParserAuto.cs")
-desibleSerializerOutputPath = os.path.join(paths.acridDir,"Desible/DesibleSerializerAuto.cs")
-toyParserOutputPath = os.path.join(paths.acridDir,"Toy/ToyParserAuto.cs")
-executorOutputPath = os.path.join(paths.acridDir,"Execution/Executor auto.cs")
+nodeClassesOutputPath = os.path.join(paths.solutionDir,"NodeTypes/node classes auto.cs")
+desibleParserOutputPath = os.path.join(paths.solutionDir,"Desible/DesibleParserAuto.cs")
+desibleSerializerOutputPath = os.path.join(paths.solutionDir,"Desible/DesibleSerializerAuto.cs")
+toyParserOutputPath = os.path.join(paths.solutionDir,"Toy/ToyParserAuto.cs")
+executorOutputPath = os.path.join(paths.solutionDir,"Execution/Executor auto.cs")
 
 def lowerCamelCase(text) :
 	upperCamel = upperCamelCase(text)

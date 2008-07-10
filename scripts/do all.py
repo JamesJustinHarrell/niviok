@@ -23,13 +23,14 @@ call([
 #generate Toy parser with CocoR
 call([
 	"python",
-	os.path.join(paths.scriptsDir, "runcoco.py")
+	os.path.join(paths.scriptsDir, "generate Toy CocoR parser.py")
 ])
 
 #generate Fujin parser with SableCC
+#the child script calls "generate Fujin SableCC grammar.py"
 call([
 	"python",
-	os.path.join(paths.scriptsDir, "generateSableParser.py"),
+	os.path.join(paths.scriptsDir, "generate Fujin SableCC parser.py"),
 	"3b3alt"
 ])
 

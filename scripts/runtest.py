@@ -16,9 +16,11 @@ import subprocess
 import sys
 import paths
 
+executablePath = os.path.join(paths.solutionDir, "CommandLine/bin/Debug/CommandLine.exe")
+
 def runTest_desible_1() :
 	return runTest([
-		"-path=%s" % os.path.join(paths.acridDir, "test1.desible"),
+		"-path=%s" % os.path.join(paths.testsDir, "test1.desible"),
 		"-representation=desible",
 		"-desible-warn-unhandled=true",
 		"-desible-warn-allNS=true"
@@ -29,32 +31,32 @@ def runTest_desible_2() :
 	result = subprocess.call([
 		"mono",
 		"--debug",
-		os.path.join(paths.acridDir, "CommandLine/bin/Debug/CommandLine.exe"),
-		"-path=%s" % os.path.join(paths.acridDir, "test.toy"),
+		executablePath,
+		"-path=%s" % os.path.join(paths.testsDir, "test.toy"),
 		"-representation=toy",
 		"-run=false",
 		"-output-desible=true",
-		"-desible-output-path=%s" % os.path.join(paths.acridDir, "test2.desible") ])
+		"-desible-output-path=%s" % os.path.join(paths.testsDir, "test2.desible") ])
 	
 	if result != 0 :
 		print "unable to create Desible test file"
 		exit(1)
 	
 	return runTest([
-		"-path=%s" % os.path.join(paths.acridDir, "test2.desible"),
+		"-path=%s" % os.path.join(paths.testsDir, "test2.desible"),
 		"-representation=desible",
 		"-desible-warn-unhandled=true",
 		"-desible-warn-allNS=true" ])
 
 def runTest_fujin() :
 	return runTest([
-		"-path=%s" % os.path.join(paths.acridDir, "test.fujin"),
+		"-path=%s" % os.path.join(paths.testsDir, "test.fujin"),
 		"-representation=fujin",
 		"-fujin-parser=SableCC" ])
 
 def runTest_toy() :
 	return runTest([
-		"-path=%s" % os.path.join(paths.acridDir, "test.toy"),
+		"-path=%s" % os.path.join(paths.testsDir, "test.toy"),
 		"-representation=toy" ])
 
 def runTest(args) :
@@ -62,7 +64,7 @@ def runTest(args) :
 		"mono",
 		"--debug",
 		"--trace=program",
-		os.path.join(paths.acridDir, "CommandLine/bin/Debug/CommandLine.exe"),
+		executablePath,
 		"-print-tree=true",
 	] + args
 	

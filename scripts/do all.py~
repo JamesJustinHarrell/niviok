@@ -23,10 +23,11 @@ call([
 #generate Toy parser with CocoR
 call([
 	"python",
-	os.path.join(paths.scriptsDir, "runcoco.py")
+	os.path.join(paths.scriptsDir, "generate Toy CocoR parser.py")
 ])
 
 #generate Fujin parser with SableCC
+#the child script calls "generate Fujin SableCC grammar.py"
 call([
 	"python",
 	os.path.join(paths.scriptsDir, "generateSableParser.py"),
@@ -36,7 +37,7 @@ call([
 #compile Acrid
 call([
 	"python",
-	os.path.join(paths.scriptsDir, "runmdtoolbuild.py")
+	os.path.join(paths.scriptsDir, "build acrid.py")
 ])
 
 #run all Acrid tests using "runtest.py"

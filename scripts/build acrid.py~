@@ -6,19 +6,10 @@ import paths
 #must change directory because mdtool build throws exceptions when path is specified
 
 startingDir = os.getcwd()
-os.chdir(paths.acridDir)
+os.chdir(paths.solutionsDir)
 exitCode = subprocess.call([
 	"mdtool",
 	"build"
 ])
 os.chdir(startingDir)
 exit(exitCode)
-
-
-#must change directory because mdtool build throws exceptions when path is specified
-startingdir=`pwd`
-cd "/media/files/Desal/Desal Agent 001"
-mdtool build
-exitcode=$?
-cd $startingdir
-exit $exitcode

@@ -1,3 +1,6 @@
+2008-07-09
+	When a command in a terminal or script directs an executable to be executed, how does the executable obtain knowledge of the standard streams?
+
 2008-07-07
 	http://www.electricmonk.nl/log/2008/07/07/python-destructor-and-garbage-collection-notes/
 	When the agent discovers that a cycle of unreachable objects has __del__ methods, and thus cannot be GCed, it should emit a warning. It is ridiculous for the agent to keep such valuable information to itself, instead of alerting the outside world to the problem.

@@ -2,9 +2,12 @@ import os
 
 niviokDir = "/media/files/Niviok"
 acridDir = os.path.join(niviokDir, "Acrid")
-acridSourceDir = os.path.join(acridDir, "Acrid")
-cocoDir = os.path.join(acridDir, "CocoR")
-sableDir = os.path.join(acridDir, "SableCC")
+solutionDir = os.path.join(acridDir, "solution")
+codeGenDir = os.path.join(acridDir, "code generation")
+toyCocorDir = os.path.join(codeGenDir, "Toy CocoR")
+fujinSableccDir = os.path.join(codeGenDir, "Fujin SableCC")
+testsDir = os.path.join(acridDir, "tests")
 scriptsDir = os.path.join(niviokDir, "scripts")
 specsDir = os.path.join(niviokDir, "specs")
+
 docbookDir = "/media/files/other/docbook"
