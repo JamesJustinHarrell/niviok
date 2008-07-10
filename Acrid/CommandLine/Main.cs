@@ -98,6 +98,7 @@ class CommandLine {
 			args.Add(key, val);
 		}
 		
+		//default arguments are added second in order to catch duplicate user-supplied arguments
 		IDictionary<string,string> defaultArgs = new Dictionary<string,string>();
 		defaultArgs.Add("print-tree", "false");
 		defaultArgs.Add("run", "true");

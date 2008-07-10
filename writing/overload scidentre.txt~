@@ -1,0 +1,21 @@
+It should be possible to bind generic functions and functions to the same scidentre.
+
+	func print_warning { message |
+		print "Warning: "
+		print message
+	}
+	let print_warning = <T>{ T message |
+		print "Warning: "
+		print message
+	}
+
+Therefore, I have decided to replace the "function" scidentre with the "overload" scidentre. Furthermore, this scidentre is not limited to function and generic functions, but can instead be associated with any kind of worker.
+
+	overload print_warning = { message |
+		print "Warning: "
+		print message
+	}
+	overload print_warning = <T>{ T message |
+		print "Warning: "
+		print message
+	}

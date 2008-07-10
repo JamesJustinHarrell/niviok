@@ -13,14 +13,12 @@ public class HashSet<T> : ICollection<T>, IEnumerable<T>, IEnumerable {
 	public HashSet() {}
 	
 	public void UnionWith(IEnumerable<T> other) {
-		foreach( T item in other )
-			Add(item);
+		G.each<T,bool>(other, Add);
 	}
 	
 	//removes elements in this collection that are in @other
 	public void ExceptWith(IEnumerable<T> other) {
-		foreach( T item in other )
-			Remove(item);
+		G.each<T,bool>(other, Remove);
 	}
 	
 	void ICollection<T>.Add(T item) {

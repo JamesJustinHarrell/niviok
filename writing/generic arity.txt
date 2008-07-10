@@ -1,0 +1,39 @@
+It should be possible for:
+	* a worker to implement generics with different arities
+	* an overload scidentre to bound to generics with different arities
+
+Example:
+	overload Foo = <T>{ T a | println a }
+	overload Foo = <T1,T2>{ T1 a, T2 b |
+		println a
+		println b
+	}
+	overload Foo = <T1,T2,T3>{ T1 a, T2 b, T3 c |
+		println a
+		println b
+		println c
+	}
+
+This means arity needs to be exposed through the interface of generics.
+
+interface Generic<FunctionInterface T>
+	func specialize T
+
+interface Foo<T>
+	get alpha T
+
+Foo
+=> Generic< (Type -> Interface) >
+
+Foo<Int>
+=> Interface
+
+interface Bar<T1,T2>
+	get alpha T1
+	get beta T2
+
+Bar
+=> Generic< (Type,Type -> Interface) >
+
+Bar<String,Bool>
+=> Interface

@@ -51,18 +51,15 @@ public static class Depends {
 	//declare-assign
 	public static HashSet<IdentifierSequence> depends(Node_DeclareAssign node) {
 		HashSet<IdentifierSequence> idents = collectDepends(node.type, node.value);
-		if( node.woScidentreCategory.value != WoScidentreCategory.FUNCTION )
-			idents.Remove(
-				new IdentifierSequence(node.name.value) );
+		idents.Remove(new IdentifierSequence(node.name.value));
 		return idents;
 	}
 	
 	//declare-first
 	public static HashSet<IdentifierSequence> depends(Node_DeclareFirst node) {
 		HashSet<IdentifierSequence> idents = collectDepends(node.type, node.value);
-		if( node.woScidentreCategory.value != WoScidentreCategory.FUNCTION )
-			idents.Remove(
-				new IdentifierSequence(node.name.value) );
+		if( ! node.overload.value )
+			idents.Remove(new IdentifierSequence(node.name.value));
 		return idents;
 	}
 	
@@ -107,7 +104,7 @@ public static class Depends {
 		foreach( Node_Hidable child in node.hidables ) {
 			if( child.declaration is Node_DeclareFirst ) {
 				Node_DeclareFirst df = (Node_DeclareFirst)child.declaration;
-				if( df.woScidentreCategory.value == WoScidentreCategory.CONSTANT )
+				if( ! df.overload.value )
 					idents.Remove(new IdentifierSequence(df.name.value));
 			}
 		}

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?><book version="5.0" xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2003/XInclude">
 	
 	<title>Niviok 1.0 Specification</title>
-	<subtitle>Edition 1 Draft 2008-07-06</subtitle>
+	<subtitle>Edition 1 Draft 2008-07-09</subtitle>
 	
 	<info>
 		<copyright>
@@ -15,7 +15,7 @@
 	<chapter xml:id="Overview">
 		<title>Overview</title>
 		
-		<para>This document is a draft for the first edition of the specification describing the 1.0 version of Niviok. It can be represented as &quot;Niviok 1.0 Edition 1 Draft 2008-07-06&quot;.</para>
+		<para>This document is a draft for the first edition of the specification describing the 1.0 version of Niviok. It can be represented as &quot;Niviok 1.0 Edition 1 Draft 2008-07-09&quot;.</para>
 	
 		<para>This document is a draft of the first edition of the specification describing the 1.0 version of Niviok.</para>
 		
@@ -220,8 +220,10 @@ mutate`this`thing!
 			</programlisting>
 		</section>
 			
-		<section xml:id="identikeys">
-			<title>Identikeys</title>
+		<section xml:id="scidentres">
+			<title>Scidentres</title>
+			
+			<para role="xxx">Need to replace &quot;identikey&quot; with &quot;scidentre&quot;.</para>
 			
 			<para>An identikey is associated with a scope and an identifier. It may be associated with a nullable-type, a worker, multiple workers, and/or a namespace. Some identikeys can be mutated.</para>
 
@@ -232,22 +234,22 @@ mutate`this`thing!
 			<glosslist>
 				<glossentry>
 					<glossterm xml:id="def.namespace">namespace</glossterm>
-					<glossdef>associated with a namespace when created. immutable.</glossdef>
-				</glossentry>
-				
-				<glossentry>
-					<glossterm xml:id="def.variable">variable</glossterm>
-					<glossdef>can be mutated to point to different workers. associated with a nullable-type. only workers that match the nullable-type can be assigned to the identikey (note that the nullable type could be dyn or ?dyn)</glossdef>
+					<glossdef>associated with a namespace when created. immutable. multiple declarations of the same scidentre can be made in the same scope.</glossdef>
 				</glossentry>
 				
 				<glossentry>
 					<glossterm xml:id="def.constant">constant</glossterm>
-					<glossdef>worker is assigned when the identikey is created. immutable.</glossdef>
+					<glossdef>associated with a worker when created. immutable.</glossdef>
 				</glossentry>
 				
 				<glossentry>
-					<glossterm xml:id="def.function">function</glossterm>
-					<glossdef>associated with a worker with with a function interface as the active interface when created. immutable.</glossdef>
+					<glossterm xml:id="def.overload">overload</glossterm>
+					<glossdef>associated with a worker when created. immutable. multiple declarations of the same scidentre can be made in the same scope.</glossdef>
+				</glossentry>
+				
+				<glossentry>
+					<glossterm xml:id="def.variable">variable</glossterm>
+					<glossdef>can be mutated to point to different workers. only workers that match the type can be assigned to the identikey (note that the type could be e.g. any or Nullable&lt;any&gt;)</glossdef>
 				</glossentry>
 			</glosslist>
 			
@@ -581,7 +583,7 @@ declfirst func bar = func() {
 	<chapter xml:id="nodes">
 		<title>Nodes</title>
 	
-		<para>Niviok defines 70 nodes.</para>
+		<para>Niviok defines 69 nodes.</para>
 		
 		<para>Niviok code is represented by a tree of nodes. How this tree and its nodes are represented is outside the scope of this specification. Many means may exist of representing a Niviok tree.</para>
 
@@ -627,7 +629,7 @@ declfirst func bar = func() {
 		<para>These node types do not contain child nodes, and are thus the only nodes that must encode information themselves (as opposed to containing child nodes which together provide information).</para>
 
 		
-		<simplelist xml:id="terminal-node-types-list"><member linkend="node.boolean">boolean</member><member linkend="node.direction">direction</member><member linkend="node.identifier">identifier</member><member linkend="node.integer">integer</member><member linkend="node.member-status">member-status</member><member linkend="node.member-type">member-type</member><member linkend="node.rational">rational</member><member linkend="node.string">string</member><member linkend="node.wo-scidentre-category">wo-scidentre-category</member></simplelist>
+		<simplelist xml:id="terminal-node-types-list"><member linkend="node.boolean">boolean</member><member linkend="node.direction">direction</member><member linkend="node.identifier">identifier</member><member linkend="node.integer">integer</member><member linkend="node.member-status">member-status</member><member linkend="node.member-type">member-type</member><member linkend="node.rational">rational</member><member linkend="node.string">string</member></simplelist>
 	</section>
 	
 	<section xml:id="family-node-types">
@@ -876,14 +878,6 @@ def Xml:Element root = doc.documentElement
 			
 			<para>Note: May actually correspond to multiple workers, since some of the member-implementation nodes may implement members of inherited interfaces.</para>
 		</section>
-
-		<section xml:id="node.wo-scidentre-category">
-			<title>wo-scidentre-category</title>
-			
-			<para>specifies one of: constant, function, variable</para>
-			
-			<para>See the <link linkend="identikeys">section on identikeys</link>.</para>
-		</section>
 	</section>
 	
 	<section xml:id="statements">
@@ -896,17 +890,15 @@ def Xml:Element root = doc.documentElement
 			
 			<simplelist role="layout">
 				<member><link linkend="node.identifier">identifier</link> name</member>
-				<member><link linkend="node.wo-scidentre-category">wo-scidentre-category</link> </member>
+				<member><link linkend="node.boolean">boolean</link> overload</member>
 				<member><link linkend="node.expression">expression</link> type</member>
 				<member><link linkend="node.boolean">boolean</link> breed</member>
 				<member><link linkend="node.expression">expression</link> value</member>
 			</simplelist>
 			
-			<para role="process">The [wo-scidentre-category] must specify &quot;constant&quot; or &quot;function&quot;.</para>
-			
 			<para role="xxx">Should [breed] be required to be false if [wo-scidentre-category] is &quot;function&quot;?</para>
 			
-			<para>Creates an scidentre in the parent scope with the specified type, then assigns the specified value to it.</para>
+			<para>Creates an scidentre in the parent scope ash assigns the specified value to it. If [overload] is true, creates on overload scidentre; otherwise creates a constant scidentre.</para>
 			
 			<para>The value expressions of declare-first nodes may depend on the values of other declare-first nodes that appear before or after it. Some types of expressions are allowed to reference the scidentres of each other. For example, two interfaces could reference each other.</para>
 			
@@ -1147,13 +1139,10 @@ puts( (FBZ to String)(Gamma) )
 			
 			<simplelist role="layout">
 				<member><link linkend="node.identifier">identifier</link> name</member>
-				<member><link linkend="node.wo-scidentre-category">wo-scidentre-category</link> </member>
 				<member><link linkend="node.expression">expression</link> type</member>
 			</simplelist>
 			
-			<para role="process">The [wo-scidentre-category] must specify &quot;variable&quot;.</para>
-			
-			<para>Creates a scidentre in the parent scope with the specified type. After this node executes, the produced identikey does not yet point to any values.</para>
+			<para>Creates a variable scidentre in the parent scope. After this node executes, the produced scidentre does not yet point to a value.</para>
 
 			<programlisting>
 var foo
@@ -1403,15 +1392,13 @@ bar3()
 			
 			<simplelist role="layout">
 				<member><link linkend="node.identifier">identifier</link> name</member>
-				<member><link linkend="node.wo-scidentre-category">wo-scidentre-category</link> </member>
+				<member><link linkend="node.boolean">boolean</link> constant</member>
 				<member><link linkend="node.expression">expression</link> type</member>
 				<member><link linkend="node.boolean">boolean</link> breed</member>
 				<member><link linkend="node.expression">expression</link> value</member>
 			</simplelist>
-			
-			<para role="process">The [wo-scidentre-category] must specify &quot;variable&quot; or &quot;constant&quot;.</para>
 
-			<para>Creates an identikey in the parent scope with the specified type, then assigns the specified value to it.</para>
+			<para>Creates a scidentre in the parent scope and assigns the specified value to it. If [constant] is false, creates a constant scidentre; otherwise, creates a variable scidentre.</para>
 			
 			<programlisting>
 var any foo = 123

@@ -17,11 +17,13 @@ static class WoScidentreReserver {
 	}
 	
 	public static void reserve( Node_DeclareAssign node, IScope scope ) {
-		scope.reserveWoScidentre( node.name.value, node.woScidentreCategory.value );
+		scope.reserveWoScidentre(
+			node.name.value,
+			node.constant.value ? WoScidentreCategory.CONSTANT : WoScidentreCategory.VARIABLE);
 	}
 
 	public static void reserve( Node_DeclareEmpty node, IScope scope ) {
-		scope.reserveWoScidentre( node.name.value, node.woScidentreCategory.value );
+		scope.reserveWoScidentre( node.name.value, WoScidentreCategory.VARIABLE );
 	}
 	
 	public static void reserveAny( INode_Expression node, IScope scope ) {

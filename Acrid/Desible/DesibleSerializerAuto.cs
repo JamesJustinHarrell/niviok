@@ -25,7 +25,7 @@ public abstract class DesibleSerializerAuto : DesibleSerializerBase {
 	protected virtual XmlElement serialize(Node_DeclareFirst node) {
 		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
 		append<Node_Identifier>(elem, node.@name, "name");
-		append<Node_WoScidentreCategory>(elem, node.@woScidentreCategory, null);
+		append<Node_Boolean>(elem, node.@overload, "overload");
 		append<INode_Expression>(elem, node.@type, "type");
 		append<Node_Boolean>(elem, node.@breed, "breed");
 		append<INode_Expression>(elem, node.@value, "value");
@@ -288,7 +288,6 @@ public abstract class DesibleSerializerAuto : DesibleSerializerBase {
 	protected virtual XmlElement serialize(Node_DeclareEmpty node) {
 		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
 		append<Node_Identifier>(elem, node.@name, "name");
-		append<Node_WoScidentreCategory>(elem, node.@woScidentreCategory, null);
 		append<INode_Expression>(elem, node.@type, "type");
 		return elem;
 	}
@@ -319,7 +318,7 @@ public abstract class DesibleSerializerAuto : DesibleSerializerBase {
 	protected virtual XmlElement serialize(Node_DeclareAssign node) {
 		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
 		append<Node_Identifier>(elem, node.@name, "name");
-		append<Node_WoScidentreCategory>(elem, node.@woScidentreCategory, null);
+		append<Node_Boolean>(elem, node.@constant, "constant");
 		append<INode_Expression>(elem, node.@type, "type");
 		append<Node_Boolean>(elem, node.@breed, "breed");
 		append<INode_Expression>(elem, node.@value, "value");
@@ -399,12 +398,6 @@ public abstract class DesibleSerializerAuto : DesibleSerializerBase {
 		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
 		append<INode_Expression>(elem, node.@key, "key");
 		append<INode_Expression>(elem, node.@value, "value");
-		return elem;
-	}
-
-	protected virtual XmlElement serialize(Node_WoScidentreCategory node) {
-		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
-		elem.AppendChild(_doc.CreateTextNode(node.ToString()));
 		return elem;
 	}
 
@@ -608,8 +601,6 @@ public abstract class DesibleSerializerAuto : DesibleSerializerBase {
 				return serialize((Node_Case)node);
 			case "dictionary-entry":
 				return serialize((Node_DictionaryEntry)node);
-			case "wo-scidentre-category":
-				return serialize((Node_WoScidentreCategory)node);
 			case "catcher":
 				return serialize((Node_Catcher)node);
 			case "try-catch":

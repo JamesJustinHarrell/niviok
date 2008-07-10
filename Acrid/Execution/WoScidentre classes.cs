@@ -29,11 +29,11 @@ class __SingleWoScidentreBase : __WoScidentreBase {
 	}
 }
 
-class FunctionScidentre : __WoScidentreBase, IWoScidentre {
+class OverloadScidentre : __WoScidentreBase, IWoScidentre {
 	int _requiredCount;
 	IList<IWorker> _workers;
 	
-	public FunctionScidentre() {
+	public OverloadScidentre() {
 		_requiredCount = 1;
 		_workers = new List<IWorker>();
 	}

@@ -94,7 +94,7 @@ public class Bridge {
 		
 		//println function
 		IWoScidentre ws = sieve.reserveWoScidentre(
-			true, new Identifier("println"), WoScidentreCategory.FUNCTION);
+			true, new Identifier("println"), WoScidentreCategory.OVERLOAD);
 		ws.type = new NType();
 		ws.assign(
 			toClientFunction(
@@ -116,7 +116,7 @@ public class Bridge {
 		
 		//get_exit_status function
 		IWoScidentre ws2 = sieve.reserveWoScidentre(
-			true, new Identifier("get exit status"), WoScidentreCategory.FUNCTION);
+			true, new Identifier("get exit status"), WoScidentreCategory.OVERLOAD);
 		ws2.type = new NType();
 		ws2.assign(
 			toClientFunction(

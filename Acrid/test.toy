@@ -20,7 +20,7 @@
 #child nodes below are "hidable" nodes
 
 (false
-(declare-first header function any false
+(declare-first header true any false
 	(function
 		(
 			(in any title -))
@@ -31,7 +31,7 @@
 		)))))
 
 (false
-(declare-first headerize function any false
+(declare-first headerize true any false
 	(function
 		(
 			(in any title -)
@@ -45,7 +45,7 @@
 		)))))
 
 (false
-(declare-first main function any false
+(declare-first main true any false
 	(function () any
 		(compound () () () (
 			(headerize "doStuff" doStuff)
@@ -55,17 +55,17 @@
 		)))))
 
 (false
-(declare-first Test constant Interface false
+(declare-first Test false Interface false
 	(interface () (
 		(normal (property number false Int))
 		(normal (property text true String))
 		))))
 
 (false
-(declare-first createObject function any false
+(declare-first createObject true any false
 	(function () any
 		(compound () () () (
-			(declare-assign mText variable String false "initial text")
+			(declare-assign mText false String false "initial text")
 			
 			(object (
 				(Test () (
@@ -95,13 +95,13 @@
 		)))))
 
 (false
-(declare-first doStuff function any false
+(declare-first doStuff true any false
 	(function () any
 		(compound () () () (
 			(conditional
 				true (println "this is a test")
 				any )
-			(declare-assign str constant String false
+			(declare-assign str true String false
 				((extract-member "🿰 Hello," concat) " World 🿱"))
 			(println str)
 			(println (extract-member str length))
@@ -110,11 +110,11 @@
 			(enumerator-loop - (range 1 20 false) ((any x)) -
 				(println ((extract-member x add) 10000)))
 */
-			(declare-assign 🿰🿱 constant String false
+			(declare-assign 🿰🿱 true String false
 				"astral characters in identifiers")
 			(println 🿰🿱)
 
-			(declare-assign obj constant Test false
+			(declare-assign obj true Test false
 				(createObject))
 			
 			(println (extract-member obj number))
@@ -122,7 +122,7 @@
 			(set-property obj text "text set through set-property node")
 			(println (extract-member obj text))
 			
-			(declare-assign gen constant any false
+			(declare-assign gen true any false
 				(generator any (compound () () () (
 					(println "printed by generator")
 					(yield "yielded from generator")
@@ -140,21 +140,21 @@
 		)))))
 
 (false
-(declare-first testNonProducers function any false
+(declare-first testNonProducers true any false
 	(function () any
 		(compound () () (
-			(declare-first dfval constant any false "declare-first value")
+			(declare-first dfval false any false "declare-first value")
 		) (
 			(println dfval)
 		))
 )))
 
 (false
-(declare-first testSometimesProducers function any false
+(declare-first testSometimesProducers true any false
 	(function () any
 		(compound () () () (
 			(header "assign, block, call")
-			(declare-empty foo variable any)
+			(declare-empty foo any)
 			(assign foo false (compound () () () (123)))
 			(println foo)
 			
@@ -174,7 +174,7 @@
 		)))))
 
 (false
-(declare-first testAlwaysProducers function any false
+(declare-first testAlwaysProducers true any false
 	(function () any
 		(compound () () () (
 			(header "testBooleanLogic")
@@ -198,7 +198,7 @@
 		)))))
 
 (false
-(declare-first testBooleanLogic function any false
+(declare-first testBooleanLogic true any false
 	(function () any
 		(compound () () () (
 			/*
@@ -206,9 +206,9 @@
 			first come values that should shortcut,
 			then values that should not shortcut
 			*/
-			(declare-assign t constant any false
+			(declare-assign t true any false
 				true)
-			(declare-assign f constant any false
+			(declare-assign f true any false
 				false)
 		
 			(header "and")

@@ -7,7 +7,7 @@
     </head>
     <body>
         <h1>Niviok 1.0 Specification</h1>
-        <h2>Edition 1 Draft 2008-07-06</h2>
+        <h2>Edition 1 Draft 2008-07-09</h2>
         <p>Copyright © 2008 James Justin Harrell</p>
         <p>Permission is granted to use, copy, display, modify, sell, and distribute this document. This document is provided "as is" without warrany of any kind. In no event shall anyone be liable for any damages or other liability arising from use of this document.</p>
         <ol class="toc">
@@ -41,7 +41,7 @@
                         <a href="#identifiers">5.1. Identifiers</a>
                     </li>
                     <li>
-                        <a href="#identikeys">5.2. Identikeys</a>
+                        <a href="#scidentres">5.2. Scidentres</a>
                     </li>
                     <li>
                         <a href="#builtin-numbers">5.3. Built-in numbers</a>
@@ -142,9 +142,6 @@
                             </li>
                             <li>
                                 <a href="#node.worker">12.4.10. worker</a>
-                            </li>
-                            <li>
-                                <a href="#node.wo-scidentre-category">12.4.11. wo-scidentre-category</a>
                             </li>
                         </ol>
                     </li>
@@ -529,7 +526,7 @@
         </ol>
         <div id="Overview">
             <h1>Chapter 1. Overview</h1>
-            <p>This document is a draft for the first edition of the specification describing the 1.0 version of Niviok. It can be represented as "Niviok 1.0 Edition 1 Draft 2008-07-06".</p>
+            <p>This document is a draft for the first edition of the specification describing the 1.0 version of Niviok. It can be represented as "Niviok 1.0 Edition 1 Draft 2008-07-09".</p>
             <p>This document is a draft of the first edition of the specification describing the 1.0 version of Niviok.</p>
             <p>Niviok is an abstract programming language. This document defines several node types which are used to represent Niviok source code. How Niviok nodes are represented is outside the scope of this standard. While syntax and semantics are not completetly separate, Niviok does contain much less syntax-influenced semantics than most programming languages.</p>
             <p>Nodes that can be executed are statements or expressions. Statements are greatly restricted in where they can appear, while expressions are more relaxed and can be interchanged for on another. An expression may produce a value when executed.</p>
@@ -667,20 +664,21 @@ mutate`this`thing!
                         
 </code>
             </div>
-            <div id="identikeys">
-                <h2>5.2. Identikeys</h2>
+            <div id="scidentres">
+                <h2>5.2. Scidentres</h2>
+                <p class="xxx">Need to replace "identikey" with "scidentre".</p>
                 <p>An identikey is associated with a scope and an identifier. It may be associated with a nullable-type, a worker, multiple workers, and/or a namespace. Some identikeys can be mutated.</p>
                 <p>Every scope is assocciated with zero or more identikeys. Identikeys associated with the same scope must each be associated with a different identifier.</p>
                 <p>When an identifier node is executed, every identikey in the scope the identifier node resides in is checked to see if the identikey is associated with an equivalent identifier. If it is, the value produce by executing the identifier node is obtained from the identikey. The identifier node execution process moves up through the scope tree (not to be confused with the scope formula tree) looking for an identikey associated with an equivalent identifier.</p>
                 <dl>
                     <dt id="def.namespace">namespace</dt>
-                    <dd>associated with a namespace when created. immutable.</dd>
-                    <dt id="def.variable">variable</dt>
-                    <dd>can be mutated to point to different workers. associated with a nullable-type. only workers that match the nullable-type can be assigned to the identikey (note that the nullable type could be dyn or ?dyn)</dd>
+                    <dd>associated with a namespace when created. immutable. multiple declarations of the same scidentre can be made in the same scope.</dd>
                     <dt id="def.constant">constant</dt>
-                    <dd>worker is assigned when the identikey is created. immutable.</dd>
-                    <dt id="def.function">function</dt>
-                    <dd>associated with a worker with with a function interface as the active interface when created. immutable.</dd>
+                    <dd>associated with a worker when created. immutable.</dd>
+                    <dt id="def.overload">overload</dt>
+                    <dd>associated with a worker when created. immutable. multiple declarations of the same scidentre can be made in the same scope.</dd>
+                    <dt id="def.variable">variable</dt>
+                    <dd>can be mutated to point to different workers. only workers that match the type can be assigned to the identikey (note that the type could be e.g. any or Nullable&lt;any&gt;)</dd>
                 </dl>
                 <p>A function identikey can be bound to multiple functions (objects that implement a function interface; xxx link) at the same time. A function identikey can never be bound to multiple functions with the same interface.</p>
                 <p>If a value has multiple callees, the active interface is not a function interface, and thus it cannot be bound to a function identikey. The value must be cast to each function interface, and each resulting value bound individually to the function identikey.</p>
@@ -971,7 +969,7 @@ declfirst func bar = func() {
         </div>
         <div id="nodes">
             <h1>Chapter 11. Nodes</h1>
-            <p>Niviok defines 70 nodes.</p>
+            <p>Niviok defines 69 nodes.</p>
             <p>Niviok code is represented by a tree of nodes. How this tree and its nodes are represented is outside the scope of this specification. Many means may exist of representing a Niviok tree.</p>
             <p>Nodes are either base nodes or tree nodes. Tree nodes only contain other nodes, and their entire meaning is derived from their child nodes. Base nodes do not contain any other child nodes, and must is some way encode their meaning themselves.</p>
             <p>When a node has multiple child nodes with equivalent meaning, the order of those child nodes is significant, so their order must be specified by some means. The order of nodes of different meaning in relation to each other is not significant, and must not have any observable side effects.</p>
@@ -1022,9 +1020,6 @@ declfirst func bar = func() {
                     </li>
                     <li>
                         <a href="#node.string">string</a>
-                    </li>
-                    <li>
-                        <a href="#node.wo-scidentre-category">wo-scidentre-category</a>
                     </li>
                 </ul>
             </div>
@@ -1263,12 +1258,6 @@ def Xml:Element root = doc.documentElement
                     </ul>
                     <p>Note: May actually correspond to multiple workers, since some of the member-implementation nodes may implement members of inherited interfaces.</p>
                 </div>
-                <div id="node.wo-scidentre-category">
-                    <h3>12.4.11. wo-scidentre-category</h3>
-                    <p>specifies one of: constant, function, variable</p>
-                    <p>See the 
-                    <a href="#identikeys">section on identikeys</a>.</p>
-                </div>
             </div>
             <div id="statements">
                 <h2>12.5. Statements</h2>
@@ -1279,8 +1268,7 @@ def Xml:Element root = doc.documentElement
                         <li>
                         <a href="#node.identifier">identifier</a>name</li>
                         <li>
-                            <a href="#node.wo-scidentre-category">wo-scidentre-category</a>
-                        </li>
+                        <a href="#node.boolean">boolean</a>overload</li>
                         <li>
                         <a href="#node.expression">expression</a>type</li>
                         <li>
@@ -1288,9 +1276,8 @@ def Xml:Element root = doc.documentElement
                         <li>
                         <a href="#node.expression">expression</a>value</li>
                     </ul>
-                    <p class="process">The [wo-scidentre-category] must specify "constant" or "function".</p>
                     <p class="xxx">Should [breed] be required to be false if [wo-scidentre-category] is "function"?</p>
-                    <p>Creates an scidentre in the parent scope with the specified type, then assigns the specified value to it.</p>
+                    <p>Creates an scidentre in the parent scope ash assigns the specified value to it. If [overload] is true, creates on overload scidentre; otherwise creates a constant scidentre.</p>
                     <p>The value expressions of declare-first nodes may depend on the values of other declare-first nodes that appear before or after it. Some types of expressions are allowed to reference the scidentres of each other. For example, two interfaces could reference each other.</p>
                     <p>For more (xxx outdated) information, see 
                     <a href="#handling-declare-first">this section</a>.</p>
@@ -1510,13 +1497,9 @@ puts( (FBZ to String)(Gamma) )
                         <li>
                         <a href="#node.identifier">identifier</a>name</li>
                         <li>
-                            <a href="#node.wo-scidentre-category">wo-scidentre-category</a>
-                        </li>
-                        <li>
                         <a href="#node.expression">expression</a>type</li>
                     </ul>
-                    <p class="process">The [wo-scidentre-category] must specify "variable".</p>
-                    <p>Creates a scidentre in the parent scope with the specified type. After this node executes, the produced identikey does not yet point to any values.</p>
+                    <p>Creates a variable scidentre in the parent scope. After this node executes, the produced scidentre does not yet point to a value.</p>
                     <code xml:space="preserve">
 var foo
 var any foo
@@ -1753,8 +1736,7 @@ bar3()
                         <li>
                         <a href="#node.identifier">identifier</a>name</li>
                         <li>
-                            <a href="#node.wo-scidentre-category">wo-scidentre-category</a>
-                        </li>
+                        <a href="#node.boolean">boolean</a>constant</li>
                         <li>
                         <a href="#node.expression">expression</a>type</li>
                         <li>
@@ -1762,8 +1744,7 @@ bar3()
                         <li>
                         <a href="#node.expression">expression</a>value</li>
                     </ul>
-                    <p class="process">The [wo-scidentre-category] must specify "variable" or "constant".</p>
-                    <p>Creates an identikey in the parent scope with the specified type, then assigns the specified value to it.</p>
+                    <p>Creates a scidentre in the parent scope and assigns the specified value to it. If [constant] is false, creates a constant scidentre; otherwise, creates a variable scidentre.</p>
                     <code xml:space="preserve">
 var any foo = 123
 var Nullable&lt;any&gt; foo = 123

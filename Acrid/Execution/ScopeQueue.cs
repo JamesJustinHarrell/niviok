@@ -189,7 +189,7 @@ public class ScopeQueue {
 			HashSet<Entry> cleared2 = new HashSet<Entry>();
 			cleared2.UnionWith(cleared);
 			cleared2.Add(entry);
-			return G.all_true<Entry>(
+			return G.allTrue<Entry>(
 				entry.finishDependencies,
 				delegate(Entry dep) { return cyclicalReady(dep, cleared2); });
 		case State.READY :

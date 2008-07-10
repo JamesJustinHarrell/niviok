@@ -86,7 +86,7 @@ xmlns:xi="http://www.w3.org/2003/XInclude">
 				<glossdef>A collection of data that holds state. Created by a class. Only the class that created it can access an object's state. Values are associated with objects.</glossdef>
 			</glossentry>
 			
-			<glossentry xml:id="def.scidentre">
+			<glossentry>
 				<glossterm>scidentre</glossterm>
 				<glossdef>bound to one or more values. An identifier in a certain scope is associated with an identikey. In other programming languages, the terms "variable" or "constant" may refer to a similar concept. (Previously called "identikey" by this draft. Transition has only barely begun.)</glossdef>
 			</glossentry>
@@ -233,8 +233,10 @@ mutate`this`thing!
 			</programlisting>
 		</section>
 			
-		<section xml:id="identikeys">
-			<title>Identikeys</title>
+		<section xml:id="scidentres">
+			<title>Scidentres</title>
+			
+			<para role="xxx">Need to replace "identikey" with "scidentre".</para>
 			
 			<para>An identikey is associated with a scope and an identifier. It may be associated with a nullable-type, a worker, multiple workers, and/or a namespace. Some identikeys can be mutated.</para>
 
@@ -245,22 +247,22 @@ mutate`this`thing!
 			<glosslist>
 				<glossentry>
 					<glossterm>namespace</glossterm>
-					<glossdef>associated with a namespace when created. immutable.</glossdef>
-				</glossentry>
-				
-				<glossentry>
-					<glossterm>variable</glossterm>
-					<glossdef>can be mutated to point to different workers. associated with a nullable-type. only workers that match the nullable-type can be assigned to the identikey (note that the nullable type could be dyn or ?dyn)</glossdef>
+					<glossdef>associated with a namespace when created. immutable. multiple declarations of the same scidentre can be made in the same scope.</glossdef>
 				</glossentry>
 				
 				<glossentry>
 					<glossterm>constant</glossterm>
-					<glossdef>worker is assigned when the identikey is created. immutable.</glossdef>
+					<glossdef>associated with a worker when created. immutable.</glossdef>
 				</glossentry>
 				
 				<glossentry>
-					<glossterm>function</glossterm>
-					<glossdef>associated with a worker with with a function interface as the active interface when created. immutable.</glossdef>
+					<glossterm>overload</glossterm>
+					<glossdef>associated with a worker when created. immutable. multiple declarations of the same scidentre can be made in the same scope.</glossdef>
+				</glossentry>
+				
+				<glossentry>
+					<glossterm>variable</glossterm>
+					<glossdef>can be mutated to point to different workers. only workers that match the type can be assigned to the identikey (note that the type could be e.g. any or Nullable&lt;any>)</glossdef>
 				</glossentry>
 			</glosslist>
 			

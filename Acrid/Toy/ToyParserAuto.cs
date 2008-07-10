@@ -44,7 +44,7 @@ public abstract class ToyParserAuto : ToyParserBase {
 				getSource(sexp));
 		return new Node_DeclareFirst(
    			parseOne<Node_Identifier>(parseIdentifier, sexp),
-			parseOne<Node_WoScidentreCategory>(parseWoScidentreCategory, sexp),
+			parseOne<Node_Boolean>(parseBoolean, sexp),
 			parseOne<INode_Expression>(parseExpression, sexp),
 			parseOne<Node_Boolean>(parseBoolean, sexp),
 			parseOne<INode_Expression>(parseExpression, sexp),
@@ -575,15 +575,14 @@ public abstract class ToyParserAuto : ToyParserBase {
 	}
 
 	protected virtual Node_DeclareEmpty parseDeclareEmpty(Sexp sexp) {
-		if( sexp.list.Count != 3 )
+		if( sexp.list.Count != 2 )
 			throw new ParseError(
 				String.Format(
-					"'declare-empty' node must have 3 children ({0} given)",
+					"'declare-empty' node must have 2 children ({0} given)",
 					sexp.list.Count),
 				getSource(sexp));
 		return new Node_DeclareEmpty(
    			parseOne<Node_Identifier>(parseIdentifier, sexp),
-			parseOne<Node_WoScidentreCategory>(parseWoScidentreCategory, sexp),
 			parseOne<INode_Expression>(parseExpression, sexp),
 			getSource(sexp) );
 	}
@@ -638,7 +637,7 @@ public abstract class ToyParserAuto : ToyParserBase {
 				getSource(sexp));
 		return new Node_DeclareAssign(
    			parseOne<Node_Identifier>(parseIdentifier, sexp),
-			parseOne<Node_WoScidentreCategory>(parseWoScidentreCategory, sexp),
+			parseOne<Node_Boolean>(parseBoolean, sexp),
 			parseOne<INode_Expression>(parseExpression, sexp),
 			parseOne<Node_Boolean>(parseBoolean, sexp),
 			parseOne<INode_Expression>(parseExpression, sexp),
@@ -779,20 +778,6 @@ public abstract class ToyParserAuto : ToyParserBase {
    			parseOne<INode_Expression>(parseExpression, sexp),
 			parseOne<INode_Expression>(parseExpression, sexp),
 			getSource(sexp) );
-	}
-
-	protected virtual Node_WoScidentreCategory parseWoScidentreCategory(Sexp sexp) {
-		try {
-			return new Node_WoScidentreCategory(sexp.atom, getSource(sexp));
-		}
-		catch(FormatException e) {
-			throw new ParseError(
-				String.Format(
-					"node of type WoScidentreCategory cannot be of value '{0}'",
-					sexp.atom),
-				getSource(sexp),
-				e);
-		}
 	}
 
 	protected virtual Node_Catcher parseCatcher(Sexp sexp) {

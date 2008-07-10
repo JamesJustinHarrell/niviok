@@ -16,7 +16,7 @@
 	</script></head><body>
 	
 	<h1>Niviok 1.0 Specification</h1>
-	<h2>Edition 1 Draft 2008-07-06</h2>
+	<h2>Edition 1 Draft 2008-07-09</h2>
 	
 	
 		<p>Copyright © 
@@ -27,10 +27,10 @@
 		<p>Permission is granted to use, copy, display, modify, sell, and distribute this document. This document is provided &quot;as is&quot; without warrany of any kind. In no event shall anyone be liable for any damages or other liability arising from use of this document.</p>
 	
 	
-	<ol class="toc"><li><a href="#Overview">1. Overview</a></li><li><a href="#versioning">2. Versioning</a><ol><li><a href="#niviok-version">2.1. Niviok version</a></li><li><a href="#specification-version">2.2. Specification version</a></li><li><a href="#version-notation">2.3. Version notation</a></li></ol></li><li><a href="#Glossary">3. Glossary</a></li><li><a href="#executing-nodes">4. Executing nodes</a></li><li><a href="#overview-part-2">5. Overview part 2</a><ol><li><a href="#identifiers">5.1. Identifiers</a></li><li><a href="#identikeys">5.2. Identikeys</a></li><li><a href="#builtin-numbers">5.3. Built-in numbers</a></li></ol></li><li><a href="#values">6. Values</a></li><li><a href="#functions">7. Functions</a><ol><li><a href="#function-interfaces">7.1. Function interfaces</a></li></ol></li><li><a href="#interfaces">8. Interfaces</a><ol><li><a href="#interface-operations">8.1. Adding and subtracting interfaces</a></li></ol></li><li><a href="#scopes">9. Scopes</a></li><li><a href="#handling-declare-first">10. Handling declare-first nodes</a></li><li><a href="#nodes">11. Nodes</a><ol><li><a href="#node-terminology">11.1. Node terminology</a></li><li><a href="#tree-node-layout">11.2. Tree node layout</a></li><li><a href="#node-supertypes">11.3. Node supertypes</a></li></ol></li><li><a href="#node-types">12. Node types</a><ol><li><a href="#terminal-node-types">12.1. Terminal nodes</a></li><li><a href="#family-node-types">12.2. Family node types</a><ol><li><a href="#node.expression">12.2.1. expression</a></li><li><a href="#node.statement-declaration">12.2.2. statement-declaration</a></li><li><a href="#node.interface-member">12.2.3. interface-member</a></li></ol></li><li><a href="#tree-node-layout-key">12.3. Tree node layout key</a></li><li><a href="#non-executable">12.4. Non-executable</a><ol><li><a href="#node.argument">12.4.1. argument</a></li><li><a href="#node.boolean">12.4.2. boolean</a></li><li><a href="#node.direction">12.4.3. direction</a></li><li><a href="#node.import">12.4.4. import</a></li><li><a href="#node.import-attempt">12.4.5. import-attempt</a></li><li><a href="#node.member-implementation">12.4.6. member-implementation</a></li><li><a href="#node.member-type">12.4.7. member-type</a></li><li><a href="#node.parameter-impl">12.4.8. parameter-impl</a></li><li><a href="#node.parameter-info">12.4.9. parameter-info</a></li><li><a href="#node.worker">12.4.10. worker</a></li><li><a href="#node.wo-scidentre-category">12.4.11. wo-scidentre-category</a></li></ol></li><li><a href="#statements">12.5. Statements</a><ol><li><a href="#node.declare-first">12.5.1. declare-first</a></li><li><a href="#node.expose">12.5.2. expose</a></li><li><a href="#node.hidable">12.5.3. hidable</a></li><li><a href="#node.sieve">12.5.4. sieve</a></li><li><a href="#node.module">12.5.5. module</a></li><li><a href="#node.namespace">12.5.6. namespace</a></li><li><a href="#node.using">12.5.7. using</a></li></ol></li><li><a href="#non-producing-expressions">12.6. Non-producing expressions</a><ol><li><a href="#control-flow-alteration">12.6.1. Control flow alteration</a><ol><li><a href="#node.remit">12.6.1.1. remit</a></li><li><a href="#node.throw">12.6.1.2. throw</a></li><li><a href="#node.yield">12.6.1.3. yield</a></li></ol></li><li><a href="#node.declare-empty">12.6.2. declare-empty</a></li></ol></li><li><a href="#sometimes-producing-expressions">12.7. Sometimes producing expressions</a><ol><li><a href="#node.assign">12.7.1. assign</a></li><li><a href="#node.call">12.7.2. call</a></li><li><a href="#node.compound">12.7.3. compound</a></li><li><a href="#node.conditional">12.7.4. conditional</a></li><li><a href="#node.curry">12.7.5. curry</a></li><li><a href="#node.declare-assign">12.7.6. declare-assign</a></li><li><a href="#node.identifier">12.7.7. identifier</a></li><li><a href="#node.namespaced-wo-scidentre">12.7.8. namespaced-wo-scidentre</a></li><li><a href="#node.select">12.7.9. select</a><ol><li><a href="#node.case">12.7.9.1. case</a></li></ol></li><li><a href="#node.set-property">12.7.10. set-property</a></li><li><a href="#node.try-catch">12.7.11. try-catch</a><ol><li><a href="#node.catcher">12.7.11.1. catcher</a></li></ol></li><li><a href="#node.type-select">12.7.12. type-select</a><ol><li><a href="#node.type-case">12.7.12.1. type-case</a></li></ol></li></ol></li><li><a href="#always-producing-expressions">12.8. Always producing expressions</a><ol><li><a href="#boolean-logic">12.8.1. Boolean logic</a><ol><li><a href="#node.and">12.8.1.1. and</a></li><li><a href="#node.nand">12.8.1.2. nand</a></li><li><a href="#node.or">12.8.1.3. or</a></li><li><a href="#node.nor">12.8.1.4. nor</a></li><li><a href="#node.xor">12.8.1.5. xor</a></li><li><a href="#node.xnor">12.8.1.6. xnor</a></li></ol></li><li><a href="#node.breed">12.8.2. breed</a></li><li><a href="#node.caller">12.8.3. caller</a></li><li><a href="#node.object">12.8.4. object</a></li><li><a href="#node.dictionary">12.8.5. dictionary</a><ol><li><a href="#node.dictionary-entry">12.8.5.1. dictionary-entry</a></li></ol></li><li><a href="#node.enum">12.8.6. enum</a><ol><li><a href="#node.enum-entry">12.8.6.1. enum-entry</a></li></ol></li><li><a href="#node.extract-member">12.8.7. extract-member</a></li><li><a href="#node.function">12.8.8. function</a></li><li><a href="#node.function-interface">12.8.9. function-interface</a></li><li><a href="#node.generator">12.8.10. generator</a></li><li><a href="#node.generic-function">12.8.11. generic-function</a></li><li><a href="#node.generic-interface">12.8.12. generic-interface</a></li><li><a href="#node.instantiate-generic">12.8.13. instantiate-generic</a></li><li><a href="#node.integer">12.8.14. integer</a></li><li><a href="#node.interface">12.8.15. interface</a><ol><li><a href="#node.statused-member">12.8.15.1. statused-member</a></li><li><a href="#node.member-status">12.8.15.2. member-status</a></li><li><a href="#node.breeder">12.8.15.3. breeder</a></li><li><a href="#node.callee">12.8.15.4. callee</a></li><li><a href="#node.method">12.8.15.5. method</a></li><li><a href="#node.property">12.8.15.6. property</a></li></ol></li><li><a href="#node.rational">12.8.16. rational</a></li><li><a href="#node.string">12.8.17. string</a></li></ol></li></ol></li><li><a href="#reserved-identikey-names">13. Reserved identikey names</a></li><li><a href="#standard-library">14. Standard library</a><ol><li><a href="#object.println">14.1. println</a></li><li><a href="#object.activeInterface">14.2. activeInterface</a></li><li><a href="#object.String">14.3. String</a></li><li><a href="#object.cast">14.4. func{I}(dyn)I cast</a></li><li><a href="#object.ceil">14.5. ceil</a></li><li><a href="#object.floor">14.6. floor</a></li><li><a href="#object.modulo">14.7. modulo</a></li><li><a href="#object.round">14.8. round</a></li><li><a href="#object.generator">14.9. interface generator</a></li><li><a href="#object.id">14.10. func id</a></li><li><a href="#object.sameObject_q">14.11. func sameObject?</a></li><li><a href="#object.implements_q">14.12. func(obj, interface)bool implements?</a></li><li><a href="#ident.Int">14.13. interface Int</a></li><li><a href="#object.BigInt">14.14. interface BigInt</a></li><li><a href="#object.BigRat">14.15. interface BigRat</a></li><li><a href="#ident.Interface">14.16. interface Interface</a></li><li><a href="#object.Object">14.17. interface Object</a></li><li><a href="#interface.rat">14.18. interface rat</a></li><li><a href="#Generator">14.19. Generator</a></li><li><a href="#InterfaceBuilder">14.20. InterfaceBuilder</a></li><li><a href="#Iterator">14.21. Iterator</a></li><li><a href="#CInterfaceBuilder">14.22. CInterfaceBuilder</a></li><li><a href="#getFuncInterface">14.23. getFuncInterface</a></li></ol></li><li><a href="#warnings-list">15. Warnings</a></li><li><a href="#error-handling-processing">16. Error handling during processing</a></li><li><a href="#rationales">17. Rationales</a><ol><li><a href="#rationale.dynamic-static-typing">17.1. Dynamic static typing</a></li><li><a href="#rationale.terms">17.2. Terms</a><ol><li><a href="#rationale.get-set">17.2.1. get/set</a></li></ol></li><li><a href="#rationale.executing-boolean-logic">17.3. Executing boolean logic nodes</a></li><li><a href="#executing-declaration-first">17.4. Disallowing executing declaration-first</a></li></ol></li><li><a href="#unsorted-outdated-stuff">18. Unsorted/outdated stuff</a><ol><li><a href="#closures">18.1. Closures</a></li><li><a href="#tree-examples">18.2. Tree examples</a><ol><li><a href="#tree-example-1">18.2.1. Example 1</a></li><li><a href="#tree-example-2">18.2.2. Example 2</a></li><li><a href="#tree-example-3">18.2.3. Example 3</a></li></ol></li><li><a href="#get-interface">18.3. get interface</a></li><li><a href="#obj-interface">18.4. obj interface</a></li><li><a href="#identifier-binding">18.5. Binding to identifiers</a></li><li><a href="#print-println-return-interfaces">18.6. Return interfaces of print and println</a></li><li><a href="#adjuncts">18.7. Adjuncts</a></li><li><a href="#runtime-inteface">18.8. runtime interface implementation</a></li><li><a href="#runtime-interface-creation">18.9. Runtime interface creation</a></li><li><a href="#self-return-type">18.10. &quot;self&quot; return type</a></li><li><a href="#bind">18.11. Bind</a></li><li><a href="#classes">18.12. Classes</a></li><li><a href="#noninstantiated-interface-templates">18.13. Noninstantiated interface templates</a></li><li><a href="#dynamic-library-loading">18.14. Dynamic library loading</a></li><li><a href="#static-typing">18.15. Static typing</a></li></ol></li></ol><div id="Overview">
+	<ol class="toc"><li><a href="#Overview">1. Overview</a></li><li><a href="#versioning">2. Versioning</a><ol><li><a href="#niviok-version">2.1. Niviok version</a></li><li><a href="#specification-version">2.2. Specification version</a></li><li><a href="#version-notation">2.3. Version notation</a></li></ol></li><li><a href="#Glossary">3. Glossary</a></li><li><a href="#executing-nodes">4. Executing nodes</a></li><li><a href="#overview-part-2">5. Overview part 2</a><ol><li><a href="#identifiers">5.1. Identifiers</a></li><li><a href="#scidentres">5.2. Scidentres</a></li><li><a href="#builtin-numbers">5.3. Built-in numbers</a></li></ol></li><li><a href="#values">6. Values</a></li><li><a href="#functions">7. Functions</a><ol><li><a href="#function-interfaces">7.1. Function interfaces</a></li></ol></li><li><a href="#interfaces">8. Interfaces</a><ol><li><a href="#interface-operations">8.1. Adding and subtracting interfaces</a></li></ol></li><li><a href="#scopes">9. Scopes</a></li><li><a href="#handling-declare-first">10. Handling declare-first nodes</a></li><li><a href="#nodes">11. Nodes</a><ol><li><a href="#node-terminology">11.1. Node terminology</a></li><li><a href="#tree-node-layout">11.2. Tree node layout</a></li><li><a href="#node-supertypes">11.3. Node supertypes</a></li></ol></li><li><a href="#node-types">12. Node types</a><ol><li><a href="#terminal-node-types">12.1. Terminal nodes</a></li><li><a href="#family-node-types">12.2. Family node types</a><ol><li><a href="#node.expression">12.2.1. expression</a></li><li><a href="#node.statement-declaration">12.2.2. statement-declaration</a></li><li><a href="#node.interface-member">12.2.3. interface-member</a></li></ol></li><li><a href="#tree-node-layout-key">12.3. Tree node layout key</a></li><li><a href="#non-executable">12.4. Non-executable</a><ol><li><a href="#node.argument">12.4.1. argument</a></li><li><a href="#node.boolean">12.4.2. boolean</a></li><li><a href="#node.direction">12.4.3. direction</a></li><li><a href="#node.import">12.4.4. import</a></li><li><a href="#node.import-attempt">12.4.5. import-attempt</a></li><li><a href="#node.member-implementation">12.4.6. member-implementation</a></li><li><a href="#node.member-type">12.4.7. member-type</a></li><li><a href="#node.parameter-impl">12.4.8. parameter-impl</a></li><li><a href="#node.parameter-info">12.4.9. parameter-info</a></li><li><a href="#node.worker">12.4.10. worker</a></li></ol></li><li><a href="#statements">12.5. Statements</a><ol><li><a href="#node.declare-first">12.5.1. declare-first</a></li><li><a href="#node.expose">12.5.2. expose</a></li><li><a href="#node.hidable">12.5.3. hidable</a></li><li><a href="#node.sieve">12.5.4. sieve</a></li><li><a href="#node.module">12.5.5. module</a></li><li><a href="#node.namespace">12.5.6. namespace</a></li><li><a href="#node.using">12.5.7. using</a></li></ol></li><li><a href="#non-producing-expressions">12.6. Non-producing expressions</a><ol><li><a href="#control-flow-alteration">12.6.1. Control flow alteration</a><ol><li><a href="#node.remit">12.6.1.1. remit</a></li><li><a href="#node.throw">12.6.1.2. throw</a></li><li><a href="#node.yield">12.6.1.3. yield</a></li></ol></li><li><a href="#node.declare-empty">12.6.2. declare-empty</a></li></ol></li><li><a href="#sometimes-producing-expressions">12.7. Sometimes producing expressions</a><ol><li><a href="#node.assign">12.7.1. assign</a></li><li><a href="#node.call">12.7.2. call</a></li><li><a href="#node.compound">12.7.3. compound</a></li><li><a href="#node.conditional">12.7.4. conditional</a></li><li><a href="#node.curry">12.7.5. curry</a></li><li><a href="#node.declare-assign">12.7.6. declare-assign</a></li><li><a href="#node.identifier">12.7.7. identifier</a></li><li><a href="#node.namespaced-wo-scidentre">12.7.8. namespaced-wo-scidentre</a></li><li><a href="#node.select">12.7.9. select</a><ol><li><a href="#node.case">12.7.9.1. case</a></li></ol></li><li><a href="#node.set-property">12.7.10. set-property</a></li><li><a href="#node.try-catch">12.7.11. try-catch</a><ol><li><a href="#node.catcher">12.7.11.1. catcher</a></li></ol></li><li><a href="#node.type-select">12.7.12. type-select</a><ol><li><a href="#node.type-case">12.7.12.1. type-case</a></li></ol></li></ol></li><li><a href="#always-producing-expressions">12.8. Always producing expressions</a><ol><li><a href="#boolean-logic">12.8.1. Boolean logic</a><ol><li><a href="#node.and">12.8.1.1. and</a></li><li><a href="#node.nand">12.8.1.2. nand</a></li><li><a href="#node.or">12.8.1.3. or</a></li><li><a href="#node.nor">12.8.1.4. nor</a></li><li><a href="#node.xor">12.8.1.5. xor</a></li><li><a href="#node.xnor">12.8.1.6. xnor</a></li></ol></li><li><a href="#node.breed">12.8.2. breed</a></li><li><a href="#node.caller">12.8.3. caller</a></li><li><a href="#node.object">12.8.4. object</a></li><li><a href="#node.dictionary">12.8.5. dictionary</a><ol><li><a href="#node.dictionary-entry">12.8.5.1. dictionary-entry</a></li></ol></li><li><a href="#node.enum">12.8.6. enum</a><ol><li><a href="#node.enum-entry">12.8.6.1. enum-entry</a></li></ol></li><li><a href="#node.extract-member">12.8.7. extract-member</a></li><li><a href="#node.function">12.8.8. function</a></li><li><a href="#node.function-interface">12.8.9. function-interface</a></li><li><a href="#node.generator">12.8.10. generator</a></li><li><a href="#node.generic-function">12.8.11. generic-function</a></li><li><a href="#node.generic-interface">12.8.12. generic-interface</a></li><li><a href="#node.instantiate-generic">12.8.13. instantiate-generic</a></li><li><a href="#node.integer">12.8.14. integer</a></li><li><a href="#node.interface">12.8.15. interface</a><ol><li><a href="#node.statused-member">12.8.15.1. statused-member</a></li><li><a href="#node.member-status">12.8.15.2. member-status</a></li><li><a href="#node.breeder">12.8.15.3. breeder</a></li><li><a href="#node.callee">12.8.15.4. callee</a></li><li><a href="#node.method">12.8.15.5. method</a></li><li><a href="#node.property">12.8.15.6. property</a></li></ol></li><li><a href="#node.rational">12.8.16. rational</a></li><li><a href="#node.string">12.8.17. string</a></li></ol></li></ol></li><li><a href="#reserved-identikey-names">13. Reserved identikey names</a></li><li><a href="#standard-library">14. Standard library</a><ol><li><a href="#object.println">14.1. println</a></li><li><a href="#object.activeInterface">14.2. activeInterface</a></li><li><a href="#object.String">14.3. String</a></li><li><a href="#object.cast">14.4. func{I}(dyn)I cast</a></li><li><a href="#object.ceil">14.5. ceil</a></li><li><a href="#object.floor">14.6. floor</a></li><li><a href="#object.modulo">14.7. modulo</a></li><li><a href="#object.round">14.8. round</a></li><li><a href="#object.generator">14.9. interface generator</a></li><li><a href="#object.id">14.10. func id</a></li><li><a href="#object.sameObject_q">14.11. func sameObject?</a></li><li><a href="#object.implements_q">14.12. func(obj, interface)bool implements?</a></li><li><a href="#ident.Int">14.13. interface Int</a></li><li><a href="#object.BigInt">14.14. interface BigInt</a></li><li><a href="#object.BigRat">14.15. interface BigRat</a></li><li><a href="#ident.Interface">14.16. interface Interface</a></li><li><a href="#object.Object">14.17. interface Object</a></li><li><a href="#interface.rat">14.18. interface rat</a></li><li><a href="#Generator">14.19. Generator</a></li><li><a href="#InterfaceBuilder">14.20. InterfaceBuilder</a></li><li><a href="#Iterator">14.21. Iterator</a></li><li><a href="#CInterfaceBuilder">14.22. CInterfaceBuilder</a></li><li><a href="#getFuncInterface">14.23. getFuncInterface</a></li></ol></li><li><a href="#warnings-list">15. Warnings</a></li><li><a href="#error-handling-processing">16. Error handling during processing</a></li><li><a href="#rationales">17. Rationales</a><ol><li><a href="#rationale.dynamic-static-typing">17.1. Dynamic static typing</a></li><li><a href="#rationale.terms">17.2. Terms</a><ol><li><a href="#rationale.get-set">17.2.1. get/set</a></li></ol></li><li><a href="#rationale.executing-boolean-logic">17.3. Executing boolean logic nodes</a></li><li><a href="#executing-declaration-first">17.4. Disallowing executing declaration-first</a></li></ol></li><li><a href="#unsorted-outdated-stuff">18. Unsorted/outdated stuff</a><ol><li><a href="#closures">18.1. Closures</a></li><li><a href="#tree-examples">18.2. Tree examples</a><ol><li><a href="#tree-example-1">18.2.1. Example 1</a></li><li><a href="#tree-example-2">18.2.2. Example 2</a></li><li><a href="#tree-example-3">18.2.3. Example 3</a></li></ol></li><li><a href="#get-interface">18.3. get interface</a></li><li><a href="#obj-interface">18.4. obj interface</a></li><li><a href="#identifier-binding">18.5. Binding to identifiers</a></li><li><a href="#print-println-return-interfaces">18.6. Return interfaces of print and println</a></li><li><a href="#adjuncts">18.7. Adjuncts</a></li><li><a href="#runtime-inteface">18.8. runtime interface implementation</a></li><li><a href="#runtime-interface-creation">18.9. Runtime interface creation</a></li><li><a href="#self-return-type">18.10. &quot;self&quot; return type</a></li><li><a href="#bind">18.11. Bind</a></li><li><a href="#classes">18.12. Classes</a></li><li><a href="#noninstantiated-interface-templates">18.13. Noninstantiated interface templates</a></li><li><a href="#dynamic-library-loading">18.14. Dynamic library loading</a></li><li><a href="#static-typing">18.15. Static typing</a></li></ol></li></ol><div id="Overview">
 		<h1>Chapter 1. Overview</h1>
 		
-		<p>This document is a draft for the first edition of the specification describing the 1.0 version of Niviok. It can be represented as &quot;Niviok 1.0 Edition 1 Draft 2008-07-06&quot;.</p>
+		<p>This document is a draft for the first edition of the specification describing the 1.0 version of Niviok. It can be represented as &quot;Niviok 1.0 Edition 1 Draft 2008-07-09&quot;.</p>
 	
 		<p>This document is a draft of the first edition of the specification describing the 1.0 version of Niviok.</p>
 		
@@ -235,8 +235,10 @@ mutate`this`thing!
 			</code>
 		</div>
 			
-		<div id="identikeys">
-			<h2>5.2. Identikeys</h2>
+		<div id="scidentres">
+			<h2>5.2. Scidentres</h2>
+			
+			<p class="xxx">Need to replace &quot;identikey&quot; with &quot;scidentre&quot;.</p>
 			
 			<p>An identikey is associated with a scope and an identifier. It may be associated with a nullable-type, a worker, multiple workers, and/or a namespace. Some identikeys can be mutated.</p>
 
@@ -247,22 +249,22 @@ mutate`this`thing!
 			<dl>
 				
 					<dt id="def.namespace">namespace</dt>
-					<dd>associated with a namespace when created. immutable.</dd>
-				
-				
-				
-					<dt id="def.variable">variable</dt>
-					<dd>can be mutated to point to different workers. associated with a nullable-type. only workers that match the nullable-type can be assigned to the identikey (note that the nullable type could be dyn or ?dyn)</dd>
+					<dd>associated with a namespace when created. immutable. multiple declarations of the same scidentre can be made in the same scope.</dd>
 				
 				
 				
 					<dt id="def.constant">constant</dt>
-					<dd>worker is assigned when the identikey is created. immutable.</dd>
+					<dd>associated with a worker when created. immutable.</dd>
 				
 				
 				
-					<dt id="def.function">function</dt>
-					<dd>associated with a worker with with a function interface as the active interface when created. immutable.</dd>
+					<dt id="def.overload">overload</dt>
+					<dd>associated with a worker when created. immutable. multiple declarations of the same scidentre can be made in the same scope.</dd>
+				
+				
+				
+					<dt id="def.variable">variable</dt>
+					<dd>can be mutated to point to different workers. only workers that match the type can be assigned to the identikey (note that the type could be e.g. any or Nullable&lt;any&gt;)</dd>
 				
 			</dl>
 			
@@ -596,7 +598,7 @@ declfirst func bar = func() {
 	<div id="nodes">
 		<h1>Chapter 11. Nodes</h1>
 	
-		<p>Niviok defines 70 nodes.</p>
+		<p>Niviok defines 69 nodes.</p>
 		
 		<p>Niviok code is represented by a tree of nodes. How this tree and its nodes are represented is outside the scope of this specification. Many means may exist of representing a Niviok tree.</p>
 
@@ -642,7 +644,7 @@ declfirst func bar = func() {
 		<p>These node types do not contain child nodes, and are thus the only nodes that must encode information themselves (as opposed to containing child nodes which together provide information).</p>
 
 		
-		<ul id="terminal-node-types-list"><li><a href="#node.boolean">boolean</a></li><li><a href="#node.direction">direction</a></li><li><a href="#node.identifier">identifier</a></li><li><a href="#node.integer">integer</a></li><li><a href="#node.member-status">member-status</a></li><li><a href="#node.member-type">member-type</a></li><li><a href="#node.rational">rational</a></li><li><a href="#node.string">string</a></li><li><a href="#node.wo-scidentre-category">wo-scidentre-category</a></li></ul>
+		<ul id="terminal-node-types-list"><li><a href="#node.boolean">boolean</a></li><li><a href="#node.direction">direction</a></li><li><a href="#node.identifier">identifier</a></li><li><a href="#node.integer">integer</a></li><li><a href="#node.member-status">member-status</a></li><li><a href="#node.member-type">member-type</a></li><li><a href="#node.rational">rational</a></li><li><a href="#node.string">string</a></li></ul>
 	</div>
 	
 	<div id="family-node-types">
@@ -891,14 +893,6 @@ def Xml:Element root = doc.documentElement
 			
 			<p>Note: May actually correspond to multiple workers, since some of the member-implementation nodes may implement members of inherited interfaces.</p>
 		</div>
-
-		<div id="node.wo-scidentre-category">
-			<h3>12.4.11. wo-scidentre-category</h3>
-			
-			<p>specifies one of: constant, function, variable</p>
-			
-			<p>See the <a href="#identikeys">section on identikeys</a>.</p>
-		</div>
 	</div>
 	
 	<div id="statements">
@@ -911,17 +905,15 @@ def Xml:Element root = doc.documentElement
 			
 			<ul class="layout">
 				<li><a href="#node.identifier">identifier</a> name</li>
-				<li><a href="#node.wo-scidentre-category">wo-scidentre-category</a> </li>
+				<li><a href="#node.boolean">boolean</a> overload</li>
 				<li><a href="#node.expression">expression</a> type</li>
 				<li><a href="#node.boolean">boolean</a> breed</li>
 				<li><a href="#node.expression">expression</a> value</li>
 			</ul>
 			
-			<p class="process">The [wo-scidentre-category] must specify &quot;constant&quot; or &quot;function&quot;.</p>
-			
 			<p class="xxx">Should [breed] be required to be false if [wo-scidentre-category] is &quot;function&quot;?</p>
 			
-			<p>Creates an scidentre in the parent scope with the specified type, then assigns the specified value to it.</p>
+			<p>Creates an scidentre in the parent scope ash assigns the specified value to it. If [overload] is true, creates on overload scidentre; otherwise creates a constant scidentre.</p>
 			
 			<p>The value expressions of declare-first nodes may depend on the values of other declare-first nodes that appear before or after it. Some types of expressions are allowed to reference the scidentres of each other. For example, two interfaces could reference each other.</p>
 			
@@ -1162,13 +1154,10 @@ puts( (FBZ to String)(Gamma) )
 			
 			<ul class="layout">
 				<li><a href="#node.identifier">identifier</a> name</li>
-				<li><a href="#node.wo-scidentre-category">wo-scidentre-category</a> </li>
 				<li><a href="#node.expression">expression</a> type</li>
 			</ul>
 			
-			<p class="process">The [wo-scidentre-category] must specify &quot;variable&quot;.</p>
-			
-			<p>Creates a scidentre in the parent scope with the specified type. After this node executes, the produced identikey does not yet point to any values.</p>
+			<p>Creates a variable scidentre in the parent scope. After this node executes, the produced scidentre does not yet point to a value.</p>
 
 			<code xml:space="preserve">
 var foo
@@ -1418,15 +1407,13 @@ bar3()
 			
 			<ul class="layout">
 				<li><a href="#node.identifier">identifier</a> name</li>
-				<li><a href="#node.wo-scidentre-category">wo-scidentre-category</a> </li>
+				<li><a href="#node.boolean">boolean</a> constant</li>
 				<li><a href="#node.expression">expression</a> type</li>
 				<li><a href="#node.boolean">boolean</a> breed</li>
 				<li><a href="#node.expression">expression</a> value</li>
 			</ul>
-			
-			<p class="process">The [wo-scidentre-category] must specify &quot;variable&quot; or &quot;constant&quot;.</p>
 
-			<p>Creates an identikey in the parent scope with the specified type, then assigns the specified value to it.</p>
+			<p>Creates a scidentre in the parent scope and assigns the specified value to it. If [constant] is false, creates a constant scidentre; otherwise, creates a variable scidentre.</p>
 			
 			<code xml:space="preserve">
 var any foo = 123

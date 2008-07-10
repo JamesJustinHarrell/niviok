@@ -13,7 +13,7 @@
 			<boolean label="hidden">False</boolean>
 			<declare-first label="declaration">
 				<identifier label="name">header</identifier>
-				<wo-scidentre-category>FUNCTION</wo-scidentre-category>
+				<boolean label="overload">True</boolean>
 				<identifier label="type">any</identifier>
 				<boolean label="breed">False</boolean>
 				<function label="value">
@@ -53,7 +53,7 @@
 			<boolean label="hidden">False</boolean>
 			<declare-first label="declaration">
 				<identifier label="name">headerize</identifier>
-				<wo-scidentre-category>FUNCTION</wo-scidentre-category>
+				<boolean label="overload">True</boolean>
 				<identifier label="type">any</identifier>
 				<boolean label="breed">False</boolean>
 				<function label="value">
@@ -115,7 +115,7 @@
 			<boolean label="hidden">False</boolean>
 			<declare-first label="declaration">
 				<identifier label="name">main</identifier>
-				<wo-scidentre-category>FUNCTION</wo-scidentre-category>
+				<boolean label="overload">True</boolean>
 				<identifier label="type">any</identifier>
 				<boolean label="breed">False</boolean>
 				<function label="value">
@@ -165,7 +165,7 @@
 			<boolean label="hidden">False</boolean>
 			<declare-first label="declaration">
 				<identifier label="name">Test</identifier>
-				<wo-scidentre-category>CONSTANT</wo-scidentre-category>
+				<boolean label="overload">False</boolean>
 				<identifier label="type">Interface</identifier>
 				<boolean label="breed">False</boolean>
 				<interface label="value">
@@ -192,7 +192,7 @@
 			<boolean label="hidden">False</boolean>
 			<declare-first label="declaration">
 				<identifier label="name">createObject</identifier>
-				<wo-scidentre-category>FUNCTION</wo-scidentre-category>
+				<boolean label="overload">True</boolean>
 				<identifier label="type">any</identifier>
 				<boolean label="breed">False</boolean>
 				<function label="value">
@@ -200,7 +200,7 @@
 					<compound label="body">
 						<declare-assign label="member">
 							<identifier label="name">mText</identifier>
-							<wo-scidentre-category>VARIABLE</wo-scidentre-category>
+							<boolean label="constant">False</boolean>
 							<identifier label="type">String</identifier>
 							<boolean label="breed">False</boolean>
 							<string label="value">initial text</string>
@@ -255,7 +255,7 @@
 			<boolean label="hidden">False</boolean>
 			<declare-first label="declaration">
 				<identifier label="name">doStuff</identifier>
-				<wo-scidentre-category>FUNCTION</wo-scidentre-category>
+				<boolean label="overload">True</boolean>
 				<identifier label="type">any</identifier>
 				<boolean label="breed">False</boolean>
 				<function label="value">
@@ -273,7 +273,7 @@
 						</conditional>
 						<declare-assign label="member">
 							<identifier label="name">str</identifier>
-							<wo-scidentre-category>CONSTANT</wo-scidentre-category>
+							<boolean label="constant">True</boolean>
 							<identifier label="type">String</identifier>
 							<boolean label="breed">False</boolean>
 							<call label="value">
@@ -303,7 +303,7 @@
 						</call>
 						<declare-assign label="member">
 							<identifier label="name">ð¿°ð¿±</identifier>
-							<wo-scidentre-category>CONSTANT</wo-scidentre-category>
+							<boolean label="constant">True</boolean>
 							<identifier label="type">String</identifier>
 							<boolean label="breed">False</boolean>
 							<string label="value">astral characters in identifiers</string>
@@ -316,7 +316,7 @@
 						</call>
 						<declare-assign label="member">
 							<identifier label="name">obj</identifier>
-							<wo-scidentre-category>CONSTANT</wo-scidentre-category>
+							<boolean label="constant">True</boolean>
 							<identifier label="type">Test</identifier>
 							<boolean label="breed">False</boolean>
 							<call label="value">
@@ -357,7 +357,7 @@
 						</call>
 						<declare-assign label="member">
 							<identifier label="name">gen</identifier>
-							<wo-scidentre-category>CONSTANT</wo-scidentre-category>
+							<boolean label="constant">True</boolean>
 							<identifier label="type">any</identifier>
 							<boolean label="breed">False</boolean>
 							<generator label="value">
@@ -418,7 +418,7 @@
 			<boolean label="hidden">False</boolean>
 			<declare-first label="declaration">
 				<identifier label="name">testNonProducers</identifier>
-				<wo-scidentre-category>FUNCTION</wo-scidentre-category>
+				<boolean label="overload">True</boolean>
 				<identifier label="type">any</identifier>
 				<boolean label="breed">False</boolean>
 				<function label="value">
@@ -426,7 +426,7 @@
 					<compound label="body">
 						<declare-first label="declaration">
 							<identifier label="name">dfval</identifier>
-							<wo-scidentre-category>CONSTANT</wo-scidentre-category>
+							<boolean label="overload">False</boolean>
 							<identifier label="type">any</identifier>
 							<boolean label="breed">False</boolean>
 							<string label="value">declare-first value</string>
@@ -445,7 +445,7 @@
 			<boolean label="hidden">False</boolean>
 			<declare-first label="declaration">
 				<identifier label="name">testSometimesProducers</identifier>
-				<wo-scidentre-category>FUNCTION</wo-scidentre-category>
+				<boolean label="overload">True</boolean>
 				<identifier label="type">any</identifier>
 				<boolean label="breed">False</boolean>
 				<function label="value">
@@ -459,7 +459,6 @@
 						</call>
 						<declare-empty label="member">
 							<identifier label="name">foo</identifier>
-							<wo-scidentre-category>VARIABLE</wo-scidentre-category>
 							<identifier label="type">any</identifier>
 						</declare-empty>
 						<assign label="member">
@@ -523,7 +522,7 @@
 			<boolean label="hidden">False</boolean>
 			<declare-first label="declaration">
 				<identifier label="name">testAlwaysProducers</identifier>
-				<wo-scidentre-category>FUNCTION</wo-scidentre-category>
+				<boolean label="overload">True</boolean>
 				<identifier label="type">any</identifier>
 				<boolean label="breed">False</boolean>
 				<function label="value">
@@ -611,7 +610,7 @@
 			<boolean label="hidden">False</boolean>
 			<declare-first label="declaration">
 				<identifier label="name">testBooleanLogic</identifier>
-				<wo-scidentre-category>FUNCTION</wo-scidentre-category>
+				<boolean label="overload">True</boolean>
 				<identifier label="type">any</identifier>
 				<boolean label="breed">False</boolean>
 				<function label="value">
@@ -619,14 +618,14 @@
 					<compound label="body">
 						<declare-assign label="member">
 							<identifier label="name">t</identifier>
-							<wo-scidentre-category>CONSTANT</wo-scidentre-category>
+							<boolean label="constant">True</boolean>
 							<identifier label="type">any</identifier>
 							<boolean label="breed">False</boolean>
 							<identifier label="value">true</identifier>
 						</declare-assign>
 						<declare-assign label="member">
 							<identifier label="name">f</identifier>
-							<wo-scidentre-category>CONSTANT</wo-scidentre-category>
+							<boolean label="constant">True</boolean>
 							<identifier label="type">any</identifier>
 							<boolean label="breed">False</boolean>
 							<identifier label="value">false</identifier>

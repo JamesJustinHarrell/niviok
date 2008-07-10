@@ -189,9 +189,6 @@
 			<typename>member-implementation</typename>
 		</entry>
 	</tree>
-	<terminal>
-		<typename>wo-scidentre-category</typename>
-	</terminal>
 	<tree>
 		<typename>declare-first</typename>
 		<entry>
@@ -201,7 +198,8 @@
 		</entry>
 		<entry>
 			<count>1</count>
-			<typename>wo-scidentre-category</typename>
+			<typename>boolean</typename>
+			<label>overload</label>
 		</entry>
 		<entry>
 			<count>1</count>
@@ -333,10 +331,6 @@
 		</entry>
 		<entry>
 			<count>1</count>
-			<typename>wo-scidentre-category</typename>
-		</entry>
-		<entry>
-			<count>1</count>
 			<typename>expression</typename>
 			<label>type</label>
 		</entry>
@@ -436,7 +430,8 @@
 		</entry>
 		<entry>
 			<count>1</count>
-			<typename>wo-scidentre-category</typename>
+			<typename>boolean</typename>
+			<label>constant</label>
 		</entry>
 		<entry>
 			<count>1</count>

@@ -156,7 +156,9 @@ public static partial class Executor {
 	public static void execute( Node_DeclareFirst node, ScopeQueue sq, IScope scope ) {
 		//the ScopeQueue takes care of finding dependencies
 		sq.add(
-			scope.reserveWoScidentre(node.name.value, node.woScidentreCategory.value),
+			scope.reserveWoScidentre(
+				node.name.value,
+				node.overload.value ? WoScidentreCategory.OVERLOAD : WoScidentreCategory.CONSTANT),
 			node.type,
 			node.value,
 			scope );

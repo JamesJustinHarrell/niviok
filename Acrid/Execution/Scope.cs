@@ -37,24 +37,24 @@ class Scope : IScope {
 		if(_nsScidentres.ContainsKey(name) )
 			throw new Exception(String.Format(
 				"scidentre '{0}' declared as worker and namespace", name));
-		if(cat != WoScidentreCategory.FUNCTION)
+		if(cat != WoScidentreCategory.OVERLOAD)
 			if(_woScidentres.ContainsKey(name))
 				throw new Exception(String.Format(
-					"non-function wo-scidentre '{0}' declared " +
+					"non-overload wo-scidentre '{0}' declared " +
 					"multiple times in same scope", name));
 		if(_woScidentres.ContainsKey(name)) {
 			//note that here we know that the category is FUNCTION
 			IWoScidentre ws = _woScidentres[name];
-			if( !(ws is FunctionScidentre) )
+			if( !(ws is OverloadScidentre) )
 				throw new Exception(String.Format(
 					"wo-scidentre '{0}' in same scope declared " +
 					"as function and non-function", name));
-			(ws as FunctionScidentre).incrementRequiredCount();
+			(ws as OverloadScidentre).incrementRequiredCount();
 		}
 		else
 			_woScidentres.Add(name, (
-				cat == WoScidentreCategory.FUNCTION ? new FunctionScidentre() as IWoScidentre :
 				cat == WoScidentreCategory.CONSTANT ? new ConstantScidentre() as IWoScidentre :
+				cat == WoScidentreCategory.OVERLOAD ? new OverloadScidentre() as IWoScidentre :
 				cat == WoScidentreCategory.VARIABLE ? new VariableScidentre() as IWoScidentre :
 				null /* xxx throw statement not allowed here */ ));
 		return _woScidentres[name];

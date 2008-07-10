@@ -1,3 +1,16 @@
+"""
+arguments:
+<prog> [ mode [ trace ] ]
+
+mode defaults to all
+trace defaults to false
+
+examples:
+<prog>
+<prog> all true
+<prog> desible
+"""
+
 import os
 import subprocess
 import sys
@@ -73,15 +86,14 @@ def runTestMode(mode) :
 
 #----- entry point
 
-if len(sys.argv) < 2 :
-	print "Error: no mode specified"
-	quit()
-
 if len(sys.argv) > 3 :
 	print "Error: too many arguments"
 	quit()
 
-mode = sys.argv[1]
+if len(sys.argv) is 1 :
+	mode = "all"
+else :
+	mode = sys.argv[1]
 
 #Python has no boolean parsing functionality
 trace = sys.argv[2].lower() == "true" if (2 < len(sys.argv)) else False

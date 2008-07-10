@@ -260,14 +260,6 @@ def Xml:Element root = doc.documentElement
 			
 			<para>Note: May actually correspond to multiple workers, since some of the member-implementation nodes may implement members of inherited interfaces.</para>
 		</section>
-
-		<section xml:id="node.wo-scidentre-category">
-			<title>wo-scidentre-category</title>
-			
-			<para>specifies one of: constant, function, variable</para>
-			
-			<para>See the <link linkend="identikeys">section on identikeys</link>.</para>
-		</section>
 	</section>
 	
 	<section xml:id="statements">
@@ -280,17 +272,15 @@ def Xml:Element root = doc.documentElement
 			
 			<simplelist role="layout">
 				<member>identifier name</member>
-				<member>wo-scidentre-category</member>
 				<member>expression type</member>
-				<member>boolean breed</member>
 				<member>expression value</member>
+				<member>boolean overload</member>
+				<member>boolean breed</member>
 			</simplelist>
-			
-			<para role="process">The [wo-scidentre-category] must specify "constant" or "function".</para>
 			
 			<para role="xxx">Should [breed] be required to be false if [wo-scidentre-category] is "function"?</para>
 			
-			<para>Creates an scidentre in the parent scope with the specified type, then assigns the specified value to it.</para>
+			<para>Creates an scidentre in the parent scope ash assigns the specified value to it. If [overload] is true, creates on overload scidentre; otherwise creates a constant scidentre.</para>
 			
 			<para>The value expressions of declare-first nodes may depend on the values of other declare-first nodes that appear before or after it. Some types of expressions are allowed to reference the scidentres of each other. For example, two interfaces could reference each other.</para>
 			
@@ -531,13 +521,10 @@ puts( (FBZ to String)(Gamma) )
 			
 			<simplelist role="layout">
 				<member>identifier name</member>
-				<member>wo-scidentre-category</member>
 				<member>expression type</member>
 			</simplelist>
 			
-			<para role="process">The [wo-scidentre-category] must specify "variable".</para>
-			
-			<para>Creates a scidentre in the parent scope with the specified type. After this node executes, the produced identikey does not yet point to any values.</para>
+			<para>Creates a variable scidentre in the parent scope. After this node executes, the produced scidentre does not yet point to a value.</para>
 
 			<programlisting>
 var foo
@@ -787,15 +774,13 @@ bar3()
 			
 			<simplelist role="layout">
 				<member>identifier name</member>
-				<member>wo-scidentre-category</member>
 				<member>expression type</member>
-				<member>boolean breed</member>
 				<member>expression value</member>
+				<member>boolean constant</member>
+				<member>boolean breed</member>
 			</simplelist>
-			
-			<para role="process">The [wo-scidentre-category] must specify "variable" or "constant".</para>
 
-			<para>Creates an identikey in the parent scope with the specified type, then assigns the specified value to it.</para>
+			<para>Creates a scidentre in the parent scope and assigns the specified value to it. If [constant] is false, creates a constant scidentre; otherwise, creates a variable scidentre.</para>
 			
 			<programlisting>
 var any foo = 123
@@ -929,7 +914,7 @@ alpha.beta = "gamma"
 			<para role="process">Must contain more than just [try].</para>
 			
 			<section xml:id="node.catcher">
-				<title>catch</title>
+				<title>catcher</title>
 
 				<simplelist role="layout">
 					<member>expression type</member>

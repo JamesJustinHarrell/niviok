@@ -47,7 +47,7 @@ public class Node_And : INode_Expression {
 
 public class Node_DeclareFirst : INode_StatementDeclaration {
 	Node_Identifier m_name;
-	Node_WoScidentreCategory m_woScidentreCategory;
+	Node_Boolean m_overload;
 	INode_Expression m_type;
 	Node_Boolean m_breed;
 	INode_Expression m_value;
@@ -55,13 +55,13 @@ public class Node_DeclareFirst : INode_StatementDeclaration {
 	
 	public Node_DeclareFirst(
 	Node_Identifier @name,
-	Node_WoScidentreCategory @woScidentreCategory,
+	Node_Boolean @overload,
 	INode_Expression @type,
 	Node_Boolean @breed,
 	INode_Expression @value,
 	string @nodeSource ) {
 		m_name = @name;
-		m_woScidentreCategory = @woScidentreCategory;
+		m_overload = @overload;
 		m_type = @type;
 		m_breed = @breed;
 		m_value = @value;
@@ -72,8 +72,8 @@ public class Node_DeclareFirst : INode_StatementDeclaration {
 		get { return m_name; }
 	}
 
-	public Node_WoScidentreCategory @woScidentreCategory {
-		get { return m_woScidentreCategory; }
+	public Node_Boolean @overload {
+		get { return m_overload; }
 	}
 
 	public INode_Expression @type {
@@ -96,7 +96,7 @@ public class Node_DeclareFirst : INode_StatementDeclaration {
 		get {
 			return G.collect<INode>(
 				m_name,
-				m_woScidentreCategory,
+				m_overload,
 				m_type,
 				m_breed,
 				m_value );
@@ -1336,27 +1336,20 @@ public class Node_Expose : INode {
 
 public class Node_DeclareEmpty : INode_Expression {
 	Node_Identifier m_name;
-	Node_WoScidentreCategory m_woScidentreCategory;
 	INode_Expression m_type;
 	string m_nodeSource;
 	
 	public Node_DeclareEmpty(
 	Node_Identifier @name,
-	Node_WoScidentreCategory @woScidentreCategory,
 	INode_Expression @type,
 	string @nodeSource ) {
 		m_name = @name;
-		m_woScidentreCategory = @woScidentreCategory;
 		m_type = @type;
 		m_nodeSource = @nodeSource;
 	}
 	
 	public Node_Identifier @name {
 		get { return m_name; }
-	}
-
-	public Node_WoScidentreCategory @woScidentreCategory {
-		get { return m_woScidentreCategory; }
 	}
 
 	public INode_Expression @type {
@@ -1371,7 +1364,6 @@ public class Node_DeclareEmpty : INode_Expression {
 		get {
 			return G.collect<INode>(
 				m_name,
-				m_woScidentreCategory,
 				m_type );
 		}
 	}
@@ -1516,7 +1508,7 @@ public class Node_Enum : INode_Expression {
 
 public class Node_DeclareAssign : INode_Expression {
 	Node_Identifier m_name;
-	Node_WoScidentreCategory m_woScidentreCategory;
+	Node_Boolean m_constant;
 	INode_Expression m_type;
 	Node_Boolean m_breed;
 	INode_Expression m_value;
@@ -1524,13 +1516,13 @@ public class Node_DeclareAssign : INode_Expression {
 	
 	public Node_DeclareAssign(
 	Node_Identifier @name,
-	Node_WoScidentreCategory @woScidentreCategory,
+	Node_Boolean @constant,
 	INode_Expression @type,
 	Node_Boolean @breed,
 	INode_Expression @value,
 	string @nodeSource ) {
 		m_name = @name;
-		m_woScidentreCategory = @woScidentreCategory;
+		m_constant = @constant;
 		m_type = @type;
 		m_breed = @breed;
 		m_value = @value;
@@ -1541,8 +1533,8 @@ public class Node_DeclareAssign : INode_Expression {
 		get { return m_name; }
 	}
 
-	public Node_WoScidentreCategory @woScidentreCategory {
-		get { return m_woScidentreCategory; }
+	public Node_Boolean @constant {
+		get { return m_constant; }
 	}
 
 	public INode_Expression @type {
@@ -1565,7 +1557,7 @@ public class Node_DeclareAssign : INode_Expression {
 		get {
 			return G.collect<INode>(
 				m_name,
-				m_woScidentreCategory,
+				m_constant,
 				m_type,
 				m_breed,
 				m_value );

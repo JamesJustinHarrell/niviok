@@ -18,7 +18,7 @@ Note: Desal Agent 001 must be recompiled to get this file copied next to the bin
 #child nodes below are "hidable" nodes
 
 (false
-(declare-first Bool constant Interface false
+(declare-first Bool false Interface false
 	(interface () (
 		(normal (method equals?
 			(interface () (
@@ -27,7 +27,7 @@ Note: Desal Agent 001 must be recompiled to get this file copied next to the bin
 					Bool))))))))))
 
 (false
-(declare-first Int constant Interface false
+(declare-first Int false Interface false
 	(interface () (
 		(normal (method add
 			(interface () (
@@ -36,11 +36,11 @@ Note: Desal Agent 001 must be recompiled to get this file copied next to the bin
 					Int))))))))))
 
 (false
-(declare-first Rat constant Interface false
+(declare-first Rat false Interface false
 	(interface () ())))
 
 (false
-(declare-first String constant Interface false
+(declare-first String false Interface false
 	(interface () (
 		(normal (property length false Int))
 		(normal (method concat
@@ -50,7 +50,7 @@ Note: Desal Agent 001 must be recompiled to get this file copied next to the bin
 					String))))))))))
 
 (false
-(declare-first Generator constant Interface false
+(declare-first Generator false Interface false
 	(interface () (
 		(normal (method yield
 			(interface () (
@@ -68,7 +68,7 @@ Note: Desal Agent 001 must be recompiled to get this file copied next to the bin
 	xxx inclusive is currently ignored
 */
 (false
-(declare-first range function any false
+(declare-first range true any false
 	(function
 		(
 			(in any start -)
@@ -80,7 +80,7 @@ Note: Desal Agent 001 must be recompiled to get this file copied next to the bin
 			(compound () () () (
 				(declare-assign i variable Int false
 					start)
-				(conditional-loop
+				(conditional-loop -
 					((extract-member i lessThan?) limit)
 					(compound () () () (
 						(yield i)

@@ -5,11 +5,6 @@ public enum Direction {
 	IN, OUT, INOUT
 }
 
-//corresponds to "wo-scidentre-category" nodes
-public enum WoScidentreCategory {
-	CONSTANT, FUNCTION, VARIABLE
-}
-
 //corresponds to "member-status" nodes
 public enum MemberStatus {
 	NEW, NORMAL, DEPRECATED

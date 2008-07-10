@@ -116,12 +116,12 @@ public class Sieve : IDerefable {
 		if( dict.ContainsKey(name) ) {
 			//note that here we know that the category is FUNCTION
 			IWoScidentre ws = dict[name];
-			(ws as FunctionScidentre).incrementRequiredCount();
+			(ws as OverloadScidentre).incrementRequiredCount();
 		}
 		else
 			dict.Add(name, (
-				cat == WoScidentreCategory.FUNCTION ? new FunctionScidentre() as IWoScidentre :
 				cat == WoScidentreCategory.CONSTANT ? new ConstantScidentre() as IWoScidentre :
+				cat == WoScidentreCategory.OVERLOAD ? new OverloadScidentre() as IWoScidentre :
 				cat == WoScidentreCategory.VARIABLE ? new VariableScidentre() as IWoScidentre :
 				null /* xxx throw statement not allowed here */ ));
 		return dict[name];
@@ -131,14 +131,14 @@ public class Sieve : IDerefable {
 	bool visible, Identifier name, WoScidentreCategory cat ) {
 		if(_allNsScidentres.ContainsKey(name))
 			throw new Exception("scidentre declared as worker and namespace");
-		if(cat == WoScidentreCategory.FUNCTION)
+		if(cat == WoScidentreCategory.OVERLOAD)
 			if(
 			( _hiddenWoScidentres.ContainsKey(name) &&
-			!(_hiddenWoScidentres[name] is FunctionScidentre) ) ||
+			!(_hiddenWoScidentres[name] is OverloadScidentre) ) ||
 			( _visibleWoScidentres.ContainsKey(name) &&
-			!(_visibleWoScidentres[name] is FunctionScidentre) ) )
+			!(_visibleWoScidentres[name] is OverloadScidentre) ) )
 				throw new Exception(
-					"scidentre in same scope declared as function and non-function");
+					"scidentre in same scope declared as overload and non-overload");
 		else
 			isInEither<IWoScidentre>(
 				_visibleWoScidentres,
@@ -159,8 +159,8 @@ public class Sieve : IDerefable {
 			new Dictionary<Identifier,IWoScidentre>(_hiddenWoScidentres);
 		foreach(Identifier name in _visibleWoScidentres.Keys) {
 			IWoScidentre visibleWS = _visibleWoScidentres[name];
-			if( (visibleWS is FunctionScidentre) && woScidentres.ContainsKey(name) ) {
-				FunctionScidentre allWS = new FunctionScidentre();
+			if( (visibleWS is OverloadScidentre) && woScidentres.ContainsKey(name) ) {
+				OverloadScidentre allWS = new OverloadScidentre();
 				IEnumerable<IWorker> workerList =
 					G.join(
 						visibleWS.deref().workerList,

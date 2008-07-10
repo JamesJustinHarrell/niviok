@@ -26,7 +26,7 @@ public abstract class DesibleParserAuto : DesibleParserBase {
 		checkElement(element, "declare-first");
 		return new Node_DeclareFirst(
 			parseOne<Node_Identifier>(parseIdentifier, element, "*", "name"),
-			parseOne<Node_WoScidentreCategory>(parseWoScidentreCategory, element, "wo-scidentre-category", null),
+			parseOne<Node_Boolean>(parseBoolean, element, "*", "overload"),
 			parseOne<INode_Expression>(parseExpression, element, "*", "type"),
 			parseOne<Node_Boolean>(parseBoolean, element, "*", "breed"),
 			parseOne<INode_Expression>(parseExpression, element, "*", "value"),
@@ -331,7 +331,6 @@ public abstract class DesibleParserAuto : DesibleParserBase {
 		checkElement(element, "declare-empty");
 		return new Node_DeclareEmpty(
 			parseOne<Node_Identifier>(parseIdentifier, element, "*", "name"),
-			parseOne<Node_WoScidentreCategory>(parseWoScidentreCategory, element, "wo-scidentre-category", null),
 			parseOne<INode_Expression>(parseExpression, element, "*", "type"),
 			getSource(element) );
 	}
@@ -366,7 +365,7 @@ public abstract class DesibleParserAuto : DesibleParserBase {
 		checkElement(element, "declare-assign");
 		return new Node_DeclareAssign(
 			parseOne<Node_Identifier>(parseIdentifier, element, "*", "name"),
-			parseOne<Node_WoScidentreCategory>(parseWoScidentreCategory, element, "wo-scidentre-category", null),
+			parseOne<Node_Boolean>(parseBoolean, element, "*", "constant"),
 			parseOne<INode_Expression>(parseExpression, element, "*", "type"),
 			parseOne<Node_Boolean>(parseBoolean, element, "*", "breed"),
 			parseOne<INode_Expression>(parseExpression, element, "*", "value"),
@@ -457,11 +456,6 @@ public abstract class DesibleParserAuto : DesibleParserBase {
 			parseOne<INode_Expression>(parseExpression, element, "*", "key"),
 			parseOne<INode_Expression>(parseExpression, element, "*", "value"),
 			getSource(element) );
-	}
-
-	protected virtual Node_WoScidentreCategory parseWoScidentreCategory(XmlElement element) {
-		checkElement(element, "wo-scidentre-category");
-		return new Node_WoScidentreCategory(element.InnerText, getSource(element));
 	}
 
 	protected virtual Node_Catcher parseCatcher(XmlElement element) {

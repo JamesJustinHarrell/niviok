@@ -22,7 +22,7 @@
 			<!-- the des prefix shouldn't affect anything -->
 			<des:declare-first label="declaration">
 				<identifier label='name'>main</identifier>
-				<wo-scidentre-category>function</wo-scidentre-category>
+				<boolean label='overload'>true</boolean>
 				<identifier label='type'>any</identifier>
 				<boolean label='breed'>false</boolean>
 				<function label='value'>

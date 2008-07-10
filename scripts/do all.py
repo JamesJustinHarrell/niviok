@@ -36,7 +36,7 @@ call([
 #compile Acrid
 call([
 	"python",
-	os.path.join(paths.scriptsDir, "runmdtoolbuild.py")
+	os.path.join(paths.scriptsDir, "build acrid.py")
 ])
 
 #run all Acrid tests using "runtest.py"

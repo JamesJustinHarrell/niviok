@@ -1,3 +1,13 @@
+"""
+arguments:
+<prog> [ mode (= all) [ trace (= false) ] ]
+
+examples:
+<prog>
+<prog> all true
+<prog> desible
+"""
+
 import os
 import subprocess
 import sys
@@ -16,7 +26,7 @@ def runTest_desible_2() :
 	result = subprocess.call([
 		"mono",
 		"--debug",
-		os.path.join(paths.acridDir, "CommandLine/bin/Debug/Acrid.exe"),
+		os.path.join(paths.acridDir, "CommandLine/bin/Debug/CommandLine.exe"),
 		"-path=%s" % os.path.join(paths.acridDir, "test.toy"),
 		"-representation=toy",
 		"-run=false",
@@ -49,7 +59,7 @@ def runTest(args) :
 		"mono",
 		"--debug",
 		"--trace=program",
-		os.path.join(paths.acridDir, "CommandLine/bin/Debug/Acrid.exe"),
+		os.path.join(paths.acridDir, "CommandLine/bin/Debug/CommandLine.exe"),
 		"-print-tree=true",
 	] + args
 	
@@ -73,15 +83,14 @@ def runTestMode(mode) :
 
 #----- entry point
 
-if len(sys.argv) < 2 :
-	print "Error: no mode specified"
-	quit()
-
 if len(sys.argv) > 3 :
 	print "Error: too many arguments"
 	quit()
 
-mode = sys.argv[1]
+if len(sys.argv) is 1 :
+	mode = "all"
+else :
+	mode = sys.argv[1]
 
 #Python has no boolean parsing functionality
 trace = sys.argv[2].lower() == "true" if (2 < len(sys.argv)) else False

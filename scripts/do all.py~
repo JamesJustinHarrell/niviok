@@ -33,13 +33,13 @@ call([
 	"3b3alt"
 ])
 
-#compile Desal Agent 001
+#compile Acrid
 call([
 	"python",
 	os.path.join(paths.scriptsDir, "runmdtoolbuild.py")
 ])
 
-#run all Desal Agent 001 tests using "runtest.py"
+#run all Acrid tests using "runtest.py"
 call([
 	"python",
 	os.path.join(paths.scriptsDir, "runtest.py"),

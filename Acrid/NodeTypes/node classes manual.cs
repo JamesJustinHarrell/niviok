@@ -46,17 +46,6 @@ public class Node_MemberStatus : TerminalNode<MemberStatus, Node_MemberStatus>, 
 	}
 }
 
-public class Node_WoScidentreCategory : TerminalNode<WoScidentreCategory, Node_WoScidentreCategory>, INode {
-	public Node_WoScidentreCategory(WoScidentreCategory value, string nodeSource)
-		: base(value, nodeSource) {}
-	public Node_WoScidentreCategory(string str, string nodeSource)
-		: base(G.parseEnum<WoScidentreCategory>(str), nodeSource) {}
-	
-	public string typeName {
-		get { return "wo-scidentre-category"; }
-	}
-}
-
 //xxx use BigInt
 public class Node_Integer : TerminalNode<long, Node_Integer>, INode_Expression {
 	public Node_Integer(long value, string nodeSource)

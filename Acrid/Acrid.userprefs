@@ -2,9 +2,7 @@
   <Files />
   <Views>
     <ViewMemento id="ProjectPad">
-      <Node expanded="True">
-        <Node name="CommandLine" selected="True" />
-      </Node>
+      <Node expanded="True" />
     </ViewMemento>
     <ViewMemento id="ClassPad">
       <Node expanded="True" />
