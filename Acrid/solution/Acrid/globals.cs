@@ -146,6 +146,11 @@ public static class G {
 		return list;
 	}
 	
+	public static IEnumerable<T> typeEnumerable<T>( IEnumerable elements ) {
+		foreach( T element in elements )
+			yield return (T)element;
+	}
+	
 }
 
 } //namespace

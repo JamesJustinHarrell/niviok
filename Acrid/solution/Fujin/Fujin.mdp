@@ -17,12 +17,12 @@
     <File name="AssemblyInfo.cs" subtype="Code" buildaction="Compile" />
     <File name="Fujin_Custom_ParserManager.cs" subtype="Code" buildaction="Compile" />
     <File name="Fujin_Custom_SableCCLexer.cs" subtype="Code" buildaction="Compile" />
-    <File name="../../code generation/Fujin SableCC/out3b3alt/analysis.cs" subtype="Code" buildaction="Compile" />
-    <File name="../../code generation/Fujin SableCC/out3b3alt/lexer.cs" subtype="Code" buildaction="Compile" />
-    <File name="../../code generation/Fujin SableCC/out3b3alt/nodes.cs" subtype="Code" buildaction="Compile" />
-    <File name="../../code generation/Fujin SableCC/out3b3alt/parser.cs" subtype="Code" buildaction="Compile" />
-    <File name="../../code generation/Fujin SableCC/out3b3alt/prods.cs" subtype="Code" buildaction="Compile" />
-    <File name="../../code generation/Fujin SableCC/out3b3alt/tokens.cs" subtype="Code" buildaction="Compile" />
+    <File name="../../code generation/Fujin SableCC/output/analysis.cs" subtype="Code" buildaction="Compile" />
+    <File name="../../code generation/Fujin SableCC/output/lexer.cs" subtype="Code" buildaction="Compile" />
+    <File name="../../code generation/Fujin SableCC/output/nodes.cs" subtype="Code" buildaction="Compile" />
+    <File name="../../code generation/Fujin SableCC/output/parser.cs" subtype="Code" buildaction="Compile" />
+    <File name="../../code generation/Fujin SableCC/output/prods.cs" subtype="Code" buildaction="Compile" />
+    <File name="../../code generation/Fujin SableCC/output/tokens.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

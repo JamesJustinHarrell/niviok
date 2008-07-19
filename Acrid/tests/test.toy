@@ -70,19 +70,19 @@
 			(object (
 				(Test () (
 					(
-						property_getter
+						getter
 						number
 						any
 						(function()any 123)
 					)
 					(
-						property_getter
+						getter
 						text
 						any
 						(function()any mText)
 					)
 					(
-						property_setter
+						setter
 						text
 						any
 						(function(
@@ -110,10 +110,11 @@
 			(enumerator-loop - (range 1 20 false) ((any x)) -
 				(println ((extract-member x add) 10000)))
 */
+/* xxx
 			(declare-assign 🿰🿱 true String false
 				"astral characters in identifiers")
 			(println 🿰🿱)
-
+*/
 			(declare-assign obj true Test false
 				(createObject))
 			

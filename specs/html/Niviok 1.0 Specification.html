@@ -7,7 +7,7 @@
     </head>
     <body>
         <h1>Niviok 1.0 Specification</h1>
-        <h2>Edition 1 Draft 2008-07-09</h2>
+        <h2>Edition 1 Draft 2008-07-10</h2>
         <p>Copyright © 2008 James Justin Harrell</p>
         <p>Permission is granted to use, copy, display, modify, sell, and distribute this document. This document is provided "as is" without warranty of any kind. In no event shall anyone be liable for any damages or other liability arising from use of this document.</p>
         <ol class="toc">
@@ -526,7 +526,7 @@
         </ol>
         <div id="Overview">
             <h1>Chapter 1. Overview</h1>
-            <p>This document is a draft for the first edition of the specification describing the 1.0 version of Niviok. It can be represented as "Niviok 1.0 Edition 1 Draft 2008-07-09".</p>
+            <p>This document is a draft for the first edition of the specification describing the 1.0 version of Niviok. It can be represented as "Niviok 1.0 Edition 1 Draft 2008-07-10".</p>
             <p>This document is a draft of the first edition of the specification describing the 1.0 version of Niviok.</p>
             <p>Niviok is an abstract programming language. This document defines several node types which are used to represent Niviok source code. How Niviok nodes are represented is outside the scope of this standard. While syntax and semantics are not completetly separate, Niviok does contain much less syntax-influenced semantics than most programming languages.</p>
             <p>Nodes that can be executed are statements or expressions. Statements are greatly restricted in where they can appear, while expressions are more relaxed and can be interchanged for on another. An expression may produce a value when executed.</p>
@@ -1120,12 +1120,23 @@ doSomething(7, c = default, 8)
                 </div>
                 <div id="node.boolean">
                     <h3>12.4.2. boolean</h3>
-                    <p>Base node. Must specify either true or false.</p>
+                    <p>Terminal node. Specifies one of:</p>
+                    <ul class="enum">
+                        <li>true</li>
+                        <li>false</li>
+                    </ul>
                     <p>Cannot be evaluated because that would conflict with the "true" and "false" members of the Bool enum. Boolean values in the node tree use a boolean node, and boolean values in code use the "true" and "false" identikeys.</p>
                 </div>
                 <div id="node.direction">
                     <h3>12.4.3. direction</h3>
-                    <p>Specifies the direction of a function parameter, one of: in, in-mutable, out, in-out, in-mutable-out</p>
+                    <p>Specifies the direction of a function parameter.</p>
+                    <p>Terminal node. Specifies one of:</p>
+                    <ul class="enum">
+                        <li>in</li>
+                        <li>out</li>
+                        <li>inout</li>
+                    </ul>
+                    <p class="xxx">At one time also included "in-mutable" and "in-mutable-out". The nun-mutable version would create copies. It is not clear whether these should be kept. Parameter direction is currently ignored.</p>
                     <p>A value passed to a function as an "in" parameter will not be mutated by the function. This means if the function uses the value in ways that may mutate the value, the value will be copied. If an action in the function may mutate the value, and the value does not declare a copy converter, an error results.</p>
                     <p>Instances where the value may be mutated include when the interface of the value does not provide opacity information and the function calls a method, or if the interface does provide opacity information but the function calls a mutator method, or if the value is passed to another function as an in-mutable or in-mutable-out parameter.</p>
                     <code xml:space="preserve">
@@ -1215,7 +1226,14 @@ def Xml:Element root = doc.documentElement
                 </div>
                 <div id="node.member-type">
                     <h3>12.4.7. member-type</h3>
-                    <p>Specifies one of: breeder, callee, property setter, property getter, method.</p>
+                    <p>Terminal node. Specifies one of:</p>
+                    <ul class="enum">
+                        <li>breeder</li>
+                        <li>callee</li>
+                        <li>getter</li>
+                        <li>setter</li>
+                        <li>method</li>
+                    </ul>
                 </div>
                 <div id="node.parameter-impl">
                     <h3>12.4.8. parameter-impl</h3>
@@ -2669,7 +2687,12 @@ println( 789 )
                     </div>
                     <div id="node.member-status">
                         <h4>12.8.15.2. member-status</h4>
-                        <p>Base node. Specifies "new", "normal", or "deprecated".</p>
+                        <p>Terminal node. Specifies one of:</p>
+                        <ul class="enum">
+                            <li>new</li>
+                            <li>normal</li>
+                            <li>deprecated</li>
+                        </ul>
                     </div>
                     <div id="node.breeder">
                         <h4>12.8.15.3. breeder</h4>

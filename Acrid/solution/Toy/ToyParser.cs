@@ -5,66 +5,6 @@ using Acrid.NodeTypes;
 
 namespace Acrid.Toy {
 
-public enum SexpType {
-	INTEGER, PLACEHOLDER, RATIONAL, STRING, WORD, LIST
-}
-
-public class Sexp {
-	SexpType _type;
-	string _atom;
-	LinkedList<Sexp> _list;
-	int _line;
-	int _column;
-	
-	public Sexp(
-	SexpType type, string atom, LinkedList<Sexp> list,
-	int line, int column) {
-		if( type == SexpType.LIST )
-			Debug.Assert( list != null );
-		_type = type;
-		_atom = atom;
-		_list = list;
-		_line = line;
-		_column = column;
-	}
-	
-	public SexpType type {
-		get { return _type; }
-	}
-	
-	public string atom {
-		get { return _atom; }
-	}
-	
-	public LinkedList<Sexp> list {
-		get { return _list; }
-	}
-	
-	public int line {
-		get { return _line; }
-	}
-	
-	public int column {
-		get { return _column; }
-	}
-	
-	public override string ToString() {
-		if( _type == SexpType.LIST ) {
-			string rv = "(";
-			bool follow = false;
-			foreach( Sexp s in _list ) {
-				if(follow)
-					rv += " ";
-				else follow = true;
-				rv += s.ToString();
-			}
-			rv += ")";
-			return rv;
-		}
-		return _atom;
-	}
-}
-
 public abstract class ToyParserBase {
 	protected delegate T ParseFunc<T>(Sexp sexp);
 	protected abstract T parseOne<T>( ParseFunc<T> func, Sexp parent );
@@ -75,13 +15,38 @@ public abstract class ToyParserBase {
 }
 
 public class ToyParser : ToyParserAuto {
+
 	public static Node_Module parseFile(string path) {
+		SableCC.parser.Parser sableParser = new SableCC.parser.Parser(
+			new SableCC.lexer.Lexer(
+				new System.IO.StreamReader(path)));
+		SableCC.node.Start start;
+		try {
+			start = sableParser.Parse();
+		}
+		catch( SableCC.lexer.LexerException e ) {
+			throw new ParseError( e.Message, path, e );
+		}
+		catch( SableCC.parser.ParserException e ) {
+			throw new ParseError( e.Message, path, e );
+		}
+		return parse(
+			path,
+			SableSexpWrapper.wrapEach(
+				(start.GetPDocument() as SableCC.node.ADocument).GetSexp() ));
+	}
+
+	public static Node_Module parseFileCocor(string path) {
 		CocoR.Parser cocoParser = new CocoR.Parser(new CocoR.Scanner(path));
 		cocoParser.Parse();
-		LinkedList<Sexp> roots = cocoParser.roots;
-		ToyParser myParser = new ToyParser(path);
-		return myParser.parseModule(new Sexp(SexpType.LIST, null, roots, 0, 0));
+		return parse(path, cocoParser.roots);
 	}
+	
+	public static Node_Module parse(string fileSource, LinkedList<Sexp> rootList) {
+		ToyParser parser = new ToyParser(fileSource);
+		return parser.parseModule(
+			new Sexp(SexpType.LIST, null, rootList, 0, 0));
+	}		
 	
 	string _fileSource;
 	

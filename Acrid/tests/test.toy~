@@ -70,19 +70,19 @@
 			(object (
 				(Test () (
 					(
-						property_getter
+						getter
 						number
 						any
 						(function()any 123)
 					)
 					(
-						property_getter
+						getter
 						text
 						any
 						(function()any mText)
 					)
 					(
-						property_setter
+						setter
 						text
 						any
 						(function(
@@ -206,9 +206,9 @@
 			first come values that should shortcut,
 			then values that should not shortcut
 			*/
-			(declare-assign t constant any false
+			(declare-assign t true any false
 				true)
-			(declare-assign f constant any false
+			(declare-assign f true any false
 				false)
 		
 			(header "and")

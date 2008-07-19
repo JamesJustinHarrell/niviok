@@ -219,7 +219,7 @@ public class Bridge {
 	}
 
 	public static IWorker toClientString(string val) {
-		return Client_String.wrap(StringUtil.codePointsFromString(val));
+		return Client_String.wrap(StringUtil.toCodePoints(val));
 	}
 	public static string toNativeString(IWorker val) {
 		//xxx doesn't work with client implementations of String

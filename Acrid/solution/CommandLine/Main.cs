@@ -28,6 +28,9 @@ class CommandLine {
 		}
 		catch(ParseError e) {
 			Console.Error.WriteLine("Parsing: " + e.Message + "\n" + e.source);
+			#if DEBUG
+			Console.Error.WriteLine("Inner exception:\n" + e.InnerException);
+			#endif
 			return 1;
 		}
 	}

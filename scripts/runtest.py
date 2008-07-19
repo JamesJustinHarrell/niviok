@@ -65,7 +65,7 @@ def runTest(args) :
 		"--debug",
 		"--trace=program",
 		executablePath,
-		"-print-tree=true",
+#		"-print-tree=true",
 	] + args
 	
 	if not trace : args.remove("--trace=program")
@@ -90,7 +90,7 @@ def runTestMode(mode) :
 
 if len(sys.argv) > 3 :
 	print "Error: too many arguments"
-	quit()
+	exit(1)
 
 if len(sys.argv) is 1 :
 	mode = "all"

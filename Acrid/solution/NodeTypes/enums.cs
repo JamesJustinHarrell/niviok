@@ -12,7 +12,7 @@ public enum MemberStatus {
 
 //corresponds to "member-type" nodes
 public enum MemberType {
-	BREEDER, CALLEE, PROPERTY_GETTER, PROPERTY_SETTER, METHOD
+	BREEDER, CALLEE, GETTER, SETTER, METHOD
 }
 
 } //namespace

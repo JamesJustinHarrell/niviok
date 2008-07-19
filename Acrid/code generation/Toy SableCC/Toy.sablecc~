@@ -1,0 +1,85 @@
+/* to do:
+
+star and slash comments
+
+illegal tokens
+
+wordchar tokens
+
+*/
+
+
+Package Acrid.Toy.SableCC;
+
+Helpers
+
+	all = [0..0x10FFFF] ;
+	illegal = [0..8] ;
+	legal = [all - illegal] ;
+	numerical = ['0' + ['1'..'9']] ;
+	astral = [0x010000..0x10FFFF] ;
+	alpha = [ ['a'..'z'] + ['A'..'Z'] ] ;
+	wordchar = [ astral + alpha ] ;
+	wordchar = alpha ;
+
+Tokens
+
+	//boolean, direction, identifier, member-status, member-type
+	t_word = wordchar (wordchar | numerical | '-')* ('?' | '!')? ;
+	
+	//other terminal nodes
+	t_integer = numerical+ ;
+	t_rational = numerical+ '.' numerical+ ;
+	t_string = '"' [legal - '"']* '"' ;
+
+	t_parenopen = '(' ;
+	t_parenclose = ')' ;
+	t_placeholder = '-' ;
+	
+	t_whitespace = [[[
+		0x09 + //tab
+		0x0A ]+ //linefeed
+		0x0D ]+ //carriage return
+		0x20 ] ; //space
+	
+	t_linecomment =
+		'#' [[[legal - '#'] - 0x0A] - 0x0D]* ;
+	
+	t_multilinecomment =
+		'/*' [legal - '*']* '*/' ;
+
+Ignored Tokens
+
+	t_whitespace ,
+	t_linecomment ,
+	t_multilinecomment ;
+
+Productions
+
+	document {-> document}
+		= sexpression+ {-> New document([sexpression.sexp])} ;
+	
+	list {-> sexp}
+		= t_parenopen sexpression* t_parenclose {-> New sexp.list(t_parenopen, [sexpression.sexp])} ;
+	
+	sexpression {-> sexp}
+		= {word} t_word                {-> New sexp.word(t_word)}
+		| {integer} t_integer          {-> New sexp.integer(t_integer)}
+		| {rational} t_rational        {-> New sexp.rational(t_rational)}
+		| {string} t_string            {-> New sexp.string(t_string)}
+		| {placeholder} t_placeholder  {-> New sexp.placeholder(t_placeholder)}
+		| {list} list                  {-> list.sexp} ;
+
+Abstract Syntax Tree
+
+	document
+		= sexp* ;
+
+	sexp
+		= {word} t_word
+		| {integer} t_integer
+		| {rational} t_rational
+		| {string} t_string
+		| {placeholder} t_placeholder
+		| {list} t_parenopen sexp* ; //t_parenopen used for location information
+

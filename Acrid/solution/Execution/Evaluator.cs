@@ -117,10 +117,10 @@ public static class Evaluator {
 			children );
 		foreach( Node_MemberImplementation nmi in node.memberImplementations ) {
 			Node_MemberType type = nmi.memberType;
-			if( type.value == MemberType.PROPERTY_GETTER )
+			if( type.value == MemberType.GETTER )
 				builder.addPropertyGetter(
 					nmi.name.value, Executor.executeAny(nmi.function, scope));
-			if( type.value == MemberType.PROPERTY_SETTER )
+			if( type.value == MemberType.SETTER )
 				builder.addPropertySetter(
 					nmi.name.value,
 					Executor.executeAny(nmi.function, scope));

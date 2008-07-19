@@ -33,6 +33,14 @@ public abstract class ToyParserAuto : ToyParserBase {
 				getSource(sexp),
 				e);
 		}
+		catch(ArgumentException e) {
+			throw new ParseError(
+				String.Format(
+					"node of type MemberStatus cannot be of value '{0}'",
+					sexp.atom),
+				getSource(sexp),
+				e);
+		}
 	}
 
 	protected virtual Node_DeclareFirst parseDeclareFirst(Sexp sexp) {
@@ -131,6 +139,14 @@ public abstract class ToyParserAuto : ToyParserBase {
 				getSource(sexp),
 				e);
 		}
+		catch(ArgumentException e) {
+			throw new ParseError(
+				String.Format(
+					"node of type Integer cannot be of value '{0}'",
+					sexp.atom),
+				getSource(sexp),
+				e);
+		}
 	}
 
 	protected virtual Node_Boolean parseBoolean(Sexp sexp) {
@@ -138,6 +154,14 @@ public abstract class ToyParserAuto : ToyParserBase {
 			return new Node_Boolean(sexp.atom, getSource(sexp));
 		}
 		catch(FormatException e) {
+			throw new ParseError(
+				String.Format(
+					"node of type Boolean cannot be of value '{0}'",
+					sexp.atom),
+				getSource(sexp),
+				e);
+		}
+		catch(ArgumentException e) {
 			throw new ParseError(
 				String.Format(
 					"node of type Boolean cannot be of value '{0}'",
@@ -227,6 +251,14 @@ public abstract class ToyParserAuto : ToyParserBase {
 				getSource(sexp),
 				e);
 		}
+		catch(ArgumentException e) {
+			throw new ParseError(
+				String.Format(
+					"node of type MemberType cannot be of value '{0}'",
+					sexp.atom),
+				getSource(sexp),
+				e);
+		}
 	}
 
 	protected virtual Node_ImportAttempt parseImportAttempt(Sexp sexp) {
@@ -261,6 +293,14 @@ public abstract class ToyParserAuto : ToyParserBase {
 			return new Node_String(sexp.atom, getSource(sexp));
 		}
 		catch(FormatException e) {
+			throw new ParseError(
+				String.Format(
+					"node of type String cannot be of value '{0}'",
+					sexp.atom),
+				getSource(sexp),
+				e);
+		}
+		catch(ArgumentException e) {
 			throw new ParseError(
 				String.Format(
 					"node of type String cannot be of value '{0}'",
@@ -427,6 +467,14 @@ public abstract class ToyParserAuto : ToyParserBase {
 				getSource(sexp),
 				e);
 		}
+		catch(ArgumentException e) {
+			throw new ParseError(
+				String.Format(
+					"node of type Rational cannot be of value '{0}'",
+					sexp.atom),
+				getSource(sexp),
+				e);
+		}
 	}
 
 	protected virtual Node_TypeCase parseTypeCase(Sexp sexp) {
@@ -500,6 +548,14 @@ public abstract class ToyParserAuto : ToyParserBase {
 			return new Node_Direction(sexp.atom, getSource(sexp));
 		}
 		catch(FormatException e) {
+			throw new ParseError(
+				String.Format(
+					"node of type Direction cannot be of value '{0}'",
+					sexp.atom),
+				getSource(sexp),
+				e);
+		}
+		catch(ArgumentException e) {
 			throw new ParseError(
 				String.Format(
 					"node of type Direction cannot be of value '{0}'",
@@ -1033,6 +1089,14 @@ public abstract class ToyParserAuto : ToyParserBase {
 			return new Node_Identifier(sexp.atom, getSource(sexp));
 		}
 		catch(FormatException e) {
+			throw new ParseError(
+				String.Format(
+					"node of type Identifier cannot be of value '{0}'",
+					sexp.atom),
+				getSource(sexp),
+				e);
+		}
+		catch(ArgumentException e) {
 			throw new ParseError(
 				String.Format(
 					"node of type Identifier cannot be of value '{0}'",

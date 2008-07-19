@@ -190,6 +190,14 @@ toyTerminalParserTemplate = """
 				getSource(sexp),
 				e);
 		}
+		catch(ArgumentException e) {
+			throw new ParseError(
+				String.Format(
+					"node of type %(csName)s cannot be of value '{0}'",
+					sexp.atom),
+				getSource(sexp),
+				e);
+		}
 	}
 """.strip()
 

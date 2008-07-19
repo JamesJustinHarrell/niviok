@@ -1,3 +1,24 @@
+2008-07-19
+	Namespaces are quite complicated and non-intuitive features that mainly exist to allow different libraries to group members under the same name. But now that function scidentres were replaced with overload scidentres, different libraries can contribute members to the same worker. This means namespaces provide less benefit than before, and their existence should be reevaluated.
+	
+	If namespace scidentres were removed:
+		* The total number of scidentres would be just three: overload, constant, and variable.
+			ovr foo = 123 #declare-first overload
+			def foo = 123 #declare-first constant
+			let foo = 123 #declare-assign constant
+			var foo = 123 #declare-assign variable
+			var foo #declare-empty variable
+	
+		* These nodes would be removed:
+			expose
+			namespace
+			using
+			namespaced-wo-scidentre
+		
+		* ns-scidentres would be removed, so that the term "wo-scidentre" would become just "scidentre".
+	
+	Namespaces do still provide important functionality that workers don't provide in the form of the expose node. This could be replaced with a node that exposes the function and getter members of a worker, similar to the "with" statement in JavaScript. It wouldn't be able to expose the callees or breeders. I think it is important that it not expose the setters. (Trying to do so should throw an exception, and not try to change the value of a variable in an ancestor scope.)
+
 2008-07-09
 	When a command in a terminal or script directs an executable to be executed, how does the executable obtain knowledge of the standard streams?
 

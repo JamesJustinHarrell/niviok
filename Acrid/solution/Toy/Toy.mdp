@@ -19,6 +19,15 @@
     <File name="ToyParser.cs" subtype="Code" buildaction="Compile" />
     <File name="../../code generation/Toy CocoR/Parser.cs" subtype="Code" buildaction="Compile" />
     <File name="../../code generation/Toy CocoR/Scanner.cs" subtype="Code" buildaction="Compile" />
+    <File name="../../code generation/Toy SableCC/output/analysis.cs" subtype="Code" buildaction="Compile" />
+    <File name="../../code generation/Toy SableCC/output/lexer.cs" subtype="Code" buildaction="Compile" />
+    <File name="../../code generation/Toy SableCC/output/nodes.cs" subtype="Code" buildaction="Compile" />
+    <File name="../../code generation/Toy SableCC/output/parser.cs" subtype="Code" buildaction="Compile" />
+    <File name="../../code generation/Toy SableCC/output/prods.cs" subtype="Code" buildaction="Compile" />
+    <File name="../../code generation/Toy SableCC/output/tokens.cs" subtype="Code" buildaction="Compile" />
+    <File name="Sexp.cs" subtype="Code" buildaction="Compile" />
+    <File name="SexpType.cs" subtype="Code" buildaction="Compile" />
+    <File name="SableSexpWrapper.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

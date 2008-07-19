@@ -238,6 +238,7 @@ toyFamilyCaseTemplate = """
 """.strip()
 
 executorFileTemplate = autoHeader + """
+using Acrid.NodeTypes;
 
 namespace Acrid.Execution {
 

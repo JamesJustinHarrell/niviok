@@ -1,13 +1,17 @@
 import os
 
+join = os.path.join
+
 niviokDir = "/media/files/Niviok"
-acridDir = os.path.join(niviokDir, "Acrid")
-solutionDir = os.path.join(acridDir, "solution")
-codeGenDir = os.path.join(acridDir, "code generation")
-toyCocorDir = os.path.join(codeGenDir, "Toy CocoR")
-fujinSableccDir = os.path.join(codeGenDir, "Fujin SableCC")
-testsDir = os.path.join(acridDir, "tests")
-scriptsDir = os.path.join(niviokDir, "scripts")
-specsDir = os.path.join(niviokDir, "specs")
+acridDir = join(niviokDir, "Acrid")
+solutionDir = join(acridDir, "solution")
+codeGenDir = join(acridDir, "code generation")
+toyCocorDir = join(codeGenDir, "Toy CocoR")
+fujinSableccDir = join(codeGenDir, "Fujin SableCC")
+testsDir = join(acridDir, "tests")
+scriptsDir = join(niviokDir, "scripts")
+specsDir = join(niviokDir, "specs")
 
 docbookDir = "/media/files/other/docbook"
+sablecc3b3altDir = "/media/files/other/sablecc-3b3 alt"
+sablecc32Dir = "/media/files/other/sablecc-3.2"

@@ -24,7 +24,6 @@
     <File name="WorkerBase.cs" subtype="Code" buildaction="Compile" />
     <File name="Worker_NativeObject.cs" subtype="Code" buildaction="Compile" />
     <File name="Worker.cs" subtype="Code" buildaction="Compile" />
-    <File name="StringUtil.cs" subtype="Code" buildaction="Compile" />
     <File name="Sieve.cs" subtype="Code" buildaction="Compile" />
     <File name="ScopeQueue.cs" subtype="Code" buildaction="Compile" />
     <File name="ScopeAllowance.cs" subtype="Code" buildaction="Compile" />

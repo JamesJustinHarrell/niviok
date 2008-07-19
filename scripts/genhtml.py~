@@ -1,17 +1,17 @@
 # coding: utf-8
 
 #external libraries
-import os
-import re
-from exceptions import Exception
 import xml.dom.minidom as dom
+from exceptions import Exception
+import os
 from random import random
+import re
 import subprocess
 import sys
 
 #my libraries
-import paths
 import lib
+import paths
 extractor = __import__('extract nodes')
 processdocbook = __import__('process docbook')
 
@@ -19,7 +19,7 @@ processdocbook = __import__('process docbook')
 nodeTypes = extractor.extractNodeTypes(extractor.inputPath)
 inputDir = os.path.join(paths.specsDir,'docbook processed')
 outputDir = os.path.join(paths.specsDir,'html')
-knownRoles = ( 'allowance', 'exec', 'family-members', 'layout', 'process', 'rationale', 'xxx' )
+knownRoles = ( 'allowance', 'enum', 'exec', 'family-members', 'layout', 'process', 'rationale', 'xxx' )
 xhtmlNS = "http://www.w3.org/1999/xhtml"
 domImpl = dom.getDOMImplementation()
 fileBases = (

@@ -119,7 +119,12 @@ doSomething(7, c = default, 8)
 		<section xml:id="node.boolean">
 			<title>boolean</title>
 			
-			<para>Base node. Must specify either true or false.</para>
+			<para>Terminal node. Specifies one of:</para>
+			
+			<simplelist role="enum">
+				<member>true</member>
+				<member>false</member>
+			</simplelist>
 			
 			<para>Cannot be evaluated because that would conflict with the "true" and "false" members of the Bool enum. Boolean values in the node tree use a boolean node, and boolean values in code use the "true" and "false" identikeys.</para>
 		</section>
@@ -127,7 +132,17 @@ doSomething(7, c = default, 8)
 		<section xml:id="node.direction">
 			<title>direction</title>
 			
-			<para>Specifies the direction of a function parameter, one of: in, in-mutable, out, in-out, in-mutable-out</para>
+			<para>Specifies the direction of a function parameter.</para>
+			
+			<para>Terminal node. Specifies one of:</para>
+			
+			<simplelist role="enum">
+				<member>in</member>
+				<member>out</member>
+				<member>inout</member>
+			</simplelist>
+			
+			<para role="xxx">At one time also included "in-mutable" and "in-mutable-out". The nun-mutable version would create copies. It is not clear whether these should be kept. Parameter direction is currently ignored.</para>
 			
 			<para>A value passed to a function as an "in" parameter will not be mutated by the function. This means if the function uses the value in ways that may mutate the value, the value will be copied. If an action in the function may mutate the value, and the value does not declare a copy converter, an error results.</para>
 			
@@ -222,7 +237,15 @@ def Xml:Element root = doc.documentElement
 		<section xml:id="node.member-type">
 			<title>member-type</title>
 			
-			<para>Specifies one of: breeder, callee, property setter, property getter, method.</para>
+			<para>Terminal node. Specifies one of:</para>
+			
+			<simplelist role="enum">
+				<member>breeder</member>
+				<member>callee</member>
+				<member>getter</member>
+				<member>setter</member>
+				<member>method</member>
+			</simplelist>
 		</section>
 
 		<section xml:id="node.parameter-impl">
@@ -1747,8 +1770,14 @@ println( 789 )
 			
 			<section xml:id="node.member-status">
 				<title>member-status</title>
+			
+				<para>Terminal node. Specifies one of:</para>
 				
-				<para>Base node. Specifies "new", "normal", or "deprecated".</para>
+				<simplelist role="enum">
+					<member>new</member>
+					<member>normal</member>
+					<member>deprecated</member>
+				</simplelist>
 			</section>
 			
 			<section xml:id="node.breeder">

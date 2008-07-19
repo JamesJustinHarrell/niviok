@@ -6,7 +6,7 @@ def call(args) :
 	result = subprocess.call(args)
 	if result != 0 :
 		print "FAILURE"
-		exit()
+		exit(1)
 
 #generate HTML from DocBook
 call([
@@ -20,18 +20,24 @@ call([
 	os.path.join(paths.scriptsDir, "code generator.py")
 ])
 
-#generate Toy parser with CocoR
-call([
-	"python",
-	os.path.join(paths.scriptsDir, "generate Toy CocoR parser.py")
-])
-
 #generate Fujin parser with SableCC
 #the child script calls "generate Fujin SableCC grammar.py"
 call([
 	"python",
 	os.path.join(paths.scriptsDir, "generate Fujin SableCC parser.py"),
 	"3b3alt"
+])
+
+#generate Toy parser with CocoR
+call([
+	"python",
+	os.path.join(paths.scriptsDir, "generate Toy CocoR parser.py")
+])
+
+#generate Toy parser with SableCC
+call([
+	"python",
+	os.path.join(paths.scriptsDir, "generate Toy SableCC parser.py")
 ])
 
 #compile Acrid

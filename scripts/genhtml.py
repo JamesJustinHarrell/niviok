@@ -19,7 +19,7 @@ processdocbook = __import__('process docbook')
 nodeTypes = extractor.extractNodeTypes(extractor.inputPath)
 inputDir = os.path.join(paths.specsDir,'docbook processed')
 outputDir = os.path.join(paths.specsDir,'html')
-knownRoles = ( 'allowance', 'exec', 'family-members', 'layout', 'process', 'rationale', 'xxx' )
+knownRoles = ( 'allowance', 'enum', 'exec', 'family-members', 'layout', 'process', 'rationale', 'xxx' )
 xhtmlNS = "http://www.w3.org/1999/xhtml"
 domImpl = dom.getDOMImplementation()
 fileBases = (
@@ -316,5 +316,7 @@ def createHtmlFile(fileBase) :
 	print "done\n"
 
 #entry point
-subprocess.call(['python', 'process docbook.py'])
+result = subprocess.call(['python', 'process docbook.py'])
+if result != 0 :
+	exit(1)
 lib.each(createHtmlFile, fileBases)

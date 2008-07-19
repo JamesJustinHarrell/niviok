@@ -1,21 +1,23 @@
 import os
 import subprocess
 import sys
+import tempfile
+
 import paths
 
 def call(args) :
 	result = subprocess.call(args)
 	if result != 0 :
 		print "FAILURE"
-		exit()
+		exit(1)
 
 if len(sys.argv) < 2 :
 	print "Error: no version specified (3.2 or 3b3alt)"
-	quit()
+	exit(1)
 
 if len(sys.argv) > 2 :
 	print "Error: too many arguments"
-	quit()
+	exit(1)
 
 version = sys.argv[1]
 
@@ -24,24 +26,17 @@ call([
 	os.path.join(paths.scriptsDir, "generate Fujin SableCC grammar.py")
 ])
 
-#note: the files in the 3b3alt directory are used by Acrid
-
-dirPath = paths.fujinSableccDir
-
+#This version is only used because its error messages are sometimes more helpful.
+#It only outputs Java code, so the code it generates is not useful.
 if version == "3.2" :
+	outputDir = tempfile.mkdtemp()
 	call([
 		"java",
 		"-jar",
-		os.path.join(dirPath, "sablecc-3.2/lib/sablecc.jar"),
+		os.path.join(paths.sablecc32Dir, "lib/sablecc.jar"),
 		"-d",
-		os.path.join(dirPath, "out32"),
-		os.path.join(dirPath, "Fujin.sablecc")
-	])
-	#xxx remove using Python API
-	call([
-		"rm",
-		"-r",
-		os.path.join(dirPath, "out32/Fujin")
+		outputDir,
+		os.path.join(paths.fujinSableccDir, "Fujin.sablecc")
 	])
 
 else :
@@ -49,10 +44,10 @@ else :
 	call([
 		"java",
 		"-jar",
-		os.path.join(dirPath, "sablecc-3b3 alt/lib/sablecc.jar"),
+		os.path.join(paths.sablecc3b3altDir, "lib/sablecc.jar"),
 		"-d",
-		os.path.join(dirPath, "out3b3alt"),
+		os.path.join(paths.fujinSableccDir, "output"),
 		"-t",
 		"csharp",
-		os.path.join(dirPath, "Fujin.sablecc")
+		os.path.join(paths.fujinSableccDir, "Fujin.sablecc")
 	])

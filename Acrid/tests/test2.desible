@@ -209,7 +209,7 @@
 							<worker>
 								<identifier label="face">Test</identifier>
 								<member-implementation>
-									<member-type>PROPERTY_GETTER</member-type>
+									<member-type>GETTER</member-type>
 									<identifier label="name">number</identifier>
 									<identifier label="interface">any</identifier>
 									<function label="function">
@@ -218,7 +218,7 @@
 									</function>
 								</member-implementation>
 								<member-implementation>
-									<member-type>PROPERTY_GETTER</member-type>
+									<member-type>GETTER</member-type>
 									<identifier label="name">text</identifier>
 									<identifier label="interface">any</identifier>
 									<function label="function">
@@ -227,7 +227,7 @@
 									</function>
 								</member-implementation>
 								<member-implementation>
-									<member-type>PROPERTY_SETTER</member-type>
+									<member-type>SETTER</member-type>
 									<identifier label="name">text</identifier>
 									<identifier label="interface">any</identifier>
 									<function label="function">
@@ -278,11 +278,11 @@
 							<boolean label="breed">False</boolean>
 							<call label="value">
 								<extract-member label="receiver">
-									<string label="source">ð¿° Hello,</string>
+									<string label="source">🿰 Hello,</string>
 									<identifier label="member name">concat</identifier>
 								</extract-member>
 								<argument>
-									<string label="value"> World ð¿±</string>
+									<string label="value"> World 🿱</string>
 								</argument>
 							</call>
 						</declare-assign>
@@ -299,19 +299,6 @@
 									<identifier label="source">str</identifier>
 									<identifier label="member name">length</identifier>
 								</extract-member>
-							</argument>
-						</call>
-						<declare-assign label="member">
-							<identifier label="name">ð¿°ð¿±</identifier>
-							<boolean label="constant">True</boolean>
-							<identifier label="type">String</identifier>
-							<boolean label="breed">False</boolean>
-							<string label="value">astral characters in identifiers</string>
-						</declare-assign>
-						<call label="member">
-							<identifier label="receiver">println</identifier>
-							<argument>
-								<identifier label="value">ð¿°ð¿±</identifier>
 							</argument>
 						</call>
 						<declare-assign label="member">
