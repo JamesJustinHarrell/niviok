@@ -60,15 +60,16 @@ def runTest_toy() :
 		"-representation=toy" ])
 
 def runTest(args) :
+	traceCommand = "--trace=N:Acrid.Execution"
 	args = [
 		"mono",
 		"--debug",
-		"--trace=program",
+		traceCommand,
 		executablePath,
 #		"-print-tree=true",
 	] + args
 	
-	if not trace : args.remove("--trace=program")
+	if not trace : args.remove(traceCommand)
 	
 	subprocess.call("clear")
 	process = subprocess.Popen(args, stderr=subprocess.PIPE)

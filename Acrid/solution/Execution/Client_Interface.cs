@@ -43,7 +43,7 @@ public class Client_Interface {
 	}
 	
 	public bool equals(IInterface face) {
-		//xxx there are other situations where this should true
+		//xxx there are other situations where this should return true
 		return _face == face;
 	}
 }

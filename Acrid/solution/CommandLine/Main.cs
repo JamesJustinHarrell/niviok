@@ -13,10 +13,6 @@ class CommandLine {
 	static int Main(string[] programArgs) {
 		//Debug.Assert and Trace.Assert don't output anything by default
 		Debug.Listeners.Add(new TextWriterTraceListener(Console.Error));
-	
-		//xxx XmlDocument::Load has threading issues
-		//this seems to prevent the bug from being triggered
-		System.Threading.Thread.Sleep(100);
 		
 		CommandLine program = new CommandLine();
 		try {
@@ -76,8 +72,6 @@ class CommandLine {
 			}
 		}
 		
-		//xxx the desired behavior recently changed (and has not been implemented)
-		//see "executing module.txt" for details
 		if( bool.Parse(args["run"]) ) {
 			//all exceptions in client code should be caught, and not bubble up here
 			return Execution.Executor.executeProgramModule(
@@ -128,11 +122,11 @@ class CommandLine {
 		Console.Write(node.typeName);
 
 		//write identikey dependencies
-		HashSet<IdentifierSequence> depends = Execution.Depends.depends(node);
+		HashSet<Identifier> depends = Execution.Depends.depends(node);
 		if( depends.Count > 0 ) {
 			Console.Write(" (");
 			bool first = true;
-			foreach( IdentifierSequence identseq in depends ) {
+			foreach( Identifier identseq in depends ) {
 				if( first ) first = false;
 				else Console.Write(", ");
 				Console.Write( identseq.ToString() );

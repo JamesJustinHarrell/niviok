@@ -12,13 +12,13 @@ namespace Acrid.Execution {
 
 public static class Depends {
 	//unions dependencies of nodes extracted from params
-	static HashSet<IdentifierSequence> collectDepends( params object[] args ) {
+	static HashSet<Identifier> collectDepends( params object[] args ) {
 		return unionDepends(G.collect<INode>(args));
 	}
 
 	//unions dependencies of nodes in collection
-	static HashSet<IdentifierSequence> unionDepends(ICollection<INode> args) {
-		HashSet<IdentifierSequence> idents = new HashSet<IdentifierSequence>();
+	static HashSet<Identifier> unionDepends(ICollection<INode> args) {
+		HashSet<Identifier> idents = new HashSet<Identifier>();
 		foreach( INode node in args ) {
 			if( node != null )
 				idents.UnionWith( Depends.depends(node) );
@@ -27,63 +27,50 @@ public static class Depends {
 	}
 	
 	//unions dependencies of child nodes
-	static HashSet<IdentifierSequence> unionChildDepends(INode node) {
+	static HashSet<Identifier> unionChildDepends(INode node) {
 		return ( node.childNodes == null ?
-		        new HashSet<IdentifierSequence>() :
+		        new HashSet<Identifier>() :
 		        unionDepends(node.childNodes) );
 	}
 	
 	//compound
 	//xxx may want to remove references to global identikeys (optimization)
-	public static HashSet<IdentifierSequence> depends(Node_Compound node) {
-		HashSet<IdentifierSequence> idents = unionChildDepends(node);
+	public static HashSet<Identifier> depends(Node_Compound node) {
+		HashSet<Identifier> idents = unionChildDepends(node);
 		foreach( INode_Expression member in node.members ) {
 			if( member is Node_DeclareAssign )
-				idents.Remove(
-					new IdentifierSequence((member as Node_DeclareAssign).name.value) );
+				idents.Remove( (member as Node_DeclareAssign).name.value );
 			else if( member is Node_DeclareEmpty )
-				idents.Remove(
-					new IdentifierSequence((member as Node_DeclareEmpty).name.value) );
+				idents.Remove( (member as Node_DeclareEmpty).name.value );
 		}
 		return idents;
 	}
 
 	//declare-assign
-	public static HashSet<IdentifierSequence> depends(Node_DeclareAssign node) {
-		HashSet<IdentifierSequence> idents = collectDepends(node.type, node.value);
-		idents.Remove(new IdentifierSequence(node.name.value));
+	public static HashSet<Identifier> depends(Node_DeclareAssign node) {
+		HashSet<Identifier> idents = collectDepends(node.type, node.value);
+		idents.Remove( node.name.value );
 		return idents;
 	}
 	
 	//declare-first
-	public static HashSet<IdentifierSequence> depends(Node_DeclareFirst node) {
-		HashSet<IdentifierSequence> idents = collectDepends(node.type, node.value);
+	public static HashSet<Identifier> depends(Node_DeclareFirst node) {
+		HashSet<Identifier> idents = collectDepends(node.type, node.value);
 		if( ! node.overload.value )
-			idents.Remove(new IdentifierSequence(node.name.value));
+			idents.Remove(node.name.value);
 		return idents;
 	}
 	
-	//expose
-	public static HashSet<IdentifierSequence> depends(Node_Expose node) {
-		IEnumerator<Node_Identifier> en = node.identifiers.GetEnumerator();
-		if( en.MoveNext() ) {
-			HashSet<IdentifierSequence> s = new HashSet<IdentifierSequence>();
-			s.Add(new IdentifierSequence(en.Current.value));
-			return s;
-		}
-		return new HashSet<IdentifierSequence>();
-	}
-	
 	//extract-member
-	public static HashSet<IdentifierSequence> depends(Node_ExtractMember node) {
+	public static HashSet<Identifier> depends(Node_ExtractMember node) {
 		return depends(node.source);
 	}
 	
 	//function
-	public static HashSet<IdentifierSequence> depends(Node_Function node) {
-		HashSet<IdentifierSequence> idents = depends(node.body);
+	public static HashSet<Identifier> depends(Node_Function node) {
+		HashSet<Identifier> idents = depends(node.body);
 		foreach( Node_ParameterImpl param in node.parameterImpls )
-			idents.Remove(new IdentifierSequence(param.name.value));
+			idents.Remove(param.name.value);
 		foreach( Node_ParameterImpl param in node.parameterImpls )
 			idents.UnionWith( depends(param) );
 		idents.UnionWith( depends(node.returnType) );
@@ -91,63 +78,63 @@ public static class Depends {
 	}
 	
 	//identifier
-	public static HashSet<IdentifierSequence> depends(Node_Identifier node) {
-		HashSet<IdentifierSequence> idents = new HashSet<IdentifierSequence>();
-		idents.Add(new IdentifierSequence(node.value));
+	public static HashSet<Identifier> depends(Node_Identifier node) {
+		HashSet<Identifier> idents = new HashSet<Identifier>();
+		idents.Add(node.value);
 		return idents;
 	}
 	
 	//sieve
 	//xxx temporary
-	public static HashSet<IdentifierSequence> depends(Node_Sieve node) {
-		HashSet<IdentifierSequence> idents = collectDepends(node.hidables);
+	public static HashSet<Identifier> depends(Node_Sieve node) {
+		HashSet<Identifier> idents = collectDepends(node.hidables);
 		foreach( Node_Hidable child in node.hidables ) {
 			if( child.declaration is Node_DeclareFirst ) {
 				Node_DeclareFirst df = (Node_DeclareFirst)child.declaration;
 				if( ! df.overload.value )
-					idents.Remove(new IdentifierSequence(df.name.value));
+					idents.Remove(df.name.value);
 			}
 		}
 		return idents;
 	}
 	
 	//method
-	public static HashSet<IdentifierSequence> depends(Node_Method node) {
+	public static HashSet<Identifier> depends(Node_Method node) {
 		return depends(node.@interface);
 	}
 	
 	//module
 	//identikeys that must be exposed by import and/or expose nodes
-	public static HashSet<IdentifierSequence> depends(Node_Module node) {
+	public static HashSet<Identifier> depends(Node_Module node) {
 		return depends(node.sieve);
 	}
 	
 	//parameter-impl
-	public static HashSet<IdentifierSequence> depends(Node_ParameterImpl node) {
+	public static HashSet<Identifier> depends(Node_ParameterImpl node) {
 		return collectDepends(node.defaultValue, node.type);
 	}
 	
 	//parameter-info
-	public static HashSet<IdentifierSequence> depends(Node_ParameterInfo node) {
+	public static HashSet<Identifier> depends(Node_ParameterInfo node) {
 		return depends(node.type);
 	}
 	
 	//property
-	public static HashSet<IdentifierSequence> depends(Node_Property node) {
+	public static HashSet<Identifier> depends(Node_Property node) {
 		return depends(node.type);
 	}
 	
 	//used by the function below
-	static HashSet<IdentifierSequence> dependsDefault(INode node) {
+	static HashSet<Identifier> dependsDefault(INode node) {
 		string name = node.typeName;
 		if( name == "import" )
-			return new HashSet<IdentifierSequence>();
+			return new HashSet<Identifier>();
 	
 		return unionChildDepends(node);
 	}
 	
 	//any node
-	public static HashSet<IdentifierSequence> depends(INode node) {
+	public static HashSet<Identifier> depends(INode node) {
 		System.Type classType = typeof(Depends);
 		System.Type nodeType = ((Object)node).GetType();
 		Reflection.MethodInfo meth = classType.GetMethod(
@@ -156,7 +143,7 @@ public static class Depends {
 		if( meth.GetParameters()[0].ParameterType == typeof(INode) )
 			return dependsDefault(node);
 		try {
-			return (HashSet<IdentifierSequence>)meth.Invoke(null, new object[]{node});
+			return (HashSet<Identifier>)meth.Invoke(null, new object[]{node});
 		}
 		catch(Reflection.TargetInvocationException e) {
 			if( e.InnerException is ClientException )
@@ -227,7 +214,7 @@ public static class Depends {
 			node is Node_Property ?
 				dependsSplit(node as Node_Property) :
 			new DependsResults(
-				depends(node), new HashSet<IdentifierSequence>() ));
+				depends(node), new HashSet<Identifier>() ));
 	}
 }
 

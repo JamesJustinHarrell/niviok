@@ -3,13 +3,6 @@ using Acrid.NodeTypes;
 
 namespace Acrid.Execution {
 
-//a collection of scidentres
-//used by e.g. namespaces, sieves, and libraries
-public interface IDerefable {
-	DerefResults deref(IdentifierSequence idents);
-	HashSet<IWoScidentre> findEmptyWoScidentres(IdentifierSequence idents);
-}
-
 public interface IFunction {
 	IInterface face {get;}
 	IWorker call(IList<Argument> arguments);
@@ -29,20 +22,26 @@ public interface IObject {
 	bool sameObject(IObject o);
 }
 
+public interface IScidentre {
+	IType type {get;set;}
+	void assign(IWorker worker);
+	DerefResults deref();
+}
+
 public interface IScope {
-	void expose(IDerefable d);
-	void bindNamespace(Identifier name, IDerefable d);
-	IWoScidentre reserveWoScidentre(Identifier name, WoScidentreCategory cat);
+	void expose(IWorker worker);
+	void addSieve(ISieve sieve);
+	IScidentre reserveScidentre(Identifier name, ScidentreCategory cat);
 
 	//scidentre reserved by the above function
 	//used by declare-assign and declare-first nodes
 	//@worker can be Null (but not null)
-	void activateWoScidentre(Identifier name, NType type, IWorker worker);
+	void activateScidentre(Identifier name, NType type, IWorker worker);
 	
 	void assign(Identifier name, IWorker worker);
 	
 	//searches up a chain of scopes
-	DerefResults upDeref(IdentifierSequence idents);
+	DerefResults upDeref(Identifier name);
 	
 	/*
 	returns every wo-scidentre that:
@@ -50,9 +49,15 @@ public interface IScope {
 		* is in the EMPTY state
 	May also return others. All that is guaranteed is that the wanted ones are returned.
 	*/
-	HashSet<IWoScidentre> upFindEmptyWoScidentres(IdentifierSequence idents);
+	HashSet<IScidentre> upFindEmptyScidentres(Identifier name);
 	
 	ScopeAllowance allowance {get;}
+}
+
+public interface ISieve {
+	DerefResults deref(Identifier idents);
+	HashSet<IScidentre> findEmptyScidentres(Identifier idents);
+	HashSet<Identifier> visibleScidentreNames {get;}
 }
 
 public interface IWorker {
@@ -64,12 +69,6 @@ public interface IWorker {
 	IWorker extractMember(Identifier name);
 	void setProperty(Identifier propName, IWorker worker);
 	object nativeObject {get;set;}
-}
-
-public interface IWoScidentre {
-	IType type {get;set;}
-	void assign(IWorker worker);
-	DerefResults deref();
 }
 
 } //namespace

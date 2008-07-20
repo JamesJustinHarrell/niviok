@@ -13,7 +13,8 @@ using Acrid.NodeTypes;
 namespace Acrid.Execution {
 
 public class Bridge {
-	static IDerefable _std;
+	static IWorker _std;
+	static ISieve _stdSieve;
 	
 	//xxx temporary
 	static NType _any;
@@ -52,22 +53,23 @@ public class Bridge {
 		IScope scope = new Scope(null, new ScopeAllowance(false,false));
 		ScopeQueue sq = new ScopeQueue();
 		Sieve sieve = Executor.executeGetSieve(node.sieve, sq, scope);
-		_std = sieve;
+		_stdSieve = sieve;
+
 		GE.declareAssign(
 			new Identifier("Interface"),
-			WoScidentreCategory.CONSTANT,
+			ScidentreCategory.CONSTANT,
 			new NType(),
 			stdn_Interface.worker,
 			sieve.visible );
 		GE.declareAssign(
 			new Identifier("Object"),
-			WoScidentreCategory.CONSTANT,
+			ScidentreCategory.CONSTANT,
 			new NType(),
 			stdn_Object.worker,
 			sieve.visible );
 		GE.declareAssign(
 			new Identifier("any"),
-			WoScidentreCategory.CONSTANT,
+			ScidentreCategory.CONSTANT,
 			new NType(),
 			stdn_Object.worker, //xxx temporary - won't work when type checking is enabled
 			sieve.visible );
@@ -76,25 +78,27 @@ public class Bridge {
 		
 		GE.declareAssign(
 			new Identifier("true"),
-			WoScidentreCategory.CONSTANT,
+			ScidentreCategory.CONSTANT,
 			new NType(stdn_Bool),
 			Client_Boolean.wrap(true),
 			sieve.visible );
 		GE.declareAssign(
 			new Identifier("false"),
-			WoScidentreCategory.CONSTANT,
+			ScidentreCategory.CONSTANT,
 			new NType(stdn_Bool),
 			Client_Boolean.wrap(false),
 			sieve.visible );
+		
+		_std = LibraryWrapper.wrap(_stdSieve);
 	}
 
-	public static IDerefable buildStdioLib(
+	public static IWorker buildStdioLib(
 	TextReader inStream, TextWriter outStream, TextWriter logStream ) {
 		Sieve sieve = new Sieve(null);
 		
 		//println function
-		IWoScidentre ws = sieve.reserveWoScidentre(
-			true, new Identifier("println"), WoScidentreCategory.OVERLOAD);
+		IScidentre ws = sieve.reserveScidentre(
+			true, new Identifier("println"), ScidentreCategory.OVERLOAD);
 		ws.type = new NType();
 		ws.assign(
 			toClientFunction(
@@ -115,8 +119,8 @@ public class Bridge {
 					null)));
 		
 		//get_exit_status function
-		IWoScidentre ws2 = sieve.reserveWoScidentre(
-			true, new Identifier("get exit status"), WoScidentreCategory.OVERLOAD);
+		IScidentre ws2 = sieve.reserveScidentre(
+			true, new Identifier("get exit status"), ScidentreCategory.OVERLOAD);
 		ws2.type = new NType();
 		ws2.assign(
 			toClientFunction(
@@ -128,29 +132,30 @@ public class Bridge {
 					},
 					null)));
 		
-		return sieve;
+		return LibraryWrapper.wrap(sieve);
 	}
 
-	public static IDerefable tryImport(string scheme, string body) {
+	public static IWorker tryImport(string scheme, string body) {
 		//xxx
+		Console.WriteLine("returning null in Bridge.tryImport");
 		return null;
 	}
 
-	public static IDerefable std {
+	public static IWorker std {
 		get { return _std; }
 	}
 	
 	public static NType stdn_any {
-		get { return _any; }
+		get { return _any; } //xxx temporary
 	}
 	public static NType stdn_Nullable_any {
-		get { return _nullable_any; /* xxx temp */ }
+		get { return _nullable_any; } //xxx temporary
 	}
 	public static IInterface stdn_Bool {
-		get { return toNativeInterface(GE.evalIdent(_std, "Bool")); }
+		get { return toNativeInterface(GE.evalIdent(_stdSieve, "Bool")); }
 	}
 	public static IInterface stdn_Int {
-		get { return toNativeInterface(GE.evalIdent(_std, "Int")); }
+		get { return toNativeInterface(GE.evalIdent(_stdSieve, "Bool")); }
 	}
 	public static IInterface stdn_Interface {
 		get { return Interface_Interface.instance; }
@@ -159,14 +164,14 @@ public class Bridge {
 		get { return Interface_Object.instance; }
 	}
 	public static IInterface stdn_Rat {
-		get { return toNativeInterface(GE.evalIdent(_std, "Rat")); }
+		get { return toNativeInterface(GE.evalIdent(_stdSieve, "Rat")); }
 	}
 	public static IInterface stdn_String {
-		get { return toNativeInterface(GE.evalIdent(_std, "String")); }
+		get { return toNativeInterface(GE.evalIdent(_stdSieve, "String")); }
 	}
 	//xxx replace Generator interface with Iterable/Iterator generic interfaces
 	public static IInterface stdn_Generator {
-		get { return toNativeInterface(GE.evalIdent(_std, "Generator")); }
+		get { return toNativeInterface(GE.evalIdent(_stdSieve, "Generator")); }
 	}
 
 	//e.g. Foo -> Breeder<Foo>
@@ -181,7 +186,7 @@ public class Bridge {
 	}
 
 	public static IWorker toClientBoolean(bool val) {
-		return GE.evalIdent(_std, val ? "true" : "false");
+		return GE.extractMember(_std, val ? "true" : "false");
 	}
 	public static bool toNativeBoolean(IWorker worker) {
 		//xxx how to handle client implementations of the Bool interface?

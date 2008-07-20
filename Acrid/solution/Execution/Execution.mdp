@@ -18,8 +18,8 @@
     <File name="Executor auto.cs" subtype="Code" buildaction="Compile" />
     <File name="Executor.cs" subtype="Code" buildaction="Compile" />
     <File name="Argument.cs" subtype="Code" buildaction="Compile" />
-    <File name="WoScidentreReserver.cs" subtype="Code" buildaction="Compile" />
-    <File name="WoScidentre classes.cs" subtype="Code" buildaction="Compile" />
+    <File name="ScidentreReserver.cs" subtype="Code" buildaction="Compile" />
+    <File name="Scidentre classes.cs" subtype="Code" buildaction="Compile" />
     <File name="WorkerBuilder.cs" subtype="Code" buildaction="Compile" />
     <File name="WorkerBase.cs" subtype="Code" buildaction="Compile" />
     <File name="Worker_NativeObject.cs" subtype="Code" buildaction="Compile" />
@@ -34,17 +34,12 @@
     <File name="ParameterImpl.cs" subtype="Code" buildaction="Compile" />
     <File name="Null.cs" subtype="Code" buildaction="Compile" />
     <File name="NType.cs" subtype="Code" buildaction="Compile" />
-    <File name="NsScidentre.cs" subtype="Code" buildaction="Compile" />
     <File name="NObject.cs" subtype="Code" buildaction="Compile" />
-    <File name="NamespaceScope.cs" subtype="Code" buildaction="Compile" />
-    <File name="NamespaceReference.cs" subtype="Code" buildaction="Compile" />
     <File name="Method.cs" subtype="Code" buildaction="Compile" />
-    <File name="Library.cs" subtype="Code" buildaction="Compile" />
     <File name="InterfaceFromValue.cs" subtype="Code" buildaction="Compile" />
     <File name="Interface_Object.cs" subtype="Code" buildaction="Compile" />
     <File name="Interface_Interface.cs" subtype="Code" buildaction="Compile" />
     <File name="Interface.cs" subtype="Code" buildaction="Compile" />
-    <File name="IdentifierSequence.cs" subtype="Code" buildaction="Compile" />
     <File name="FunctionInterface.cs" subtype="Code" buildaction="Compile" />
     <File name="Function_Native.cs" subtype="Code" buildaction="Compile" />
     <File name="Function_Client.cs" subtype="Code" buildaction="Compile" />
@@ -65,7 +60,8 @@
     <File name="exceptions.cs" subtype="Code" buildaction="Compile" />
     <File name="interfaces.cs" subtype="Code" buildaction="Compile" />
     <File name="globals.cs" subtype="Code" buildaction="Compile" />
-    <File name="WoScidentreCategory.cs" subtype="Code" buildaction="Compile" />
+    <File name="ScidentreCategory.cs" subtype="Code" buildaction="Compile" />
+    <File name="LibraryWrapper.cs" subtype="Code" buildaction="Compile" />
   </Contents>
   <References>
     <ProjectReference type="Gac" localcopy="True" refto="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />

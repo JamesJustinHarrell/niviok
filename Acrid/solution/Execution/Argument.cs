@@ -9,7 +9,7 @@ namespace Acrid.Execution {
 public class Argument {
 
 	//create the scope to be used by a function body
-	//assumes the IList<Argument> have been matched to an appropriate function
+	//assumes the arguments have already been matched to an appropriate function
 	public static IScope setupArguments(
 	IList<ParameterImpl> parameters, IList<Argument> arguments, IScope outerScope) {
 		Debug.Assert(outerScope != null);
@@ -18,7 +18,7 @@ public class Argument {
 		for( int i = 0; i < arguments.Count; i++ ) {
 			GE.declareAssign(
 				parameters[i].name,
-				WoScidentreCategory.VARIABLE,
+				ScidentreCategory.VARIABLE,
 				new NType(),
 				arguments[i].value,
 					/* xxx downcast(arguments[i].value, parameters[i].type) */

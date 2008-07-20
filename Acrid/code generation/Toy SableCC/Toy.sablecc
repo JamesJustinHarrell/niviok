@@ -19,7 +19,8 @@ Helpers
 	numerical = ['0' + ['1'..'9']] ;
 	astral = [0x010000..0x10FFFF] ;
 	alpha = [ ['a'..'z'] + ['A'..'Z'] ] ;
-	wordchar = [ astral + alpha ] ;
+	// wordchar = [ astral + alpha ] ;
+	wordchar = alpha ;
 
 Tokens
 

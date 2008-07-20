@@ -108,84 +108,6 @@ public class Node_DeclareFirst : INode_StatementDeclaration {
 	}
 }
 
-public class Node_InstantiateGeneric : INode_Expression {
-	INode_Expression m_generic;
-	IList<Node_Argument> m_arguments;
-	string m_nodeSource;
-	
-	public Node_InstantiateGeneric(
-	INode_Expression @generic,
-	IList<Node_Argument> @arguments,
-	string @nodeSource ) {
-		m_generic = @generic;
-		m_arguments = @arguments;
-		m_nodeSource = @nodeSource;
-	}
-	
-	public INode_Expression @generic {
-		get { return m_generic; }
-	}
-
-	public IList<Node_Argument> @arguments {
-		get { return m_arguments; }
-	}
-
-	public string typeName {
-		get { return "instantiate-generic"; }
-	}
-	
-	public ICollection<INode> childNodes {
-		get {
-			return G.collect<INode>(
-				m_generic,
-				m_arguments );
-		}
-	}
-	
-	public string @nodeSource {
-		get { return m_nodeSource; }
-	}
-}
-
-public class Node_Xnor : INode_Expression {
-	INode_Expression m_first;
-	INode_Expression m_second;
-	string m_nodeSource;
-	
-	public Node_Xnor(
-	INode_Expression @first,
-	INode_Expression @second,
-	string @nodeSource ) {
-		m_first = @first;
-		m_second = @second;
-		m_nodeSource = @nodeSource;
-	}
-	
-	public INode_Expression @first {
-		get { return m_first; }
-	}
-
-	public INode_Expression @second {
-		get { return m_second; }
-	}
-
-	public string typeName {
-		get { return "xnor"; }
-	}
-	
-	public ICollection<INode> childNodes {
-		get {
-			return G.collect<INode>(
-				m_first,
-				m_second );
-		}
-	}
-	
-	public string @nodeSource {
-		get { return m_nodeSource; }
-	}
-}
-
 public class Node_Conditional : INode_Expression {
 	INode_Expression m_test;
 	INode_Expression m_result;
@@ -349,6 +271,45 @@ public class Node_Yield : INode_Expression {
 	public ICollection<INode> childNodes {
 		get {
 			return G.collect<INode>(
+				m_value );
+		}
+	}
+	
+	public string @nodeSource {
+		get { return m_nodeSource; }
+	}
+}
+
+public class Node_DictionaryEntry : INode {
+	INode_Expression m_key;
+	INode_Expression m_value;
+	string m_nodeSource;
+	
+	public Node_DictionaryEntry(
+	INode_Expression @key,
+	INode_Expression @value,
+	string @nodeSource ) {
+		m_key = @key;
+		m_value = @value;
+		m_nodeSource = @nodeSource;
+	}
+	
+	public INode_Expression @key {
+		get { return m_key; }
+	}
+
+	public INode_Expression @value {
+		get { return m_value; }
+	}
+
+	public string typeName {
+		get { return "dictionary-entry"; }
+	}
+	
+	public ICollection<INode> childNodes {
+		get {
+			return G.collect<INode>(
+				m_key,
 				m_value );
 		}
 	}
@@ -741,45 +702,6 @@ public class Node_Breed : INode_Expression {
 	}
 }
 
-public class Node_Namespace : INode_StatementDeclaration {
-	Node_Identifier m_name;
-	Node_Sieve m_sieve;
-	string m_nodeSource;
-	
-	public Node_Namespace(
-	Node_Identifier @name,
-	Node_Sieve @sieve,
-	string @nodeSource ) {
-		m_name = @name;
-		m_sieve = @sieve;
-		m_nodeSource = @nodeSource;
-	}
-	
-	public Node_Identifier @name {
-		get { return m_name; }
-	}
-
-	public Node_Sieve @sieve {
-		get { return m_sieve; }
-	}
-
-	public string typeName {
-		get { return "namespace"; }
-	}
-	
-	public ICollection<INode> childNodes {
-		get {
-			return G.collect<INode>(
-				m_name,
-				m_sieve );
-		}
-	}
-	
-	public string @nodeSource {
-		get { return m_nodeSource; }
-	}
-}
-
 public class Node_Nand : INode_Expression {
 	INode_Expression m_first;
 	INode_Expression m_second;
@@ -1100,37 +1022,37 @@ public class Node_Function : INode_Expression {
 	}
 }
 
-public class Node_NamespacedWoScidentre : INode_Expression {
-	IList<Node_Identifier> m_namespaces;
-	Node_Identifier m_identikeyName;
+public class Node_Xnor : INode_Expression {
+	INode_Expression m_first;
+	INode_Expression m_second;
 	string m_nodeSource;
 	
-	public Node_NamespacedWoScidentre(
-	IList<Node_Identifier> @namespaces,
-	Node_Identifier @identikeyName,
+	public Node_Xnor(
+	INode_Expression @first,
+	INode_Expression @second,
 	string @nodeSource ) {
-		m_namespaces = @namespaces;
-		m_identikeyName = @identikeyName;
+		m_first = @first;
+		m_second = @second;
 		m_nodeSource = @nodeSource;
 	}
 	
-	public IList<Node_Identifier> @namespaces {
-		get { return m_namespaces; }
+	public INode_Expression @first {
+		get { return m_first; }
 	}
 
-	public Node_Identifier @identikeyName {
-		get { return m_identikeyName; }
+	public INode_Expression @second {
+		get { return m_second; }
 	}
 
 	public string typeName {
-		get { return "namespaced-wo-scidentre"; }
+		get { return "xnor"; }
 	}
 	
 	public ICollection<INode> childNodes {
 		get {
 			return G.collect<INode>(
-				m_namespaces,
-				m_identikeyName );
+				m_first,
+				m_second );
 		}
 	}
 	
@@ -1303,29 +1225,37 @@ public class Node_Callee : INode_InterfaceMember {
 	}
 }
 
-public class Node_Expose : INode {
-	IList<Node_Identifier> m_identifiers;
+public class Node_InstantiateGeneric : INode_Expression {
+	INode_Expression m_generic;
+	IList<Node_Argument> m_arguments;
 	string m_nodeSource;
 	
-	public Node_Expose(
-	IList<Node_Identifier> @identifiers,
+	public Node_InstantiateGeneric(
+	INode_Expression @generic,
+	IList<Node_Argument> @arguments,
 	string @nodeSource ) {
-		m_identifiers = @identifiers;
+		m_generic = @generic;
+		m_arguments = @arguments;
 		m_nodeSource = @nodeSource;
 	}
 	
-	public IList<Node_Identifier> @identifiers {
-		get { return m_identifiers; }
+	public INode_Expression @generic {
+		get { return m_generic; }
+	}
+
+	public IList<Node_Argument> @arguments {
+		get { return m_arguments; }
 	}
 
 	public string typeName {
-		get { return "expose"; }
+		get { return "instantiate-generic"; }
 	}
 	
 	public ICollection<INode> childNodes {
 		get {
 			return G.collect<INode>(
-				m_identifiers );
+				m_generic,
+				m_arguments );
 		}
 	}
 	
@@ -1570,31 +1500,24 @@ public class Node_DeclareAssign : INode_Expression {
 }
 
 public class Node_Compound : INode_Expression {
-	IList<Node_Expose> m_exposes;
-	IList<Node_Using> m_usings;
+	IList<INode_Expression> m_exposes;
 	IList<INode_StatementDeclaration> m_declarations;
 	IList<INode_Expression> m_members;
 	string m_nodeSource;
 	
 	public Node_Compound(
-	IList<Node_Expose> @exposes,
-	IList<Node_Using> @usings,
+	IList<INode_Expression> @exposes,
 	IList<INode_StatementDeclaration> @declarations,
 	IList<INode_Expression> @members,
 	string @nodeSource ) {
 		m_exposes = @exposes;
-		m_usings = @usings;
 		m_declarations = @declarations;
 		m_members = @members;
 		m_nodeSource = @nodeSource;
 	}
 	
-	public IList<Node_Expose> @exposes {
+	public IList<INode_Expression> @exposes {
 		get { return m_exposes; }
-	}
-
-	public IList<Node_Using> @usings {
-		get { return m_usings; }
 	}
 
 	public IList<INode_StatementDeclaration> @declarations {
@@ -1613,7 +1536,6 @@ public class Node_Compound : INode_Expression {
 		get {
 			return G.collect<INode>(
 				m_exposes,
-				m_usings,
 				m_declarations,
 				m_members );
 		}
@@ -1655,45 +1577,6 @@ public class Node_Interface : INode_Expression {
 			return G.collect<INode>(
 				m_inheritees,
 				m_members );
-		}
-	}
-	
-	public string @nodeSource {
-		get { return m_nodeSource; }
-	}
-}
-
-public class Node_Using : INode {
-	IList<Node_Identifier> m_targets;
-	Node_Identifier m_name;
-	string m_nodeSource;
-	
-	public Node_Using(
-	IList<Node_Identifier> @targets,
-	Node_Identifier @name,
-	string @nodeSource ) {
-		m_targets = @targets;
-		m_name = @name;
-		m_nodeSource = @nodeSource;
-	}
-	
-	public IList<Node_Identifier> @targets {
-		get { return m_targets; }
-	}
-
-	public Node_Identifier @name {
-		get { return m_name; }
-	}
-
-	public string typeName {
-		get { return "using"; }
-	}
-	
-	public ICollection<INode> childNodes {
-		get {
-			return G.collect<INode>(
-				m_targets,
-				m_name );
 		}
 	}
 	
@@ -1750,28 +1633,21 @@ public class Node_SetProperty : INode_Expression {
 }
 
 public class Node_Sieve : INode_StatementDeclaration {
-	IList<Node_Expose> m_exposes;
-	IList<Node_Using> m_usings;
+	IList<INode_Expression> m_exposes;
 	IList<Node_Hidable> m_hidables;
 	string m_nodeSource;
 	
 	public Node_Sieve(
-	IList<Node_Expose> @exposes,
-	IList<Node_Using> @usings,
+	IList<INode_Expression> @exposes,
 	IList<Node_Hidable> @hidables,
 	string @nodeSource ) {
 		m_exposes = @exposes;
-		m_usings = @usings;
 		m_hidables = @hidables;
 		m_nodeSource = @nodeSource;
 	}
 	
-	public IList<Node_Expose> @exposes {
+	public IList<INode_Expression> @exposes {
 		get { return m_exposes; }
-	}
-
-	public IList<Node_Using> @usings {
-		get { return m_usings; }
 	}
 
 	public IList<Node_Hidable> @hidables {
@@ -1786,7 +1662,6 @@ public class Node_Sieve : INode_StatementDeclaration {
 		get {
 			return G.collect<INode>(
 				m_exposes,
-				m_usings,
 				m_hidables );
 		}
 	}
@@ -1960,45 +1835,6 @@ public class Node_Case : INode {
 			return G.collect<INode>(
 				m_testValues,
 				m_result );
-		}
-	}
-	
-	public string @nodeSource {
-		get { return m_nodeSource; }
-	}
-}
-
-public class Node_DictionaryEntry : INode {
-	INode_Expression m_key;
-	INode_Expression m_value;
-	string m_nodeSource;
-	
-	public Node_DictionaryEntry(
-	INode_Expression @key,
-	INode_Expression @value,
-	string @nodeSource ) {
-		m_key = @key;
-		m_value = @value;
-		m_nodeSource = @nodeSource;
-	}
-	
-	public INode_Expression @key {
-		get { return m_key; }
-	}
-
-	public INode_Expression @value {
-		get { return m_value; }
-	}
-
-	public string typeName {
-		get { return "dictionary-entry"; }
-	}
-	
-	public ICollection<INode> childNodes {
-		get {
-			return G.collect<INode>(
-				m_key,
-				m_value );
 		}
 	}
 	

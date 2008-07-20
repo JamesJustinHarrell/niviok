@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?><book version="5.0" xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2003/XInclude">
 	
 	<title>Niviok 1.0 Specification</title>
-	<subtitle>Edition 1 Draft 2008-07-10</subtitle>
+	<subtitle>Edition 1 Draft 2008-07-19</subtitle>
 	
 	<info>
 		<copyright>
@@ -15,7 +15,7 @@
 	<chapter xml:id="Overview">
 		<title>Overview</title>
 		
-		<para>This document is a draft for the first edition of the specification describing the 1.0 version of Niviok. It can be represented as &quot;Niviok 1.0 Edition 1 Draft 2008-07-10&quot;.</para>
+		<para>This document is a draft for the first edition of the specification describing the 1.0 version of Niviok. It can be represented as &quot;Niviok 1.0 Edition 1 Draft 2008-07-19&quot;.</para>
 	
 		<para>This document is a draft of the first edition of the specification describing the 1.0 version of Niviok.</para>
 		
@@ -583,7 +583,7 @@ declfirst func bar = func() {
 	<chapter xml:id="nodes">
 		<title>Nodes</title>
 	
-		<para>Niviok defines 69 nodes.</para>
+		<para>Niviok defines 65 nodes.</para>
 		
 		<para>Niviok code is represented by a tree of nodes. How this tree and its nodes are represented is outside the scope of this specification. Many means may exist of representing a Niviok tree.</para>
 
@@ -657,7 +657,6 @@ declfirst func bar = func() {
 			<simplelist role="family-members">
 				<member><link linkend="node.declare-first">declare-first</link> </member>
 				<member><link linkend="node.sieve">sieve</link> </member>
-				<member><link linkend="node.namespace">namespace</link> </member>
 			</simplelist>
 		</section>
 		
@@ -946,23 +945,6 @@ println( foo.bar.foo.bar.foo.bar.foo.number )
 			</programlisting>
 		</section>
 		
-		<section xml:id="node.expose">
-			<title>expose</title>
-			
-			<para>Imports all the child identikeys of the specified namespace into the enclosing scope.</para>
-			
-			<simplelist role="layout">
-				<member>+ <link linkend="node.identifier">identifier</link> </member>
-			</simplelist>
-			
-			<programlisting>
-decl std::Array&lt;std::Int&gt; numbers = generateNumbers()
-
-expose std
-decl Array&lt;Int&gt; numbers = generateNumbers()
-			</programlisting>
-		</section>
-		
 		<section xml:id="node.hidable">
 			<title>hidable</title>
 
@@ -980,8 +962,7 @@ decl Array&lt;Int&gt; numbers = generateNumbers()
 			<para>Like some other special expressions, screen nodes add identikeys to their parent scope, as well as creating their own scope and adding identikeys to it.</para>
 			
 			<simplelist role="layout">
-				<member>* <link linkend="node.expose">expose</link> </member>
-				<member>* <link linkend="node.using">using</link> </member>
+				<member>* <link linkend="node.expression">expression</link> expose</member>
 				<member>* <link linkend="node.hidable">hidable</link> </member>
 			</simplelist>
 			
@@ -1041,7 +1022,7 @@ module
 			<orderedlist role="exec">
 				<listitem>Let globalScope be a new scope.</listitem>
 				<listitem>Create the identikeys required by <link linkend="reserved-identikey-names">Reserved identikey names</link>.</listitem>
-				<listitem>For each <link linkend="node.import">import</link>, <link linkend="node.using">using</link>, and <link linkend="node.expose">expose</link> child node, add the identikeys to globalScope specified by that node.</listitem>
+				<listitem>For each <link linkend="node.import">import</link> and expose child node, add the identikeys to globalScope specified by that node.</listitem>
 				<listitem>Execute all declaration-first children of each plane together as required by <link linkend="handling-declare-first">Handling declare-first nodes</link>.</listitem>
 				<listitem>Let mainKey be the identikey in globalScope that is associated with identifier &quot;main&quot;. If such an identikey does not exist, throw an error.</listitem>
 				<listitem>Let mainVal be the result of evaluating mainKey. If mainVal is null, throw an error.</listitem>
@@ -1054,7 +1035,7 @@ module
 			<orderedlist role="exec">
 				<listitem>Let globalScope be a new scope.</listitem>
 				<listitem>Create the identikeys required by <link linkend="reserved-identikey-names">Reserved identikey names</link>.</listitem>
-				<listitem>For each <link linkend="node.import">import</link>, <link linkend="node.using">using</link>, and <link linkend="node.expose">expose</link> child node, add the identikeys to globalScope specified by that node.</listitem>
+				<listitem>For each <link linkend="node.import">import</link> and expose child node, add the identikeys to globalScope specified by that node.</listitem>
 				<listitem>Execute all declaration-first children of each plane together as required by <link linkend="handling-declare-first">Handling declare-first nodes</link>.</listitem>
 				<listitem>Expose globalScope, in an immutable form, to the containing environment. How this is done depends on the containing enviornment and the Desal implementation, and is not covered by this specification.</listitem>
 			</orderedlist>
@@ -1066,47 +1047,6 @@ module
 			<para role="xxx">For when acting as a library, need a means of hiding/showing certain child namespaces/identikeys of the global namespace. For example, a bundle may have declarations in the global namespace and in a &quot;private&quot; namespace. The bundle should expose the declarations in the global namespace but hide the declarations in the private namespace. There has also been consideration of an &quot;export&quot; attribute/node that would expose specified identikeys, and all other identikeys would not be exposed.</para>
 			
 			<para role="xxx">The identikeys added to globalScope by import, using, and expose nodes should not be exposed to the containing environment when the bundle is acting as a library.</para>
-		</section>
-		
-		<section xml:id="node.namespace">
-			<title>namespace</title>
-			
-			<para>Adds child identikeys to specified namespace. &quot;namespace&quot; here could be thought of as a verb, as in, &quot;Please namespace these identikeys.&quot; This node namespaces child identikeys as directed.</para>
-
-			<para>The namespace node does not have a 1-to-1 correspondence with a namespace. A namespace node merely inserts child identikeys into the specified namespace. Multiple namespace nodes can insert identikeys into the same namespace.</para>
-			
-			<simplelist role="layout">
-				<member><link linkend="node.identifier">identifier</link> name</member>
-				<member><link linkend="node.sieve">sieve</link> </member>
-			</simplelist>
-		</section>
-		
-		<section xml:id="node.using">
-			<title>using</title>
-			
-			<para>Creates an identikey that is associated with the same value/namespace as the specified identikey in the specified namespace.</para>
-			
-			<simplelist role="layout">
-				<member>+ <link linkend="node.identifier">identifier</link> target</member>
-				<member>? <link linkend="node.identifier">identifier</link> name</member>
-			</simplelist>
-			
-			<programlisting>
-using Xml.XmlElement
-using Xml.XmlDocument as Doc
-
-import &quot;.NET: System&quot; as System
-using System.Collections.Generic as box
-box.IList&lt;Foo&gt; = new box.List&lt;Foo&gt;();
-			</programlisting>
-			
-			<programlisting>
-using FooBarBaz as FBZ
-using System.out.print as puts
-puts( (FBZ to String)(Gamma) )
-			</programlisting>
-			
-			<para>Each of the [target] identifiers, except for the last, must refer to a namespace. (The last can also refer to a namespace.)</para>
 		</section>
 	</section>
 	
@@ -1264,8 +1204,7 @@ println( person1.name ) //Michael
 			<title>compound</title>
 			
 			<simplelist role="layout">
-				<member>* <link linkend="node.expose">expose</link> </member>
-				<member>* <link linkend="node.using">using</link> </member>
+				<member>* <link linkend="node.expression">expression</link> expose</member>
 				<member>* <link linkend="node.statement-declaration">statement-declaration</link> declaration</member>
 				<member>+ <link linkend="node.expression">expression</link> member</member>
 			</simplelist>
@@ -1453,25 +1392,6 @@ println( foo )
 			
 			<programlisting>
 (println foo)
-			</programlisting>
-		</section>
-
-		<section xml:id="node.namespaced-wo-scidentre">
-			<title>namespaced-wo-scidentre</title>
-			
-			<simplelist role="layout">
-				<member>+ <link linkend="node.identifier">identifier</link> namespace</member>
-				<member><link linkend="node.identifier">identifier</link> identikey name</member>
-			</simplelist>
-			
-			<programlisting>
-namespace foo {
-	namespace bar {
-		decl Int alpha = 123
-	}
-}
-decl Int alpha = foo:bar:alpha
-println( alpha ) //123
 			</programlisting>
 		</section>
 	

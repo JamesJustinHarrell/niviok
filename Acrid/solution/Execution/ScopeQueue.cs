@@ -14,7 +14,7 @@ public class ScopeQueue {
 		EMPTY, WAITING, READY
 	}
 	class Entry {
-		public IWoScidentre target;
+		public IScidentre target;
 		public INode_Expression typeExpr;
 		public INode_Expression valueExpr;
 		public IScope scope;
@@ -24,7 +24,7 @@ public class ScopeQueue {
 		public HashSet<Entry> listeners;
 		
 		public Entry(
-		IWoScidentre a,
+		IScidentre a,
 		INode_Expression b,
 		INode_Expression c,
 		IScope d,
@@ -69,15 +69,15 @@ public class ScopeQueue {
 		}
 	}
 	List<Entry> _entries; //needed to store order of entries
-	IDictionary<IWoScidentre, Entry> _entryLookup;
+	IDictionary<IScidentre, Entry> _entryLookup;
 
 	public ScopeQueue() {
 		_entries = new List<Entry>();
-		_entryLookup = new Dictionary<IWoScidentre,Entry>();
+		_entryLookup = new Dictionary<IScidentre,Entry>();
 	}
 	
 	public void add(
-	IWoScidentre ws, INode_Expression typeExpr, INode_Expression valueExpr, IScope scope ) {
+	IScidentre ws, INode_Expression typeExpr, INode_Expression valueExpr, IScope scope ) {
 		Entry entry = new Entry(
 			ws,
 			typeExpr, valueExpr,
@@ -103,10 +103,10 @@ public class ScopeQueue {
 		}
 	}
 	
-	HashSet<Entry> findDependencies( HashSet<IdentifierSequence> identseqs, IScope scope ) {
+	HashSet<Entry> findDependencies( HashSet<Identifier> identseqs, IScope scope ) {
 		HashSet<Entry> output = new HashSet<Entry>();
-		foreach(IdentifierSequence identseq in identseqs) {
-			foreach(IWoScidentre ws in scope.upFindEmptyWoScidentres(identseq))
+		foreach(Identifier identseq in identseqs) {
+			foreach(IScidentre ws in scope.upFindEmptyScidentres(identseq))
 				if(_entryLookup.ContainsKey(ws))
 					output.Add(_entryLookup[ws]);
 		}

@@ -3,18 +3,18 @@ using Acrid.NodeTypes;
 namespace Acrid.Execution {
 
 public class DependsResults {
-	HashSet<IdentifierSequence> _executeDepends;
-	HashSet<IdentifierSequence> _finishDepends;
+	HashSet<Identifier> _executeDepends;
+	HashSet<Identifier> _finishDepends;
 	
 	public DependsResults(
-	HashSet<IdentifierSequence> executeDepends,
-	HashSet<IdentifierSequence> finishDepends) {
+	HashSet<Identifier> executeDepends,
+	HashSet<Identifier> finishDepends) {
 		_executeDepends = executeDepends;
 		if( _executeDepends == null )
-			_executeDepends = new HashSet<IdentifierSequence>();
+			_executeDepends = new HashSet<Identifier>();
 		_finishDepends = finishDepends;
 		if( _finishDepends == null )
-			_finishDepends = new HashSet<IdentifierSequence>();
+			_finishDepends = new HashSet<Identifier>();
 	}
 	
 	public void UnionWith(DependsResults results) {
@@ -31,11 +31,11 @@ public class DependsResults {
 			_executeDepends.UnionWith(Depends.depends(node));
 	}
 
-	public HashSet<IdentifierSequence> executeDepends {
+	public HashSet<Identifier> executeDepends {
 		get { return _executeDepends; }
 	}
 	
-	public HashSet<IdentifierSequence> finishDepends {
+	public HashSet<Identifier> finishDepends {
 		get { return _finishDepends; }
 	}
 }

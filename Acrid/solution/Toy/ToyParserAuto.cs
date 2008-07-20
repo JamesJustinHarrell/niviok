@@ -59,32 +59,6 @@ public abstract class ToyParserAuto : ToyParserBase {
 			getSource(sexp) );
 	}
 
-	protected virtual Node_InstantiateGeneric parseInstantiateGeneric(Sexp sexp) {
-		if( sexp.list.Count != 2 )
-			throw new ParseError(
-				String.Format(
-					"'instantiate-generic' node must have 2 children ({0} given)",
-					sexp.list.Count),
-				getSource(sexp));
-		return new Node_InstantiateGeneric(
-   			parseOne<INode_Expression>(parseExpression, sexp),
-			parseMult1<Node_Argument>(parseArgument, sexp),
-			getSource(sexp) );
-	}
-
-	protected virtual Node_Xnor parseXnor(Sexp sexp) {
-		if( sexp.list.Count != 2 )
-			throw new ParseError(
-				String.Format(
-					"'xnor' node must have 2 children ({0} given)",
-					sexp.list.Count),
-				getSource(sexp));
-		return new Node_Xnor(
-   			parseOne<INode_Expression>(parseExpression, sexp),
-			parseOne<INode_Expression>(parseExpression, sexp),
-			getSource(sexp) );
-	}
-
 	protected virtual Node_Conditional parseConditional(Sexp sexp) {
 		if( sexp.list.Count != 3 )
 			throw new ParseError(
@@ -183,46 +157,17 @@ public abstract class ToyParserAuto : ToyParserBase {
 			getSource(sexp) );
 	}
 
-	protected virtual INode_StatementDeclaration parseStatementDeclaration(Sexp sexp) {
-		if( sexp.type != SexpType.LIST )
-			return parseTerminalStatementDeclaration(sexp);
-		if( sexp.list.Count == 0 )
+	protected virtual Node_DictionaryEntry parseDictionaryEntry(Sexp sexp) {
+		if( sexp.list.Count != 2 )
 			throw new ParseError(
-				"this list cannot be empty",
+				String.Format(
+					"'dictionary-entry' node must have 2 children ({0} given)",
+					sexp.list.Count),
 				getSource(sexp));
-		if( sexp.list.First.Value.type != SexpType.WORD )
-			return parseNonwordStatementDeclaration(sexp);
-		Sexp first = sexp.list.First.Value;
-		string specType = first.atom;
-		sexp.list.RemoveFirst();
-		switch(specType) {
-			case "declare-first":
-				return parseDeclareFirst(sexp);
-			case "sieve":
-				return parseSieve(sexp);
-			case "namespace":
-				return parseNamespace(sexp);
-			default:
-				sexp.list.AddFirst(first);
-				return parseStatementDeclarationDefault(sexp);
-		}
-	}
-	protected virtual INode_StatementDeclaration parseTerminalStatementDeclaration(Sexp sexp) {
-		throw new ParseError(
-			"StatementDeclaration expression must be a list",
-			getSource(sexp));
-	}
-	protected virtual INode_StatementDeclaration parseNonwordStatementDeclaration(Sexp sexp) {
-		throw new ParseError(
-			"expression must begin with a word",
-			getSource(sexp));
-	}
-	protected virtual INode_StatementDeclaration parseStatementDeclarationDefault(Sexp sexp) {
-		throw new ParseError(
-			String.Format(
-				"unknown type of StatementDeclaration '{0}'",
-				sexp.list.First.Value.atom),
-			getSource(sexp));
+		return new Node_DictionaryEntry(
+   			parseOne<INode_Expression>(parseExpression, sexp),
+			parseOne<INode_Expression>(parseExpression, sexp),
+			getSource(sexp) );
 	}
 
 	protected virtual Node_Property parseProperty(Sexp sexp) {
@@ -390,19 +335,6 @@ public abstract class ToyParserAuto : ToyParserBase {
 			getSource(sexp) );
 	}
 
-	protected virtual Node_Namespace parseNamespace(Sexp sexp) {
-		if( sexp.list.Count != 2 )
-			throw new ParseError(
-				String.Format(
-					"'namespace' node must have 2 children ({0} given)",
-					sexp.list.Count),
-				getSource(sexp));
-		return new Node_Namespace(
-   			parseOne<Node_Identifier>(parseIdentifier, sexp),
-			parseOne<Node_Sieve>(parseSieve, sexp),
-			getSource(sexp) );
-	}
-
 	protected virtual Node_Nand parseNand(Sexp sexp) {
 		if( sexp.list.Count != 2 )
 			throw new ParseError(
@@ -530,16 +462,16 @@ public abstract class ToyParserAuto : ToyParserBase {
 			getSource(sexp) );
 	}
 
-	protected virtual Node_NamespacedWoScidentre parseNamespacedWoScidentre(Sexp sexp) {
+	protected virtual Node_Xnor parseXnor(Sexp sexp) {
 		if( sexp.list.Count != 2 )
 			throw new ParseError(
 				String.Format(
-					"'namespaced-wo-scidentre' node must have 2 children ({0} given)",
+					"'xnor' node must have 2 children ({0} given)",
 					sexp.list.Count),
 				getSource(sexp));
-		return new Node_NamespacedWoScidentre(
-   			parseMult1<Node_Identifier>(parseIdentifier, sexp),
-			parseOne<Node_Identifier>(parseIdentifier, sexp),
+		return new Node_Xnor(
+   			parseOne<INode_Expression>(parseExpression, sexp),
+			parseOne<INode_Expression>(parseExpression, sexp),
 			getSource(sexp) );
 	}
 
@@ -618,15 +550,16 @@ public abstract class ToyParserAuto : ToyParserBase {
 			getSource(sexp) );
 	}
 
-	protected virtual Node_Expose parseExpose(Sexp sexp) {
-		if( sexp.list.Count != 1 )
+	protected virtual Node_InstantiateGeneric parseInstantiateGeneric(Sexp sexp) {
+		if( sexp.list.Count != 2 )
 			throw new ParseError(
 				String.Format(
-					"'expose' node must have 1 children ({0} given)",
+					"'instantiate-generic' node must have 2 children ({0} given)",
 					sexp.list.Count),
 				getSource(sexp));
-		return new Node_Expose(
-   			parseMult1<Node_Identifier>(parseIdentifier, sexp),
+		return new Node_InstantiateGeneric(
+   			parseOne<INode_Expression>(parseExpression, sexp),
+			parseMult1<Node_Argument>(parseArgument, sexp),
 			getSource(sexp) );
 	}
 
@@ -701,15 +634,14 @@ public abstract class ToyParserAuto : ToyParserBase {
 	}
 
 	protected virtual Node_Compound parseCompound(Sexp sexp) {
-		if( sexp.list.Count != 4 )
+		if( sexp.list.Count != 3 )
 			throw new ParseError(
 				String.Format(
-					"'compound' node must have 4 children ({0} given)",
+					"'compound' node must have 3 children ({0} given)",
 					sexp.list.Count),
 				getSource(sexp));
 		return new Node_Compound(
-   			parseMult0<Node_Expose>(parseExpose, sexp),
-			parseMult0<Node_Using>(parseUsing, sexp),
+   			parseMult0<INode_Expression>(parseExpression, sexp),
 			parseMult0<INode_StatementDeclaration>(parseStatementDeclaration, sexp),
 			parseMult1<INode_Expression>(parseExpression, sexp),
 			getSource(sexp) );
@@ -728,17 +660,44 @@ public abstract class ToyParserAuto : ToyParserBase {
 			getSource(sexp) );
 	}
 
-	protected virtual Node_Using parseUsing(Sexp sexp) {
-		if( sexp.list.Count != 2 )
+	protected virtual INode_StatementDeclaration parseStatementDeclaration(Sexp sexp) {
+		if( sexp.type != SexpType.LIST )
+			return parseTerminalStatementDeclaration(sexp);
+		if( sexp.list.Count == 0 )
 			throw new ParseError(
-				String.Format(
-					"'using' node must have 2 children ({0} given)",
-					sexp.list.Count),
+				"this list cannot be empty",
 				getSource(sexp));
-		return new Node_Using(
-   			parseMult1<Node_Identifier>(parseIdentifier, sexp),
-			parseOpt<Node_Identifier>(parseIdentifier, sexp),
-			getSource(sexp) );
+		if( sexp.list.First.Value.type != SexpType.WORD )
+			return parseNonwordStatementDeclaration(sexp);
+		Sexp first = sexp.list.First.Value;
+		string specType = first.atom;
+		sexp.list.RemoveFirst();
+		switch(specType) {
+			case "declare-first":
+				return parseDeclareFirst(sexp);
+			case "sieve":
+				return parseSieve(sexp);
+			default:
+				sexp.list.AddFirst(first);
+				return parseStatementDeclarationDefault(sexp);
+		}
+	}
+	protected virtual INode_StatementDeclaration parseTerminalStatementDeclaration(Sexp sexp) {
+		throw new ParseError(
+			"StatementDeclaration expression must be a list",
+			getSource(sexp));
+	}
+	protected virtual INode_StatementDeclaration parseNonwordStatementDeclaration(Sexp sexp) {
+		throw new ParseError(
+			"expression must begin with a word",
+			getSource(sexp));
+	}
+	protected virtual INode_StatementDeclaration parseStatementDeclarationDefault(Sexp sexp) {
+		throw new ParseError(
+			String.Format(
+				"unknown type of StatementDeclaration '{0}'",
+				sexp.list.First.Value.atom),
+			getSource(sexp));
 	}
 
 	protected virtual Node_SetProperty parseSetProperty(Sexp sexp) {
@@ -756,15 +715,14 @@ public abstract class ToyParserAuto : ToyParserBase {
 	}
 
 	protected virtual Node_Sieve parseSieve(Sexp sexp) {
-		if( sexp.list.Count != 3 )
+		if( sexp.list.Count != 2 )
 			throw new ParseError(
 				String.Format(
-					"'sieve' node must have 3 children ({0} given)",
+					"'sieve' node must have 2 children ({0} given)",
 					sexp.list.Count),
 				getSource(sexp));
 		return new Node_Sieve(
-   			parseMult0<Node_Expose>(parseExpose, sexp),
-			parseMult0<Node_Using>(parseUsing, sexp),
+   			parseMult0<INode_Expression>(parseExpression, sexp),
 			parseMult0<Node_Hidable>(parseHidable, sexp),
 			getSource(sexp) );
 	}
@@ -819,19 +777,6 @@ public abstract class ToyParserAuto : ToyParserBase {
 				getSource(sexp));
 		return new Node_Case(
    			parseMult1<INode_Expression>(parseExpression, sexp),
-			parseOne<INode_Expression>(parseExpression, sexp),
-			getSource(sexp) );
-	}
-
-	protected virtual Node_DictionaryEntry parseDictionaryEntry(Sexp sexp) {
-		if( sexp.list.Count != 2 )
-			throw new ParseError(
-				String.Format(
-					"'dictionary-entry' node must have 2 children ({0} given)",
-					sexp.list.Count),
-				getSource(sexp));
-		return new Node_DictionaryEntry(
-   			parseOne<INode_Expression>(parseExpression, sexp),
 			parseOne<INode_Expression>(parseExpression, sexp),
 			getSource(sexp) );
 	}
@@ -982,8 +927,6 @@ public abstract class ToyParserAuto : ToyParserBase {
 				return parseDeclareAssign(sexp);
 			case "identifier":
 				return parseIdentifier(sexp);
-			case "namespaced-wo-scidentre":
-				return parseNamespacedWoScidentre(sexp);
 			case "select":
 				return parseSelect(sexp);
 			case "set-property":

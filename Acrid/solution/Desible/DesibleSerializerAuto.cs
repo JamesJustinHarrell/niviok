@@ -32,20 +32,6 @@ public abstract class DesibleSerializerAuto : DesibleSerializerBase {
 		return elem;
 	}
 
-	protected virtual XmlElement serialize(Node_InstantiateGeneric node) {
-		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
-		append<INode_Expression>(elem, node.@generic, "generic");
-		append<Node_Argument>(elem, node.@arguments, null);
-		return elem;
-	}
-
-	protected virtual XmlElement serialize(Node_Xnor node) {
-		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
-		append<INode_Expression>(elem, node.@first, "first");
-		append<INode_Expression>(elem, node.@second, "second");
-		return elem;
-	}
-
 	protected virtual XmlElement serialize(Node_Conditional node) {
 		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
 		append<INode_Expression>(elem, node.@test, "test");
@@ -84,6 +70,13 @@ public abstract class DesibleSerializerAuto : DesibleSerializerBase {
 
 	protected virtual XmlElement serialize(Node_Yield node) {
 		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
+		append<INode_Expression>(elem, node.@value, "value");
+		return elem;
+	}
+
+	protected virtual XmlElement serialize(Node_DictionaryEntry node) {
+		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
+		append<INode_Expression>(elem, node.@key, "key");
 		append<INode_Expression>(elem, node.@value, "value");
 		return elem;
 	}
@@ -167,13 +160,6 @@ public abstract class DesibleSerializerAuto : DesibleSerializerBase {
 		return elem;
 	}
 
-	protected virtual XmlElement serialize(Node_Namespace node) {
-		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
-		append<Node_Identifier>(elem, node.@name, "name");
-		append<Node_Sieve>(elem, node.@sieve, null);
-		return elem;
-	}
-
 	protected virtual XmlElement serialize(Node_Nand node) {
 		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
 		append<INode_Expression>(elem, node.@first, "first");
@@ -237,10 +223,10 @@ public abstract class DesibleSerializerAuto : DesibleSerializerBase {
 		return elem;
 	}
 
-	protected virtual XmlElement serialize(Node_NamespacedWoScidentre node) {
+	protected virtual XmlElement serialize(Node_Xnor node) {
 		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
-		append<Node_Identifier>(elem, node.@namespaces, "namespace");
-		append<Node_Identifier>(elem, node.@identikeyName, "identikey name");
+		append<INode_Expression>(elem, node.@first, "first");
+		append<INode_Expression>(elem, node.@second, "second");
 		return elem;
 	}
 
@@ -279,9 +265,10 @@ public abstract class DesibleSerializerAuto : DesibleSerializerBase {
 		return elem;
 	}
 
-	protected virtual XmlElement serialize(Node_Expose node) {
+	protected virtual XmlElement serialize(Node_InstantiateGeneric node) {
 		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
-		append<Node_Identifier>(elem, node.@identifiers, null);
+		append<INode_Expression>(elem, node.@generic, "generic");
+		append<Node_Argument>(elem, node.@arguments, null);
 		return elem;
 	}
 
@@ -327,8 +314,7 @@ public abstract class DesibleSerializerAuto : DesibleSerializerBase {
 
 	protected virtual XmlElement serialize(Node_Compound node) {
 		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
-		append<Node_Expose>(elem, node.@exposes, null);
-		append<Node_Using>(elem, node.@usings, null);
+		append<INode_Expression>(elem, node.@exposes, "expose");
 		append<INode_StatementDeclaration>(elem, node.@declarations, "declaration");
 		append<INode_Expression>(elem, node.@members, "member");
 		return elem;
@@ -338,13 +324,6 @@ public abstract class DesibleSerializerAuto : DesibleSerializerBase {
 		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
 		append<INode_Expression>(elem, node.@inheritees, "inheritee");
 		append<Node_StatusedMember>(elem, node.@members, "member");
-		return elem;
-	}
-
-	protected virtual XmlElement serialize(Node_Using node) {
-		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
-		append<Node_Identifier>(elem, node.@targets, "target");
-		append<Node_Identifier>(elem, node.@name, "name");
 		return elem;
 	}
 
@@ -358,8 +337,7 @@ public abstract class DesibleSerializerAuto : DesibleSerializerBase {
 
 	protected virtual XmlElement serialize(Node_Sieve node) {
 		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
-		append<Node_Expose>(elem, node.@exposes, null);
-		append<Node_Using>(elem, node.@usings, null);
+		append<INode_Expression>(elem, node.@exposes, "expose");
 		append<Node_Hidable>(elem, node.@hidables, null);
 		return elem;
 	}
@@ -391,13 +369,6 @@ public abstract class DesibleSerializerAuto : DesibleSerializerBase {
 		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
 		append<INode_Expression>(elem, node.@testValues, "test value");
 		append<INode_Expression>(elem, node.@result, "result");
-		return elem;
-	}
-
-	protected virtual XmlElement serialize(Node_DictionaryEntry node) {
-		XmlElement elem = _doc.CreateElement(node.typeName, desible1NS);
-		append<INode_Expression>(elem, node.@key, "key");
-		append<INode_Expression>(elem, node.@value, "value");
 		return elem;
 	}
 
@@ -499,10 +470,6 @@ public abstract class DesibleSerializerAuto : DesibleSerializerBase {
 				return serialize((Node_MemberStatus)node);
 			case "declare-first":
 				return serialize((Node_DeclareFirst)node);
-			case "instantiate-generic":
-				return serialize((Node_InstantiateGeneric)node);
-			case "xnor":
-				return serialize((Node_Xnor)node);
 			case "conditional":
 				return serialize((Node_Conditional)node);
 			case "argument":
@@ -515,6 +482,8 @@ public abstract class DesibleSerializerAuto : DesibleSerializerBase {
 				return serialize((Node_Boolean)node);
 			case "yield":
 				return serialize((Node_Yield)node);
+			case "dictionary-entry":
+				return serialize((Node_DictionaryEntry)node);
 			case "property":
 				return serialize((Node_Property)node);
 			case "member-type":
@@ -537,8 +506,6 @@ public abstract class DesibleSerializerAuto : DesibleSerializerBase {
 				return serialize((Node_GenericFunction)node);
 			case "breed":
 				return serialize((Node_Breed)node);
-			case "namespace":
-				return serialize((Node_Namespace)node);
 			case "nand":
 				return serialize((Node_Nand)node);
 			case "hidable":
@@ -557,8 +524,8 @@ public abstract class DesibleSerializerAuto : DesibleSerializerBase {
 				return serialize((Node_Method)node);
 			case "function":
 				return serialize((Node_Function)node);
-			case "namespaced-wo-scidentre":
-				return serialize((Node_NamespacedWoScidentre)node);
+			case "xnor":
+				return serialize((Node_Xnor)node);
 			case "direction":
 				return serialize((Node_Direction)node);
 			case "object":
@@ -569,8 +536,8 @@ public abstract class DesibleSerializerAuto : DesibleSerializerBase {
 				return serialize((Node_Dictionary)node);
 			case "callee":
 				return serialize((Node_Callee)node);
-			case "expose":
-				return serialize((Node_Expose)node);
+			case "instantiate-generic":
+				return serialize((Node_InstantiateGeneric)node);
 			case "declare-empty":
 				return serialize((Node_DeclareEmpty)node);
 			case "worker":
@@ -585,8 +552,6 @@ public abstract class DesibleSerializerAuto : DesibleSerializerBase {
 				return serialize((Node_Compound)node);
 			case "interface":
 				return serialize((Node_Interface)node);
-			case "using":
-				return serialize((Node_Using)node);
 			case "set-property":
 				return serialize((Node_SetProperty)node);
 			case "sieve":
@@ -599,8 +564,6 @@ public abstract class DesibleSerializerAuto : DesibleSerializerBase {
 				return serialize((Node_TypeSelect)node);
 			case "case":
 				return serialize((Node_Case)node);
-			case "dictionary-entry":
-				return serialize((Node_DictionaryEntry)node);
 			case "catcher":
 				return serialize((Node_Catcher)node);
 			case "try-catch":

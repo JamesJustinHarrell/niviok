@@ -33,22 +33,6 @@ public abstract class DesibleParserAuto : DesibleParserBase {
 			getSource(element) );
 	}
 
-	protected virtual Node_InstantiateGeneric parseInstantiateGeneric(XmlElement element) {
-		checkElement(element, "instantiate-generic");
-		return new Node_InstantiateGeneric(
-			parseOne<INode_Expression>(parseExpression, element, "*", "generic"),
-			parseMult<Node_Argument>(parseArgument, element, "argument", null),
-			getSource(element) );
-	}
-
-	protected virtual Node_Xnor parseXnor(XmlElement element) {
-		checkElement(element, "xnor");
-		return new Node_Xnor(
-			parseOne<INode_Expression>(parseExpression, element, "*", "first"),
-			parseOne<INode_Expression>(parseExpression, element, "*", "second"),
-			getSource(element) );
-	}
-
 	protected virtual Node_Conditional parseConditional(XmlElement element) {
 		checkElement(element, "conditional");
 		return new Node_Conditional(
@@ -93,21 +77,12 @@ public abstract class DesibleParserAuto : DesibleParserBase {
 			getSource(element) );
 	}
 
-	protected virtual INode_StatementDeclaration parseStatementDeclaration(XmlElement element) {
-		switch(element.LocalName) {
-			case "declare-first":
-				return parseDeclareFirst(element);
-			case "sieve":
-				return parseSieve(element);
-			case "namespace":
-				return parseNamespace(element);
-			default:
-				throw new ParseError(
-					String.Format(
-						"element with name '{0}' is not recognized as a StatementDeclaration node",
-						element.LocalName),
-					getSource(element));
-		}
+	protected virtual Node_DictionaryEntry parseDictionaryEntry(XmlElement element) {
+		checkElement(element, "dictionary-entry");
+		return new Node_DictionaryEntry(
+			parseOne<INode_Expression>(parseExpression, element, "*", "key"),
+			parseOne<INode_Expression>(parseExpression, element, "*", "value"),
+			getSource(element) );
 	}
 
 	protected virtual Node_Property parseProperty(XmlElement element) {
@@ -196,14 +171,6 @@ public abstract class DesibleParserAuto : DesibleParserBase {
 			getSource(element) );
 	}
 
-	protected virtual Node_Namespace parseNamespace(XmlElement element) {
-		checkElement(element, "namespace");
-		return new Node_Namespace(
-			parseOne<Node_Identifier>(parseIdentifier, element, "*", "name"),
-			parseOne<Node_Sieve>(parseSieve, element, "sieve", null),
-			getSource(element) );
-	}
-
 	protected virtual Node_Nand parseNand(XmlElement element) {
 		checkElement(element, "nand");
 		return new Node_Nand(
@@ -274,11 +241,11 @@ public abstract class DesibleParserAuto : DesibleParserBase {
 			getSource(element) );
 	}
 
-	protected virtual Node_NamespacedWoScidentre parseNamespacedWoScidentre(XmlElement element) {
-		checkElement(element, "namespaced-wo-scidentre");
-		return new Node_NamespacedWoScidentre(
-			parseMult<Node_Identifier>(parseIdentifier, element, "*", "namespace"),
-			parseOne<Node_Identifier>(parseIdentifier, element, "*", "identikey name"),
+	protected virtual Node_Xnor parseXnor(XmlElement element) {
+		checkElement(element, "xnor");
+		return new Node_Xnor(
+			parseOne<INode_Expression>(parseExpression, element, "*", "first"),
+			parseOne<INode_Expression>(parseExpression, element, "*", "second"),
 			getSource(element) );
 	}
 
@@ -320,10 +287,11 @@ public abstract class DesibleParserAuto : DesibleParserBase {
 			getSource(element) );
 	}
 
-	protected virtual Node_Expose parseExpose(XmlElement element) {
-		checkElement(element, "expose");
-		return new Node_Expose(
-			parseMult<Node_Identifier>(parseIdentifier, element, "identifier", null),
+	protected virtual Node_InstantiateGeneric parseInstantiateGeneric(XmlElement element) {
+		checkElement(element, "instantiate-generic");
+		return new Node_InstantiateGeneric(
+			parseOne<INode_Expression>(parseExpression, element, "*", "generic"),
+			parseMult<Node_Argument>(parseArgument, element, "argument", null),
 			getSource(element) );
 	}
 
@@ -375,8 +343,7 @@ public abstract class DesibleParserAuto : DesibleParserBase {
 	protected virtual Node_Compound parseCompound(XmlElement element) {
 		checkElement(element, "compound");
 		return new Node_Compound(
-			parseMult<Node_Expose>(parseExpose, element, "expose", null),
-			parseMult<Node_Using>(parseUsing, element, "using", null),
+			parseMult<INode_Expression>(parseExpression, element, "*", "expose"),
 			parseMult<INode_StatementDeclaration>(parseStatementDeclaration, element, "*", "declaration"),
 			parseMult<INode_Expression>(parseExpression, element, "*", "member"),
 			getSource(element) );
@@ -390,12 +357,19 @@ public abstract class DesibleParserAuto : DesibleParserBase {
 			getSource(element) );
 	}
 
-	protected virtual Node_Using parseUsing(XmlElement element) {
-		checkElement(element, "using");
-		return new Node_Using(
-			parseMult<Node_Identifier>(parseIdentifier, element, "*", "target"),
-			parseOpt<Node_Identifier>(parseIdentifier, element, "*", "name"),
-			getSource(element) );
+	protected virtual INode_StatementDeclaration parseStatementDeclaration(XmlElement element) {
+		switch(element.LocalName) {
+			case "declare-first":
+				return parseDeclareFirst(element);
+			case "sieve":
+				return parseSieve(element);
+			default:
+				throw new ParseError(
+					String.Format(
+						"element with name '{0}' is not recognized as a StatementDeclaration node",
+						element.LocalName),
+					getSource(element));
+		}
 	}
 
 	protected virtual Node_SetProperty parseSetProperty(XmlElement element) {
@@ -410,8 +384,7 @@ public abstract class DesibleParserAuto : DesibleParserBase {
 	protected virtual Node_Sieve parseSieve(XmlElement element) {
 		checkElement(element, "sieve");
 		return new Node_Sieve(
-			parseMult<Node_Expose>(parseExpose, element, "expose", null),
-			parseMult<Node_Using>(parseUsing, element, "using", null),
+			parseMult<INode_Expression>(parseExpression, element, "*", "expose"),
 			parseMult<Node_Hidable>(parseHidable, element, "hidable", null),
 			getSource(element) );
 	}
@@ -447,14 +420,6 @@ public abstract class DesibleParserAuto : DesibleParserBase {
 		return new Node_Case(
 			parseMult<INode_Expression>(parseExpression, element, "*", "test value"),
 			parseOne<INode_Expression>(parseExpression, element, "*", "result"),
-			getSource(element) );
-	}
-
-	protected virtual Node_DictionaryEntry parseDictionaryEntry(XmlElement element) {
-		checkElement(element, "dictionary-entry");
-		return new Node_DictionaryEntry(
-			parseOne<INode_Expression>(parseExpression, element, "*", "key"),
-			parseOne<INode_Expression>(parseExpression, element, "*", "value"),
 			getSource(element) );
 	}
 
@@ -553,8 +518,6 @@ public abstract class DesibleParserAuto : DesibleParserBase {
 				return parseDeclareAssign(element);
 			case "identifier":
 				return parseIdentifier(element);
-			case "namespaced-wo-scidentre":
-				return parseNamespacedWoScidentre(element);
 			case "select":
 				return parseSelect(element);
 			case "set-property":

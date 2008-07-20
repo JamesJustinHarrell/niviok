@@ -7,44 +7,39 @@ namespace Acrid.Execution {
 
 class Scope : IScope {
 	IScope _parent;
-	HashSet<IDerefable> _exposes;
-	IDictionary<Identifier, NsScidentre> _nsScidentres;
-	IDictionary<Identifier, IWoScidentre> _woScidentres;
+	HashSet<IWorker> _exposes;
+	HashSet<ISieve> _sieves;
+	IDictionary<Identifier, IScidentre> _scidentres;
 	ScopeAllowance _allowance;
 
 	public Scope( IScope parent, ScopeAllowance allowance ) {
 		_parent = parent;
-		_exposes = new HashSet<IDerefable>();
-		_nsScidentres = new Dictionary<Identifier,NsScidentre>();
-		_woScidentres = new Dictionary<Identifier,IWoScidentre>();
+		_exposes = new HashSet<IWorker>();
+		_sieves = new HashSet<ISieve>();
+		_scidentres = new Dictionary<Identifier,IScidentre>();
 		_allowance = allowance;
 		if(_parent == null && _allowance == null)
 			throw new Exception("parent and allowance can't both be null");
 	}
 	
-	public void expose(IDerefable d) {
-		_exposes.Add(d);
+	public void expose(IWorker worker) {
+		_exposes.Add(worker);
 	}
 	
-	public void bindNamespace( Identifier i, IDerefable d ) {
-		if( ! _nsScidentres.ContainsKey(i) )
-			_nsScidentres.Add(i, new NsScidentre());
-		_nsScidentres[i].bind(d);
+	public void addSieve(ISieve sieve) {
+		_sieves.Add(sieve);
 	}
 	
-	//this function is very similar to Sieve::reserveWoScidentre
-	public IWoScidentre reserveWoScidentre( Identifier name, WoScidentreCategory cat ) {
-		if(_nsScidentres.ContainsKey(name) )
-			throw new Exception(String.Format(
-				"scidentre '{0}' declared as worker and namespace", name));
-		if(cat != WoScidentreCategory.OVERLOAD)
-			if(_woScidentres.ContainsKey(name))
+	//this function is very similar to Sieve::reserveScidentre
+	public IScidentre reserveScidentre( Identifier name, ScidentreCategory cat ) {
+		if(cat != ScidentreCategory.OVERLOAD)
+			if(_scidentres.ContainsKey(name))
 				throw new Exception(String.Format(
 					"non-overload wo-scidentre '{0}' declared " +
 					"multiple times in same scope", name));
-		if(_woScidentres.ContainsKey(name)) {
+		if(_scidentres.ContainsKey(name)) {
 			//note that here we know that the category is FUNCTION
-			IWoScidentre ws = _woScidentres[name];
+			IScidentre ws = _scidentres[name];
 			if( !(ws is OverloadScidentre) )
 				throw new Exception(String.Format(
 					"wo-scidentre '{0}' in same scope declared " +
@@ -52,22 +47,22 @@ class Scope : IScope {
 			(ws as OverloadScidentre).incrementRequiredCount();
 		}
 		else
-			_woScidentres.Add(name, (
-				cat == WoScidentreCategory.CONSTANT ? new ConstantScidentre() as IWoScidentre :
-				cat == WoScidentreCategory.OVERLOAD ? new OverloadScidentre() as IWoScidentre :
-				cat == WoScidentreCategory.VARIABLE ? new VariableScidentre() as IWoScidentre :
+			_scidentres.Add(name, (
+				cat == ScidentreCategory.CONSTANT ? new ConstantScidentre() as IScidentre :
+				cat == ScidentreCategory.OVERLOAD ? new OverloadScidentre() as IScidentre :
+				cat == ScidentreCategory.VARIABLE ? new VariableScidentre() as IScidentre :
 				null /* xxx throw statement not allowed here */ ));
-		return _woScidentres[name];
+		return _scidentres[name];
 	}
 
-	public void activateWoScidentre(Identifier name, NType type, IWorker worker) {
-		_woScidentres[name].type = type;
-		_woScidentres[name].assign(worker);
+	public void activateScidentre(Identifier name, NType type, IWorker worker) {
+		_scidentres[name].type = type;
+		_scidentres[name].assign(worker);
 	}
 	
 	public void assign(Identifier name, IWorker worker) {
-		if( _woScidentres.ContainsKey(name) )
-			_woScidentres[name].assign(worker);
+		if( _scidentres.ContainsKey(name) )
+			_scidentres[name].assign(worker);
 		else if( _parent != null )
 			_parent.assign(name, worker);
 		else
@@ -75,14 +70,14 @@ class Scope : IScope {
 				"no wo-scidentre found named '{0}'", name));
 	}
 	
-	public DerefResults upDeref(IdentifierSequence idents) {
+	public DerefResults upDeref(Identifier idents) {
 		return GE.commonDeref(
-			idents, _woScidentres, _nsScidentres, _exposes, _parent);
+			idents, _scidentres, _sieves, _exposes, _parent);
 	}
 	
-	public HashSet<IWoScidentre> upFindEmptyWoScidentres(IdentifierSequence idents) { 
-		return GE.commonFindEmptyWoScidentres(
-			idents, _woScidentres, _nsScidentres, _exposes, _parent);
+	public HashSet<IScidentre> upFindEmptyScidentres(Identifier idents) { 
+		return GE.commonFindEmptyScidentres(
+			idents, _scidentres, _sieves, _parent);
 	}
 	
 	public ScopeAllowance allowance {

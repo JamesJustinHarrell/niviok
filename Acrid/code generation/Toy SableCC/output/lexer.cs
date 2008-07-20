@@ -2,113 +2,35 @@
 
 using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using Acrid.Toy.SableCC.node;
 
 namespace Acrid.Toy.SableCC.lexer {
 
-internal static class StringUtil {
-	public static char replacement = (char)0xFFFD; //U+FFFD REPLACEMENT CHARACTER
-
-	public static bool isHighSurrogate(uint codePoint) {
-		return (0xD800 <= codePoint && codePoint <= 0xDBFF);
-	}
-	
-	public static bool isLowSurrogate(uint codePoint) {
-		return (0xDC00 <= codePoint && codePoint <= 0xDFFF);
-	}
-
-	public static bool isSurrogate(uint codePoint) {
-		return (0xD800 <= codePoint && codePoint <= 0xDFFF);
-	}
-	
-	public static uint fromSurrogatePair(uint high, uint low) {
-		if( ! (isHighSurrogate(high) && isLowSurrogate(low)) )
-			return replacement;
-		return (high - 0xD800)*0x400 + (low - 0xDC00) + 0x10000;
-	}
-
-	public static char computeHighSurrogate(uint codePoint) {
-		return (char)(
-			((double)(codePoint - 0x10000)) /
-			((double)(0x400 + 0xD800)) );
-	}
-	
-	public static char computeLowSurrogate(uint codePoint) {
-		return (char)( ((codePoint - 0x10000) % 0x400) + 0xDC00 );
-	}
-	
-	public static IEnumerable<uint> toCodePoints(TextReader reader) {
-		//key: H-high surrogate, L-low surrogate, N-non-surrogate
-		//4 cases: HL, H<eof>|HN|HH, L, N
-		while( reader.Peek() > -1 ) {
-			char code1 = (char)reader.Read();
-			if( isHighSurrogate(code1) ) {
-				if( reader.Peek() > -1 && isLowSurrogate((char)reader.Peek()) )
-					yield return fromSurrogatePair(code1, (char)reader.Read()); //HL
-				else
-					yield return replacement; //H<eof>|HN|HH
-			}
-			else if( isLowSurrogate(code1) ) //L
-				yield return replacement;
-			else
-				yield return code1; //N
-		}
-	}
-	
-	public static string stringFromCodePoints(IList<uint> codePoints) {
-		StringBuilder sb = new StringBuilder();
-		foreach( uint codePoint in codePoints ) {
-			if( codePoint > 0x10FFFF || isSurrogate(codePoint) )
-				sb.Append(replacement);
-			if( codePoint >= 0x10000 ) {
-				sb.Append(computeHighSurrogate(codePoint));
-				sb.Append(computeLowSurrogate(codePoint));
-			}
-			else sb.Append( (char)codePoint );
-		}
-		return sb.ToString();
-	}
-}
-
 internal class PushbackReader {
-  private IEnumerator<uint> reader;
+  private TextReader reader;
   private Stack stack = new Stack ();
 
 
   internal PushbackReader (TextReader reader)
   {
-    this.reader = StringUtil.toCodePoints(reader).GetEnumerator();
+    this.reader = reader;
   }
 
-  internal long Peek ()
+  internal int Peek ()
   {
-    if ( stack.Count > 0 ) return (long)stack.Peek();
-    long value = __Read();
-    Unread(value);
-    return value;
+    if ( stack.Count > 0 ) return (int)stack.Peek();
+    return reader.Peek();
   }
 
-  internal long Read ()
+  internal int Read ()
   {
-    long value = __Read();
-    if( value > 127 )
-      Console.WriteLine("code point: " + value.ToString());
-    return value;
+    if ( stack.Count > 0 ) return (int)stack.Pop();
+    return reader.Read();
   }
 
-  internal long __Read ()
-  {
-    if ( stack.Count > 0 ) return (long)stack.Pop();
-    if ( reader.MoveNext() )
-    	return reader.Current;
-    else
-    	return -1;
-  }
-
-  internal void Unread (long v)
+  internal void Unread (int v)
   {
     stack.Push (v);
   }
@@ -131,13 +53,7 @@ public class Lexer
     private int pos;
     private bool cr;
     private bool eof;
-    private List<uint> text = new List<uint>();
-
-
-    private string TextToString() {
-         return GetText(text.Count);
-    }
-
+    private StringBuilder text = new StringBuilder();
 
     protected virtual void Filter()
     {
@@ -187,11 +103,11 @@ public class Lexer
 
         int[][][] gotoTable = Lexer.gotoTable[currentState.id()];
         int[] accept = Lexer.accept[currentState.id()];
-        text.Clear();
+        text.Length = 0;
 
         while(true)
         {
-            long c = GetChar();
+            int c = GetChar();
 
             if(c != -1)
             {
@@ -219,7 +135,7 @@ public class Lexer
                     break;
                 };
 
-                text.Add((uint)c);
+                text.Append((char) c);
                 do
                 {
                     int oldState = (dfa_state < -1) ? (-2 -dfa_state) : dfa_state;
@@ -262,7 +178,7 @@ public class Lexer
                 {
                     accept_state = dfa_state;
                     accept_token = accept[dfa_state];
-                    accept_length = text.Count;
+                    accept_length = text.Length;
                     accept_pos = pos;
                     accept_line = line;
                 }
@@ -387,11 +303,11 @@ public class Lexer
                 }
                 else
                 {
-                    if(text.Count > 0)
+                    if(text.Length > 0)
                     {
                         throw new LexerException(
                             "[" + (start_line + 1) + "," + (start_pos + 1) + "]" +
-                            " Unknown token: " + TextToString());
+                            " Unknown token: " + text);
                     }
                     else
                     {
@@ -416,14 +332,14 @@ public class Lexer
     private Token New8(String text, int line, int pos) { return new TTLinecomment(text, line, pos); }
     private Token New9(String text, int line, int pos) { return new TTMultilinecomment(text, line, pos); }
 
-    private long GetChar()
+    private int GetChar()
     {
         if(eof)
         {
             return -1;
         }
 
-        long result = input.Read();
+        int result = input.Read();
 
         if(result == -1)
         {
@@ -435,7 +351,7 @@ public class Lexer
 
     private void PushBack(int acceptLength)
     {
-        int length = text.Count;
+        int length = text.Length;
         for(int i = length - 1; i >= acceptLength; i--)
         {
             eof = false;
@@ -447,14 +363,14 @@ public class Lexer
 
     protected virtual void Unread(Token token)
     {
-        String str = token.Text;
-        if( str.Length > 0 )
-        	eof = false;
-        LinkedList<uint> codePoints = new LinkedList<uint>(
-        	StringUtil.toCodePoints(new StringReader(str)));
-        while( codePoints.Last != null ) {
-        	input.Unread(codePoints.Last.Value);
-        	codePoints.RemoveLast();
+        String text = token.Text;
+        int length = text.Length;
+
+        for(int i = length - 1; i >= 0; i--)
+        {
+            eof = false;
+
+            input.Unread(text[i]);
         }
 
         pos = token.Pos - 1;
@@ -466,7 +382,7 @@ public class Lexer
         StringBuilder s = new StringBuilder(acceptLength);
         for(int i = 0; i < acceptLength; i++)
         {
-            s.Append(StringUtil.stringFromCodePoints(new uint[]{text[i]}));
+            s.Append(text[i]);
         }
 
         return s.ToString();
@@ -475,198 +391,100 @@ public class Lexer
     private static int[][][][] gotoTable = {
       new int[][][] {
         new int[][] {
-          new int[] {0, 8, 1},
-          new int[] {9, 10, 2},
-          new int[] {11, 12, 1},
-          new int[] {13, 13, 2},
-          new int[] {14, 31, 1},
-          new int[] {32, 32, 2},
-          new int[] {33, 33, 1},
-          new int[] {34, 34, 3},
-          new int[] {35, 35, 4},
-          new int[] {36, 39, 1},
-          new int[] {40, 40, 5},
-          new int[] {41, 41, 6},
-          new int[] {42, 44, 1},
-          new int[] {45, 45, 7},
-          new int[] {46, 46, 1},
-          new int[] {47, 47, 8},
-          new int[] {48, 57, 9},
-          new int[] {58, 65535, 1},
+          new int[] {9, 10, 1},
+          new int[] {13, 13, 1},
+          new int[] {32, 32, 1},
+          new int[] {34, 34, 2},
+          new int[] {35, 35, 3},
+          new int[] {40, 40, 4},
+          new int[] {41, 41, 5},
+          new int[] {45, 45, 6},
+          new int[] {47, 47, 7},
+          new int[] {48, 57, 8},
+          new int[] {65, 90, 9},
+          new int[] {97, 122, 9},
         },
         new int[][] {
-          new int[] {0, 32, 10},
-          new int[] {33, 33, 11},
-          new int[] {34, 44, 10},
-          new int[] {45, 45, 12},
-          new int[] {46, 47, 10},
-          new int[] {48, 57, 13},
-          new int[] {58, 62, 10},
-          new int[] {63, 63, 14},
-          new int[] {64, 65535, 10},
         },
         new int[][] {
-          new int[] {0, 65535, -3},
+          new int[] {9, 33, 10},
+          new int[] {34, 34, 11},
+          new int[] {35, 65535, 10},
         },
         new int[][] {
-          new int[] {0, 8, 10},
-          new int[] {9, 32, 15},
-          new int[] {33, 33, 16},
-          new int[] {34, 34, 17},
-          new int[] {35, 44, 15},
-          new int[] {45, 45, 18},
-          new int[] {46, 47, 15},
-          new int[] {48, 57, 19},
-          new int[] {58, 62, 15},
-          new int[] {63, 63, 20},
-          new int[] {64, 65535, 15},
+          new int[] {9, 9, 12},
+          new int[] {11, 12, 12},
+          new int[] {14, 34, 12},
+          new int[] {36, 65535, 12},
         },
         new int[][] {
-          new int[] {0, 8, 10},
-          new int[] {9, 9, 21},
-          new int[] {10, 10, 10},
-          new int[] {11, 12, 21},
-          new int[] {13, 13, 10},
-          new int[] {14, 32, 21},
-          new int[] {33, 33, 22},
-          new int[] {34, 34, 21},
-          new int[] {35, 35, 10},
-          new int[] {36, 44, 21},
-          new int[] {45, 45, 23},
-          new int[] {46, 47, 21},
-          new int[] {48, 57, 24},
-          new int[] {58, 62, 21},
-          new int[] {63, 63, 25},
-          new int[] {64, 65535, 21},
         },
         new int[][] {
-          new int[] {0, 65535, -3},
         },
         new int[][] {
-          new int[] {0, 65535, -3},
         },
         new int[][] {
-          new int[] {0, 65535, -3},
+          new int[] {42, 42, 13},
         },
         new int[][] {
-          new int[] {0, 33, -3},
-          new int[] {34, 41, 10},
-          new int[] {42, 42, 26},
-          new int[] {43, 44, 10},
-          new int[] {45, 65535, -3},
+          new int[] {46, 46, 14},
+          new int[] {48, 57, 8},
         },
         new int[][] {
-          new int[] {0, 45, -3},
-          new int[] {46, 46, 27},
-          new int[] {47, 47, 10},
-          new int[] {48, 57, 28},
-          new int[] {58, 65535, -3},
+          new int[] {33, 33, 15},
+          new int[] {45, 45, 16},
+          new int[] {48, 57, 17},
+          new int[] {63, 63, 18},
+          new int[] {65, 90, 19},
+          new int[] {97, 122, 19},
         },
         new int[][] {
-          new int[] {0, 65535, -3},
+          new int[] {9, 65535, -4},
         },
         new int[][] {
-          new int[] {0, 65535, -3},
         },
         new int[][] {
-          new int[] {0, 65535, -3},
+          new int[] {9, 65535, -5},
         },
         new int[][] {
-          new int[] {0, 65535, -3},
+          new int[] {9, 41, 20},
+          new int[] {42, 42, 21},
+          new int[] {43, 65535, 20},
         },
         new int[][] {
-          new int[] {0, 65535, -3},
+          new int[] {48, 57, 22},
         },
         new int[][] {
-          new int[] {0, 65535, -5},
         },
         new int[][] {
-          new int[] {0, 65535, -5},
+          new int[] {33, 122, -11},
         },
         new int[][] {
-          new int[] {0, 65535, -3},
+          new int[] {33, 122, -11},
         },
         new int[][] {
-          new int[] {0, 65535, -5},
         },
         new int[][] {
-          new int[] {0, 65535, -5},
+          new int[] {33, 122, -11},
         },
         new int[][] {
-          new int[] {0, 65535, -5},
+          new int[] {9, 65535, -15},
         },
         new int[][] {
-          new int[] {0, 65535, -6},
+          new int[] {47, 47, 23},
         },
         new int[][] {
-          new int[] {0, 65535, -6},
+          new int[] {48, 57, 22},
         },
         new int[][] {
-          new int[] {0, 65535, -6},
-        },
-        new int[][] {
-          new int[] {0, 65535, -6},
-        },
-        new int[][] {
-          new int[] {0, 65535, -6},
-        },
-        new int[][] {
-          new int[] {0, 8, 10},
-          new int[] {9, 32, 29},
-          new int[] {33, 33, 30},
-          new int[] {34, 41, 29},
-          new int[] {42, 42, 31},
-          new int[] {43, 44, 29},
-          new int[] {45, 45, 32},
-          new int[] {46, 47, 29},
-          new int[] {48, 57, 33},
-          new int[] {58, 62, 29},
-          new int[] {63, 63, 34},
-          new int[] {64, 65535, 29},
-        },
-        new int[][] {
-          new int[] {0, 47, -3},
-          new int[] {48, 57, 35},
-          new int[] {58, 65535, -3},
-        },
-        new int[][] {
-          new int[] {0, 65535, -11},
-        },
-        new int[][] {
-          new int[] {0, 65535, -28},
-        },
-        new int[][] {
-          new int[] {0, 65535, -28},
-        },
-        new int[][] {
-          new int[] {0, 45, -3},
-          new int[] {46, 46, 10},
-          new int[] {47, 47, 36},
-          new int[] {48, 65535, -3},
-        },
-        new int[][] {
-          new int[] {0, 65535, -28},
-        },
-        new int[][] {
-          new int[] {0, 65535, -28},
-        },
-        new int[][] {
-          new int[] {0, 65535, -28},
-        },
-        new int[][] {
-          new int[] {0, 65535, -29},
-        },
-        new int[][] {
-          new int[] {0, 65535, -3},
         },
       },
     };
 
     private static int[][] accept = {
       new int[] {
-        -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-        0, 0, 0, 0, 0, 
+        -1, 7, -1, 8, 4, 5, 6, -1, 1, 0, -1, 3, 8, -1, -1, 0, 
+        0, 0, 0, 0, -1, -1, 2, 9, 
       },
     };
 

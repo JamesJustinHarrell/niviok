@@ -13,7 +13,6 @@
 			<typename>curry</typename>
 			<typename>declare-assign</typename>
 			<typename>identifier</typename>
-			<typename>namespaced-wo-scidentre</typename>
 			<typename>select</typename>
 			<typename>set-property</typename>
 			<typename>try-catch</typename>
@@ -47,7 +46,6 @@
 		<members>
 			<typename>declare-first</typename>
 			<typename>sieve</typename>
-			<typename>namespace</typename>
 		</members>
 	</family>
 	<family>
@@ -218,13 +216,6 @@
 		</entry>
 	</tree>
 	<tree>
-		<typename>expose</typename>
-		<entry>
-			<count>+</count>
-			<typename>identifier</typename>
-		</entry>
-	</tree>
-	<tree>
 		<typename>hidable</typename>
 		<entry>
 			<count>1</count>
@@ -241,11 +232,8 @@
 		<typename>sieve</typename>
 		<entry>
 			<count>*</count>
-			<typename>expose</typename>
-		</entry>
-		<entry>
-			<count>*</count>
-			<typename>using</typename>
+			<typename>expression</typename>
+			<label>expose</label>
 		</entry>
 		<entry>
 			<count>*</count>
@@ -271,31 +259,6 @@
 		<entry>
 			<count>1</count>
 			<typename>sieve</typename>
-		</entry>
-	</tree>
-	<tree>
-		<typename>namespace</typename>
-		<entry>
-			<count>1</count>
-			<typename>identifier</typename>
-			<label>name</label>
-		</entry>
-		<entry>
-			<count>1</count>
-			<typename>sieve</typename>
-		</entry>
-	</tree>
-	<tree>
-		<typename>using</typename>
-		<entry>
-			<count>+</count>
-			<typename>identifier</typename>
-			<label>target</label>
-		</entry>
-		<entry>
-			<count>?</count>
-			<typename>identifier</typename>
-			<label>name</label>
 		</entry>
 	</tree>
 	<tree>
@@ -369,11 +332,8 @@
 		<typename>compound</typename>
 		<entry>
 			<count>*</count>
-			<typename>expose</typename>
-		</entry>
-		<entry>
-			<count>*</count>
-			<typename>using</typename>
+			<typename>expression</typename>
+			<label>expose</label>
 		</entry>
 		<entry>
 			<count>*</count>
@@ -452,19 +412,6 @@
 	<terminal>
 		<typename>identifier</typename>
 	</terminal>
-	<tree>
-		<typename>namespaced-wo-scidentre</typename>
-		<entry>
-			<count>+</count>
-			<typename>identifier</typename>
-			<label>namespace</label>
-		</entry>
-		<entry>
-			<count>1</count>
-			<typename>identifier</typename>
-			<label>identikey name</label>
-		</entry>
-	</tree>
 	<tree>
 		<typename>select</typename>
 		<entry>

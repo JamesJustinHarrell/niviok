@@ -75,12 +75,12 @@ Note: Desal Agent 001 must be recompiled to get this file copied next to the bin
 		)
 		any
 		(generator Int
-			(compound () () (
+			(compound () () () (
 				(declare-assign i false Int false
 					start)
 				(conditional-loop -
 					((extract-member i lessThan?) limit)
-					(compound () () (
+					(compound () () () (
 						(yield i)
 						(assign i false
 							((extract-member i add) 1)))))))))))

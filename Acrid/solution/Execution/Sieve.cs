@@ -16,24 +16,24 @@ class SieveScope : IScope {
 		_sieve = sieve;
 		_visible = visible;
 	}
-
-	public void expose(IDerefable d) {
-		if(_visible)
+	
+	public void expose(IWorker worker) {
+		if( _visible )
 			throw new NotImplementedException();
 		else
-			_sieve.expose(d);
+			_sieve.expose(worker);
+	}
+
+	public void addSieve(ISieve sieve) {
+		_sieve.addSieve(_visible, sieve);
 	}
 	
-	public void bindNamespace( Identifier name, IDerefable d ) {
-		_sieve.bindNamespace( _visible, name, d );
+	public IScidentre reserveScidentre(
+	Identifier name, ScidentreCategory cat ) {
+		return _sieve.reserveScidentre( _visible, name, cat );
 	}
 	
-	public IWoScidentre reserveWoScidentre(
-	Identifier name, WoScidentreCategory cat ) {
-		return _sieve.reserveWoScidentre( _visible, name, cat );
-	}
-	
-	public void activateWoScidentre(Identifier name, NType type, IWorker worker) {
+	public void activateScidentre(Identifier name, NType type, IWorker worker) {
 		throw new NotImplementedException();
 	}
 	
@@ -41,16 +41,12 @@ class SieveScope : IScope {
 		throw new NotImplementedException();
 	}
 	
-	public DerefResults xxxNsUpDeref(IdentifierSequence idents) {
-		return _sieve.xxxNsUpDeref(idents);
-	}
-	
-	public DerefResults upDeref(IdentifierSequence idents) {
+	public DerefResults upDeref(Identifier idents) {
 		return _sieve.upDeref(idents);
 	}
 	
-	public HashSet<IWoScidentre> upFindEmptyWoScidentres(IdentifierSequence idents) {
-		return _sieve.upFindEmptyWoScidentres(idents);
+	public HashSet<IScidentre> upFindEmptyScidentres(Identifier idents) {
+		return _sieve.upFindEmptyScidentres(idents);
 	}
 	
 	public ScopeAllowance allowance {
@@ -58,28 +54,28 @@ class SieveScope : IScope {
 	}
 }
 
-public class Sieve : IDerefable {
+public class Sieve : ISieve {
 	IScope _parent;
-	HashSet<IDerefable> _exposes; //all hidden
-	IDictionary<Identifier,NsScidentre> _visibleNsScidentres;
-	IDictionary<Identifier,NsScidentre> _allNsScidentres;
-	IDictionary<Identifier,IWoScidentre> _visibleWoScidentres;
-	IDictionary<Identifier,IWoScidentre> _hiddenWoScidentres;
+	HashSet<IWorker> _exposes; //all hidden
+	HashSet<ISieve> _visibleSieves;
+	HashSet<ISieve> _hiddenSieves;
+	IDictionary<Identifier,IScidentre> _visibleScidentres;
+	IDictionary<Identifier,IScidentre> _hiddenScidentres;
 	SieveScope _visibleScope;
 	SieveScope _hiddenScope;
 
 	public Sieve(IScope parent) {
 		_parent = parent;
-		_exposes = new HashSet<IDerefable>();
-		_visibleNsScidentres = new Dictionary<Identifier,NsScidentre>();
-		_allNsScidentres = new Dictionary<Identifier,NsScidentre>();
-		_visibleWoScidentres = new Dictionary<Identifier,IWoScidentre>();
-		_hiddenWoScidentres = new Dictionary<Identifier,IWoScidentre>();
+		_exposes = new HashSet<IWorker>();
+		_visibleSieves = new HashSet<ISieve>();
+		_hiddenSieves = new HashSet<ISieve>();
+		_visibleScidentres = new Dictionary<Identifier,IScidentre>();
+		_hiddenScidentres = new Dictionary<Identifier,IScidentre>();
 		_hiddenScope = new SieveScope(_parent, this, false);
 		_visibleScope = new SieveScope(_parent, this, true);
 	}
 	
-	void isInEither<T>(
+	private void isInEither<T>(
 	IDictionary<Identifier,T> a,
 	IDictionary<Identifier,T> b,
 	Identifier name,
@@ -88,113 +84,51 @@ public class Sieve : IDerefable {
 			throw new Exception(message);
 	}
 	
-	public void expose(IDerefable d) {
-		_exposes.Add(d);
-	}
-
-	void bindNamespace(
-	IDictionary<Identifier,NsScidentre> dict, Identifier name, IDerefable d ) {
-		if(! dict.ContainsKey(name))
-			dict.Add(name, new NsScidentre());
-		dict[name].bind(d);
-	}
-	
-	public void bindNamespace(bool visible, Identifier name, IDerefable d) {
-		isInEither<IWoScidentre>(
-			_visibleWoScidentres,
-			_hiddenWoScidentres,
-			name,
-			"scidentre declared as worker and namespace");
-		bindNamespace( _allNsScidentres, name, d );
-		if(visible)
-			bindNamespace( _visibleNsScidentres, name, d );
-	}
-	
-	//this function is very similar to Scope::reserveWoScidentre
-	private IWoScidentre reserveWoScidentre(
-	IDictionary<Identifier,IWoScidentre> dict, Identifier name, WoScidentreCategory cat ) {
-		if( dict.ContainsKey(name) ) {
-			//note that here we know that the category is FUNCTION
-			IWoScidentre ws = dict[name];
-			(ws as OverloadScidentre).incrementRequiredCount();
-		}
-		else
-			dict.Add(name, (
-				cat == WoScidentreCategory.CONSTANT ? new ConstantScidentre() as IWoScidentre :
-				cat == WoScidentreCategory.OVERLOAD ? new OverloadScidentre() as IWoScidentre :
-				cat == WoScidentreCategory.VARIABLE ? new VariableScidentre() as IWoScidentre :
-				null /* xxx throw statement not allowed here */ ));
-		return dict[name];
-	}
-	
-	public IWoScidentre reserveWoScidentre(
-	bool visible, Identifier name, WoScidentreCategory cat ) {
-		if(_allNsScidentres.ContainsKey(name))
-			throw new Exception("scidentre declared as worker and namespace");
-		if(cat == WoScidentreCategory.OVERLOAD)
-			if(
-			( _hiddenWoScidentres.ContainsKey(name) &&
-			!(_hiddenWoScidentres[name] is OverloadScidentre) ) ||
-			( _visibleWoScidentres.ContainsKey(name) &&
-			!(_visibleWoScidentres[name] is OverloadScidentre) ) )
-				throw new Exception(
-					"scidentre in same scope declared as overload and non-overload");
-		else
-			isInEither<IWoScidentre>(
-				_visibleWoScidentres,
-				_hiddenWoScidentres,
-				name,
-				"non-function wo-scidentre declared multiple times in same scope");
-		return reserveWoScidentre(
-			visible ? _visibleWoScidentres : _hiddenWoScidentres, name, cat );
-	}
-	
-	public DerefResults deref(IdentifierSequence idents) {
-		return GE.commonDeref(
-			idents, _visibleWoScidentres, _visibleNsScidentres, _exposes, null);
-	}
-	
-	private IDictionary<Identifier,IWoScidentre> addWoScidentres() {
-		IDictionary<Identifier,IWoScidentre> woScidentres =
-			new Dictionary<Identifier,IWoScidentre>(_hiddenWoScidentres);
-		foreach(Identifier name in _visibleWoScidentres.Keys) {
-			IWoScidentre visibleWS = _visibleWoScidentres[name];
-			if( (visibleWS is OverloadScidentre) && woScidentres.ContainsKey(name) ) {
+	private IDictionary<Identifier,IScidentre> addScidentres() {
+		IDictionary<Identifier,IScidentre> scidentres =
+			new Dictionary<Identifier,IScidentre>(_hiddenScidentres);
+		foreach(Identifier name in _visibleScidentres.Keys) {
+			IScidentre visibleWS = _visibleScidentres[name];
+			if( (visibleWS is OverloadScidentre) && scidentres.ContainsKey(name) ) {
 				OverloadScidentre allWS = new OverloadScidentre();
 				IEnumerable<IWorker> workerList =
 					G.join(
 						visibleWS.deref().workerList,
-						woScidentres[name].deref().workerList);
+						scidentres[name].deref().workerList);
 				foreach(IWorker worker in workerList) {
 					allWS.incrementRequiredCount();
 					allWS.assign(worker);
 				}
-				woScidentres[name] = allWS;
+				scidentres[name] = allWS;
 			}
 			else
-				woScidentres.Add(name, visibleWS);
+				scidentres.Add(name, visibleWS);
 		}
-		return woScidentres;
+		return scidentres;
 	}
 	
-	public DerefResults xxxNsUpDeref(IdentifierSequence idents) {
-		return GE.commonDeref(
-			idents, addWoScidentres(), _allNsScidentres, null, _parent);
+	private HashSet<ISieve> addSieves() {
+		HashSet<ISieve> rv = new HashSet<ISieve>();
+		rv.UnionWith(_visibleSieves);
+		rv.UnionWith(_hiddenSieves);
+		return rv;
 	}
 	
-	public DerefResults upDeref(IdentifierSequence idents) {
-		return GE.commonDeref(
-			idents, addWoScidentres(), _allNsScidentres, _exposes, _parent);
-	}
-	
-	public HashSet<IWoScidentre> findEmptyWoScidentres(IdentifierSequence idents) {
-		return GE.commonFindEmptyWoScidentres(
-			idents, _visibleWoScidentres, _visibleNsScidentres, null, null);
-	}
-	
-	public HashSet<IWoScidentre> upFindEmptyWoScidentres(IdentifierSequence idents) {
-		return GE.commonFindEmptyWoScidentres(
-			idents, addWoScidentres(), _allNsScidentres, _exposes, _parent);
+	//this function is very similar to Scope::reserveScidentre
+	private IScidentre reserveScidentre(
+	IDictionary<Identifier,IScidentre> dict, Identifier name, ScidentreCategory cat ) {
+		if( dict.ContainsKey(name) ) {
+			//note that here we know that the category is FUNCTION
+			IScidentre ws = dict[name];
+			(ws as OverloadScidentre).incrementRequiredCount();
+		}
+		else
+			dict.Add(name, (
+				cat == ScidentreCategory.CONSTANT ? new ConstantScidentre() as IScidentre :
+				cat == ScidentreCategory.OVERLOAD ? new OverloadScidentre() as IScidentre :
+				cat == ScidentreCategory.VARIABLE ? new VariableScidentre() as IScidentre :
+				null /* xxx throw statement not allowed here */ ));
+		return dict[name];
 	}
 
 	public IScope visible {
@@ -203,6 +137,68 @@ public class Sieve : IDerefable {
 	
 	public IScope hidden {
 		get { return _hiddenScope; }
+	}
+	
+	//----- related to the IScope interface
+	
+	public void expose(IWorker worker) {
+		_exposes.Add(worker);
+	}
+	
+	public void addSieve(bool visible, ISieve sieve) {
+		(visible ? _visibleSieves : _hiddenSieves).Add(sieve);
+	}
+	
+	public IScidentre reserveScidentre(
+	bool visible, Identifier name, ScidentreCategory cat ) {
+		if(cat == ScidentreCategory.OVERLOAD)
+			if(
+			( _hiddenScidentres.ContainsKey(name) &&
+			!(_hiddenScidentres[name] is OverloadScidentre) ) ||
+			( _visibleScidentres.ContainsKey(name) &&
+			!(_visibleScidentres[name] is OverloadScidentre) ) )
+				throw new Exception(
+					"scidentre in same scope declared as overload and non-overload");
+		else
+			isInEither<IScidentre>(
+				_visibleScidentres,
+				_hiddenScidentres,
+				name,
+				"non-overload scidentre already declared");
+		return reserveScidentre(
+			visible ? _visibleScidentres : _hiddenScidentres, name, cat );
+	}
+	
+	public DerefResults upDeref(Identifier name) {
+		return GE.commonDeref(
+			name, addScidentres(), addSieves(), _exposes, _parent);
+	}
+	
+	public HashSet<IScidentre> upFindEmptyScidentres(Identifier name) {
+		return GE.commonFindEmptyScidentres(
+			name, addScidentres(), addSieves(), _parent);
+	}
+	
+	//----- members of the ISieve interface
+	
+	public DerefResults deref(Identifier name) {
+		return GE.commonDeref(
+			name, _visibleScidentres, _visibleSieves, null, null);
+	}
+	
+	public HashSet<IScidentre> findEmptyScidentres(Identifier name) {
+		return GE.commonFindEmptyScidentres(
+			name, _visibleScidentres, _visibleSieves, null);
+	}
+	
+	public HashSet<Identifier> visibleScidentreNames {
+		get {
+			HashSet<Identifier> names = new HashSet<Identifier>();
+			names.UnionWith(_visibleScidentres.Keys);
+			foreach( ISieve sieve in _visibleSieves )
+				names.UnionWith( sieve.visibleScidentreNames );
+			return names;
+		}
 	}
 }
 

@@ -32,8 +32,6 @@ public static partial class Executor {
 				return execute((Node_DeclareAssign)node, scope);
 			case "identifier":
 				return execute((Node_Identifier)node, scope);
-			case "namespaced-wo-scidentre":
-				return execute((Node_NamespacedWoScidentre)node, scope);
 			case "select":
 				return execute((Node_Select)node, scope);
 			case "set-property":

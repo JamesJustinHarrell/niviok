@@ -3,12 +3,8 @@
 	<integer label="niviok major version number">1</integer>
 	<integer label="niviok minor version number">0</integer>
 	<sieve>
-		<expose>
-			<identifier>std</identifier>
-		</expose>
-		<expose>
-			<identifier>stdio</identifier>
-		</expose>
+		<identifier label="expose">std</identifier>
+		<identifier label="expose">stdio</identifier>
 		<hidable>
 			<boolean label="hidden">False</boolean>
 			<declare-first label="declaration">

@@ -1,4 +1,81 @@
 <section xmlns="http://docbook.org/ns/docbook" version="5.0">
+		
+		<section xml:id="node.expose">
+			<title>expose</title>
+			
+			<para>Imports all the child identikeys of the specified namespace into the enclosing scope.</para>
+			
+			<simplelist role="layout">
+				<member>+ identifier</member>
+			</simplelist>
+			
+			<programlisting>
+decl std::Array&lt;std::Int> numbers = generateNumbers()
+
+expose std
+decl Array&lt;Int> numbers = generateNumbers()
+			</programlisting>
+		</section>
+		
+		<section xml:id="node.using">
+			<title>using</title>
+			
+			<para>Creates an identikey that is associated with the same value/namespace as the specified identikey in the specified namespace.</para>
+			
+			<simplelist role="layout">
+				<member>+ identifier target</member>
+				<member>? identifier name</member>
+			</simplelist>
+			
+			<programlisting>
+using Xml.XmlElement
+using Xml.XmlDocument as Doc
+
+import ".NET: System" as System
+using System.Collections.Generic as box
+box.IList&lt;Foo> = new box.List&lt;Foo>();
+			</programlisting>
+			
+			<programlisting>
+using FooBarBaz as FBZ
+using System.out.print as puts
+puts( (FBZ to String)(Gamma) )
+			</programlisting>
+			
+			<para>Each of the [target] identifiers, except for the last, must refer to a namespace. (The last can also refer to a namespace.)</para>
+		</section>
+		
+		<section xml:id="node.namespace">
+			<title>namespace</title>
+			
+			<para>Adds child identikeys to specified namespace. "namespace" here could be thought of as a verb, as in, "Please namespace these identikeys." This node namespaces child identikeys as directed.</para>
+
+			<para>The namespace node does not have a 1-to-1 correspondence with a namespace. A namespace node merely inserts child identikeys into the specified namespace. Multiple namespace nodes can insert identikeys into the same namespace.</para>
+			
+			<simplelist role="layout">
+				<member>identifier name</member>
+				<member>sieve</member>
+			</simplelist>
+		</section>
+	
+		<section xml:id="node.namespaced-wo-scidentre">
+			<title>namespaced-wo-scidentre</title>
+			
+			<simplelist role="layout">
+				<member>+ identifier namespace</member>
+				<member>identifier identikey name</member>
+			</simplelist>
+			
+			<programlisting>
+namespace foo {
+	namespace bar {
+		decl Int alpha = 123
+	}
+}
+decl Int alpha = foo:bar:alpha
+println( alpha ) //123
+			</programlisting>
+		</section>
 
 		<!-- way too complicated, at least for now -->
 		<section xml:id="node.class">

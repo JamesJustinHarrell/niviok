@@ -19,9 +19,19 @@ public static partial class Executor {
 			IScope scope = new Scope(null, new ScopeAllowance(false,false));
 			
 			//bind libraries
-			scope.bindNamespace(new Identifier("std"), Bridge.std);
-			IDerefable stdio = Bridge.buildStdioLib(inStream, outStream, logStream);
-			scope.bindNamespace(new Identifier("stdio"), stdio);
+			GE.declareAssign(
+				new Identifier("std"),
+				ScidentreCategory.CONSTANT,
+				new NType(),
+				Bridge.std,
+				scope);
+			IWorker stdio = Bridge.buildStdioLib(inStream, outStream, logStream);
+			GE.declareAssign(
+				new Identifier("stdio"),
+				ScidentreCategory.CONSTANT,
+				new NType(),
+				stdio,
+				scope);
 			try {
 				foreach(Node_Import i in node.imports)
 					execute(i, scope);
@@ -34,12 +44,19 @@ public static partial class Executor {
 			
 			//execute global declarations
 			ScopeQueue sq = new ScopeQueue();
-			IDerefable sieve = executeGetSieve(node.sieve, sq, scope);
+			ISieve sieve;
+			try { //expose children of sieve node can be any kind of expression
+				sieve = executeGetSieve(node.sieve, sq, scope);
+			}
+			catch(ClientException e) {
+				outStream.WriteLine("Expose child of sieve threw an exception: " + e.clientMessage);
+				return 1;
+			}
 			try {
 				sq.executeAll();
 			}
 			catch(ClientException e) {
-				outStream.WriteLine("Global declaration threw an exception: " + e);
+				outStream.WriteLine("Global declaration threw an exception: " + e.clientMessage);
 				return 1;
 			}
 			
@@ -62,7 +79,7 @@ public static partial class Executor {
 				return 1;
 			}
 
-			IWorker exitStatus = GE.evalIdent(stdio, "get exit status").call(new Argument[]{});
+			IWorker exitStatus = stdio.extractMember(new Identifier("get exit status")).call(new Argument[]{});
 			return (int)Bridge.toNativeInteger(exitStatus);
 		}
 		catch(Exception e) {
@@ -72,12 +89,17 @@ public static partial class Executor {
 		}
 	}
 
-	public static IDerefable executeLibraryModule(
+	public static IWorker executeLibraryModule(
 	Node_Module node, TextReader inStream, TextWriter outStream, TextWriter logStream ) {
 		IScope scope = new Scope(null, new ScopeAllowance(false,false));
 		
 		//bind libraries
-		scope.bindNamespace(new Identifier("std"), Bridge.std);
+		GE.declareAssign(
+			new Identifier("std"),
+			ScidentreCategory.CONSTANT,
+			null,
+			Bridge.std,
+			scope);
 		try {
 			foreach(Node_Import i in node.imports)
 				execute(i, scope);
@@ -88,7 +110,7 @@ public static partial class Executor {
 		}
 		
 		//execute global declarations
-		IDerefable sieve;
+		ISieve sieve;
 		try {
 			ScopeQueue sq = new ScopeQueue();
 			sieve = executeGetSieve(node.sieve, sq, scope);
@@ -96,48 +118,38 @@ public static partial class Executor {
 		}
 		catch(ClientException e) {
 			throw new LibraryFailure(
-				"couldn't load library because it throw an exception", e);
+				"couldn't load library because it threw an exception", e);
 		}
 		
-		return new Library(sieve);
-	}
-
-	public static void execute( Node_Expose node, IScope scope ) {
-		IList<Identifier> idents = GE.extractIdents(node.identifiers);
-		scope.expose( new NamespaceReference(new IdentifierSequence(idents), scope) );
+		return LibraryWrapper.wrap(sieve);
 	}
 
 	public static void execute( Node_Import node, IScope s ) {
 		foreach(Node_ImportAttempt at in node.importAttempts) {
-			IDerefable lib = Bridge.tryImport(at.scheme.value, at.body.value);
+			IWorker lib = Bridge.tryImport(at.scheme.value, at.body.value);
 			if(lib != null) {
-				s.bindNamespace(node.alias.value, lib);
+				GE.declareAssign(
+					node.alias.value,
+					ScidentreCategory.CONSTANT,
+					null,
+					lib,
+					s);
 				return;
 			}
 		}
 		throw new LibraryFailure("couldn't load library with attempts ...");
 	}
 
-	public static void execute( Node_Using node, IScope scope ) {
-		IList<Identifier> idents = GE.extractIdents(node.targets);
-		Identifier name;
-		if(node.name == null)
-			name = G.last(idents);
-		else
-			name = node.name.value;
-		scope.bindNamespace( name, new NamespaceReference(new IdentifierSequence(idents), scope) );
-	}
-
 	public static void execute( Node_Sieve node, ScopeQueue sq, IScope scope ) {
-		scope.expose( executeGetSieve(node, sq, scope) );
+		scope.addSieve( executeGetSieve(node, sq, scope) );
 	}
 
 	public static Sieve executeGetSieve( Node_Sieve node, ScopeQueue sq, IScope scope ) {
 		Sieve sieve = new Sieve(scope);
-		foreach( Node_Expose e in node.exposes )
-			execute(e, sieve.hidden);
-		foreach( Node_Using u in node.usings )
-			execute(u, sieve.hidden);
+		foreach( INode_Expression expose in node.exposes )
+			scope.expose(executeAny(expose, scope));
+			//xxx when should expose children be executed?
+			//this was not considered when originaly developing the ordering algorithm
 		foreach( Node_Hidable hidable in node.hidables )
 			execute(hidable, sq, sieve);
 		return sieve;
@@ -147,18 +159,12 @@ public static partial class Executor {
 		execute( node.declaration, sq, node.hidden.value ? sieve.hidden : sieve.visible );
 	}
 
-	public static void execute( Node_Namespace node, ScopeQueue sq, IScope scope ) {
-		scope.bindNamespace( node.name.value,
-			executeGetSieve( node.sieve, sq,
-				new NamespaceScope(scope, node.name.value)));
-	}
-
 	public static void execute( Node_DeclareFirst node, ScopeQueue sq, IScope scope ) {
 		//the ScopeQueue takes care of finding dependencies
 		sq.add(
-			scope.reserveWoScidentre(
+			scope.reserveScidentre(
 				node.name.value,
-				node.overload.value ? WoScidentreCategory.OVERLOAD : WoScidentreCategory.CONSTANT),
+				node.overload.value ? ScidentreCategory.OVERLOAD : ScidentreCategory.CONSTANT),
 			node.type,
 			node.value,
 			scope );
@@ -168,9 +174,6 @@ public static partial class Executor {
 		switch(decl.typeName) {
 		case "declare-first" :
 			execute(decl as Node_DeclareFirst, sq, scope);
-			break;
-		case "namespace" :
-			execute(decl as Node_Namespace, sq, scope);
 			break;
 		case "sieve" :
 			execute(decl as Node_Sieve, sq, scope);
@@ -223,11 +226,12 @@ public static partial class Executor {
 			return func.call(args);
 		}
 		catch(ClientException e) {
-			e.pushFunc(
-				( node.receiver is Node_Identifier ?
-					node.receiver.ToString() :
-					"(anonymous)" ));
-			throw e;
+			e.pushFunc( node.receiver is Node_Identifier ?
+				String.Format("'{0}' @ '{1}'",
+					node.receiver, node.receiver.nodeSource) :
+				String.Format("{0} @ '{1}'",
+					node.receiver.typeName, node.receiver.nodeSource) );
+			throw;
 		}
 	}
 	
@@ -240,13 +244,12 @@ public static partial class Executor {
 	public static IWorker execute(Node_Compound node, IScope parentScope) {
 		IScope scope = new Scope(parentScope, null);
 		
-		foreach(Node_Expose exp in node.exposes)
-			execute(exp, scope);
-
-		foreach(Node_Using us in node.usings)
-			execute(us, scope);
+		foreach( INode_Expression expose in node.exposes )
+			scope.expose(executeAny(expose, scope));
+			//xxx when should expose children be executed?
+			//this was not considered when originaly developing the ordering algorithm
 		
-		WoScidentreReserver.reserve(node, scope);
+		ScidentreReserver.reserve(node, scope);
 
 		ScopeQueue sq = new ScopeQueue();
 		foreach(INode_StatementDeclaration decl in node.declarations)
@@ -280,7 +283,7 @@ public static partial class Executor {
 	//declare-assign
 	public static IWorker execute(Node_DeclareAssign node, IScope scope) {
 		IWorker val = executeAny(node.value, scope);
-		scope.activateWoScidentre(
+		scope.activateScidentre(
 			node.name.value,
 			new NType(executeAny(node.type, scope)),
 			val);
@@ -289,7 +292,7 @@ public static partial class Executor {
 
 	//declare-empty
 	public static IWorker execute(Node_DeclareEmpty node, IScope scope) {
-		scope.activateWoScidentre(
+		scope.activateScidentre(
 			node.name.value,
 			new NType(executeAny(node.type, scope)),
 			new Null());
@@ -396,11 +399,6 @@ public static partial class Executor {
 		return Bridge.toClientBoolean(false);
 	}
 	
-	//namespaced-wo-scidentre
-	public static IWorker execute(Node_NamespacedWoScidentre node, IScope scope) {
-		throw new NotImplementedException();
-	}
-	
 	//nor
 	public static IWorker execute(Node_Nor node, IScope scope) {
 		IWorker first = executeAny(node.first, scope);
@@ -471,7 +469,7 @@ public static partial class Executor {
 	
 	//throw
 	public static IWorker execute(Node_Throw node, IScope scope) {
-		throw new NotImplementedException();
+		throw new ClientException(executeAny(node.value, scope));
 	}
 	
 	//try-catch
@@ -494,7 +492,7 @@ public static partial class Executor {
 					if( eh.name != null )
 						GE.declareAssign(
 							eh.name.value,
-							WoScidentreCategory.CONSTANT,
+							ScidentreCategory.CONSTANT,
 							new NType(),
 							exception.thrown,
 							handlerScope);

@@ -65,22 +65,9 @@ public static class GE {
 		return GE.inherits(
 			face, Bridge.getBreederFace(Bridge.stdn_String));
 	}
-
-	public static IWorker evalIdent(IScope scope, IdentifierSequence idents) {
-		DerefResults results = scope.upDeref(idents);
-		if( results.worker != null )
-			return results.worker;
-		if( results.workerList != null ) {
-			if( results.workerList.Count > 1 )
-				throw new NotImplementedException();
-			return results.workerList[0];
-		}
-		throw new ClientException(
-			String.Format("wo-scidentre '{0}' not found", idents));
-	}
 	
 	public static IWorker evalIdent(IScope scope, Identifier name) {
-		DerefResults results = scope.upDeref(new IdentifierSequence(name));
+		DerefResults results = scope.upDeref(name);
 		if( results.worker != null )
 			return results.worker;
 		if( results.workerList != null ) {
@@ -96,8 +83,8 @@ public static class GE {
 		return evalIdent(scope, new Identifier(name));
 	}
 	
-	public static IWorker evalIdent(IDerefable d, Identifier name) {
-		DerefResults results = d.deref(new IdentifierSequence(name));
+	public static IWorker evalIdent(ISieve d, Identifier name) {
+		DerefResults results = d.deref(name);
 		if( results.worker != null )
 			return results.worker;
 		if( results.workerList != null ) {
@@ -106,73 +93,77 @@ public static class GE {
 			return results.workerList[0];
 		}
 		throw new ClientException(
-			String.Format("wo-scidentre '{0}' not found", name));
+			String.Format("scidentre '{0}' not found", name));
 	}
 	
-	public static IWorker evalIdent(IDerefable d, string name) {
+	public static IWorker evalIdent(ISieve d, string name) {
 		return evalIdent(d, new Identifier(name));
 	}
 	
 	public static IScope createClosure(
-	HashSet<IdentifierSequence> idents, IScope scope ) {
+	HashSet<Identifier> idents, IScope scope ) {
 		//xxx temp
 		return scope;
 	}
 
 	public static DerefResults commonDeref(
-	IdentifierSequence idents,
-	IDictionary<Identifier,IWoScidentre> woScidentres,
-	IDictionary<Identifier,NsScidentre> nsScidentres,
-	IEnumerable<IDerefable> derefables,
+	Identifier name,
+	IDictionary<Identifier,IScidentre> scidentres,
+	IEnumerable<ISieve> sieves,
+	IEnumerable<IWorker> exposes,
 	IScope scope ) {
 		DerefResults results = new DerefResults(null, null);		
-		if(idents.Count == 1) {
-			if( woScidentres != null && woScidentres.ContainsKey(G.first(idents)) ) {
-				results.Add( woScidentres[ G.first(idents) ].deref() );
+		if( scidentres != null && scidentres.ContainsKey(name) )
+			results.Add( scidentres[name].deref() );
+		if(sieves != null)
+			foreach(ISieve d in sieves)
+				results.Add(d.deref(name));
+		if(exposes != null && results.worker == null) {
+			foreach(IWorker w in exposes) {
+				DerefResults exposeResults = GE.deref(w, name);
+				if(results.workerList == null || exposeResults.worker == null)
+					results.Add(exposeResults);
 			}
 		}
-		else if(nsScidentres != null && nsScidentres.ContainsKey(G.first(idents))) {
-			results.Add( nsScidentres[G.first(idents)].deref(
-				new IdentifierSequence(G.rest(idents))) );
-		}
-		if(derefables != null)
-			foreach(IDerefable d in derefables)
-				results.Add(d.deref(idents));
 		if(scope != null && results.worker == null) {
-			DerefResults scopeResults = scope.upDeref(idents);
+			DerefResults scopeResults = scope.upDeref(name);
 			if(results.workerList == null || scopeResults.worker == null)
 				results.Add(scopeResults);
 		}
 		return results;
 	}
 
-	public static HashSet<IWoScidentre> commonFindEmptyWoScidentres(
-	IdentifierSequence idents,
-	IDictionary<Identifier,IWoScidentre> woScidentres,
-	IDictionary<Identifier,NsScidentre> nsScidentres,
-	IEnumerable<IDerefable> derefables,
+	public static HashSet<IScidentre> commonFindEmptyScidentres(
+	Identifier name,
+	IDictionary<Identifier,IScidentre> scidentres,
+	IEnumerable<ISieve> sieves,
 	IScope scope ) {
-		HashSet<IWoScidentre> results = new HashSet<IWoScidentre>();
-		if(idents.Count == 1)
-			if(woScidentres.ContainsKey( G.first(idents) ))
-				results.Add( woScidentres[ G.first(idents) ] );
-		else if(nsScidentres.ContainsKey( G.first(idents) ))
-			results.UnionWith(
-				nsScidentres[G.first(idents)].findEmptyWoScidentres(
-					new IdentifierSequence(G.rest(idents))) );
-		foreach(IDerefable d in derefables)
-			results.UnionWith( d.findEmptyWoScidentres(idents) );
+		HashSet<IScidentre> results = new HashSet<IScidentre>();
+		if(scidentres.ContainsKey(name))
+			results.Add( scidentres[name] );
+		foreach(ISieve d in sieves)
+			results.UnionWith( d.findEmptyScidentres(name) );
 		if(scope != null)
-			results.UnionWith(scope.upFindEmptyWoScidentres(idents));
+			results.UnionWith(scope.upFindEmptyScidentres(name));
 		return results;
 	}
 
 	public static void declareAssign (
-	Identifier name, WoScidentreCategory cat,
+	Identifier name, ScidentreCategory cat,
 	NType type, IWorker worker, IScope scope ) {
-		IWoScidentre ws = scope.reserveWoScidentre(name, cat);
+		IScidentre ws = scope.reserveScidentre(name, cat);
 		ws.type = type;
 		ws.assign(worker);
+	}
+	
+	public static DerefResults deref(IWorker worker, Identifier name) {
+		return new DerefResults(
+			worker.face.properties.ContainsKey(name) ?
+				extractMember(worker, name) :
+				null,
+			worker.face.methods.ContainsKey(name) ?
+				new IWorker[]{ extractMember(worker, name) } :
+				null );
 	}
 	
 	public static IList<Identifier> extractIdents( IList<Node_Identifier> identNodes ) {
@@ -180,6 +171,14 @@ public static class GE {
 		foreach( Node_Identifier identNode in identNodes )
 			rv.Add( identNode.value );
 		return rv;
+	}
+	
+	public static IWorker extractMember( IWorker worker, string name ) {
+		return extractMember(worker, new Identifier(name));
+	}
+	
+	public static IWorker extractMember( IWorker worker, Identifier name ) {
+		return worker.extractMember(name);
 	}
 }
 

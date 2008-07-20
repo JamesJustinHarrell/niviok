@@ -3,16 +3,15 @@ using Acrid.NodeTypes;
 
 namespace Acrid.Execution {
 
-//xxx what is this?
-enum TypeType {
-	INTERFACE, MANUAL
-}
-
 //xxx move
 public interface IType {}
 
-//xxx conflicts with System.Type
+//named 'NType' (Niviok Type) because 'Type' would conflict with System.Type
 public class NType : IType {
+	enum TypeType {
+		INTERFACE, MANUAL
+	}
+
 	TypeType _type;
 	IInterface _face;
 

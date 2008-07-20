@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Acrid.Execution {
 
-class __WoScidentreBase {
+class __ScidentreBase {
 	IType _type;
 	
 	public IType type {
@@ -16,7 +16,7 @@ class __WoScidentreBase {
 	}
 }
 
-class __SingleWoScidentreBase : __WoScidentreBase {
+class __SingleScidentreBase : __ScidentreBase {
 	protected IWorker _worker;
 	
 	protected bool ready() {
@@ -29,7 +29,7 @@ class __SingleWoScidentreBase : __WoScidentreBase {
 	}
 }
 
-class OverloadScidentre : __WoScidentreBase, IWoScidentre {
+class OverloadScidentre : __ScidentreBase, IScidentre {
 	int _requiredCount;
 	IList<IWorker> _workers;
 	
@@ -59,7 +59,7 @@ class OverloadScidentre : __WoScidentreBase, IWoScidentre {
 	}
 }
 
-class ConstantScidentre : __SingleWoScidentreBase, IWoScidentre {
+class ConstantScidentre : __SingleScidentreBase, IScidentre {
 	public void assign(IWorker worker) {
 		if(worker == null) { throw new Exception("argument @worker is null"); }
 		if(ready()) { throw new Exception("constant scidentre already has value"); }
@@ -67,7 +67,7 @@ class ConstantScidentre : __SingleWoScidentreBase, IWoScidentre {
 	}
 }
 
-class VariableScidentre : __SingleWoScidentreBase, IWoScidentre {
+class VariableScidentre : __SingleScidentreBase, IScidentre {
 	public void assign(IWorker worker) {
 		if(worker == null) { throw new Exception(); }
 		_worker = worker;

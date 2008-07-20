@@ -23,7 +23,7 @@ class Interface : IInterface {
 	IList<Breeder> breeders,
 	IList<Property> properties,
 	IList<Method> methods ) {
-		_inheritees = inheritees;
+		_inheritees = new List<IInterface>(inheritees);
 		_callees = callees;
 		_breeders = breeders;
 		

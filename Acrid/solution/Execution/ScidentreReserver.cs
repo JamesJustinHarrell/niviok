@@ -3,7 +3,7 @@ using Acrid.NodeTypes;
 
 namespace Acrid.Execution {
 
-static class WoScidentreReserver {
+static class ScidentreReserver {
 	public static void reserve( Node_Call node, IScope scope ) {
 		reserveAny(node.receiver, scope);
 		foreach(Node_Argument a in node.arguments)
@@ -17,13 +17,13 @@ static class WoScidentreReserver {
 	}
 	
 	public static void reserve( Node_DeclareAssign node, IScope scope ) {
-		scope.reserveWoScidentre(
+		scope.reserveScidentre(
 			node.name.value,
-			node.constant.value ? WoScidentreCategory.CONSTANT : WoScidentreCategory.VARIABLE);
+			node.constant.value ? ScidentreCategory.CONSTANT : ScidentreCategory.VARIABLE);
 	}
 
 	public static void reserve( Node_DeclareEmpty node, IScope scope ) {
-		scope.reserveWoScidentre( node.name.value, WoScidentreCategory.VARIABLE );
+		scope.reserveScidentre( node.name.value, ScidentreCategory.VARIABLE );
 	}
 	
 	public static void reserveAny( INode_Expression node, IScope scope ) {

@@ -7,7 +7,7 @@
     </head>
     <body>
         <h1>Niviok 1.0 Specification</h1>
-        <h2>Edition 1 Draft 2008-07-10</h2>
+        <h2>Edition 1 Draft 2008-07-19</h2>
         <p>Copyright © 2008 James Justin Harrell</p>
         <p>Permission is granted to use, copy, display, modify, sell, and distribute this document. This document is provided "as is" without warranty of any kind. In no event shall anyone be liable for any damages or other liability arising from use of this document.</p>
         <ol class="toc">
@@ -152,22 +152,13 @@
                                 <a href="#node.declare-first">12.5.1. declare-first</a>
                             </li>
                             <li>
-                                <a href="#node.expose">12.5.2. expose</a>
+                                <a href="#node.hidable">12.5.2. hidable</a>
                             </li>
                             <li>
-                                <a href="#node.hidable">12.5.3. hidable</a>
+                                <a href="#node.sieve">12.5.3. sieve</a>
                             </li>
                             <li>
-                                <a href="#node.sieve">12.5.4. sieve</a>
-                            </li>
-                            <li>
-                                <a href="#node.module">12.5.5. module</a>
-                            </li>
-                            <li>
-                                <a href="#node.namespace">12.5.6. namespace</a>
-                            </li>
-                            <li>
-                                <a href="#node.using">12.5.7. using</a>
+                                <a href="#node.module">12.5.4. module</a>
                             </li>
                         </ol>
                     </li>
@@ -218,32 +209,29 @@
                                 <a href="#node.identifier">12.7.7. identifier</a>
                             </li>
                             <li>
-                                <a href="#node.namespaced-wo-scidentre">12.7.8. namespaced-wo-scidentre</a>
-                            </li>
-                            <li>
-                                <a href="#node.select">12.7.9. select</a>
+                                <a href="#node.select">12.7.8. select</a>
                                 <ol>
                                     <li>
-                                        <a href="#node.case">12.7.9.1. case</a>
+                                        <a href="#node.case">12.7.8.1. case</a>
                                     </li>
                                 </ol>
                             </li>
                             <li>
-                                <a href="#node.set-property">12.7.10. set-property</a>
+                                <a href="#node.set-property">12.7.9. set-property</a>
                             </li>
                             <li>
-                                <a href="#node.try-catch">12.7.11. try-catch</a>
+                                <a href="#node.try-catch">12.7.10. try-catch</a>
                                 <ol>
                                     <li>
-                                        <a href="#node.catcher">12.7.11.1. catcher</a>
+                                        <a href="#node.catcher">12.7.10.1. catcher</a>
                                     </li>
                                 </ol>
                             </li>
                             <li>
-                                <a href="#node.type-select">12.7.12. type-select</a>
+                                <a href="#node.type-select">12.7.11. type-select</a>
                                 <ol>
                                     <li>
-                                        <a href="#node.type-case">12.7.12.1. type-case</a>
+                                        <a href="#node.type-case">12.7.11.1. type-case</a>
                                     </li>
                                 </ol>
                             </li>
@@ -526,7 +514,7 @@
         </ol>
         <div id="Overview">
             <h1>Chapter 1. Overview</h1>
-            <p>This document is a draft for the first edition of the specification describing the 1.0 version of Niviok. It can be represented as "Niviok 1.0 Edition 1 Draft 2008-07-10".</p>
+            <p>This document is a draft for the first edition of the specification describing the 1.0 version of Niviok. It can be represented as "Niviok 1.0 Edition 1 Draft 2008-07-19".</p>
             <p>This document is a draft of the first edition of the specification describing the 1.0 version of Niviok.</p>
             <p>Niviok is an abstract programming language. This document defines several node types which are used to represent Niviok source code. How Niviok nodes are represented is outside the scope of this standard. While syntax and semantics are not completetly separate, Niviok does contain much less syntax-influenced semantics than most programming languages.</p>
             <p>Nodes that can be executed are statements or expressions. Statements are greatly restricted in where they can appear, while expressions are more relaxed and can be interchanged for on another. An expression may produce a value when executed.</p>
@@ -969,7 +957,7 @@ declfirst func bar = func() {
         </div>
         <div id="nodes">
             <h1>Chapter 11. Nodes</h1>
-            <p>Niviok defines 69 nodes.</p>
+            <p>Niviok defines 65 nodes.</p>
             <p>Niviok code is represented by a tree of nodes. How this tree and its nodes are represented is outside the scope of this specification. Many means may exist of representing a Niviok tree.</p>
             <p>Nodes are either base nodes or tree nodes. Tree nodes only contain other nodes, and their entire meaning is derived from their child nodes. Base nodes do not contain any other child nodes, and must is some way encode their meaning themselves.</p>
             <p>When a node has multiple child nodes with equivalent meaning, the order of those child nodes is significant, so their order must be specified by some means. The order of nodes of different meaning in relation to each other is not significant, and must not have any observable side effects.</p>
@@ -1050,9 +1038,6 @@ declfirst func bar = func() {
                         </li>
                         <li>
                             <a href="#node.sieve">sieve</a>
-                        </li>
-                        <li>
-                            <a href="#node.namespace">namespace</a>
                         </li>
                     </ul>
                 </div>
@@ -1318,23 +1303,8 @@ println( foo.bar.foo.bar.foo.bar.foo.number )
                         
 </code>
                 </div>
-                <div id="node.expose">
-                    <h3>12.5.2. expose</h3>
-                    <p>Imports all the child identikeys of the specified namespace into the enclosing scope.</p>
-                    <ul class="layout">
-                        <li>+ 
-                        <a href="#node.identifier">identifier</a></li>
-                    </ul>
-                    <code xml:space="preserve">
-decl std::Array&lt;std::Int&gt; numbers = generateNumbers()
-
-expose std
-decl Array&lt;Int&gt; numbers = generateNumbers()
-                        
-</code>
-                </div>
                 <div id="node.hidable">
-                    <h3>12.5.3. hidable</h3>
+                    <h3>12.5.2. hidable</h3>
                     <ul class="layout">
                         <li>
                         <a href="#node.boolean">boolean</a>hidden</li>
@@ -1343,14 +1313,12 @@ decl Array&lt;Int&gt; numbers = generateNumbers()
                     </ul>
                 </div>
                 <div id="node.sieve">
-                    <h3>12.5.4. sieve</h3>
+                    <h3>12.5.3. sieve</h3>
                     <p>Limits reach of expose and using nodes. Can hide child scidentres.</p>
                     <p>Like some other special expressions, screen nodes add identikeys to their parent scope, as well as creating their own scope and adding identikeys to it.</p>
                     <ul class="layout">
                         <li>* 
-                        <a href="#node.expose">expose</a></li>
-                        <li>* 
-                        <a href="#node.using">using</a></li>
+                        <a href="#node.expression">expression</a>expose</li>
                         <li>* 
                         <a href="#node.hidable">hidable</a></li>
                     </ul>
@@ -1385,7 +1353,7 @@ module
 </code>
                 </div>
                 <div id="node.module">
-                    <h3>12.5.5. module</h3>
+                    <h3>12.5.4. module</h3>
                     <p>A grouping of identikey declarations, for use as a library or a standalone program.</p>
                     <ul class="layout">
                         <li>
@@ -1408,9 +1376,7 @@ module
                         <li>Create the identikeys required by 
                         <a href="#reserved-identikey-names">Reserved identikey names</a>.</li>
                         <li>For each 
-                        <a href="#node.import">import</a>, 
-                        <a href="#node.using">using</a>, and 
-                        <a href="#node.expose">expose</a>child node, add the identikeys to globalScope specified by that node.</li>
+                        <a href="#node.import">import</a>and expose child node, add the identikeys to globalScope specified by that node.</li>
                         <li>Execute all declaration-first children of each plane together as required by 
                         <a href="#handling-declare-first">Handling declare-first nodes</a>.</li>
                         <li>Let mainKey be the identikey in globalScope that is associated with identifier "main". If such an identikey does not exist, throw an error.</li>
@@ -1424,9 +1390,7 @@ module
                         <li>Create the identikeys required by 
                         <a href="#reserved-identikey-names">Reserved identikey names</a>.</li>
                         <li>For each 
-                        <a href="#node.import">import</a>, 
-                        <a href="#node.using">using</a>, and 
-                        <a href="#node.expose">expose</a>child node, add the identikeys to globalScope specified by that node.</li>
+                        <a href="#node.import">import</a>and expose child node, add the identikeys to globalScope specified by that node.</li>
                         <li>Execute all declaration-first children of each plane together as required by 
                         <a href="#handling-declare-first">Handling declare-first nodes</a>.</li>
                         <li>Expose globalScope, in an immutable form, to the containing environment. How this is done depends on the containing enviornment and the Desal implementation, and is not covered by this specification.</li>
@@ -1435,44 +1399,6 @@ module
                     <p class="xxx">When acting as a standalone executable, what kind of errors should bundle by throwing? This is a problem that applies to many other nodes as well.</p>
                     <p class="xxx">For when acting as a library, need a means of hiding/showing certain child namespaces/identikeys of the global namespace. For example, a bundle may have declarations in the global namespace and in a "private" namespace. The bundle should expose the declarations in the global namespace but hide the declarations in the private namespace. There has also been consideration of an "export" attribute/node that would expose specified identikeys, and all other identikeys would not be exposed.</p>
                     <p class="xxx">The identikeys added to globalScope by import, using, and expose nodes should not be exposed to the containing environment when the bundle is acting as a library.</p>
-                </div>
-                <div id="node.namespace">
-                    <h3>12.5.6. namespace</h3>
-                    <p>Adds child identikeys to specified namespace. "namespace" here could be thought of as a verb, as in, "Please namespace these identikeys." This node namespaces child identikeys as directed.</p>
-                    <p>The namespace node does not have a 1-to-1 correspondence with a namespace. A namespace node merely inserts child identikeys into the specified namespace. Multiple namespace nodes can insert identikeys into the same namespace.</p>
-                    <ul class="layout">
-                        <li>
-                        <a href="#node.identifier">identifier</a>name</li>
-                        <li>
-                            <a href="#node.sieve">sieve</a>
-                        </li>
-                    </ul>
-                </div>
-                <div id="node.using">
-                    <h3>12.5.7. using</h3>
-                    <p>Creates an identikey that is associated with the same value/namespace as the specified identikey in the specified namespace.</p>
-                    <ul class="layout">
-                        <li>+ 
-                        <a href="#node.identifier">identifier</a>target</li>
-                        <li>? 
-                        <a href="#node.identifier">identifier</a>name</li>
-                    </ul>
-                    <code xml:space="preserve">
-using Xml.XmlElement
-using Xml.XmlDocument as Doc
-
-import ".NET: System" as System
-using System.Collections.Generic as box
-box.IList&lt;Foo&gt; = new box.List&lt;Foo&gt;();
-                        
-</code>
-                    <code xml:space="preserve">
-using FooBarBaz as FBZ
-using System.out.print as puts
-puts( (FBZ to String)(Gamma) )
-                        
-</code>
-                    <p>Each of the [target] identifiers, except for the last, must refer to a namespace. (The last can also refer to a namespace.)</p>
                 </div>
             </div>
             <div id="non-producing-expressions">
@@ -1606,9 +1532,7 @@ println( person1.name ) //Michael
                     <h3>12.7.3. compound</h3>
                     <ul class="layout">
                         <li>* 
-                        <a href="#node.expose">expose</a></li>
-                        <li>* 
-                        <a href="#node.using">using</a></li>
+                        <a href="#node.expression">expression</a>expose</li>
                         <li>* 
                         <a href="#node.statement-declaration">statement-declaration</a>declaration</li>
                         <li>+ 
@@ -1793,27 +1717,8 @@ println( foo )
                         
 </code>
                 </div>
-                <div id="node.namespaced-wo-scidentre">
-                    <h3>12.7.8. namespaced-wo-scidentre</h3>
-                    <ul class="layout">
-                        <li>+ 
-                        <a href="#node.identifier">identifier</a>namespace</li>
-                        <li>
-                        <a href="#node.identifier">identifier</a>identikey name</li>
-                    </ul>
-                    <code xml:space="preserve">
-namespace foo {
-        namespace bar {
-                decl Int alpha = 123
-        }
-}
-decl Int alpha = foo:bar:alpha
-println( alpha ) //123
-                        
-</code>
-                </div>
                 <div id="node.select">
-                    <h3>12.7.9. select</h3>
+                    <h3>12.7.8. select</h3>
                     <ul class="layout">
                         <li>
                         <a href="#node.expression">expression</a>input value</li>
@@ -1824,7 +1729,7 @@ println( alpha ) //123
                     </ul>
                     <p class="exec">Execute [value]. Execute each [values] child of each [case] and compare them to the [value] value (with the .equals? method of the [value] value) until finding a match. Then, execute the [result] of that case and produce the result. If no match is found, and [else] is given, execute [else] and produce its result.</p>
                     <div id="node.case">
-                        <h4>12.7.9.1. case</h4>
+                        <h4>12.7.8.1. case</h4>
                         <ul class="layout">
                             <li>+ 
                             <a href="#node.expression">expression</a>test value</li>
@@ -1860,7 +1765,7 @@ decl bar = select foo
 </code>
                 </div>
                 <div id="node.set-property">
-                    <h3>12.7.10. set-property</h3>
+                    <h3>12.7.9. set-property</h3>
                     <ul class="layout">
                         <li>
                         <a href="#node.expression">expression</a>source</li>
@@ -1880,7 +1785,7 @@ alpha.beta = "gamma"
 </code>
                 </div>
                 <div id="node.try-catch">
-                    <h3>12.7.11. try-catch</h3>
+                    <h3>12.7.10. try-catch</h3>
                     <ul class="layout">
                         <li>
                         <a href="#node.expression">expression</a>try</li>
@@ -1893,7 +1798,7 @@ alpha.beta = "gamma"
                     </ul>
                     <p class="process">Must contain more than just [try].</p>
                     <div id="node.catcher">
-                        <h4>12.7.11.1. catcher</h4>
+                        <h4>12.7.10.1. catcher</h4>
                         <ul class="layout">
                             <li>
                             <a href="#node.expression">expression</a>type</li>
@@ -2021,7 +1926,7 @@ observe
                     <p class="xxx">This node is too complicated. Try to simplify it. In particular, see about removing remit node and reintroducing catch/observe distinction.</p>
                 </div>
                 <div id="node.type-select">
-                    <h3>12.7.12. type-select</h3>
+                    <h3>12.7.11. type-select</h3>
                     <ul class="layout">
                         <li>
                         <a href="#node.expression">expression</a>input value</li>
@@ -2037,7 +1942,7 @@ observe
                     <p class="process">[require match] must be present if and only if an [else] is not given.</p>
                     <p>If [require match] is true (which means an [else] was not given) and no match was found, an exception is thrown.</p>
                     <div id="node.type-case">
-                        <h4>12.7.12.1. type-case</h4>
+                        <h4>12.7.11.1. type-case</h4>
                         <ul class="layout">
                             <li>+ 
                             <a href="#node.expression">expression</a>test type</li>

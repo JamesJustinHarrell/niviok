@@ -101,10 +101,20 @@ class Worker : WorkerBase, IWorker {
 	}
 	
 	public IWorker call(IList<Argument> arguments) {
+		if( _callees.Count == 0 )
+			throw new ClientException("attempted to call worker that has no callees");
+		
 		//xxx use arguments to determine which callee to call
-		foreach( IFunction func in _callees.Values )
-			return func.call(arguments);
-		throw new ClientException("attempted to call worker with no callees");
+		IFunction chosenCallee = G.first(_callees.Values);
+		try {
+			return chosenCallee.call(arguments);
+		}
+		catch(ArgumentOutOfRangeException e) {
+			throw new ClientException(String.Format(
+				"wrong number of arguments ({0}) provided",
+				arguments.Count
+				));
+		}
 	}
 	
 	public IWorker extractMember(Identifier name) {
@@ -115,7 +125,7 @@ class Worker : WorkerBase, IWorker {
 			foreach( IFunction func in _methods[name].Values )
 				return Client_Function.wrap(func);
 		}
-		throw new NotImplementedException("although it may be an argument error");
+		throw new ClientException("no member with that name");
 	}
 	
 	public void setProperty(Identifier propName, IWorker worker) {

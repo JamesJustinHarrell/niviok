@@ -8,13 +8,9 @@
 	<integer label='niviok minor version number'>0</integer>
 	
 	<sieve>
-		<expose>
-			<identifier>std</identifier>
-		</expose>
+		<identifier label='expose'>std</identifier>
 		
-		<expose>
-			<identifier>stdio</identifier>
-		</expose>
+		<identifier label='expose'>stdio</identifier>
 		
 		<hidable>
 			<boolean label="hidden">False</boolean>

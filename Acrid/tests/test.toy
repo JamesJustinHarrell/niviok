@@ -9,11 +9,9 @@
 ( #sieve
 
 ( #expose
-	((std))
-	((stdio))
+	std
+	stdio
 )
-
-() #using
 
 ( #statement-declaration list
 
@@ -25,7 +23,7 @@
 		(
 			(in any title -))
 		any
-		(compound () () () (
+		(compound () () (
 			(println "")
 			(println ((extract-member title concat) " :"))
 		)))))
@@ -37,7 +35,7 @@
 			(in any title -)
 			(in any func -))
 		any
-		(compound () () () (
+		(compound () () (
 			(header ((extract-member "calling " concat) title))
 			(func)
 			(println "")
@@ -47,7 +45,7 @@
 (false
 (declare-first main true any false
 	(function () any
-		(compound () () () (
+		(compound () () (
 			(headerize "doStuff" doStuff)
 			(headerize "testNonProducers" testNonProducers)
 			(headerize "testSometimesProducers" testSometimesProducers)
@@ -64,7 +62,7 @@
 (false
 (declare-first createObject true any false
 	(function () any
-		(compound () () () (
+		(compound () () (
 			(declare-assign mText false String false "initial text")
 			
 			(object (
@@ -97,7 +95,7 @@
 (false
 (declare-first doStuff true any false
 	(function () any
-		(compound () () () (
+		(compound () () (
 			(conditional
 				true (println "this is a test")
 				any )
@@ -124,7 +122,7 @@
 			(println (extract-member obj text))
 			
 			(declare-assign gen true any false
-				(generator any (compound () () () (
+				(generator any (compound () () (
 					(println "printed by generator")
 					(yield "yielded from generator")
 					))))
@@ -143,7 +141,7 @@
 (false
 (declare-first testNonProducers true any false
 	(function () any
-		(compound () () (
+		(compound () (
 			(declare-first dfval false any false "declare-first value")
 		) (
 			(println dfval)
@@ -153,10 +151,10 @@
 (false
 (declare-first testSometimesProducers true any false
 	(function () any
-		(compound () () () (
+		(compound () () (
 			(header "assign, block, call")
 			(declare-empty foo any)
-			(assign foo false (compound () () () (123)))
+			(assign foo false (compound () () (123)))
 			(println foo)
 			
 /* xxx enable when Bridge.getBreederFace is implemented
@@ -177,7 +175,7 @@
 (false
 (declare-first testAlwaysProducers true any false
 	(function () any
-		(compound () () () (
+		(compound () () (
 			(header "testBooleanLogic")
 			(testBooleanLogic)
 			
@@ -201,7 +199,7 @@
 (false
 (declare-first testBooleanLogic true any false
 	(function () any
-		(compound () () () (
+		(compound () () (
 			/*
 			for "and", "nand", "or", and "nor" node tests:
 			first come values that should shortcut,
