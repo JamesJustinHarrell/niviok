@@ -439,14 +439,14 @@ public static partial class Executor {
 		return Bridge.toClientBoolean(false);
 	}
 	
+	//raise
+	public static IWorker execute(Node_Raise node, IScope scope) {
+		throw new ClientException(executeAny(node.value, scope));
+	}
+	
 	//rational
 	public static IWorker execute(Node_Rational node, IScope scope) {
 		return Bridge.toClientRational(node.value);
-	}
-	
-	//remit
-	public static IWorker execute(Node_Remit node, IScope scope) {
-		throw new NotImplementedException();
 	}
 	
 	//select
@@ -465,11 +465,6 @@ public static partial class Executor {
 	//string
 	public static IWorker execute(Node_String node, IScope scope) {
 		return Bridge.toClientString(node.value);
-	}
-	
-	//throw
-	public static IWorker execute(Node_Throw node, IScope scope) {
-		throw new ClientException(executeAny(node.value, scope));
 	}
 	
 	//try-catch
@@ -531,34 +526,6 @@ public static partial class Executor {
 		
 		return Bridge.toClientBoolean(
 			Bridge.toNativeBoolean(first) != Bridge.toNativeBoolean(second) );
-	}
-	
-	//yield
-	//highly coupled with Client_Generator
-	public static IWorker execute(Node_Yield node, IScope scope) {
-		IWorker yieldValue = executeAny(node.value, scope);
-		#if GEN_DEBUG
-		Console.WriteLine("fixin to yield " + Bridge.toNativeInteger(yieldValue));
-		Console.Out.Flush();
-		#endif
-		
-		Client_Generator.setYieldValue(Thread.CurrentThread, yieldValue);
-		
-		//xxx for each call to Interrupt, Mono throws ThreadInterruptedException twice
-		//the while loop is a workaround which would otherwise not be required
-		while( ! Client_Generator.hasNullYieldValue(Thread.CurrentThread) ) {
-			try {
-				Thread.Sleep(Timeout.Infinite);
-			}
-			catch(ThreadInterruptedException e) {
-				#if GEN_DEBUG
-				Console.WriteLine("generator awoken");
-				Console.Out.Flush();
-				#endif
-			}
-		}
-		
-		return new Null(); //note: in future, may add something like Python's "send" method
 	}
 }
 

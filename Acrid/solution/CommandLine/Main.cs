@@ -51,6 +51,9 @@ class CommandLine {
 			module = Fujin.Custom.ParserManager.parseDocument(
 				path, parserName);
 		}
+		else if( repr == "ivan" ) {
+			module = Ivan.IvanParser.parseFile(path);
+		}
 		else {
 			throw new UserError(String.Format(
 				"unknown representation '{0}'.",

@@ -161,3 +161,38 @@ public class Client_Generator {
 }
 
 } //namespace
+
+
+
+/*
+xxxx yield node replaced with yield function
+
+	//yield
+	//highly coupled with Client_Generator
+	public static IWorker execute(Node_Yield node, IScope scope) {
+		IWorker yieldValue = executeAny(node.value, scope);
+		#if GEN_DEBUG
+		Console.WriteLine("fixin to yield " + Bridge.toNativeInteger(yieldValue));
+		Console.Out.Flush();
+		#endif
+		
+		Client_Generator.setYieldValue(Thread.CurrentThread, yieldValue);
+		
+		//xxx for each call to Interrupt, Mono throws ThreadInterruptedException twice
+		//the while loop is a workaround which would otherwise not be required
+		while( ! Client_Generator.hasNullYieldValue(Thread.CurrentThread) ) {
+			try {
+				Thread.Sleep(Timeout.Infinite);
+			}
+			catch(ThreadInterruptedException e) {
+				#if GEN_DEBUG
+				Console.WriteLine("generator awoken");
+				Console.Out.Flush();
+				#endif
+			}
+		}
+		
+		return new Null(); //note: in future, may add something like Python's "send" method
+	}
+*/
+

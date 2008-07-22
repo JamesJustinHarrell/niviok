@@ -1,0 +1,209 @@
+/*
+try to generate Abstract Syntax Tree section and family productions programatically
+*/
+
+Package Acrid.Ivan.SableCC;
+
+Helpers
+
+	h_all = [0..0x10FFFF] ;
+	h_illegal = [0..8] ;
+	h_legal = [h_all - h_illegal] ;
+	h_numerical = ['0' + ['1'..'9']] ;
+	h_astral = [0x010000..0x10FFFF] ;
+	h_alpha = [ ['a'..'z'] + ['A'..'Z'] ] ;
+	// wordchar = [ h_astral + h_alpha ] ;
+	h_wordchar = h_alpha ;
+
+
+Tokens
+
+	t_identifier = h_wordchar (h_wordchar | h_numerical | '_')* ('?' | '!')? ;
+	
+	//other terminal nodes
+	t_integer = h_numerical+ ;
+	t_rational = h_numerical+ '.' h_numerical+ ;
+	t_string = '"' [h_legal - '"']* '"' ;
+
+	t_parenopen = '(' ;
+	t_parenclose = ')' ;
+	t_placeholder = '-' ;
+	
+	t_whitespace = [[[
+		0x09 + //tab
+		0x0A ]+ //linefeed
+		0x0D ]+ //carriage return
+		0x20 ] ; //space
+	
+	t_linecomment =
+		'#' [[[h_legal - '#'] - 0x0A] - 0x0D]* ;
+	
+	t_multilinecomment =
+		'/*' [h_legal - '*']* '*/' ;
+	
+	k_constant = '!constant' ;
+	k_expose = '!expose' ;
+	k_first = '!first' ;
+	k_hidden = '!hidden' ;
+	k_import = '!import' ;
+	k_overload = '!overload' ;
+	k_raise = '!raise' ;
+	k_sieve = '!sieve' ;
+	k_variable = '!variable' ;
+	k_version = '!version' ;
+	k_visible = '!visible' ;
+
+	o_assign = '=' ;
+	o_assignbreed = ':=' ;
+	o_clocurly = '}' ;
+	o_opcurly = '{' ;
+	o_period = '.' ;
+	o_semicolon = ';' ;
+
+
+Ignored Tokens
+
+	t_whitespace ,
+	t_linecomment ,
+	t_multilinecomment ;
+
+
+Productions
+
+	document {-> document}
+		= module
+			{-> New document(module)} ;
+
+
+	//----- FAMILIES
+	
+	expression {-> expression}
+		= {declareempty} declareempty
+			{-> New expression.declareempty(declareempty)}
+		| {raise} raise
+			{-> New expression.raise(raise)}
+		| {identifier} t_identifier
+			{-> New expression.identifier(t_identifier)} ;
+	
+	statementdeclaration {-> statementdeclaration}
+		= {declarefirst} declarefirst
+			{-> New statementdeclaration.declarefirst(declarefirst)}
+		| {sieve} sieve
+			{-> New statementdeclaration.sieve(sieve)} ;
+
+
+	//----- NON-EXECUTABLE
+	
+	import {-> import}
+		= k_import t_identifier o_opcurly importattempt+ o_clocurly
+			{-> New import(t_identifier, [importattempt])} ;
+	
+	importattempt {-> importattempt}
+		= [scheme]:t_string [body]:t_string o_semicolon
+			{-> New importattempt(scheme, body)} ;
+	
+	
+	//----- STATEMENTS
+
+	declarefirst {-> declarefirst}
+		= {overload} k_first k_overload [type]:expression t_identifier o_assign [value]:expression
+			{-> New declarefirst(t_identifier, New boolean.true(), type, New boolean.false(), value)}
+		| {overloadbreed} k_first k_overload [type]:expression t_identifier o_assignbreed [value]:expression
+			{-> New declarefirst(t_identifier, New boolean.true(), type, New boolean.true(), value)}
+		| {constant} k_first k_constant [type]:expression t_identifier o_assign [value]:expression
+			{-> New declarefirst(t_identifier, New boolean.false(), type, New boolean.false(), value)}
+		| {constantbreed} k_first k_constant [type]:expression t_identifier o_assignbreed [value]:expression
+			{-> New declarefirst(t_identifier, New boolean.false(), type, New boolean.true(), value)} ;
+
+	hidable {-> hidable}
+		= {hidden} k_hidden statementdeclaration o_semicolon
+			{-> New hidable(New boolean.true(), statementdeclaration)}
+		| {visible} k_visible statementdeclaration o_semicolon
+			{-> New hidable(New boolean.false(), statementdeclaration)} ;
+
+	module {-> module}
+		= k_version [major]:t_integer [minor]:t_integer o_semicolon import*  modulesieve
+			{-> New module(major, minor, [import], modulesieve.sieve)} ;
+	modulesieve {-> sieve}
+		= [expose]:moduleexpose* hidable*
+			{-> New sieve([expose.expression], [hidable])} ;
+	moduleexpose {-> expression}
+		= k_expose [expose]:expression o_semicolon {-> expose.expression} ;
+	
+	sieve {-> sieve}
+		= k_sieve o_opcurly [expose]:sieveexpose* hidable* o_clocurly
+			{-> New sieve([expose.expression], [hidable])} ;
+	sieveexpose {-> expression}
+		= k_expose [expose]:expression o_semicolon {-> expose.expression} ;
+	
+	
+	//----- NON-PRODUCING
+	
+	declareempty {-> declareempty}
+		= k_variable [type]:expression t_identifier
+			{-> New declareempty(t_identifier, type)} ;
+	
+	raise {-> raise}
+		= k_raise expression
+			{-> New raise(expression)} ;
+
+
+Abstract Syntax Tree
+
+	document
+		= module ;
+
+	boolean
+		= {true}
+		| {false} ;
+
+	//----- FAMILIES
+	
+	expression
+		= {declareempty} declareempty
+		| {raise} raise
+		| {identifier} t_identifier ;
+	
+	statementdeclaration
+		= {declarefirst} declarefirst
+		| {sieve} sieve ;
+
+
+	//----- NON-EXECUTABLE
+
+	import
+		= t_identifier importattempt+ ;
+	
+	importattempt
+		= [scheme]:t_string [body]:t_string ;
+
+
+	//----- STATEMENTS
+
+	declarefirst
+		= [name]:t_identifier [overload]:boolean [type]:expression [breed]:boolean [value]:expression ;
+
+	hidable
+		= [hidden]:boolean statementdeclaration ;
+
+	module
+		= [major]:t_integer [minor]:t_integer import* sieve ;
+
+	sieve
+		= [expose]:expression* hidable* ;
+	
+	
+	//----- NON-PRODUCING
+	
+	declareempty
+		= t_identifier [type]:expression ;
+	
+	raise
+		= expression ;
+	
+	
+	//----- SOMETIMES PRODUCING
+	
+	identifier
+		= t_identifier ;
+

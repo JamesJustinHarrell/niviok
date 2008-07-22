@@ -6,18 +6,16 @@ using Acrid.NodeTypes;
 namespace Acrid.Desible {
 
 public abstract class DesibleParserBase {
-	protected delegate T ParseFunc<T>(XmlElement element);
-
-	protected abstract void checkElement(
-		XmlElement element, string expectedTagName);
+	protected abstract void checkElement(XmlElement element, string expectedTagName);
+	protected abstract string getSource(XmlElement element);
 	protected abstract T parseOne<T>(
-		ParseFunc<T> parserFunc, XmlElement element, string label, string tagName);
+		Func<XmlElement,T> func, XmlElement element, string label, string tagName);
 	protected abstract T parseOpt<T>(
-		ParseFunc<T> parserFunc, XmlElement element, string label, string tagName);
-	protected abstract IList<T> parseMult<T>(
-		ParseFunc<T> parserFunc, XmlElement element, string label, string tagName);
-	protected abstract string getSource(
-		XmlElement element);
+		Func<XmlElement,T> func, XmlElement element, string label, string tagName);
+	protected abstract IList<T> parseMult0<T>(
+		Func<XmlElement,T> func, XmlElement element, string label, string tagName);
+	protected abstract IList<T> parseMult1<T>(
+		Func<XmlElement,T> func, XmlElement element, string label, string tagName);
 }
 
 public class DesibleParser : DesibleParserAuto {
@@ -141,26 +139,36 @@ public class DesibleParser : DesibleParserAuto {
 
 	//parse first child with label
 	protected override T parseOne<T>(
-	ParseFunc<T> parserFunc, XmlElement element, string label, string tagName) {
-		return parserFunc(selectFirst(element, label, tagName));
+	Func<XmlElement,T> func, XmlElement element, string label, string tagName) {
+		return func(selectFirst(element, label, tagName));
 	}
 
 	//parse first child with label, if such a child exists
 	protected override T parseOpt<T>(
-	ParseFunc<T> parserFunc, XmlElement element, string label, string tagName) {
+	Func<XmlElement,T> func, XmlElement element, string label, string tagName) {
 		XmlElement child = trySelectFirst(element, label, tagName);
 		if( child == null )
 			return default(T); //null - google CS0403 for info
-		return parserFunc( child );
+		return func( child );
 	}
 
 	//parse all children with label
-	protected override IList<T> parseMult<T>(
-	ParseFunc<T> parserFunc, XmlElement element, string label, string tagName) {
+	protected override IList<T> parseMult0<T>(
+	Func<XmlElement,T> func, XmlElement element, string label, string tagName) {
 		IList<T> rv = new List<T>();
 		foreach( XmlElement child in selectAll(element, label, tagName) ) {
-			rv.Add( parserFunc(child) );
+			rv.Add( func(child) );
 		}
+		return rv;
+	}
+	
+	protected override IList<T> parseMult1<T>(
+	Func<XmlElement,T> func, XmlElement element, string label, string tagName) {
+		IList<T> rv = parseMult0<T>(func, element, label, tagName);
+		if( rv.Count == 0 )
+			throw new ParseError(
+				"list at must contain at least 1 child",
+				getSource(element));
 		return rv;
 	}
 }

@@ -1,0 +1,193 @@
+Package Acrid.Ivan.SableCC;
+
+Helpers
+
+	h_all = [0..0x10FFFF] ;
+	h_illegal = [0..8] ;
+	h_legal = [h_all - h_illegal] ;
+	h_numerical = ['0' + ['1'..'9']] ;
+	h_astral = [0x010000..0x10FFFF] ;
+	h_alpha = [ ['a'..'z'] + ['A'..'Z'] ] ;
+	// wordchar = [ h_astral + h_alpha ] ;
+	h_wordchar = h_alpha ;
+
+
+Tokens
+
+	identifier = h_wordchar (h_wordchar | h_numerical | '_')* ('?' | '!')? ;
+	
+	//other terminal nodes
+	integer = h_numerical+ ;
+	rational = h_numerical+ '.' h_numerical+ ;
+	string = '"' [h_legal - '"']* '"' ;
+
+	t_whitespace = [[[
+		0x09 + //tab
+		0x0A ]+ //linefeed
+		0x0D ]+ //carriage return
+		0x20 ] ; //space
+	
+	t_linecomment =
+		'#' [[[h_legal - '#'] - 0x0A] - 0x0D]* ;
+	
+	t_multilinecomment =
+		'/*' [h_legal - '*']* '*/' ;
+	
+	k_constant = '!constant' ;
+	k_expose = '!expose' ;
+	k_first = '!first' ;
+	k_function = '!function' ;
+	k_hidden = '!hidden' ;
+	k_import = '!import' ;
+	k_in = '!in' ;
+	k_inout = '!inout' ;
+	k_out = '!out' ;
+	k_overload = '!overload' ;
+	k_raise = '!raise' ;
+	k_sieve = '!sieve' ;
+	k_variable = '!variable' ;
+	k_version = '!version' ;
+	k_visible = '!visible' ;
+
+	o_assign = '=' ;
+	o_assignbreed = ':=' ;
+	o_curlyclose = '}' ;
+	o_curlyopen = '{' ;
+	o_parenopen = '(' ;
+	o_parenclose = ')' ;
+	o_period = '.' ;
+	o_placeholder = '-' ;
+	o_semicolon = ';' ;
+
+
+Ignored Tokens
+
+	t_whitespace ,
+	t_linecomment ,
+	t_multilinecomment ;
+
+
+Productions
+
+	document {-> document}
+		= module
+			{-> New document(module)} ;
+
+
+	//----- FAMILIES
+	/*
+	%(familyproductions)s
+	*/
+	expression
+		= {declareempty} declareempty
+		| {raise} raise
+		| {identifier} identifier
+		| {function} function ;
+	
+	statementdeclaration
+		= {declarefirst} declarefirst
+		| {sieve} sieve ;
+
+	//----- NON-EXECUTABLE
+	
+	import {-> import}
+		= k_import identifier o_curlyopen importattempt+ o_curlyclose
+			{-> New import(identifier, [importattempt.importattempt])} ;
+	
+	importattempt {-> importattempt}
+		= [scheme]:string [body]:string o_semicolon
+			{-> New importattempt(scheme, body)} ;
+	
+	parameterimpl {-> parameterimpl}
+		= {a} parameterimpldirection [type]:expression [name]:identifier
+			{-> New parameterimpl(parameterimpldirection.direction, type, name, Null)}
+		| {b} parameterimpldirection [type]:expression [name]:identifier o_assign [defaultvalue]:expression
+			{-> New parameterimpl(parameterimpldirection.direction, type, name, defaultvalue)} ;
+	parameterimpldirection {-> direction}
+		= {in} k_in {-> New direction.in()}
+		| {out} k_out {-> New direction.out()}
+		| {inout} k_inout {-> New direction.inout()} ;
+	
+	
+	//----- STATEMENTS
+
+	declarefirst {-> declarefirst}
+		= {overload} k_first k_overload [type]:expression identifier o_assign [value]:expression
+			{-> New declarefirst(identifier, New boolean.true(), type, New boolean.false(), value)}
+		| {overloadbreed} k_first k_overload [type]:expression identifier o_assignbreed [value]:expression
+			{-> New declarefirst(identifier, New boolean.true(), type, New boolean.true(), value)}
+		| {constant} k_first k_constant [type]:expression identifier o_assign [value]:expression
+			{-> New declarefirst(identifier, New boolean.false(), type, New boolean.false(), value)}
+		| {constantbreed} k_first k_constant [type]:expression identifier o_assignbreed [value]:expression
+			{-> New declarefirst(identifier, New boolean.false(), type, New boolean.true(), value)} ;
+
+	hidable {-> hidable}
+		= {hidden} k_hidden statementdeclaration o_semicolon
+			{-> New hidable(New boolean.true(), statementdeclaration)}
+		| {visible} k_visible statementdeclaration o_semicolon
+			{-> New hidable(New boolean.false(), statementdeclaration)} ;
+
+	module {-> module}
+		= k_version [major]:integer [minor]:integer o_semicolon import*  modulesieve
+			{-> New module(major, minor, [import], modulesieve.sieve)} ;
+	modulesieve {-> sieve}
+		= [expose]:moduleexpose* hidable*
+			{-> New sieve([expose.expression], [hidable])} ;
+	moduleexpose {-> expression}
+		= k_expose [expose]:expression o_semicolon {-> expose.expression} ;
+	
+	sieve {-> sieve}
+		= k_sieve o_curlyopen [expose]:sieveexpose* hidable* o_curlyclose
+			{-> New sieve([expose.expression], [hidable])} ;
+	sieveexpose {-> expression}
+		= k_expose [expose]:expression o_semicolon {-> expose.expression} ;
+	
+	
+	//----- NON-PRODUCING
+	
+	declareempty {-> declareempty}
+		= k_variable [type]:expression identifier
+			{-> New declareempty(identifier, type)} ;
+	
+	raise {-> raise}
+		= k_raise expression
+			{-> New raise(expression)} ;
+
+
+	//----- ALWAYS PRODUCING
+	
+	function {-> function}
+		= k_function o_parenopen parameterimpl* o_parenclose [returntype]:expression o_curlyopen [body]:expression o_curlyclose
+			{-> New function([parameterimpl], returntype, body)} ;
+
+Abstract Syntax Tree
+
+	document
+		= module ;
+
+
+	//----- ENUMS
+
+	boolean
+		= {true}
+		| {false} ;
+		
+	direction
+		= {in}
+		| {out}
+		| {inout} ;
+	
+	memberstatus
+		= {new}
+		| {normal}
+		| {deprecated} ;
+
+	membertype
+		= {breeder}
+		| {callee}
+		| {getter}
+		| {setter}
+		| {method} ;
+	
+
+	%(astanodes)s

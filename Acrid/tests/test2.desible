@@ -338,61 +338,6 @@
 								</extract-member>
 							</argument>
 						</call>
-						<declare-assign label="member">
-							<identifier label="name">gen</identifier>
-							<boolean label="constant">True</boolean>
-							<identifier label="type">any</identifier>
-							<boolean label="breed">False</boolean>
-							<generator label="value">
-								<identifier label="type">any</identifier>
-								<compound label="body">
-									<call label="member">
-										<identifier label="receiver">println</identifier>
-										<argument>
-											<string label="value">printed by generator</string>
-										</argument>
-									</call>
-									<yield label="member">
-										<string label="value">yielded from generator</string>
-									</yield>
-								</compound>
-							</generator>
-						</declare-assign>
-						<call label="member">
-							<identifier label="receiver">println</identifier>
-							<argument>
-								<call label="value">
-									<extract-member label="receiver">
-										<identifier label="source">gen</identifier>
-										<identifier label="member name">yield</identifier>
-									</extract-member>
-								</call>
-							</argument>
-						</call>
-						<try-catch label="member">
-							<identifier label="try">nonexistantidentikey</identifier>
-							<catcher>
-								<identifier label="type">Object</identifier>
-								<call label="result">
-									<identifier label="receiver">println</identifier>
-									<argument>
-										<string label="value">exception caught</string>
-									</argument>
-								</call>
-							</catcher>
-							<call label="on success">
-								<identifier label="receiver">println</identifier>
-								<argument>
-									<string label="value">no exception</string>
-								</argument>
-							</call>
-							<call label="finally">
-								<identifier label="receiver">println</identifier>
-								<argument>
-									<string label="value">finally!</string>
-								</argument>
-							</call>
-						</try-catch>
 					</compound>
 				</function>
 			</declare-first>

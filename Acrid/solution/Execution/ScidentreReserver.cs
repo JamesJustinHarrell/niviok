@@ -77,9 +77,6 @@ static class ScidentreReserver {
 			reserveAny( (node as Node_SetProperty).source, scope );
 			reserveAny( (node as Node_SetProperty).value, scope );
 			break;
-		case "yield" :
-			reserveAny( (node as Node_Yield).value, scope );
-			break;
 		default :
 			throw new Exception(String.Format("unrecognized node type '{0}'", node.typeName));
 		}

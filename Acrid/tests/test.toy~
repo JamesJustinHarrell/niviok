@@ -9,8 +9,8 @@
 ( #sieve
 
 ( #expose
-	((std))
-	((stdio))
+	std
+	stdio
 )
 
 ( #statement-declaration list
@@ -104,11 +104,12 @@
 			(println str)
 			(println (extract-member str length))
 
-/* xxx enumerator-loop was removed
+/* xxx enumerator-loop node removed and not yet added back
 			(enumerator-loop - (range 1 20 false) ((any x)) -
 				(println ((extract-member x add) 10000)))
 */
-/* xxx
+
+/* xxx -- SableCC can't handle astral characters
 			(declare-assign 🿰🿱 true String false
 				"astral characters in identifiers")
 			(println 🿰🿱)
@@ -121,6 +122,7 @@
 			(set-property obj text "text set through set-property node")
 			(println (extract-member obj text))
 			
+/* xxx -- yield node replaced with yield function that hasn't been implemented yet
 			(declare-assign gen true any false
 				(generator any (compound () () (
 					(println "printed by generator")
@@ -136,6 +138,7 @@
 				)
 				/* else */ (println "no exception")
 				/* finally */ (println "finally!") )
+*/
 		)))))
 
 (false

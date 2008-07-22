@@ -60,7 +60,7 @@ def runTest_toy() :
 		"-representation=toy" ])
 
 def runTest(args) :
-	traceCommand = "--trace=N:Acrid.*"
+	traceCommand = "--trace=N:Acrid.Execution"
 	args = [
 		"mono",
 		"--debug",

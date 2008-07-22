@@ -1,4 +1,4 @@
-A Subr specialization checks the parameters of a function, but not the return type. It is useful for when code wants to call a callback with certain arguments, but doesn't care what the return type is.
+A specialization of the generic Subr is a ManualType that checks the parameters of a function, but not the return type. It is useful for when code wants to call a callback with certain arguments, but doesn't care what the return type is.
 
 Subr
 => Generic< (params Type -> ManualType) >
@@ -9,13 +9,13 @@ Subr<Int>
 Subr<Int, String, Rat, Bool>
 => ManualType
 
-func each<T> { Subr<T> subr, Iterable<T> elements |
+ovr each = <T>{ Subr<T> subr, Iterable<T> elements |
 	for T element in elements
 		subr element
 }
 
-fun is123 = { Int i -> Bool | i == 123 }
-fun intToStr = { Int i -> String | i to String }
+ovr is123 = { Int i -> Bool | i == 123 }
+ovr intToStr = { Int i -> String | i to String }
 let doNothing = <T>{ T arg -> void | null }
 let numbers = Array<Int>(456, 789, 10)
 

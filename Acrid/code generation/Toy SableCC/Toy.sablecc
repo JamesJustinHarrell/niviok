@@ -13,24 +13,24 @@ Package Acrid.Toy.SableCC;
 
 Helpers
 
-	all = [0..0x10FFFF] ;
-	illegal = [0..8] ;
-	legal = [all - illegal] ;
-	numerical = ['0' + ['1'..'9']] ;
-	astral = [0x010000..0x10FFFF] ;
-	alpha = [ ['a'..'z'] + ['A'..'Z'] ] ;
-	// wordchar = [ astral + alpha ] ;
-	wordchar = alpha ;
+	h_all = [0..0x10FFFF] ;
+	h_illegal = [0..8] ;
+	h_legal = [h_all - h_illegal] ;
+	h_numerical = ['0' + ['1'..'9']] ;
+	h_astral = [0x010000..0x10FFFF] ;
+	h_alpha = [ ['a'..'z'] + ['A'..'Z'] ] ;
+	// wordchar = [ h_astral + h_alpha ] ;
+	h_wordchar = alpha ;
 
 Tokens
 
 	//boolean, direction, identifier, member-status, member-type
-	t_word = wordchar (wordchar | numerical | '-')* ('?' | '!')? ;
+	t_word = h_wordchar (h_wordchar | h_numerical | '-')* ('?' | '!')? ;
 	
 	//other terminal nodes
-	t_integer = numerical+ ;
-	t_rational = numerical+ '.' numerical+ ;
-	t_string = '"' [legal - '"']* '"' ;
+	t_integer = h_numerical+ ;
+	t_rational = h_numerical+ '.' h_numerical+ ;
+	t_string = '"' [h_legal - '"']* '"' ;
 
 	t_parenopen = '(' ;
 	t_parenclose = ')' ;
@@ -43,10 +43,10 @@ Tokens
 		0x20 ] ; //space
 	
 	t_linecomment =
-		'#' [[[legal - '#'] - 0x0A] - 0x0D]* ;
+		'#' [[[h_legal - '#'] - 0x0A] - 0x0D]* ;
 	
 	t_multilinecomment =
-		'/*' [legal - '*']* '*/' ;
+		'/*' [h_legal - '*']* '*/' ;
 
 Ignored Tokens
 

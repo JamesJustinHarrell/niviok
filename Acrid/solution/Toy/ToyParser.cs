@@ -6,12 +6,11 @@ using Acrid.NodeTypes;
 namespace Acrid.Toy {
 
 public abstract class ToyParserBase {
-	protected delegate T ParseFunc<T>(Sexp sexp);
-	protected abstract T parseOne<T>( ParseFunc<T> func, Sexp parent );
-	protected abstract T parseOpt<T>( ParseFunc<T> func, Sexp parent );
-	protected abstract IList<T> parseMult0<T>( ParseFunc<T> func, Sexp sexp );
-	protected abstract IList<T> parseMult1<T>( ParseFunc<T> func, Sexp sexp );
 	protected abstract string getSource(Sexp sexp);
+	protected abstract T parseOne<T>( Func<Sexp,T> func, Sexp parent );
+	protected abstract T parseOpt<T>( Func<Sexp,T> func, Sexp parent );
+	protected abstract IList<T> parseMult0<T>( Func<Sexp,T> func, Sexp sexp );
+	protected abstract IList<T> parseMult1<T>( Func<Sexp,T> func, Sexp sexp );
 }
 
 public class ToyParser : ToyParserAuto {
@@ -111,14 +110,14 @@ public class ToyParser : ToyParserAuto {
 	}
 	
 	//parse first child of @parent and remove
-	protected override T parseOne<T>( ParseFunc<T> func, Sexp parent ) {
+	protected override T parseOne<T>( Func<Sexp,T> func, Sexp parent ) {
 		T t = func(parent.list.First.Value);
 		parent.list.RemoveFirst();
 		return t;
 	}
 	
 	//parse first child of @parent and remove
-	protected override T parseOpt<T>( ParseFunc<T> func, Sexp parent ) {
+	protected override T parseOpt<T>( Func<Sexp,T> func, Sexp parent ) {
 		if( parent.type != SexpType.LIST )
 			throw new ParseError(
 				"S-Expression must be a list",
@@ -135,7 +134,7 @@ public class ToyParser : ToyParserAuto {
 	}
 	
 	//parse children of first child of @parent and remove first child
-	protected override IList<T> parseMult0<T>( ParseFunc<T> func, Sexp sexp ) {
+	protected override IList<T> parseMult0<T>( Func<Sexp,T> func, Sexp sexp ) {
 		if( sexp.type != SexpType.LIST )
 			throw new ParseError(
 				"S-Expression must be a list",
@@ -158,7 +157,7 @@ public class ToyParser : ToyParserAuto {
 	}
 
 	//parse children of first child of @parent and remove first child
-	protected override IList<T> parseMult1<T>( ParseFunc<T> func, Sexp sexp ) {
+	protected override IList<T> parseMult1<T>( Func<Sexp,T> func, Sexp sexp ) {
 		IList<T> rv = parseMult0(func, sexp);
 		if( rv.Count == 0 )
 			throw new ParseError(

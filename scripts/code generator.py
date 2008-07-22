@@ -1,3 +1,5 @@
+#----- library references
+
 import os
 import re
 import sys
@@ -6,17 +8,38 @@ import xml.dom.minidom as DOM
 import paths
 import lib
 extractor = __import__('extract nodes')
-from templates import *
+import templates
 
-nodeClassesOutputPath = os.path.join(paths.solutionDir,"NodeTypes/node classes auto.cs")
-desibleParserOutputPath = os.path.join(paths.solutionDir,"Desible/DesibleParserAuto.cs")
-desibleSerializerOutputPath = os.path.join(paths.solutionDir,"Desible/DesibleSerializerAuto.cs")
-toyParserOutputPath = os.path.join(paths.solutionDir,"Toy/ToyParserAuto.cs")
-executorOutputPath = os.path.join(paths.solutionDir,"Execution/Executor auto.cs")
+
+#----- constants
+
+pj = os.path.join
+nodeClassesOutputPath = pj(paths.solutionDir,"NodeTypes/node classes auto.cs")
+desibleParserOutputPath = pj(paths.solutionDir,"Desible/DesibleParserAuto.cs")
+desibleSerializerOutputPath = pj(paths.solutionDir,"Desible/DesibleSerializerAuto.cs")
+ivanGrammarInputPath = pj(paths.ivanSableccDir,"Ivan.sablecc.template")
+ivanGrammarOutputPath = pj(paths.ivanSableccDir,"Ivan.sablecc")
+ivanParserOutputPath = pj(paths.solutionDir,"Ivan/IvanParserAuto.cs")
+toyParserOutputPath = pj(paths.solutionDir,"Toy/ToyParserAuto.cs")
+executorOutputPath = pj(paths.solutionDir,"Execution/Executor auto.cs")
+
+
+#----- global functions
+
+def mapByCategory(nodeTypes, funcMap) :
+	def performCallback(nodeType) :
+		return funcMap[nodeType["category"]](nodeType)
+	return map(performCallback, nodeTypes.values())
+
+def isEnumNode(typename) :
+	return typename in ['boolean', 'direction', 'member-status', 'member-type']
 
 def lowerCamelCase(text) :
 	upperCamel = upperCamelCase(text)
 	return string.lower(upperCamel[0]) + upperCamel[1:]
+
+def lowerLatin(text) :
+	return text.replace("-", "").replace(" ", "").lower()
 
 def upperCamelCase(text) :
 	#a sequence of any character besides space and dash
@@ -31,10 +54,19 @@ def getNodeTypesDict() :
 		nodeTypesDict[ nodeType["typename"] ] = nodeType
 	return nodeTypesDict
 
+def methFromCount(count) :
+	return {
+		"1" : "parseOne",
+		"?" : "parseOpt",
+		"*" : "parseMult0",
+		"+" : "parseMult1"
+	}[count]
+
 #add csTypename, csFamilies, csName, csTagName, csLabel, csType ("cs" refers to C#)
 def setupNodeTypes(nodeTypes) :
-	#add cs* keys
+	#add some cs* keys
 	for (typename, nodeType) in nodeTypes.iteritems() :
+		nodeType["csName"] = upperCamelCase(typename)
 		if nodeType["category"] == "family" :
 			nodeType["csTypename"] = "INode_%s" % upperCamelCase(typename)
 		else :
@@ -75,8 +107,22 @@ def setupNodeTypes(nodeTypes) :
 				entry["csName"] += "s"
 				entry["csType"] = "IList<%s>" % csType
 
-def createNodeClasses(nodes) :
-	def createClass(specType) :
+def titleLatin(text) :
+	return text.replace("-", "").replace(" ", "").title()
+
+def withoutCategory(nodeTypes, category) :
+	return dict(filter(lambda x: x[1]["category"] != category, nodeTypes.items()))
+
+def write(content, location) :
+	outFile = file(location, "w")
+	outFile.write(content)
+	outFile.close()
+
+
+#----- createFoo functions
+
+def createNodeClasses(nodeTypes) :
+	def createClass(nodeType) :
 		def createField(child) :
 			return "%(csType)s m_%(csName)s;" % child
 		
@@ -87,233 +133,244 @@ def createNodeClasses(nodes) :
 			return "m_%(csName)s = @%(csName)s;" % child
 		
 		def createGetter(child) :
-			return nodeGetterTemplate % child
+			return templates.nodeGetter % child
 		
 		def getPrivateName(child) :
 			return "m_%(csName)s" % child
 	
-		nodeInfo = nodes[specType]
-		entries = nodeInfo["layout"]
-	
-		inheritStr = ", ".join(nodeInfo["csFamilies"])
+		entries = nodeType["layout"]
+		inheritStr = ", ".join(nodeType["csFamilies"])
 		if inheritStr == "" :
 			inheritStr = "INode"
 	
-		return nodeClassTemplate % {
-			"csType" : nodeInfo["csTypename"],
+		return templates.nodeClass % {
+			"csType" : nodeType["csTypename"],
 			"inherit" : inheritStr,
 			"fields" : "\n\t".join(map(createField, entries)),
 			"parameters" : ",\n\t".join(map(createParameter, entries)),
 			"assignments" : "\n\t\t".join(map(createAssignment, entries)),
 			"getters" : "\n\n\t".join(map(createGetter, entries)),
-			"specType" : specType,
-			"fieldList" : ",\n\t\t\t\t".join(map(getPrivateName, entries))
-		}
-
-	out = file(nodeClassesOutputPath, "w")
-	out.write(
-		nodeClassFileTemplate % "\n\n".join(
-		[createClass(x) for x in nodes if nodes[x]["category"] == "tree"]))
-	out.close()
+			"specType" : nodeType["typename"],
+			"fieldList" : ",\n\t\t\t\t".join(map(getPrivateName, entries)) }
+	
+	treeNodeTypes = filter( lambda x: x["category"] == "tree", nodeTypes.values() )
+	classes = map( createClass, treeNodeTypes )
+	content = templates.nodeClassFile % "\n\n".join(classes)
+	write( content, nodeClassesOutputPath )
 
 def createDesibleParserMethods(nodeTypes) :
-	def createFamilyMethod(typename) :
-		def createCase(entry) :
-			return desibleFamilyCaseTemplate % {
-				"specType" : entry,
-				"csType" : nodeTypes[entry]["csTypename"],
-				"csName" : upperCamelCase(entry)
-			}
+	def createFamilyMethod(nodeType) :
+		def createCase(memberTypename) :
+			return templates.desibleFamilyCase % nodeTypes[memberTypename]
 
-		nodeType = nodeTypes[typename]
-
-		return desibleFamilyParserTemplate % {
-			"csType" : nodeType["csTypename"],
-			"csName" : upperCamelCase(nodeType["typename"]),
-			"cases" : "\n\t\t\t".join(map(createCase, nodeType["members"])),
-		}
+		return templates.desibleFamilyParser % nodeType % \
+			"\n\t\t\t".join(map(createCase, nodeType["members"]))
 	
-	def createTerminalMethod(typename) :
-		nodeType = nodeTypes[typename]
-		return desibleTerminalParserTemplate % {
-			"csType" : nodeType["csTypename"],
-			"csName" : upperCamelCase(typename),
-			"typename" : typename
-		}
+	def createTerminalMethod(nodeType) :
+		return templates.desibleTerminalParser % nodeType
 	
-	def createTreeMethod(typename) :
+	def createTreeMethod(nodeType) :
 		def createCall(entry) :
-			count = entry["count"]
-			if count == "1" :
-				meth = "parseOne"
-			elif count == "?" :
-				meth = "parseOpt"
-			elif count == "*" :
-				meth = "parseMult"
-			elif count == "+" :
-				meth = "parseMult"
-			else :
-				raise Exception("unknown count " % count)
-			return '%s<%s>(parse%s, element, %s, %s)' % (
-				meth,
+			return templates.desibleTreeParserCall % (
+				methFromCount(entry["count"]),
 				nodeTypes[entry["typename"]]["csTypename"],
 				upperCamelCase(entry["typename"]),
 				entry["csTagName"],
+				entry["csLabel"] )
+
+		return templates.desibleTreeParser % nodeType % \
+			",\n\t\t\t".join(map(createCall, nodeType["layout"]))
+	
+	meths = mapByCategory(nodeTypes, {
+		"family" : createFamilyMethod,
+		"terminal" : createTerminalMethod,
+		"tree" : createTreeMethod })
+	content = templates.desibleParserFile % "\n\n\t".join(meths)
+	write( content, desibleParserOutputPath )
+
+def createDesibleSerializerMethods(nodeTypes) :	
+	def createTerminalMethod(nodeType) :
+		return templates.desibleSerializerTerminal % nodeType
+	
+	def createTreeMethod(nodeType) :
+		def createCall(entry) :
+			return "append<%s>(elem, node.@%s, %s);" % (
+				nodeTypes[entry["typename"]]["csTypename"],
+				entry["csName"],
 				entry["csLabel"]
 			)
-	
-		nodeType = nodeTypes[typename]
-		entries = nodeType["layout"]
-		
-		return desibleTreeParserTemplate % {
-			"specType" : typename,
-			"csType" : nodeType["csTypename"],
-			"csName" : upperCamelCase(typename),
-			"childNodes" : ",\n\t\t\t".join(map(createCall, entries))
-		}
-	
-	def createMethod(typename) :
-		cat = nodeTypes[typename]["category"]
-		if cat == "tree" :
-			return createTreeMethod(typename)
-		if cat == "terminal" :
-			return createTerminalMethod(typename)
-		if cat == "family" :
-			return createFamilyMethod(typename)
-		raise Exception()
-	
-	out = file(desibleParserOutputPath, "w")
-	out.write(
-		desibleParserFileTemplate % \
-		"\n\n\t".join(map(createMethod, nodeTypes)))
-	out.close()
 
-def createDesibleSerializerMethods(nodeTypes) :
-	def notFamilyType(typename) :
-		return nodeTypes[typename]["category"] != "family"
+		return templates.desibleSerializerTree % nodeType % \
+			"\n\t\t".join(map(createCall, nodeType["layout"]))
 	
-	def createTerminalMethod(typename) :
-		return desibleSerializerTerminalTemplate % {
-			"csType" : nodeTypes[typename]["csTypename"]
-		}
+	def createCase(nodeType) :
+		return templates.desibleSerializerCase % nodeType
 	
-	def createTreeMethod(typename) :
-		def createCall(child) :
-			return "append<%s>(elem, node.@%s, %s);" % (
-				nodeTypes[child["typename"]]["csTypename"],
-				child["csName"],
-				child["csLabel"]
-			)
-		
-		csType = nodeTypes[typename]["csTypename"]
-		entries = "\n\t\t".join(map(createCall, nodeTypes[typename]["layout"]))
-		
-		return desibleSerializerTreeTemplate % {
-			"csType" : csType,
-			"children" : entries
-		}
-	
-	def createMethod(typename) :
-		cat = nodeTypes[typename]["category"]
-		if cat == "terminal" :
-			return createTerminalMethod(typename)
-		if cat == "tree" :
-			return createTreeMethod(typename)
-		return ""
-	
-	def createCase(typename) :
-		return desibleSerializerCaseTemplate % {
-			"typename" : typename,
-			"csTypename" : nodeTypes[typename]["csTypename"]
-		}
+	nonFamilyTypes = withoutCategory(nodeTypes, "family")
+	meths = mapByCategory(nonFamilyTypes, {
+		"terminal" : createTerminalMethod,
+		"tree" : createTreeMethod })
+	cases = map(createCase, nonFamilyTypes.values())
+	content = templates.desibleSerializerFile % {
+		"methods" : "\n\n\t".join(meths),
+		"cases" : "\n\t\t\t".join(cases) }
+	write( content, desibleSerializerOutputPath )
 
-	out = file(desibleSerializerOutputPath, "w")
-	out.write(desibleSerializerFileTemplate % {
-		"methods" : "\n\n\t".join(map(createMethod, filter(notFamilyType, nodeTypes))),
-		"cases" : "\n\t\t\t".join(map(createCase, filter(notFamilyType, nodeTypes)))
+def createIvanGrammar(nodeTypes) :
+	def createProduction(nodeType) :
+		def createOption(memberTypename) :
+			return templates.ivanGrammarFamilyOption % {
+				"familyName" : familyName,
+				"optionName" : lowerLatin(memberTypename) }
+		
+		familyName = lowerLatin(nodeType["typename"])
+		options = map(createOption, nodeType["members"])
+		return templates.ivanGrammarFamilyProduction % {
+			"familyName" : familyName,
+			"options" : "\n\t\t| ".join(options) }
+
+	def createFamilyANode(nodeType) :
+		def createOption(memberTypename) :
+			return "{%(name)s} %(name)s" % {
+				"name" : lowerLatin(memberTypename) }
+		
+		options = map(createOption, nodeType["members"])
+		return lowerLatin(nodeType["typename"]) + "\n\t\t= " + "\n\t\t| ".join(options) + " ;"
+
+	def createTreeANode(nodeType) :
+		def createEntry(entry) :
+			rv = ""
+			if "label" in entry :
+				rv = "[%s]:" % lowerLatin(entry["label"])
+			rv = rv + lowerLatin(entry["typename"])
+			if entry["count"] in ["?", "*", "+"] :
+				rv = rv + entry["count"]
+			return rv
+		
+		entries = map(createEntry, nodeType["layout"])
+		return templates.ivanGrammarTreeANode % {
+			"name" : lowerLatin(nodeType["typename"]),
+			"entries" : " ".join(entries) }
+
+	productions = [createProduction(x) for x in nodeTypes.values() if x["category"] == "family"]
+	nonTerminalNodes = withoutCategory(nodeTypes, "terminal")
+	anodes = mapByCategory(nonTerminalNodes, {
+		"family" : createFamilyANode,
+		"tree" : createTreeANode
 	})
-	out.close()
+	
+	infile = file(ivanGrammarInputPath)
+	template = infile.read()
+	infile.close()
+	
+	content = templates.warning + "\n\n" + template % {
+		"familyproductions" : "\n\n\t".join(productions),
+		"astanodes" : "\n\n\t".join(anodes) }
+	write( content, ivanGrammarOutputPath )
+
+def createIvanParser(nodeTypes) :
+	def createFamilyMethod(nodeType) :
+		def createIf(memberTypename) :
+			memberType = nodeTypes[memberTypename]
+			return {
+				"tree" : templates.ivanFamilyIfTree,
+				"terminal" : templates.ivanFamilyIfTerminal
+			}[ memberType["category"] ] % memberType % {
+				"parentSableName" : titleLatin(nodeType['typename']),
+				"childSableName" : titleLatin(memberType['typename']) }
+		
+		return templates.ivanFamilyParser % nodeType % {
+			"sableName" : "P" + titleLatin(nodeType['typename']),
+			"ifs" : "\n\t\t".join(map(createIf, nodeType["members"])) }
+	
+	def createTerminalMethod(nodeType) :
+		template = templates.ivanTerminalParser
+		if isEnumNode(nodeType['typename']) :
+			template = templates.ivanTerminalEnumParser
+		return template % nodeType % {
+			"sableName" : titleLatin(nodeType['typename']) }
+	
+	def createTreeMethod(nodeType) :		
+		def sableTypename(typename) :
+			cat = nodeTypes[typename]['category']
+			title = titleLatin(typename)
+			if cat == 'family' or isEnumNode(typename) :
+				return 'P' + title
+			if cat == 'terminal' :
+				return 'T' + title
+			return 'A' + title
+		
+		def createCall(entry) :
+			if "label" in entry :
+				d = titleLatin(entry["label"])
+			else :
+				d = titleLatin(entry["typename"])
+			return templates.ivanTreeParserCall % (
+				methFromCount(entry['count']),
+				sableTypename(entry['typename']),
+				nodeTypes[entry['typename']]['csTypename'],
+				nodeTypes[entry['typename']]['csName'],
+				'' if entry['count'] in ['*', '+'] else '(%s)' % sableTypename(entry['typename']),
+				d)
+		
+		return templates.ivanTreeParser % nodeType % {
+			"sableName" : titleLatin(nodeType['typename']),
+			"calls" : ",\n\t\t\t".join(map(createCall, nodeType["layout"])) }
+	
+	meths = mapByCategory(nodeTypes, {
+		"family" : createFamilyMethod,
+		"terminal" : createTerminalMethod,
+		"tree" : createTreeMethod })
+	content = templates.ivanParserFile % "\n\n\t".join(meths)
+	write( content, ivanParserOutputPath )
 
 def createToyParser(nodeTypes) :
 	def createFamilyMethod(nodeType) :
-		def createCase(entry) :
-			return toyFamilyCaseTemplate % {
-				"specType" : entry,
-				"csType" : nodeTypes[entry]["csTypename"],
-				"csName" : upperCamelCase(entry)
-			}
-		
-		assert nodeType["category"] == "family"
-		template = toyFamilyParserTemplate
+		def createCase(memberTypename) :
+			return templates.toyFamilyCase % nodeTypes[memberTypename]
 
-		return template % {
-			"csType" : nodeType["csTypename"],
-			"csName" : upperCamelCase(nodeType["typename"]),
-			"cases" : "\n\t\t\t".join(map(createCase, nodeType["members"])),
-		}
+		return templates.toyFamilyParser % nodeType % \
+			"\n\t\t\t".join(map(createCase, nodeType["members"]))
+	
+	def createTerminalMethod(nodeType) :
+		return templates.toyTerminalParser % nodeType
 	
 	def createTreeMethod(nodeType) :
-		templates = {
-			"1" : "parseOne<%s>(parse%s, sexp)",
-			"?" : "parseOpt<%s>(parse%s, sexp)",
-			"*" : "parseMult0<%s>(parse%s, sexp)",
-			"+" : "parseMult1<%s>(parse%s, sexp)"
-		}
-		
 		def createCall(entry) :
-			return templates[entry["count"]] % (
+			return templates.toyTreeParserCall % (
+				methFromCount(entry['count']),
 				nodeTypes[entry["typename"]]["csTypename"],
 				upperCamelCase(entry["typename"]))
 
-		assert nodeType["category"] == "tree"
-		return toyParserTemplate % {
-			"typename" : nodeType["typename"],
-			"csType" : nodeType["csTypename"],
-			"csName" : upperCamelCase(nodeType["typename"]),
+		return templates.toyTreeParser % nodeType % {
 			"childNodes" : ",\n\t\t\t".join(map(createCall, nodeType["layout"])),
-			"childCount" : len(nodeType["layout"])
-		}
+			"childCount" : len(nodeType["layout"]) }
 	
-	def createTerminalMethod(nodeType) :
-		assert nodeType["category"] == "terminal"
-		return toyTerminalParserTemplate % {
-			"csType" : nodeType["csTypename"],
-			"csName" : upperCamelCase(nodeType["typename"])
-		}
-	
-	meths = []
-	for (typename, nodeType) in nodeTypes.iteritems() :
-		if nodeType["category"] == "family" :
-			meths.append(createFamilyMethod(nodeType))
-		elif nodeType["category"] == "tree" :
-			meths.append(createTreeMethod(nodeType))
-		else :
-			meths.append(createTerminalMethod(nodeType))
-	
-	out = file(toyParserOutputPath, "w")
-	out.write(toyParserFileTemplate % "\n\n\t".join(meths))
-	out.close()
+	meths = mapByCategory(nodeTypes, {
+		"family" : createFamilyMethod,
+		"terminal" : createTerminalMethod,
+		"tree" : createTreeMethod })
+	content = templates.toyParserFile % "\n\n\t".join(meths)
+	write( content, toyParserOutputPath )
 
 def createExecutor(nodeTypes) :
 	def createCase(typename) :
-		return executorCaseTemplate % {
-			"typename" : typename,
-			"csTypename" : nodeTypes[typename]["csTypename"]
-		}
+		return templates.executorCase % nodeTypes[typename]
 	
-	members = nodeTypes["expression"]["members"]
-	cases = map(createCase, filter(lambda x: x != "bundle", members))
-	out = file(executorOutputPath, "w")
-	out.write(executorFileTemplate % "\n\t\t\t".join(cases))
-	out.close()
+	cases = map(createCase, nodeTypes["expression"]["members"])
+	content = templates.executorFile % "\n\t\t\t".join(cases)
+	write( content, executorOutputPath )
+
 
 #----- entry point
 
 nodeTypes = getNodeTypesDict()
 setupNodeTypes(nodeTypes)
-
-createNodeClasses(nodeTypes)
-createDesibleParserMethods(nodeTypes)
-createDesibleSerializerMethods(nodeTypes)
-createToyParser(nodeTypes)
-createExecutor(nodeTypes)
+lib.each( lambda x: x(nodeTypes), [
+	createNodeClasses,
+	createDesibleParserMethods,
+	createDesibleSerializerMethods,
+	createIvanGrammar,
+	createIvanParser,
+	createToyParser,
+	createExecutor ])

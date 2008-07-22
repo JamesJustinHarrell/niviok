@@ -1,4 +1,35 @@
 <section xmlns="http://docbook.org/ns/docbook" version="5.0">
+	
+			<section xml:id="node.yield">
+				<title>yield</title>
+				
+				<para>Within a generator, specifies the next value for the generator to yield.</para>
+				
+				<simplelist role="layout">
+					<member>expression value</member>
+				</simplelist>
+				
+				<para role="process">Must have YIELD allowance.</para>
+				
+				<para>Note that this node may, in the future, become more like Python's yield expression, so that the yield node would become a sometimes-producing expression.</para>
+			</section>
+		
+		<section xml:id="node.expose">
+			<title>expose</title>
+			
+			<para>Imports all the child identikeys of the specified namespace into the enclosing scope.</para>
+			
+			<simplelist role="layout">
+				<member>+ identifier</member>
+			</simplelist>
+			
+			<programlisting>
+decl std::Array&lt;std::Int> numbers = generateNumbers()
+
+expose std
+decl Array&lt;Int> numbers = generateNumbers()
+			</programlisting>
+		</section>
 		
 		<section xml:id="node.using">
 			<title>using</title>

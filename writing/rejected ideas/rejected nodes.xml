@@ -1,4 +1,30 @@
 <section xmlns="http://docbook.org/ns/docbook" version="5.0">
+			
+			<section xml:id="node.remit">
+				<title>remit</title>
+				
+				<simplelist role="layout">
+					<member>? identifier label</member>
+				</simplelist>
+				
+				<para role="process">Must have REMIT allowance. If [label] is specified, must have labled REMIT allowance of that name.</para>
+				
+				<para>The catch nodes that follows the catch node that this node was in are checked, as if the catch node that this node was in was never entered.</para>
+			</section>
+	
+			<section xml:id="node.yield">
+				<title>yield</title>
+				
+				<para>Within a generator, specifies the next value for the generator to yield.</para>
+				
+				<simplelist role="layout">
+					<member>expression value</member>
+				</simplelist>
+				
+				<para role="process">Must have YIELD allowance.</para>
+				
+				<para>Note that this node may, in the future, become more like Python's yield expression, so that the yield node would become a sometimes-producing expression.</para>
+			</section>
 		
 		<section xml:id="node.expose">
 			<title>expose</title>

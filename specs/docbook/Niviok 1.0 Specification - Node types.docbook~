@@ -336,6 +336,58 @@ println( foo.bar.foo.bar.foo.bar.foo.number )
 			</simplelist>
 		</section>
 		
+		<section xml:id="node.module">
+			<title>module</title>
+			
+			<para>A grouping of identikey declarations, for use as a library or a standalone program.</para>
+			
+			<simplelist role="layout">
+				<member>integer niviok major version number</member>
+				<member>integer niviok minor version number</member>
+				<member>* import</member>
+				<member>sieve</member>
+			</simplelist>
+			
+			<para>No node can contain a module node. Module nodes are the only nodes which can ever be parentless. All nodes that are ever executed in any way must be part of a complete tree, with a module node as the rootmost node.</para>
+			
+			<para role="xxx">Following stuff needs to be moved. Also, see "executing module.txt".</para>
+			
+			<para>Implementations must not pass any arguments to the main function when executing a bundle as a standalone executable. Implementations should instead provide program arguments through a library which can be imported with the import node. Note that the program arguments are not required by this specification to be a sequence of strings.</para>
+			
+			<para>The result produced by executing a bundle node as a standalone executable may be converted as necesary to suit the containing environment. How this conversion is performed depends on the containing environment and the Desal implementation, and is not covered by this specification.</para>
+			
+			<para>When treating a bundle as a standalone executable:</para>
+			
+			<orderedlist role="exec">
+				<listitem>Let globalScope be a new scope.</listitem>
+				<listitem>Create the identikeys required by <link linkend="reserved-identikey-names">Reserved identikey names</link>.</listitem>
+				<listitem>For each @@import and expose child node, add the identikeys to globalScope specified by that node.</listitem>
+				<listitem>Execute all declaration-first children of each plane together as required by <link linkend="handling-declare-first">Handling declare-first nodes</link>.</listitem>
+				<listitem>Let mainKey be the identikey in globalScope that is associated with identifier "main". If such an identikey does not exist, throw an error.</listitem>
+				<listitem>Let mainVal be the result of evaluating mainKey. If mainVal is null, throw an error.</listitem>
+				<listitem>Call mainVal with no arguments and let rv be the result. If mainVal is not callable, throw an error. If mainVal does not have a callee that takes no arguments, throw an error.</listitem>
+				<listitem>If rv is null, produce a value, with Int as the active interface, that encodes the number zero. Else if rv has an active interface that inherits from Int, downcast rv to Int and produce the result. Else if rv, with it's current active interface, can breed an Int, have rv breed an Int, and produce the result. Else throw an error.</listitem>
+			</orderedlist>
+			
+			<para>When treating a bundle as a library:</para>
+			
+			<orderedlist role="exec">
+				<listitem>Let globalScope be a new scope.</listitem>
+				<listitem>Create the identikeys required by <link linkend="reserved-identikey-names">Reserved identikey names</link>.</listitem>
+				<listitem>For each @@import and expose child node, add the identikeys to globalScope specified by that node.</listitem>
+				<listitem>Execute all declaration-first children of each plane together as required by <link linkend="handling-declare-first">Handling declare-first nodes</link>.</listitem>
+				<listitem>Expose globalScope, in an immutable form, to the containing environment. How this is done depends on the containing enviornment and the Desal implementation, and is not covered by this specification.</listitem>
+			</orderedlist>
+			
+			<para role="xxx">When acting as a standalone executable, need to specify what happens to exceptions that bubble all the way up to the bundle node. They are caught, an error message is output, and the bundle node returns some value, like 1. The bundle may expose to the containing environment additional information, depending on the enclosing environment and Desal implementation.</para>
+			
+			<para role="xxx">When acting as a standalone executable, what kind of errors should bundle by throwing? This is a problem that applies to many other nodes as well.</para>
+			
+			<para role="xxx">For when acting as a library, need a means of hiding/showing certain child namespaces/identikeys of the global namespace. For example, a bundle may have declarations in the global namespace and in a "private" namespace. The bundle should expose the declarations in the global namespace but hide the declarations in the private namespace. There has also been consideration of an "export" attribute/node that would expose specified identikeys, and all other identikeys would not be exposed.</para>
+			
+			<para role="xxx">The identikeys added to globalScope by import, using, and expose nodes should not be exposed to the containing environment when the bundle is acting as a library.</para>
+		</section>
+		
 		<section xml:id="node.sieve">
 			<title>sieve</title>
 			
@@ -378,106 +430,12 @@ module
 			}
 			</programlisting>
 		</section>
-		
-		<section xml:id="node.module">
-			<title>module</title>
-			
-			<para>A grouping of identikey declarations, for use as a library or a standalone program.</para>
-			
-			<simplelist role="layout">
-				<member>integer niviok major version number</member>
-				<member>integer niviok minor version number</member>
-				<member>* import</member>
-				<member>sieve</member>
-			</simplelist>
-			
-			<para>No node can contain a module node. Module nodes are the only nodes which can ever be parentless. All nodes that are ever executed in any way must be part of a complete tree, with a module node as the rootmost node.</para>
-			
-			<para role="xxx">Following stuff needs to be moved. Also, see "executing module.txt".</para>
-			
-			<para>Implementations must not pass any arguments to the main function when executing a bundle as a standalone executable. Implementations should instead provide program arguments through a library which can be imported with the import node. Note that the program arguments are not required by this specification to be a sequence of strings.</para>
-			
-			<para>The result produced by executing a bundle node as a standalone executable may be converted as necesary to suit the containing environment. How this conversion is performed depends on the containing environment and the Desal implementation, and is not covered by this specification.</para>
-			
-			<para>When treating a bundle as a standalone executable:</para>
-			
-			<orderedlist role="exec">
-				<listitem>Let globalScope be a new scope.</listitem>
-				<listitem>Create the identikeys required by <link linkend="reserved-identikey-names">Reserved identikey names</link>.</listitem>
-				<listitem>For each @@import, @@using, and @@expose child node, add the identikeys to globalScope specified by that node.</listitem>
-				<listitem>Execute all declaration-first children of each plane together as required by <link linkend="handling-declare-first">Handling declare-first nodes</link>.</listitem>
-				<listitem>Let mainKey be the identikey in globalScope that is associated with identifier "main". If such an identikey does not exist, throw an error.</listitem>
-				<listitem>Let mainVal be the result of evaluating mainKey. If mainVal is null, throw an error.</listitem>
-				<listitem>Call mainVal with no arguments and let rv be the result. If mainVal is not callable, throw an error. If mainVal does not have a callee that takes no arguments, throw an error.</listitem>
-				<listitem>If rv is null, produce a value, with Int as the active interface, that encodes the number zero. Else if rv has an active interface that inherits from Int, downcast rv to Int and produce the result. Else if rv, with it's current active interface, can breed an Int, have rv breed an Int, and produce the result. Else throw an error.</listitem>
-			</orderedlist>
-			
-			<para>When treating a bundle as a library:</para>
-			
-			<orderedlist role="exec">
-				<listitem>Let globalScope be a new scope.</listitem>
-				<listitem>Create the identikeys required by <link linkend="reserved-identikey-names">Reserved identikey names</link>.</listitem>
-				<listitem>For each @@import, @@using, and @@expose child node, add the identikeys to globalScope specified by that node.</listitem>
-				<listitem>Execute all declaration-first children of each plane together as required by <link linkend="handling-declare-first">Handling declare-first nodes</link>.</listitem>
-				<listitem>Expose globalScope, in an immutable form, to the containing environment. How this is done depends on the containing enviornment and the Desal implementation, and is not covered by this specification.</listitem>
-			</orderedlist>
-			
-			<para role="xxx">When acting as a standalone executable, need to specify what happens to exceptions that bubble all the way up to the bundle node. They are caught, an error message is output, and the bundle node returns some value, like 1. The bundle may expose to the containing environment additional information, depending on the enclosing environment and Desal implementation.</para>
-			
-			<para role="xxx">When acting as a standalone executable, what kind of errors should bundle by throwing? This is a problem that applies to many other nodes as well.</para>
-			
-			<para role="xxx">For when acting as a library, need a means of hiding/showing certain child namespaces/identikeys of the global namespace. For example, a bundle may have declarations in the global namespace and in a "private" namespace. The bundle should expose the declarations in the global namespace but hide the declarations in the private namespace. There has also been consideration of an "export" attribute/node that would expose specified identikeys, and all other identikeys would not be exposed.</para>
-			
-			<para role="xxx">The identikeys added to globalScope by import, using, and expose nodes should not be exposed to the containing environment when the bundle is acting as a library.</para>
-		</section>
 	</section>
 	
 	<section xml:id="non-producing-expressions">
 		<title>Non-producing expressions</title>
 		
-		<para>Nodes that can be executed, but never produce.</para>
-
-		<section xml:id="control-flow-alteration">
-			<title>Control flow alteration</title>
-			
-			<para>The nodes alter the control flow when executed. For example, if present in a sequence of statements that are executed in order, executing a node of this type alters control flow in such a way that the following statements in the sequence are not executed (or execution is delayed until other expression nodes have been executed).</para>
-			
-			<section xml:id="node.remit">
-				<title>remit</title>
-				
-				<simplelist role="layout">
-					<member>? identifier label</member>
-				</simplelist>
-				
-				<para role="process">Must have REMIT allowance. If [label] is specified, must have labled REMIT allowance of that name.</para>
-				
-				<para>The catch nodes that follows the catch node that this node was in are checked, as if the catch node that this node was in was never entered.</para>
-			</section>
-			
-			<section xml:id="node.throw">
-				<title>throw</title>
-				
-				<simplelist role="layout">
-					<member>expression value</member>
-				</simplelist>
-				
-				<para>If the expression isn't an Exception, throw a NonExceptionThrownError with the value from [value] as the wrapped value.</para>
-			</section>
-	
-			<section xml:id="node.yield">
-				<title>yield</title>
-				
-				<para>Within a generator, specifies the next value for the generator to yield.</para>
-				
-				<simplelist role="layout">
-					<member>expression value</member>
-				</simplelist>
-				
-				<para role="process">Must have YIELD allowance.</para>
-				
-				<para>Note that this node may, in the future, become more like Python's yield expression, so that the yield node would become a sometimes-producing expression.</para>
-			</section>
-		</section>
+		<para>Expression nodes that never produce.</para>
 		
 		<section xml:id="node.declare-empty">
 			<title>declare-empty</title>
@@ -494,8 +452,8 @@ var foo
 var any foo
 var ? foo
 var ?any foo
-decl Int foo
-decl ?Int foo
+var Int foo
+var ?Int foo
 			</programlisting>
 			
 			<programlisting>
@@ -505,6 +463,18 @@ println(bar)
 bar = 456
 println(bar)
 			</programlisting>
+		</section>
+
+		<section xml:id="node.raise">
+			<title>raise</title>
+		
+			<para>This node alters the control flow when executed. For example, if present in a sequence of statements that are executed in order, executing a node of this type alters control flow in such a way that the following statements in the sequence are not executed.</para>
+			
+			<simplelist role="layout">
+				<member>expression value</member>
+			</simplelist>
+			
+			<para>If the worker produced by the expression doesn't implement an interface that is or inherits from Signal, throw a NonSignalRaiseAttempt signal with the value from [value] as the wrapped value.</para>
 		</section>
 	</section>
 

@@ -8,6 +8,7 @@
       <Entry build="True" name="Execution" configuration="Debug" />
       <Entry build="True" name="NodeTypes" configuration="Debug" />
       <Entry build="True" name="Fujin" configuration="Debug" />
+      <Entry build="True" name="Ivan" configuration="Debug" />
     </Configuration>
     <Configuration name="Release" ctype="CombineConfiguration">
       <Entry build="True" name="Acrid" configuration="Release" />
@@ -17,6 +18,7 @@
       <Entry build="True" name="Execution" configuration="Release" />
       <Entry build="True" name="NodeTypes" configuration="Release" />
       <Entry build="True" name="Fujin" configuration="Release" />
+      <Entry build="True" name="Ivan" configuration="Release" />
     </Configuration>
   </Configurations>
   <StartMode startupentry="CommandLine" single="True">
@@ -27,6 +29,7 @@
     <Execute type="None" entry="Execution" />
     <Execute type="None" entry="NodeTypes" />
     <Execute type="None" entry="Fujin" />
+    <Execute type="None" entry="Ivan" />
   </StartMode>
   <DeployTargets />
   <Entries>
@@ -37,5 +40,6 @@
     <Entry filename="Execution/Execution.mdp" />
     <Entry filename="NodeTypes/NodeTypes.mdp" />
     <Entry filename="Fujin/Fujin.mdp" />
+    <Entry filename="Ivan/Ivan.mdp" />
   </Entries>
 </Combine>

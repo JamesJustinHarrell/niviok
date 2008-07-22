@@ -30,10 +30,12 @@ func $repeat { body |
 }
 
 func $while { test, body |
-	while callback()
+	while test()
 		body()
 }
 
+
+-----
 
 
 This probably can't be decided well for casting until the type system is further developed.
@@ -54,7 +56,7 @@ func $downcast { val, type | val downas type }
 func $rootcast { val | rootcast val }
 
 
-
+-----
 
 
 Criteria for determining whether a feature should get a node or just be included in the library.
@@ -63,7 +65,11 @@ Criteria for determining whether a feature should get a node or just be included
 
 Features that don't "do" anything should be in the library. Nodes should perform actions.
 
-Examples: interfaces, types, null, constructors for collections
+Examples:
+	built-in interfaces
+	built-in types
+	reference to null ("null" keyword or "null" scidentre)
+	constructors for collections
 
 Counter examples: dictionary node
 

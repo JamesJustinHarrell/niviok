@@ -1,0 +1,6 @@
+!version 1 0 ;
+
+!expose std ;
+!expose stdio ;
+
+!visible !first !constant any main = !function() any { 123 } ;

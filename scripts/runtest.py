@@ -54,6 +54,11 @@ def runTest_fujin() :
 		"-representation=fujin",
 		"-fujin-parser=SableCC" ])
 
+def runTest_ivan() :
+	return runTest([
+		"-path=%s" % os.path.join(paths.testsDir, "test.ivan"),
+		"-representation=ivan" ])
+
 def runTest_toy() :
 	return runTest([
 		"-path=%s" % os.path.join(paths.testsDir, "test.toy"),

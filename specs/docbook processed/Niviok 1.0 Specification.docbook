@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?><book version="5.0" xmlns="http://docbook.org/ns/docbook" xmlns:xi="http://www.w3.org/2003/XInclude">
 	
 	<title>Niviok 1.0 Specification</title>
-	<subtitle>Edition 1 Draft 2008-07-19</subtitle>
+	<subtitle>Edition 1 Draft 2008-07-20</subtitle>
 	
 	<info>
 		<copyright>
@@ -15,7 +15,7 @@
 	<chapter xml:id="Overview">
 		<title>Overview</title>
 		
-		<para>This document is a draft for the first edition of the specification describing the 1.0 version of Niviok. It can be represented as &quot;Niviok 1.0 Edition 1 Draft 2008-07-19&quot;.</para>
+		<para>This document is a draft for the first edition of the specification describing the 1.0 version of Niviok. It can be represented as &quot;Niviok 1.0 Edition 1 Draft 2008-07-20&quot;.</para>
 	
 		<para>This document is a draft of the first edition of the specification describing the 1.0 version of Niviok.</para>
 		
@@ -583,7 +583,7 @@ declfirst func bar = func() {
 	<chapter xml:id="nodes">
 		<title>Nodes</title>
 	
-		<para>Niviok defines 65 nodes.</para>
+		<para>Niviok defines 63 nodes.</para>
 		
 		<para>Niviok code is represented by a tree of nodes. How this tree and its nodes are represented is outside the scope of this specification. Many means may exist of representing a Niviok tree.</para>
 
@@ -954,49 +954,6 @@ println( foo.bar.foo.bar.foo.bar.foo.number )
 			</simplelist>
 		</section>
 		
-		<section xml:id="node.sieve">
-			<title>sieve</title>
-			
-			<para>Limits reach of expose and using nodes. Can hide child scidentres.</para>
-			
-			<para>Like some other special expressions, screen nodes add identikeys to their parent scope, as well as creating their own scope and adding identikeys to it.</para>
-			
-			<simplelist role="layout">
-				<member>* <link linkend="node.expression">expression</link> expose</member>
-				<member>* <link linkend="node.hidable">hidable</link> </member>
-			</simplelist>
-			
-			<para>Example of sieve nodes used to contain the effects of &quot;using&quot; nodes:</para>
-			
-			<programlisting>
---- file A
-module
-	import as Foo [...]
-	sieve
-		include B
-		include C
-
---- file B
-using Foo as Bar
-
---- file C
-func main {
-	println(Bar:something)
-}
-
---- all together
-module
-	import as Foo
-	sieve
-		sieve
-			using Foo as Bar
-		sieve
-			func main {
-				Bar:do_something() #error - Bar namespace not defined
-			}
-			</programlisting>
-		</section>
-		
 		<section xml:id="node.module">
 			<title>module</title>
 			
@@ -1048,54 +1005,55 @@ module
 			
 			<para role="xxx">The identikeys added to globalScope by import, using, and expose nodes should not be exposed to the containing environment when the bundle is acting as a library.</para>
 		</section>
+		
+		<section xml:id="node.sieve">
+			<title>sieve</title>
+			
+			<para>Limits reach of expose and using nodes. Can hide child scidentres.</para>
+			
+			<para>Like some other special expressions, screen nodes add identikeys to their parent scope, as well as creating their own scope and adding identikeys to it.</para>
+			
+			<simplelist role="layout">
+				<member>* <link linkend="node.expression">expression</link> expose</member>
+				<member>* <link linkend="node.hidable">hidable</link> </member>
+			</simplelist>
+			
+			<para>Example of sieve nodes used to contain the effects of &quot;using&quot; nodes:</para>
+			
+			<programlisting>
+--- file A
+module
+	import as Foo [...]
+	sieve
+		include B
+		include C
+
+--- file B
+using Foo as Bar
+
+--- file C
+func main {
+	println(Bar:something)
+}
+
+--- all together
+module
+	import as Foo
+	sieve
+		sieve
+			using Foo as Bar
+		sieve
+			func main {
+				Bar:do_something() #error - Bar namespace not defined
+			}
+			</programlisting>
+		</section>
 	</section>
 	
 	<section xml:id="non-producing-expressions">
 		<title>Non-producing expressions</title>
 		
-		<para>Nodes that can be executed, but never produce.</para>
-
-		<section xml:id="control-flow-alteration">
-			<title>Control flow alteration</title>
-			
-			<para>The nodes alter the control flow when executed. For example, if present in a sequence of statements that are executed in order, executing a node of this type alters control flow in such a way that the following statements in the sequence are not executed (or execution is delayed until other expression nodes have been executed).</para>
-			
-			<section xml:id="node.remit">
-				<title>remit</title>
-				
-				<simplelist role="layout">
-					<member>? <link linkend="node.identifier">identifier</link> label</member>
-				</simplelist>
-				
-				<para role="process">Must have REMIT allowance. If [label] is specified, must have labled REMIT allowance of that name.</para>
-				
-				<para>The catch nodes that follows the catch node that this node was in are checked, as if the catch node that this node was in was never entered.</para>
-			</section>
-			
-			<section xml:id="node.throw">
-				<title>throw</title>
-				
-				<simplelist role="layout">
-					<member><link linkend="node.expression">expression</link> value</member>
-				</simplelist>
-				
-				<para>If the expression isn't an Exception, throw a NonExceptionThrownError with the value from [value] as the wrapped value.</para>
-			</section>
-	
-			<section xml:id="node.yield">
-				<title>yield</title>
-				
-				<para>Within a generator, specifies the next value for the generator to yield.</para>
-				
-				<simplelist role="layout">
-					<member><link linkend="node.expression">expression</link> value</member>
-				</simplelist>
-				
-				<para role="process">Must have YIELD allowance.</para>
-				
-				<para>Note that this node may, in the future, become more like Python's yield expression, so that the yield node would become a sometimes-producing expression.</para>
-			</section>
-		</section>
+		<para>Expression nodes that never produce.</para>
 		
 		<section xml:id="node.declare-empty">
 			<title>declare-empty</title>
@@ -1112,17 +1070,29 @@ var foo
 var any foo
 var ? foo
 var ?any foo
-decl Int foo
-decl ?Int foo
+var Int foo
+var ?Int foo
 			</programlisting>
 			
 			<programlisting>
 var bar
 bar = 123
-println(bar)
+println bar
 bar = 456
-println(bar)
+println bar
 			</programlisting>
+		</section>
+
+		<section xml:id="node.raise">
+			<title>raise</title>
+		
+			<para>This node alters the control flow when executed. For example, if present in a sequence of statements that are executed in order, executing a node of this type alters control flow in such a way that the following statements in the sequence are not executed.</para>
+			
+			<simplelist role="layout">
+				<member><link linkend="node.expression">expression</link> value</member>
+			</simplelist>
+			
+			<para>If the worker produced by the expression doesn't implement an interface that is or inherits from Signal, throw a NonSignalRaiseAttempt signal with the value from [value] as the wrapped value.</para>
 		</section>
 	</section>
 
